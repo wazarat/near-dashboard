@@ -108,6 +108,15 @@ export const CAT = ["var(--cat-1)", "var(--cat-2)", "var(--cat-3)", "var(--cat-4
 
 export const SEQ = ["var(--seq-1)", "var(--seq-2)", "var(--seq-3)", "var(--seq-4)", "var(--seq-5)", "var(--seq-6)"];
 
+/**
+ * The same sequential ramp as --seq-1..6 in globals.css, as hex per theme, for
+ * code that must know a fill's luminance (treemap labels). Keep both in step.
+ */
+export const SEQ_HEX = {
+  dark: { seq: ["#1e3a8a", "#1d4ed8", "#2563eb", "#3d7bff", "#8fb3ff", "#bdd2ff"], none: "#3a4255", textDark: "#05060a", textLight: "#eef0f7" },
+  light: { seq: ["#dbe7ff", "#b3ccff", "#7fa9ff", "#3d7bff", "#2563eb", "#1e40af"], none: "#b6b9b3", textDark: "#0c1500", textLight: "#f5f5f7" },
+} as const satisfies Record<"dark" | "light", { seq: string[]; none: string; textDark: string; textLight: string }>;
+
 export function seqColor(t: number | null): string {
   if (t === null || !Number.isFinite(t)) return "var(--tier-none)";
   const i = Math.min(SEQ.length - 1, Math.max(0, Math.floor(t * SEQ.length)));

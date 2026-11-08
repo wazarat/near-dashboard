@@ -123,6 +123,58 @@ test("a shared ?expand= link opens the dialog on load and level charts offer a F
   await expect(zeroTick.first()).toBeVisible();
 });
 
+test("the treemap drills into a sector, opens a project from a tile and filters only on request", async ({ page }) => {
+  await page.goto("/");
+  const card = page.locator('[data-chart-card^="Sectors by"]');
+  await expect(card.locator('[data-tile-kind="sector"]').first()).toBeVisible({ timeout: 15_000 });
+  const total = page.getByText(/Showing [\d,]+ of [\d,]+ projects/);
+  const before = await total.textContent();
+  await card.locator('[data-tile-kind="sector"]').first().click();
+  await expect(page).toHaveURL(/tmSector=/);
+  await expect(page.getByRole("navigation", { name: "Treemap level" })).toContainText("All sectors");
+  await expect(page.getByRole("navigation", { name: "Treemap level" }).locator("[aria-current=location]")).toBeVisible();
+  await expect(total).toHaveText(before ?? "");
+  await expect(page.getByRole("button", { name: "Filter to this sector" })).toBeVisible();
+  await page.getByRole("button", { name: "Back to all sectors" }).click();
+  await expect(page).not.toHaveURL(/tmSector=/);
+  // A sector with fewer than three subcategories shows project tiles that open the drawer.
+  await page.goto("/?tmSector=Lending+%26+Credit");
+  const projectTile = page.locator('[data-chart-card^="Lending"] [data-tile-kind="project"]').first();
+  await expect(projectTile).toBeVisible({ timeout: 15_000 });
+  await projectTile.click();
+  await expect(page).toHaveURL(/project=/);
+  await expect(page.getByRole("dialog")).toContainText("Sources");
+});
+
+test("the timeline opens on 2024 and keeps earlier events one click away", async ({ page }) => {
+  await page.goto("/");
+  const card = page.locator('[data-chart-card="Timeline"]');
+  const toggle = card.getByRole("button", { name: /Show earlier events \(\d+\)/ });
+  await expect(toggle).toBeVisible({ timeout: 15_000 });
+  const label = await toggle.textContent();
+  const earlier = Number(label?.match(/\((\d+)\)/)?.[1]);
+  expect(earlier).toBeGreaterThan(0);
+  const markersBefore = await card.locator(".recharts-scatter-symbol").count();
+  await toggle.click();
+  await expect(card.getByRole("button", { name: /Hide events before/ })).toBeVisible();
+  await expect.poll(() => card.locator(".recharts-scatter-symbol").count()).toBe(markersBefore + earlier);
+});
+
+test("the funding chart shows disclosed funding only and sums the rest in one line", async ({ page }) => {
+  await page.goto("/funding/");
+  const card = page.locator('[data-chart-card="Funding type"]');
+  await expect(card.getByTestId("funding-coverage")).toBeVisible({ timeout: 15_000 });
+  const text = (await card.getByTestId("funding-coverage").textContent()) ?? "";
+  const nums = [...text.matchAll(/([\d,]+) (researched|with disclosed funding|not disclosed|not researched)/g)].map((m) => Number(m[1].replace(/,/g, "")));
+  expect(nums).toHaveLength(4);
+  const [researched, disclosed, notDisclosed, notResearched] = nums;
+  expect(researched).toBe(disclosed + notDisclosed);
+  const shown = Number((await page.getByText(/Showing [\d,]+ of [\d,]+ projects/).textContent())?.match(/Showing ([\d,]+)/)?.[1].replace(/,/g, ""));
+  expect(researched + notResearched).toBe(shown);
+  await expect(card.locator(".recharts-yAxis")).not.toContainText("Not disclosed");
+  await expect(card.locator(".recharts-cartesian-axis-tick-value", { hasText: "Not researched" })).toHaveCount(0);
+});
+
 test("whole-chain cards say so and do not change when a filter is applied", async ({ page }) => {
   await page.goto("/");
   const card = page.locator('[data-chart-card="Chain over time"]');
