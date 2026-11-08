@@ -1,10 +1,10 @@
 import { CHART } from "@/lib/colors";
 import type { ThesisJson, UsageKey } from "@/lib/thesis-types";
 
-/** Fixed hue per usage series so a hidden series never repaints the others. Avoids the Intents (cat-1) and price hues. */
+/** Fixed colour per usage series so a hidden series never repaints the others. Avoids the Intents (chart-1), price (neon-400) and usage (signal, chart-6) steps. */
 export const USAGE_COLOR: Record<UsageKey, string> = {
   txns: CHART.usage,
-  activeAccounts: "var(--cat-6)",
+  activeAccounts: "var(--cat-3)",
   newAccounts: "var(--cat-7)",
   functionCalls: "var(--cat-2)",
   contractsCalled: "var(--cat-5)",

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CanHav Atlas, NEAR and Aurora</title>
+    <style>
+      @font-face { font-family: "Space Grotesk"; src: url("{{fontDisplay}}") format("woff2"); font-weight: 300 700; }
+      @font-face { font-family: "Inter"; src: url("{{fontSans}}") format("woff2"); font-weight: 100 900; }
+      * { box-sizing: border-box; margin: 0; }
+      html, body { width: 1200px; height: 630px; background: #05060a; color: #eef0f7; font-family: Inter, system-ui, sans-serif; }
+      .card { position: relative; width: 1200px; height: 630px; padding: 72px 80px; display: flex; flex-direction: column; justify-content: space-between; }
+      .brand { display: flex; align-items: center; gap: 18px; }
+      .mark { width: 56px; height: 56px; border-radius: 14px; background: #3d7bff; display: grid; place-items: center; font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 28px; color: #fff; letter-spacing: -0.02em; }
+      .name { font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 34px; letter-spacing: -0.02em; }
+      .sub { font-size: 18px; color: #7c8499; margin-top: 2px; }
+      h1 { font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 54px; line-height: 1.08; letter-spacing: -0.025em; max-width: 1040px; }
+      h1 span { color: #3d7bff; }
+      .stats { display: flex; gap: 56px; padding-top: 22px; border-top: 1px solid rgba(31, 36, 51, 0.9); }
+      .stat .v { font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 36px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+      .stat .l { font-size: 15px; color: #7c8499; margin-top: 4px; }
+      .foot { display: flex; justify-content: space-between; align-items: flex-end; font-size: 16px; color: #a8aebf; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="brand">
+        <div class="mark">ch.</div>
+        <div>
+          <div class="name">CanHav Atlas</div>
+          <div class="sub">NEAR and Aurora</div>
+        </div>
+      </div>
+      <h1>The NEAR and Aurora ecosystem, <span>{{projects}} projects</span>, with the numbers behind every claim.</h1>
+      <div class="stats">
+        <div class="stat"><div class="v">{{projects}}</div><div class="l">projects</div></div>
+        <div class="stat"><div class="v">{{sectors}}</div><div class="l">sectors</div></div>
+        <div class="stat"><div class="v">Daily</div><div class="l">DefiLlama, NearBlocks, Intents, BigQuery</div></div>
+      </div>
+      <div class="foot">
+        <span>Independent research by CanHav Research, built for NEAR Hackathon 2026</span>
+        <span>Data as of {{asOf}}</span>
+      </div>
+    </div>
+  </body>
+</html>

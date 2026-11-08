@@ -43,11 +43,11 @@ npx serve out        # open http://localhost:3000
 | `/thesis` | The claim, verdict and four tests with Chart, Table and Query tabs, confounders, evidence for and against, what would change the conclusion |
 | `/funding` | Funding type breakdown, ecosystem money cards, rounds table, rounds over time, financials |
 | `/investors` | Investors by deals, portfolios, investor drawer |
-| `/security` | Chain-level checklist for NEAR L1, NEAR Intents and Aurora, incident timeline, risk breakdown, High and Medium table |
+| `/security` | Chain-level checklist for NEAR L1, NEAR Intents and Aurora, security facts by type and by sector (no per-project ratings), incidents as a sortable table |
 | `/explorer` | Every column with a column chooser and CSV download of the filtered view, plus the "Newly detected" review list |
 | `/compare` | Up to four projects: metric matrix with sector ranks, ratios, indexed overlay, side-by-side profiles |
 
-Every chart has a one-line takeaway, an info icon naming its source, an empty state and a table view; the thesis and chain-activity charts also have a Query tab. Filters, metric, date range, compare selection and the open drawer live in the URL.
+Every chart has a one-line takeaway, an info icon naming its source, an empty state, a table view and an Expand button that opens it larger with a range brush; the thesis and chain-activity charts also have a Query tab. Filters, the date range, each chart's own metric, the compare selection, the open drawer and the expanded chart (`?expand=<id>`) live in the URL, so any view can be shared.
 
 ## Data
 
@@ -97,6 +97,7 @@ Copy `.env.example` to `.env.local`:
 - `NEAR_INTENTS_JWT`: Explorer-type key from https://partners.near-intents.org. Without it the Intents source is skipped and DefiLlama's NEAR Intents series stands in, labelled.
 - `COINGECKO_DEMO_KEY`: optional price fallback.
 - `NEXT_PUBLIC_TALLY_SUBMIT_URL`, `NEXT_PUBLIC_TALLY_CORRECT_URL`: the community forms; buttons stay hidden while unset.
+- `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SIBLING_ATLAS_URL`: the public origin (canonical URLs, Open Graph, sitemap) and the footer link to the Robinhood Chain atlas. See "Design system and domain" below.
 
 A missing secret skips that source and records the reason in `data/history/_meta.json`; the site always builds.
 
@@ -111,6 +112,18 @@ Weekly ISO-week series of Intents volume (DefiLlama, all channels, since 2024-12
 ## Disclosure
 
 The architecture (store raw data by source key and join at build time, static export, daily GitHub Action, idempotent history store, fixtures-based tests, generic data table, chart cards with a table view, URL state) follows my earlier Robinhood Chain Ecosystem Atlas. This repository was written fresh for NEAR Hackathon 2026 and shares no code at runtime. All code in this repository was written during the hackathon window.
+
+## Design system and domain
+
+The site follows the shared CanHav Atlas UI standard in [`docs/ATLAS-UI.md`](docs/ATLAS-UI.md), the same contract the Robinhood Chain atlas uses, with the tokens from the canhav.dev design system. Fonts (Inter, Space Grotesk, JetBrains Mono) are self-hosted latin variable cuts under the SIL Open Font License (`src/app/fonts/LICENSE.txt`), so a build needs no network. `npm run check:copy` fails CI when a user-facing string carries an em dash or a colon. The chart palette is built from the brand hues; `docs/UI-PASS.md` records the pass and the differences kept on purpose.
+
+Planned domain: `near.canhav.com` (the Robinhood atlas moves to `robinhood.canhav.com`). To point it at this project once DNS is ready:
+
+1. In Vercel, Project, Settings, Domains, add `near.canhav.com` and create the CNAME it shows at the DNS provider.
+2. Set `NEXT_PUBLIC_SITE_URL=https://near.canhav.com` and `NEXT_PUBLIC_SIBLING_ATLAS_URL=https://robinhood.canhav.com` in the project's environment variables and redeploy, so canonical URLs, the Open Graph card, `sitemap.xml` and the footer link follow.
+3. Update the live URL at the top of this file and in `docs/SUBMISSION.md`.
+
+Until then the public origin is the Vercel URL above, set through the same two variables. `public/og.png` is rendered once by `npx tsx scripts/og-image.ts` (Playwright) from the committed data and committed.
 
 ## Libraries
 

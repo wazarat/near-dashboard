@@ -22,7 +22,7 @@
     "review": "tsx scripts/review.ts",
     "seed:map": "tsx scripts/seed-defillama-map.ts",
     "seed:contracts": "tsx scripts/seed-contracts.ts",
-    "screenshots": "playwright test -c e2e/playwright.config.ts && node -e \"const fs=require('fs');fs.mkdirSync('docs/screenshots',{recursive:true});for(const f of fs.readdirSync('e2e/screenshots'))if(f.endsWith('.png'))fs.copyFileSync('e2e/screenshots/'+f,'docs/screenshots/'+f);console.log('copied',fs.readdirSync('docs/screenshots').length,'screenshots to docs/screenshots')\""
+    "screenshots": "playwright test -c e2e/playwright.config.ts && node -e \"const fs=require('fs');fs.mkdirSync('docs/screenshots',{recursive:true});let n=0;for(const f of fs.readdirSync('e2e/screenshots'))if(f.endsWith('.png')&&!f.endsWith('-light.png')){fs.copyFileSync('e2e/screenshots/'+f,'docs/screenshots/'+f);n++}console.log('copied',n,'dark screenshots to docs/screenshots')\""
   },
   "dependencies": {
     "@tanstack/react-table": "^9.3.1",

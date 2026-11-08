@@ -20,16 +20,20 @@ function Section({ id, title, lede, children }: { id: string; title: string; led
   return (
     <section aria-labelledby={`${id}-heading`} className="space-y-3">
       <div>
-        <h2 id={`${id}-heading`} className="text-base font-semibold leading-tight">
+        <h2 id={`${id}-heading`} className="text-title leading-tight">
           {title}
         </h2>
-        {lede && <p className="mt-1 text-sm text-muted-foreground">{lede}</p>}
+        {lede && <p className="mt-1 max-w-3xl text-sm text-ink-300">{lede}</p>}
       </div>
       {children}
     </section>
   );
 }
 
+/**
+ * The thesis page. Restyled only (CanHav Atlas UI standard); every number
+ * and every conclusion comes from thesis.json as computed by scripts/thesis.ts.
+ */
 export function ThesisView() {
   const { scale, setState } = useFilters();
   if ("reason" in thesisData || !thesisData.available) {
@@ -40,7 +44,7 @@ export function ThesisView() {
   const { verdict } = data;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-10">
       <ClaimCard data={data} />
 
       <Section id="levels" title="Do the series move together at all?" lede="Before any lag test, the raw weekly levels on one indexed axis.">
@@ -69,14 +73,14 @@ export function ThesisView() {
 
       <Section id="evidence" title="Verdict, both sides">
         <div className="grid gap-4 md:grid-cols-2">
-          <TextListCard title="Evidence for" note="Generated from the tests above; each line names the series, the lag and the correlation or R² it rests on." items={verdict.evidenceFor} icon={CircleCheck} iconColor="var(--status-good)" />
-          <TextListCard title="Evidence against" note="Everything that cuts the other way, including the inconclusive series." items={verdict.evidenceAgainst} icon={CircleX} iconColor="var(--status-critical)" />
+          <TextListCard title="Evidence for" note="Generated from the tests above; each line names the series, the lag and the correlation or R² it rests on." items={verdict.evidenceFor} icon={CircleCheck} iconColor="var(--up)" />
+          <TextListCard title="Evidence against" note="Everything that cuts the other way, including the inconclusive series." items={verdict.evidenceAgainst} icon={CircleX} iconColor="var(--down)" />
         </div>
       </Section>
 
       <Section id="falsify" title="How this could be wrong">
         <div className="grid gap-4 md:grid-cols-2">
-          <TextListCard title="What would change my mind" note="Concrete thresholds the daily refresh can hit." items={verdict.changeMyMind} icon={Lightbulb} iconColor="var(--status-warning)" />
+          <TextListCard title="What would change my mind" note="Concrete thresholds the daily refresh can hit." items={verdict.changeMyMind} icon={Lightbulb} iconColor="var(--ink-secondary)" />
           <TextListCard title="Data gaps and metrics that could not be computed" note="Known limits of the free sources used." items={verdict.gaps} icon={HelpCircle} iconColor="var(--ink-muted)" />
         </div>
       </Section>

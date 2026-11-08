@@ -168,13 +168,19 @@
   --ring: var(--electric-500);
   --radius: 0.5rem;
 
-  /* Chart palette, built from the brand hues plus neutrals (section 1, Chart colours). */
+  /*
+   * Chart palette, built from the brand hues plus neutrals (section 1, Chart
+   * colours). Slots alternate light and dark steps so every adjacent pair
+   * passes the colour-vision validator (dataviz skill, adjacent pairs,
+   * both themes); the lightness-band and chroma checks fail by design of the
+   * three-hue brand constraint, so marker shapes stay the second encoding.
+   */
   --chart-1: #3d7bff;
-  --chart-2: #8b5cf6;
-  --chart-3: #22d3ee;
+  --chart-2: #c4b5fd;
+  --chart-3: #0e7490;
   --chart-4: #bdd2ff;
-  --chart-5: #c4b5fd;
-  --chart-6: #0e7490;
+  --chart-5: #8b5cf6;
+  --chart-6: #22d3ee;
   --chart-7: #1d4ed8;
   --chart-8: #a8aebf;
   --chart-not-disclosed: #3a4255;
@@ -226,10 +232,10 @@
   --on-electric: #ffffff;
 
   --chart-1: #2563eb;
-  --chart-2: #6d28d9;
+  --chart-2: #c4b5fd;
   --chart-3: #0e7490;
   --chart-4: #8fb3ff;
-  --chart-5: #c4b5fd;
+  --chart-5: #5b21b6;
   --chart-6: #22d3ee;
   --chart-7: #1e3a8a;
   --chart-8: #6b7164;
@@ -256,12 +262,13 @@
   --cat-8: var(--chart-8);
   --cat-notresearched: var(--chart-not-researched);
   --cat-notdisclosed: var(--chart-not-disclosed);
+  /* Native chains in their stacking order, so neighbours in a stacked bar always separate. */
   --chain-near: var(--chart-1);
   --chain-aurora: var(--chart-2);
   --chain-other-evm: var(--chart-3);
   --chain-other-nonevm: var(--chart-4);
-  --chain-cex: var(--chart-8);
-  --chain-octopus: var(--chart-5);
+  --chain-cex: var(--chart-7);
+  --chain-octopus: var(--chart-8);
   --tier-1: var(--seq-5);
   --tier-2: var(--seq-4);
   --tier-3: var(--seq-3);
