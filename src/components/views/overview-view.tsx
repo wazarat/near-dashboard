@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { ChartCard, TvlNote } from "@/components/atlas/chart-card";
+import { ChainActivity } from "@/components/charts/chain-activity";
 import { ChainOverTime } from "@/components/charts/chain-over-time";
 import { MoversPanel } from "@/components/charts/movers-panel";
 import { ConcentrationCurve, concentrationFocus, concentrationTable } from "@/components/charts/concentration-curve";
@@ -69,6 +70,7 @@ export function OverviewView() {
       <KpiTiles projects={filtered} total={all.length} />
 
       <ChainOverTime range={range} metric={metric} />
+      <ChainActivity range={range} />
       <MoversPanel projects={filtered} metric={metric} range={range} minSize={state.minSize} onMinSizeChange={(minSize) => void setState({ minSize })} onOpen={openProject} />
 
       <div className="grid gap-4 xl:grid-cols-3">

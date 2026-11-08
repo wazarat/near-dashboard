@@ -1,0 +1,68 @@
+
+> near-dashboard@0.1.0 refresh
+> tsx scripts/refresh.ts --only bigquery --backfill --verbose
+
+
+NEAR Ecosystem Atlas refresh — backfill — 2026-11-08 — max 500 paged calls per source
+
+  bigquery       · daily_chain 2025-11-08..2025-11-21 dry run 3.12 GB
+  · daily_chain 2025-11-22..2025-12-05 dry run 3.04 GB
+  · daily_chain 2025-12-06..2025-12-19 dry run 2.85 GB
+  · daily_chain 2025-12-20..2026-01-02 dry run 2.74 GB
+  · daily_chain 2026-01-03..2026-01-16 dry run 2.67 GB
+  · daily_chain 2026-01-17..2026-01-30 dry run 2.60 GB
+  · daily_chain 2026-01-31..2026-02-13 dry run 2.81 GB
+  · daily_chain 2026-02-14..2026-02-27 dry run 2.78 GB
+  · daily_chain 2026-02-28..2026-03-13 dry run 2.57 GB
+  · daily_chain 2026-03-14..2026-03-27 dry run 2.68 GB
+  · daily_chain 2026-03-28..2026-04-10 dry run 1.71 GB
+  · daily_chain 2026-04-11..2026-04-24 dry run 0.57 GB
+  · daily_chain 2026-04-25..2026-05-08 dry run 0.54 GB
+  · daily_chain 2026-05-09..2026-05-22 dry run 0.57 GB
+  · daily_chain 2026-05-23..2026-06-05 dry run 0.66 GB
+  · daily_chain 2026-06-06..2026-06-19 dry run 0.58 GB
+  · daily_chain 2026-06-20..2026-07-03 dry run 0.53 GB
+  · daily_chain 2026-07-04..2026-07-17 dry run 0.54 GB
+  · daily_chain 2026-07-18..2026-07-31 dry run 0.50 GB
+  · daily_chain 2026-08-01..2026-08-14 dry run 0.47 GB
+  · daily_chain 2026-08-15..2026-08-28 dry run 0.51 GB
+  · daily_chain 2026-08-29..2026-09-11 dry run 0.52 GB
+  · daily_chain 2026-09-12..2026-09-25 dry run 0.60 GB
+  · daily_chain 2026-09-26..2026-10-09 dry run 0.70 GB
+  · daily_chain 2026-10-10..2026-10-23 dry run 0.54 GB
+  · daily_chain 2026-10-24..2026-11-06 dry run 0.44 GB
+  · daily_chain 2026-11-07..2026-11-07 dry run 0.03 GB
+  · daily_receipts 2025-11-08..2025-11-21 dry run 16.41 GB
+  · daily_receipts 2025-11-22..2025-12-05 dry run 15.92 GB
+  · daily_receipts 2025-12-06..2025-12-19 dry run 15.04 GB
+  · daily_receipts 2025-12-20..2026-01-02 dry run 14.65 GB
+  · daily_receipts 2026-01-03..2026-01-16 dry run 14.58 GB
+  · daily_receipts 2026-01-17..2026-01-30 dry run 14.26 GB
+  · daily_receipts 2026-01-31..2026-02-13 dry run 14.28 GB
+  · daily_receipts 2026-02-14..2026-02-27 dry run 14.18 GB
+  · daily_receipts 2026-02-28..2026-03-13 dry run 14.36 GB
+  · daily_receipts 2026-03-14..2026-03-27 dry run 14.21 GB
+  · daily_receipts 2026-03-28..2026-04-10 dry run 7.41 GB
+  · daily_receipts 2026-04-11..2026-04-24 dry run 2.65 GB
+  · daily_receipts 2026-04-25..2026-05-08 dry run 2.50 GB
+  · daily_receipts 2026-05-09..2026-05-22 dry run 2.81 GB
+  · daily_receipts 2026-05-23..2026-06-05 dry run 3.64 GB
+  · daily_receipts 2026-06-06..2026-06-19 dry run 2.99 GB
+  · daily_receipts 2026-06-20..2026-07-03 dry run 2.62 GB
+  · daily_receipts 2026-07-04..2026-07-17 dry run 2.65 GB
+  · daily_receipts 2026-07-18..2026-07-31 dry run 2.93 GB
+  · daily_receipts 2026-08-01..2026-08-14 dry run 2.97 GB
+  · daily_receipts 2026-08-15..2026-08-28 dry run 3.33 GB
+  · daily_receipts 2026-08-29..2026-09-11 dry run 3.28 GB
+  · daily_receipts 2026-09-12..2026-09-25 dry run 3.59 GB
+  · daily_receipts 2026-09-26..2026-10-09 dry run 4.28 GB
+  · daily_receipts 2026-10-10..2026-10-23 dry run 7.85 GB
+  · daily_receipts 2026-10-24..2026-11-06 dry run 3.05 GB
+  · daily_receipts 2026-11-07..2026-11-07 dry run 0.21 GB
+
+ok    12456 rows    54 calls  102.9s  244.49 GB
+               · 54 jobs, 244.49 GB processed, 57 tracked accounts
+               · per query: daily_chain 37.9 GB, daily_receipts 206.6 GB
+
+  1 sources ok, 0 failed. 19 newly detected protocols, 0 stale map slugs.
+

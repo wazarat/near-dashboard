@@ -69,29 +69,66 @@ export function trimRow(r: ApiRow): TrimRow {
   ];
 }
 
+/** EVM chain ids used in HOT omni token ids (nep245:v2_1.omni.hot.tg:<chainId>_<token>). */
+const EVM_CHAIN_NAMES: Record<string, string> = {
+  "1": "eth",
+  "10": "op",
+  "56": "bsc",
+  "100": "gnosis",
+  "137": "pol",
+  "143": "monad",
+  "196": "xlayer",
+  "1100": "ton",
+  "1111": "ton",
+  "1117": "tron",
+  "2000": "doge",
+  "8453": "base",
+  "42161": "arb",
+  "43114": "avax",
+  "80094": "bera",
+  "534352": "scroll",
+  "1313161554": "aurora",
+};
+
 /**
- * Chain of an asset id. NEAR Intents assets are `nep141:<token>` where bridged tokens end in
- * `.omft.near` with a chain prefix (e.g. `eth-0x…omft.near`, `sol-….omft.near`, `btc.omft.near`),
- * native NEAR tokens are plain `.near` accounts, and some ids carry an explicit chain prefix.
+ * Chain of a NEAR Intents asset id. Three id families appear in the Explorer rows:
+ *  - `nep141:<chain>.omft.near` / `nep141:<chain>-0x….omft.near`: bridged tokens, the prefix is the chain;
+ *  - `nep245:v2_1.omni.hot.tg:<evmChainId>_<token>`: HOT omni tokens, mapped through EVM_CHAIN_NAMES;
+ *  - `1cs_v1:<chain>:<standard>:<id>`: 1Click canonical ids, the chain is the second segment;
+ * anything else (`nep141:usdt.tether-token.near`, `nep141:token.sweat`, 64-hex native USDC) is NEAR itself.
  */
 export function assetChain(asset: string): string {
   if (!asset) return "unknown";
-  const id = asset.replace(/^nep141:|^nep245:|^nep171:/, "");
-  const m = id.match(/^([a-z0-9]+)[-.]([a-z0-9-]*\.)?omft\.near$/i) ?? id.match(/^([a-z0-9]+)-0x[0-9a-f]+\.omft\.near$/i);
-  if (m) return m[1].toLowerCase();
-  if (/\.omft\.near$/i.test(id)) return id.split(".")[0].toLowerCase();
-  if (/^v2_1\.omni\.hot\.tg:(\d+)_/.test(id)) return `hot-${id.match(/^v2_1\.omni\.hot\.tg:(\d+)_/)![1]}`;
-  if (/\.near$|^[a-f0-9]{64}$/i.test(id)) return "near";
-  return id.split(/[:.]/)[0].toLowerCase() || "unknown";
+  const cs = asset.match(/^1cs_v1:([a-z0-9]+):/i);
+  if (cs) return cs[1].toLowerCase();
+  const hot = asset.match(/^nep245:v2_1\.omni\.hot\.tg:(\d+)_/);
+  if (hot) return EVM_CHAIN_NAMES[hot[1]] ?? `hot-${hot[1]}`;
+  const id = asset.replace(/^nep(141|245|171):/, "");
+  const omft = id.match(/^([a-z0-9]+)(?:-0x[0-9a-f]+|-[a-z0-9]+)?\.omft\.near$/i);
+  if (omft) return omft[1].toLowerCase();
+  if (/\.omft\.near$/i.test(id)) return id.split(/[.-]/)[0].toLowerCase();
+  return "near";
 }
 
 /** Short asset label: the token symbol part of the id when recognisable. */
 export function assetLabel(asset: string): string {
-  const id = asset.replace(/^nep141:|^nep245:|^nep171:/, "");
-  if (/^[a-f0-9]{64}$/i.test(id)) return "USDC (native)";
+  const cs = asset.match(/^1cs_v1:([a-z0-9]+):([a-z0-9]+):(.+)$/i);
+  if (cs) return cs[3] === "coin" || cs[3] === "native" ? `${cs[1].toUpperCase()} (native)` : `${cs[1]}:${cs[3].length > 14 ? `${cs[3].slice(0, 6)}…${cs[3].slice(-4)}` : cs[3]}`;
+  const hot = asset.match(/^nep245:v2_1\.omni\.hot\.tg:(\d+)_(.*)$/);
+  if (hot) {
+    const chain = EVM_CHAIN_NAMES[hot[1]] ?? `hot-${hot[1]}`;
+    const tok = hot[2];
+    return /^1+$/.test(tok) || tok === "" ? `${chain.toUpperCase()} (native, HOT)` : `${chain}:${tok.slice(0, 6)}… (HOT)`;
+  }
+  const id = asset.replace(/^nep(141|245|171):/, "");
+  if (/^[a-f0-9]{64}$/i.test(id)) return "USDC (native NEAR)";
   if (id === "wrap.near") return "wNEAR";
+  if (id === "usdt.tether-token.near") return "USDT (native NEAR)";
+  if (id === "token.sweat") return "SWEAT";
   const m = id.match(/^([a-z0-9]+)\.omft\.near$/i);
   if (m) return m[1].toUpperCase();
+  const m2 = id.match(/^([a-z0-9]+)-0x([0-9a-f]+)\.omft\.near$/i);
+  if (m2) return `${m2[1]}:0x${m2[2].slice(0, 6)}…`;
   return id.length > 28 ? `${id.slice(0, 12)}…${id.slice(-10)}` : id;
 }
 
@@ -217,6 +254,12 @@ export async function fetchPage(client: HttpClient, jwt: string, params: Record<
   return { rows, cursor: last ? { lastDepositAddress: last.depositAddress, lastDepositMemo: last.depositMemo ?? null } : null };
 }
 
+let saveProgress: (() => void) | null = null;
+/** The orchestrator registers its _meta.json writer so cursors persist mid-run. */
+export function onProgress(fn: (() => void) | null) {
+  saveProgress = fn;
+}
+
 export async function run(ctx: Ctx): Promise<RunResult> {
   const jwt = ctx.env.NEAR_INTENTS_JWT;
   if (!jwt) return skipped("NEAR_INTENTS_JWT not set; DefiLlama NEAR Intents volume stands in on the site");
@@ -229,12 +272,24 @@ export async function run(ctx: Ctx): Promise<RunResult> {
   let rows = 0;
   let calls = 0;
   const buffer = new Map<DateStr, TrimRow[]>();
+  const aggregate = (days: Iterable<DateStr>) => {
+    if (ctx.dryRun) return;
+    const oldestDay = cursor.oldestCreatedAt ? dateOfUnix(Math.floor(Date.parse(cursor.oldestCreatedAt) / 1000)) : null;
+    for (const d of days) {
+      const partial = d === ctx.today || (!cursor.backfillDone && d === oldestDay);
+      writeJsonStable(path.join(DAILY_DIR, `${d}.json`), aggregateDay(d, readDayRows(d), partial));
+    }
+  };
+  /** Rows go to disk and the touched days are re-aggregated at every flush, so a stopped run keeps its progress. */
   const flush = () => {
+    const days = Array.from(buffer.keys());
     for (const [d, list] of buffer) {
       if (!ctx.dryRun) writeJsonGz(dayFile(d), mergeDayRows(readDayRows(d), list));
       touched.add(d);
     }
     buffer.clear();
+    aggregate(days);
+    saveProgress?.();
   };
   const absorb = (page: ApiRow[]) => {
     for (const r of page) {
@@ -258,7 +313,7 @@ export async function run(ctx: Ctx): Promise<RunResult> {
     absorb(page.rows);
     pageCursor = page.cursor;
     if (page.rows.length < 1000) break;
-    if (calls % 20 === 0) flush();
+    if (calls % 5 === 0) flush();
   }
   flush();
   if (newest) cursor.newestCreatedAt = new Date(newest * 1000).toISOString();
@@ -289,20 +344,14 @@ export async function run(ctx: Ctx): Promise<RunResult> {
         cursor.backfillDone = oldest <= toUnixDay(target) || page.rows.length < 1000;
         break;
       }
-      if (calls % 20 === 0) flush();
+      if (calls % 5 === 0) flush();
     }
     flush();
     notes.push(`backfill: ${bRows} rows in ${calls - startCalls} calls, oldest ${cursor.oldestCreatedAt ?? "-"}, target ${target}${cursor.backfillDone ? " (done)" : ""}`);
   }
 
-  // Re-aggregate every day touched; the oldest day of an unfinished backfill is marked partial.
-  const oldestDay = cursor.oldestCreatedAt ? dateOfUnix(Math.floor(Date.parse(cursor.oldestCreatedAt) / 1000)) : null;
-  if (!ctx.dryRun) {
-    for (const d of touched) {
-      const partial = d === ctx.today || (!cursor.backfillDone && d === oldestDay);
-      writeJsonStable(path.join(DAILY_DIR, `${d}.json`), aggregateDay(d, readDayRows(d), partial));
-    }
-  }
+  // Final pass over every touched day (clears the partial flag once the backfill is done).
+  aggregate(touched);
   debug(JSON.stringify(client.stats()));
   return { rows, calls, notes: [...notes, `${touched.size} days aggregated`] };
 }

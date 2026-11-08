@@ -80,6 +80,9 @@ describe("catalog", () => {
     expect(list.find((p) => p.slug === "ref-finance")!.name).toBe("Rhea Finance");
     const det = parseCatalogDetail(fx("catalog/project-ref-finance.json"))!;
     expect(det.slug).toBe("ref-finance");
+    expect(det.contracts).toEqual(["token.rhealab.near"]); // blank contract key ignored, RHEA token address kept
+    const mp = parseCatalogDetail({ slug: "meta-pool", profile: { contracts: { "meta-pool.near": "", "": "" }, tokens: { stnear: { address: { near: "meta-pool.near" } }, meta: { address: { near: "meta-token.near" } } } } })!;
+    expect(mp.contracts).toEqual(["meta-pool.near", "meta-token.near"]);
     expect(parseCatalogDetail(false)).toBeNull();
     const detected = detectNewCatalog(list, ["Rhea Finance"], [], [], "2026-11-08");
     expect(detected.some((d) => d.slug === "ref-finance")).toBe(false);
@@ -97,6 +100,14 @@ describe("intents", () => {
     expect(assetChain("nep141:wrap.near")).toBe("near");
     expect(assetLabel("nep141:btc.omft.near")).toBe("BTC");
     expect(assetLabel("nep141:wrap.near")).toBe("wNEAR");
+    expect(assetChain("1cs_v1:btc:native:coin")).toBe("btc");
+    expect(assetChain("1cs_v1:sol:spl:A7bdiYdS5GjqGFtxf17ppRHtDKPkkRqbKtR27dxvQXaS")).toBe("sol");
+    expect(assetChain("nep245:v2_1.omni.hot.tg:56_2CMMyVTGZkeyNZTSvS5sarzfir6g")).toBe("bsc");
+    expect(assetChain("nep245:v2_1.omni.hot.tg:1117_")).toBe("tron");
+    expect(assetChain("nep141:token.sweat")).toBe("near");
+    expect(assetChain("nep141:arb-0xaf88d065e77c8cc2239327c5edb3a432268e5831.omft.near")).toBe("arb");
+    expect(assetLabel("1cs_v1:btc:native:coin")).toBe("BTC (native)");
+    expect(assetLabel("nep245:v2_1.omni.hot.tg:56_11111111111111111111")).toBe("BSC (native, HOT)");
   });
   it("aggregates a day: SUCCESS only in volume, statuses counted, routes and referrals grouped, hash is stable", () => {
     const trimmed = rows.map(trimRow).filter((r) => r[0] >= 1794096000); // 2026-11-07

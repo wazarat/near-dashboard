@@ -100,6 +100,11 @@ async function main() {
     save();
     process.exit(130);
   });
+  process.on("SIGTERM", () => {
+    save();
+    process.exit(143);
+  });
+  intents.onProgress(save);
 
   log(`\nNEAR Ecosystem Atlas refresh — ${ctx.mode} — ${ctx.today}${args.dryRun ? " (dry run)" : ""} — max ${args.maxCalls} paged calls per source\n`);
   let ok = 0;

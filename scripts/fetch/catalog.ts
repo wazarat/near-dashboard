@@ -53,12 +53,19 @@ export interface CatalogDetail {
   dapp: string | null;
 }
 
-/** Detail payload: `contracts` is a free-text field in the catalog, so split on whitespace, commas and newlines. */
-export function parseCatalogDetail(json: { slug?: string; profile?: { contracts?: string | string[] | null; linktree?: Record<string, string>; dapp?: string } } | false): CatalogDetail | null {
+/**
+ * Detail payload: `contracts` is an object keyed by account id (blank keys appear when the catalog
+ * entry is empty) and `tokens` carries per-chain token addresses. Both feed data/contracts.csv.
+ */
+export function parseCatalogDetail(
+  json: { slug?: string; profile?: { contracts?: Record<string, unknown> | string | string[] | null; tokens?: Record<string, { address?: { near?: string } }> | null; linktree?: Record<string, string>; dapp?: string } } | false,
+): CatalogDetail | null {
   if (!json || !json.slug) return null;
   const raw = json.profile?.contracts;
-  const list = Array.isArray(raw) ? raw : typeof raw === "string" ? raw.split(/[\s,;]+/) : [];
-  const contracts = Array.from(new Set(list.map((s) => s.trim().toLowerCase()).filter((s) => /^[a-z0-9._-]+\.(near|tg|aurora)$|^[a-f0-9]{64}$|^aurora$/.test(s))));
+  const list = Array.isArray(raw) ? raw : typeof raw === "string" ? raw.split(/[\s,;]+/) : raw && typeof raw === "object" ? Object.keys(raw) : [];
+  const tokens = Object.values(json.profile?.tokens ?? {}).map((t) => t?.address?.near ?? "");
+  const ok = (s: string) => /^[a-z0-9._-]+\.(near|tg|aurora)$|^[a-f0-9]{64}$|^aurora$/.test(s);
+  const contracts = Array.from(new Set([...list, ...tokens].map((s) => s.trim().toLowerCase()).filter(ok)));
   const lt = json.profile?.linktree ?? {};
   return { slug: json.slug, contracts, website: lt.website || null, twitter: lt.twitter || null, github: lt.github || null, dapp: json.profile?.dapp || null };
 }
