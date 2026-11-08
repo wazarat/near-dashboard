@@ -4,6 +4,7 @@ import { NOT_TRACKED } from "@/lib/coverage";
 import { useMemo, useState } from "react";
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState } from "@/components/atlas/chart-card";
+import { frameHeight, type ChartFrame } from "@/components/atlas/chart-frame";
 import type { ChartTableSpec } from "@/components/atlas/chart-table";
 import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/chart-tooltip";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -114,6 +115,7 @@ export function LevelsChart({ data, scale, onScaleChange }: Props) {
   return (
     <ChartCard
       scope="whole-chain"
+      id="thesis-levels"
       title="Test 1 · Levels, indexed to 100"
       takeaway={takeaway}
       info={`Weekly sums (flows) or last values (price) over ${window.weeks} ISO weeks, each divided by its first positive week and multiplied by 100 so series of very different size share one axis. Intents volume is DefiLlama's NEAR Intents adapter; price and the chain-level counts are NearBlocks daily charts; function calls and contracts called are the NEAR BigQuery public dataset and only exist for its ${bigqueryWindow.weeks}-week window. A log axis keeps the small movers readable next to Intents volume.`}
@@ -123,7 +125,7 @@ export function LevelsChart({ data, scale, onScaleChange }: Props) {
       queries={pickQueries(data.queries, ["intentsLlama", "nearblocks", "dailyChain", "dailyReceipts", "weekly"])}
       footer={<span>Toggle a series to hide or show it; colours stay fixed per series. 100 = the series&apos; first week with data.</span>}
     >
-      {series.length === 0 || weekly.dates.length === 0 ? (
+      {(frame: ChartFrame) => series.length === 0 || weekly.dates.length === 0 ? (
         <EmptyState message="No weekly series in thesis.json. Run npm run rebuild." />
       ) : (
         <div>
@@ -138,7 +140,7 @@ export function LevelsChart({ data, scale, onScaleChange }: Props) {
           {shown.length === 0 ? (
             <EmptyState message="Every series is hidden. Turn one on above." />
           ) : (
-            <div className="h-72 w-full sm:h-80">
+            <div style={{ height: frameHeight(frame, 320, 560) }} className="w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={rows} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
                   <CartesianGrid vertical={false} stroke={CHART.grid} />

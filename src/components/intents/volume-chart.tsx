@@ -1,11 +1,12 @@
 "use client";
 
-import { NOT_TRACKED } from "@/lib/coverage";
 import { useMemo } from "react";
-import { Bar, CartesianGrid, Cell, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, Brush, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
+import { frameHeight, useSvgId, type ChartFrame } from "@/components/atlas/chart-frame";
 import type { ChartTableSpec } from "@/components/atlas/chart-table";
 import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/chart-tooltip";
+import { NOT_TRACKED } from "@/lib/coverage";
 import { dateRange } from "@/lib/dates";
 import type { Scale } from "@/lib/filters";
 import { fmtDate, fmtDateShort, fmtInt, fmtMonth, fmtPct, fmtUsd, fmtUsdFull } from "@/lib/format";
@@ -26,6 +27,9 @@ export interface VolumeRow {
   partial: boolean;
   ratio: number | null;
 }
+
+/** The plotted shape: complete and partial days are two stacked bars so a Brush never shifts the hatch onto the wrong day. */
+type PlotRow = VolumeRow & { explorerComplete: number | null; explorerPartial: number | null };
 
 type Data = IntentsSummary & { llamaDaily: Series };
 
@@ -71,8 +75,6 @@ export function volumeTable(rows: VolumeRow[], range: Range): ChartTableSpec {
   };
 }
 
-const PARTIAL_PATTERN = "intents-partial-day";
-
 export function VolumeChart({ data, range, scale, onScaleChange }: { data: Data; range: Range; scale: Scale; onScaleChange: (s: Scale) => void }) {
   const rows = useMemo(() => volumeRows(data, range), [data, range]);
   const useLog = scale === "log";
@@ -92,32 +94,43 @@ export function VolumeChart({ data, range, scale, onScaleChange }: { data: Data;
     return `Over the last ${both.length} complete day${both.length === 1 ? "" : "s"} with both sources, 1Click swaps were ${fmtPct(ex / ll)} of DefiLlama's NEAR Intents volume (${fmtUsd(ex)} of ${fmtUsd(ll)}); ${llama30Text}.`;
   }, [rows, data.llamaDaily, range]);
 
-  const plotted = useMemo(
-    () => (useLog ? rows.map((r) => ({ ...r, explorer: r.explorer !== null && r.explorer > 0 ? r.explorer : null, llama: r.llama !== null && r.llama > 0 ? r.llama : null })) : rows),
+  const plotted = useMemo<PlotRow[]>(
+    () =>
+      rows.map((r) => {
+        const explorer = useLog ? (r.explorer !== null && r.explorer > 0 ? r.explorer : null) : r.explorer;
+        const llama = useLog ? (r.llama !== null && r.llama > 0 ? r.llama : null) : r.llama;
+        return { ...r, explorer, llama, explorerComplete: r.partial ? null : explorer, explorerPartial: r.partial ? explorer : null };
+      }),
     [rows, useLog],
   );
   const explorerDays = rows.filter((r) => r.explorer !== null).length;
   const partialDays = rows.filter((r) => r.explorer !== null && r.partial).length;
   const tickFormat = rows.length > 120 ? fmtMonth : fmtDateShort;
+  const patternId = useSvgId("intents-partial-day");
 
   return (
     <ChartCard
+      id="intents-volume"
       scope="whole-chain"
       title="Daily volume"
       takeaway={takeaway}
       info={`Bars show ${EXPLORER_LABEL}, the sum of amountInUsd for SUCCESS swaps per UTC day of createdAt. The line shows ${LLAMA_LABEL}, DefiLlama's "NEAR Intents" entry in the NEAR DEX overview. The Explorer covers 1Click swaps only and its backfill is still filling in older days; DefiLlama covers every channel from ${data.llamaDaily[0]?.[0] ? fmtDate(data.llamaDaily[0][0]) : "its first day"}. Window follows the date range control.`}
+      source={`${EXPLORER_LABEL} and ${LLAMA_LABEL}`}
       scale={scale}
       onScaleChange={onScaleChange}
       table={volumeTable(rows, range)}
       queries={[EXPLORER_QUERY, LLAMA_QUERY, TRANSFORM_QUERY]}
       footer={
         <span>
-          Bars are {EXPLORER_LABEL}; hatched bars are partial Explorer days (the backfill cursor stopped inside the day, or the day is still open). The line is {LLAMA_LABEL}. The current UTC day is partial in both sources until it closes.
+          Bars are {EXPLORER_LABEL}. Hatched bars are partial days, the day is still open or the backfill stopped inside it. The line is {LLAMA_LABEL}. The current UTC day is partial in both sources until it closes.
           {rows.length > 0 && ` ${rows.length} days shown, ${explorerDays} with Explorer data${partialDays ? ` (${partialDays} partial)` : ""}.`}
         </span>
       }
     >
-      {rows.length === 0 ? (
+      {(frame: ChartFrame) => {
+        const height = frameHeight(frame, 280);
+        const pid = frame.expanded ? `${patternId}-expanded` : patternId;
+        return rows.length === 0 ? (
         <EmptyState message="No volume history yet." />
       ) : (
         <div>
@@ -129,11 +142,11 @@ export function VolumeChart({ data, range, scale, onScaleChange }: { data: Data;
               { label: LLAMA_LABEL, color: LLAMA_COLOR, shape: "line" },
             ]}
           />
-          <div className="h-[280px] w-full" role="img" aria-label="Daily NEAR Intents volume, 1Click swaps as bars and DefiLlama all-channel volume as a line">
+          <div style={{ height: frame.brush ? height + 32 : height }} className="w-full" role="img" aria-label="Daily NEAR Intents volume, 1Click swaps as bars and DefiLlama all-channel volume as a line">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={plotted} margin={{ top: 8, right: 8, bottom: 0, left: 0 }} barCategoryGap={rows.length > 60 ? 0 : 2}>
+              <ComposedChart data={plotted} margin={{ top: 8, right: 8, bottom: frame.brush ? 4 : 0, left: 0 }} barCategoryGap={rows.length > 60 ? 0 : 2}>
                 <defs>
-                  <pattern id={PARTIAL_PATTERN} patternUnits="userSpaceOnUse" width={6} height={6} patternTransform="rotate(45)">
+                  <pattern id={pid} patternUnits="userSpaceOnUse" width={6} height={6} patternTransform="rotate(45)">
                     <rect width={6} height={6} fill="var(--surface-chart)" />
                     <line x1={0} y1={0} x2={0} y2={6} stroke={EXPLORER_COLOR} strokeWidth={2} />
                   </pattern>
@@ -151,18 +164,17 @@ export function VolumeChart({ data, range, scale, onScaleChange }: { data: Data;
                   tick={{ fontSize: 11 }}
                 />
                 <Tooltip cursor={{ fill: "var(--accent)", opacity: 0.4 }} content={<VolumeTip />} />
-                <Bar dataKey="explorer" name={EXPLORER_LABEL} fill={EXPLORER_COLOR} isAnimationActive={false} maxBarSize={18}>
-                  {plotted.map((r) => (
-                    <Cell key={r.date} fill={r.partial ? `url(#${PARTIAL_PATTERN})` : EXPLORER_COLOR} stroke={r.partial ? EXPLORER_COLOR : undefined} strokeWidth={r.partial ? 1 : 0} />
-                  ))}
-                </Bar>
+                <Bar dataKey="explorerComplete" stackId="explorer" name={EXPLORER_LABEL} fill={EXPLORER_COLOR} isAnimationActive={false} maxBarSize={18} />
+                <Bar dataKey="explorerPartial" stackId="explorer" name={`${EXPLORER_LABEL}, partial day`} fill={`url(#${pid})`} stroke={EXPLORER_COLOR} strokeWidth={1} isAnimationActive={false} maxBarSize={18} />
                 <Line type="monotone" dataKey="llama" name={LLAMA_LABEL} stroke={LLAMA_COLOR} strokeWidth={1.75} dot={false} isAnimationActive={false} connectNulls={false} />
+                {frame.brush && <Brush dataKey="date" height={24} travellerWidth={8} tickFormatter={tickFormat} stroke="var(--axis)" fill="var(--surface-chart)" />}
               </ComposedChart>
             </ResponsiveContainer>
           </div>
           {useLog && <p className="mt-1 text-xs text-muted-foreground">Log axis, days with zero volume are not drawn.</p>}
         </div>
-      )}
+      );
+      }}
     </ChartCard>
   );
 }

@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
+import type { ChartFrame } from "@/components/atlas/chart-frame";
 import type { ChartTableSpec } from "@/components/atlas/chart-table";
 import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/chart-tooltip";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -93,6 +94,7 @@ export function OosChart({ data }: { data: ThesisJson }) {
   return (
     <ChartCard
       scope="whole-chain"
+      id="thesis-oos"
       title="Test 3 · Out of sample"
       takeaway={takeaway}
       info={`For each usage series a one-variable regression of its weekly log change on the lagged log change of the predictor (Intents volume from DefiLlama, or NEAR price from NearBlocks) is fitted on weeks before ${fmtDate(cutoff)}; the lag is chosen on the training window only. It is then scored on weeks from ${fmtDate(cutoff)} onward. Out-of-sample R² is 1 − SSE(model) / SSE(training-mean forecast), where zero means no better than always predicting the training mean, negative means worse. The sign hit rate is the share of test weeks where the forecast had the right direction.`}
@@ -100,7 +102,7 @@ export function OosChart({ data }: { data: ThesisJson }) {
       queries={pickQueries(data.queries, ["oos", "weekly"])}
       footer={clipped.length ? <span>Bars are cut off at R² = {fmtR(FLOOR)} for {clipped.join("; ")}. Exact values are in the table and tooltip.</span> : undefined}
     >
-      {n === 0 ? (
+      {(frame: ChartFrame) => n === 0 ? (
         <EmptyState message="No out-of-sample results in thesis.json. Run npm run rebuild." />
       ) : (
         <div className="space-y-3">
@@ -111,7 +113,7 @@ export function OosChart({ data }: { data: ThesisJson }) {
               { label: "0 = training-mean forecast", color: CHART.axis, shape: "line" },
             ]}
           />
-          <div className="w-full" style={{ height: 48 + rows.length * 48 }}>
+          <div className="w-full" style={{ height: 48 + rows.length * (frame.expanded ? 72 : 48) }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={rows} layout="vertical" margin={{ top: 4, right: 12, bottom: 0, left: 0 }} barGap={2} barCategoryGap="28%">
                 <CartesianGrid horizontal={false} stroke={CHART.grid} />

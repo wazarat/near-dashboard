@@ -75,6 +75,7 @@ export function BusinessModelScatter({ projects, scale, onScaleChange, onOpen }:
 
   return (
     <ChartCard
+      id="business-model"
       title="Business model, fees against revenue"
       takeaway={takeawayFor(plotted)}
       info="Each mark is a project with both 30-day fees and 30-day revenue on DefiLlama (research snapshot, refreshed daily once history exists). Diagonal lines mark 10%, 50% and 100% revenue capture, i.e. revenue divided by fees. Colour and shape both encode Native Chain; marker area tracks TVL. Axes are log by default because fees span several orders of magnitude."

@@ -55,6 +55,7 @@ export function MoversPanel({ projects, metric, onMetricChange, range, minSize, 
 
   return (
     <ChartCard
+      id="movers"
       title={`Risers and fallers (${label})`}
       takeaway={takeaway}
       info={`Projects with daily DefiLlama history ranked by percentage change of ${METRIC_LABEL[m.metric].toLowerCase()} over the last ${label} against the window before it (TVL compares end values). The size filter hides tiny bases that would otherwise dominate.`}

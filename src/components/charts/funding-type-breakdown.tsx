@@ -56,6 +56,7 @@ export function FundingTypeBreakdown({ projects, onSelect, className }: { projec
   return (
     <ChartCard
       className={className}
+      id="funding-type"
       title="Funding type"
       takeaway={takeawayFor(projects, rows)}
       info={`Projects per funding type from the Funding Type column of the research sheet. A project with two types (for example "VC-backed; Token-funded") counts once in each bar${multi ? `; ${multi} projects do` : ""}. Rare types fold into Other. The grey bars separate projects never checked (Not researched) from those checked with nothing found (Not disclosed). Click a bar to filter.`}

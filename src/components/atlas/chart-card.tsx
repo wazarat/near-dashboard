@@ -1,12 +1,17 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { Maximize2 } from "lucide-react";
+import { parseAsString, useQueryState } from "nuqs";
+import { useMemo, useState, type ReactNode } from "react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { InfoTip } from "@/components/ui/info-tip";
 import { Segmented } from "@/components/ui/segmented";
 import { meta } from "@/lib/data";
 import { useActiveFilterCount, type Scale } from "@/lib/filters";
 import { cn } from "@/lib/utils";
+import { ChartFrameProvider, type ChartFrame } from "./chart-frame";
 import { ChartTable, ChartTableToggle, type ChartTableSpec, type ChartView } from "./chart-table";
 
 export interface QuerySpec {
@@ -16,36 +21,48 @@ export interface QuerySpec {
   code: string;
 }
 
+export type ChartScope = "filtered" | "whole-chain" | "selection";
+
 interface ChartCardProps {
   title: string;
   /** One-line takeaway shown above the chart. */
   takeaway: string;
   /** Explains the metric and the source. */
   info: string;
-  children: ReactNode;
+  /** The chart, or a function of the chart frame so the same chart can render larger, with a brush, inside the expand dialog. */
+  children: ReactNode | ((frame: ChartFrame) => ReactNode);
   className?: string;
   actions?: ReactNode;
   scale?: Scale;
   onScaleChange?: (s: Scale) => void;
   footer?: ReactNode;
+  /** Stable id. Drives the DOM id and the shareable `?expand=<id>` dialog. */
   id?: string;
   /** When given, a Chart / Table toggle lets readers see the plotted rows. */
   table?: ChartTableSpec;
   /** When given, a Query tab shows the exact SQL, API call and transform behind the chart. */
   queries?: QuerySpec[];
-  /**
-   * What the card responds to (standard section 4). Filtered cards say how
-   * many filters are active; whole-chain and selection cards say they ignore them.
-   */
+  /** What the card responds to (standard section 4). */
   scope?: ChartScope;
+  /** False for charts that live inside a drawer; the expand dialog needs an id. */
+  expandable?: boolean;
+  /** Level series (TVL, price, a ratio) get a fitted y axis and a "From zero" toggle (standard section 6). */
+  level?: boolean;
+  /** Min, max and change over the visible range, written by the chart. */
+  subtitle?: ReactNode;
+  /** Short source line, shown in the expand dialog. */
+  source?: string;
 }
-
-export type ChartScope = "filtered" | "whole-chain" | "selection";
 
 const SCALE_OPTIONS = [
   { value: "log" as const, label: "Log" },
   { value: "linear" as const, label: "Linear" },
 ];
+const AXIS_OPTIONS = [
+  { value: "fitted" as const, label: "Fitted" },
+  { value: "zero" as const, label: "From zero" },
+];
+const noop = () => {};
 
 /** One line of plain text under a title that says whether the filters apply. */
 export function ScopeNote({ scope = "filtered", className }: { scope?: ChartScope; className?: string }) {
@@ -59,9 +76,44 @@ export function ScopeNote({ scope = "filtered", className }: { scope?: ChartScop
   );
 }
 
-export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries, scope }: ChartCardProps) {
+export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries, scope, expandable = true, level = false, subtitle, source }: ChartCardProps) {
   const [view, setView] = useState<ChartView>("chart");
+  const [dialogView, setDialogView] = useState<ChartView>("chart");
+  const [axis, setAxis] = useState<"fitted" | "zero">("fitted");
+  const [brushRange, setBrushRange] = useState<[number, number] | null>(null);
+  const [expand, setExpand] = useQueryState("expand", parseAsString.withOptions({ history: "replace" }));
+  const canExpand = expandable && Boolean(id);
+  const open = canExpand && expand === id;
   const hasQuery = Boolean(queries && queries.length);
+  const startAtZero = !level || axis === "zero";
+
+  const inlineFrame = useMemo<ChartFrame>(() => ({ expanded: false, brush: false, startAtZero, brushRange: null, setBrushRange: noop }), [startAtZero]);
+  const dialogFrame = useMemo<ChartFrame>(() => ({ expanded: true, brush: true, startAtZero, brushRange, setBrushRange }), [startAtZero, brushRange]);
+
+  const close = () => {
+    setBrushRange(null);
+    setDialogView("chart");
+    void setExpand(null);
+  };
+
+  const controls = (v: ChartView, setV: (v: ChartView) => void) => (
+    <>
+      {actions}
+      {level && v === "chart" && <Segmented value={axis} onChange={setAxis} options={AXIS_OPTIONS} ariaLabel="Y axis" />}
+      {scale && onScaleChange && v === "chart" && <Segmented value={scale} onChange={onScaleChange} options={SCALE_OPTIONS} ariaLabel="Axis scale" />}
+      {(table || hasQuery) && <ChartTableToggle view={v} onChange={setV} hasQuery={hasQuery} />}
+    </>
+  );
+
+  const body = (v: ChartView, frame: ChartFrame) =>
+    v === "table" && table ? (
+      <ChartTable spec={table} />
+    ) : v === "query" && queries ? (
+      <QueryView queries={queries} />
+    ) : (
+      <ChartFrameProvider value={frame}>{typeof children === "function" ? children(frame) : children}</ChartFrameProvider>
+    );
+
   return (
     <Card id={id} className={cn("gap-3 py-4", className)} data-chart-card={title}>
       <CardHeader className="gap-1 px-4">
@@ -75,18 +127,42 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
               <ScopeNote scope={scope} />
             </div>
             <p className="mt-1 text-sm text-ink-300">{takeaway}</p>
+            {subtitle && <p className="mt-1 text-label text-ink-400">{subtitle}</p>}
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
-            {actions}
-            {scale && onScaleChange && view === "chart" && <Segmented value={scale} onChange={onScaleChange} options={SCALE_OPTIONS} ariaLabel="Axis scale" />}
-            {(table || hasQuery) && <ChartTableToggle view={view} onChange={setView} hasQuery={hasQuery} />}
+            {controls(view, setView)}
+            {canExpand && (
+              <Button variant="ghost" size="icon-sm" aria-label={`Expand ${title}`} title="Expand" onClick={() => void setExpand(id ?? null)}>
+                <Maximize2 />
+              </Button>
+            )}
           </div>
         </div>
       </CardHeader>
-      <CardContent className="px-4">
-        {view === "table" && table ? <ChartTable spec={table} /> : view === "query" && queries ? <QueryView queries={queries} /> : children}
-      </CardContent>
+      <CardContent className="px-4">{body(view, inlineFrame)}</CardContent>
       {footer && <div className="px-4 text-xs text-ink-300">{footer}</div>}
+
+      {canExpand && (
+        <Dialog open={open} onOpenChange={(o) => !o && close()}>
+          <DialogContent className="flex max-h-[92vh] w-full flex-col gap-3 overflow-y-auto sm:max-w-[min(1400px,calc(100%-2rem))]" data-expanded-chart={id}>
+            <DialogHeader className="gap-1 pr-8">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                <DialogTitle className="text-title">{title}</DialogTitle>
+                <ScopeNote scope={scope} />
+              </div>
+              <DialogDescription className="text-sm text-ink-300">{takeaway}</DialogDescription>
+              {subtitle && <p className="text-label text-ink-400">{subtitle}</p>}
+            </DialogHeader>
+            <div className="flex flex-wrap items-center gap-2">{controls(dialogView, setDialogView)}</div>
+            <div className="min-h-0 flex-1">{open && body(dialogView, dialogFrame)}</div>
+            {footer && <div className="text-xs text-ink-300">{footer}</div>}
+            <p className="text-label text-ink-400">
+              {source ? `Source. ${source}` : info}
+              {" Press Escape to close."}
+            </p>
+          </DialogContent>
+        </Dialog>
+      )}
     </Card>
   );
 }
@@ -148,7 +224,7 @@ export function TvlNote() {
   );
 }
 
-/** Hatch pattern definitions for "Other" fills; render once inside an SVG chart. */
+/** Hatch pattern definitions for "Other" fills; render once inside an SVG chart with a unique id (see useSvgId). */
 export function HatchDefs({ id = "hatch-other" }: { id?: string }) {
   return (
     <defs>

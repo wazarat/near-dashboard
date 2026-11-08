@@ -52,6 +52,7 @@ export function CoverageStrip({ data }: { data: ThesisJson }) {
   return (
     <ChartCard
       scope="whole-chain"
+      id="thesis-coverage"
       title="Explorer coverage · 1Click swaps only"
       takeaway={takeaway}
       info="Daily NEAR Intents volume from DefiLlama's adapter (all channels) drawn as a line, with the NEAR Intents Explorer API backfill (1Click swaps only, status SUCCESS, summed amountInUsd) as bars where a complete day exists. The ratio between them says how much of total Intents volume the 1Click channel is; it is the check that decides whether the Explorer series can replace DefiLlama's."

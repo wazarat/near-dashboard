@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState, HatchDefs, Legend } from "@/components/atlas/chart-card";
+import { frameHeight, useSvgId, type ChartFrame } from "@/components/atlas/chart-frame";
 import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/chart-tooltip";
 import { Segmented } from "@/components/ui/segmented";
 import { CAT } from "@/lib/colors";
@@ -56,10 +57,11 @@ export function roundsByQuarter(rounds: Round[], mode: Mode): Row[] {
   return out;
 }
 
-const fill = (bucket: string, i: number) => (bucket === "Other" ? "url(#hatch-other)" : CAT[i % CAT.length]);
+const fill = (bucket: string, i: number, hatchId: string) => (bucket === "Other" ? `url(#${hatchId})` : CAT[i % CAT.length]);
 
 export function RoundsOverTime({ rounds, className }: { rounds: Round[]; className?: string }) {
   const [mode, setMode] = useState<Mode>("count");
+  const hatchBase = useSvgId("hatch-other");
   const rows = useMemo(() => roundsByQuarter(rounds, mode), [rounds, mode]);
   const undated = rounds.filter((r) => r.date === null).length;
   const undisclosed = rounds.filter((r) => r.amount === null).length;
@@ -83,6 +85,7 @@ export function RoundsOverTime({ rounds, className }: { rounds: Round[]; classNa
   return (
     <ChartCard
       className={className}
+      id="funding-rounds"
       title="Funding rounds over time"
       takeaway={takeaway}
       info="Rounds from the rounds file by the quarter of their date, stacked by round type bucket (seed and pre-seed; Series A and later; strategic and private; token sales; grants; public-market deals such as PIPEs; acquisitions; other). Switch between the number of rounds and disclosed USD. Hatched segments are rounds whose type fits no bucket."
@@ -110,27 +113,31 @@ export function RoundsOverTime({ rounds, className }: { rounds: Round[]; classNa
         caption: "Funding rounds per quarter by round type",
       }}
     >
-      {rows.length === 0 ? (
+      {(frame: ChartFrame) => {
+        const height = frameHeight(frame, 260);
+        const hatchId = frame.expanded ? `${hatchBase}-expanded` : hatchBase;
+        return rows.length === 0 ? (
         <EmptyState message="No dated rounds." />
       ) : (
         <div>
           <Legend className="mb-2" items={usedBuckets.map((b) => ({ label: b, color: CAT[ROUND_BUCKETS.indexOf(b) % CAT.length], shape: b === "Other" ? "hatch" : "square" }))} />
-          <div className="h-[260px] w-full">
+          <div style={{ height }} className="w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={rows} margin={{ top: 8, right: 8, bottom: 0, left: 0 }} barCategoryGap={rows.length > 16 ? 2 : 6}>
-                <HatchDefs />
+                <HatchDefs id={hatchId} />
                 <CartesianGrid stroke="var(--grid)" vertical={false} />
                 <XAxis dataKey="quarter" tickLine={false} axisLine={false} fontSize={10} interval="preserveStartEnd" minTickGap={18} />
                 <YAxis tickFormatter={(v) => (mode === "count" ? fmtInt(v) : fmtUsd(v, { digits: 0 }))} allowDecimals={false} width={mode === "count" ? 32 : 52} tickLine={false} axisLine={false} fontSize={10} />
                 <Tooltip content={<QuarterTip mode={mode} />} cursor={{ fill: "var(--accent)", opacity: 0.4 }} />
                 {ROUND_BUCKETS.map((b, i) => (
-                  <Bar key={b} dataKey={b} name={b} stackId="a" fill={fill(b, i)} stroke="var(--background)" strokeWidth={1} isAnimationActive={false} maxBarSize={40} />
+                  <Bar key={b} dataKey={b} name={b} stackId="a" fill={fill(b, i, hatchId)} stroke="var(--background)" strokeWidth={1} isAnimationActive={false} maxBarSize={40} />
                 ))}
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
-      )}
+      );
+      }}
     </ChartCard>
   );
 }

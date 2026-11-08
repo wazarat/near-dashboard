@@ -1,11 +1,13 @@
 "use client";
 
-import { NOT_TRACKED } from "@/lib/coverage";
 import { useMemo, useState } from "react";
 import { ChartTable, ChartTableToggle, type ChartView } from "@/components/atlas/chart-table";
+import { Segmented } from "@/components/ui/segmented";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { fmtCompact, fmtUsd, METRIC_LABEL } from "@/lib/format";
+import { fittedDomain, levelWindow, rangeStats } from "@/lib/chart-frame";
+import { NOT_TRACKED } from "@/lib/coverage";
+import { fmtCompact, fmtPctSigned, fmtUsd, METRIC_LABEL } from "@/lib/format";
 import { rangeDays, sliceTail, type Range } from "@/lib/ranges";
 import type { MetricKey, SeriesKey } from "@/lib/types";
 import { useSeries } from "@/lib/use-series";
@@ -13,11 +15,16 @@ import { MiniSeries } from "./mini-series";
 
 const ORDER: SeriesKey[] = ["tvl", "volume", "fees", "revenue", "calls"];
 const LABEL: Record<SeriesKey, string> = { tvl: "TVL", volume: "Volume", fees: "Fees", revenue: "Revenue", calls: "Function calls" };
+const AXIS_OPTIONS = [
+  { value: "fitted" as const, label: "Fitted" },
+  { value: "zero" as const, label: "From zero" },
+];
 
-/** Per-project daily history for every metric the project has, driven by the global range. */
+/** Per-project daily history for every metric the project has. TVL is a level series with a fitted axis and a 90-day floor; the rest are flows on the global range. */
 export function HistoryChart({ projectId, range, metric }: { projectId: string; range: Range; metric: MetricKey }) {
   const series = useSeries();
   const [view, setView] = useState<ChartView>("chart");
+  const [axis, setAxis] = useState<"fitted" | "zero">("fitted");
   const available = useMemo(() => {
     const s = series?.projects[projectId];
     if (!s) return [];
@@ -29,14 +36,16 @@ export function HistoryChart({ projectId, range, metric }: { projectId: string; 
 
   if (!series) return <Skeleton className="h-[200px] w-full" />;
   if (!available.length || !active) {
-    return <p className="text-xs text-muted-foreground">No daily history for this project. The figures above are from the research snapshot.</p>;
+    return <p className="text-xs text-ink-300">No daily history for this project. The figures above are from the research snapshot.</p>;
   }
-  const n = rangeDays(range, series.dates.length);
+  const level = active === "tvl";
+  const n = level ? levelWindow(range, series.dates.length) : rangeDays(range, series.dates.length);
   const dates = sliceTail(series.dates, n);
   const values = sliceTail(series.projects[projectId][active], n);
-  const kind = active === "tvl" ? "line" : "bar";
-  const label = active === "tvl" ? "TVL" : active === "calls" ? "Daily function calls" : `Daily ${METRIC_LABEL[active].replace("30d ", "")}`;
+  const kind = level ? "line" : "bar";
+  const label = level ? "TVL" : active === "calls" ? "Daily function calls" : `Daily ${METRIC_LABEL[active].replace("30d ", "")}`;
   const money = active !== "calls";
+  const stats = level ? rangeStats(dates, values) : null;
 
   return (
     <div className="space-y-2">
@@ -50,8 +59,16 @@ export function HistoryChart({ projectId, range, metric }: { projectId: string; 
             ))}
           </TabsList>
         </Tabs>
-        <ChartTableToggle view={view} onChange={setView} />
+        <div className="flex items-center gap-2">
+          {level && view === "chart" && <Segmented value={axis} onChange={setAxis} options={AXIS_OPTIONS} ariaLabel="Y axis" />}
+          <ChartTableToggle view={view} onChange={setView} />
+        </div>
       </div>
+      {stats && view === "chart" && (
+        <p className="font-mono text-label text-ink-400">
+          min {fmtUsd(stats.min)} max {fmtUsd(stats.max)} {fmtPctSigned(stats.change)} over {dates.length} days
+        </p>
+      )}
       {view === "table" ? (
         <ChartTable
           spec={{
@@ -65,10 +82,10 @@ export function HistoryChart({ projectId, range, metric }: { projectId: string; 
           }}
         />
       ) : (
-        <MiniSeries dates={dates} values={values} kind={kind} primaryLabel={label} height={180} format={money ? fmtUsd : fmtCompact} />
+        <MiniSeries dates={dates} values={values} kind={kind} primaryLabel={label} height={180} format={money ? fmtUsd : fmtCompact} yDomain={level && axis === "fitted" ? fittedDomain(values) : undefined} />
       )}
-      <p className="text-xs text-muted-foreground">
-        {dates.length} days shown · {active === "calls" ? "BigQuery function calls to tracked contracts" : `DefiLlama daily history${active === "tvl" ? "" : ", current partial day excluded"}`}.
+      <p className="text-xs text-ink-300">
+        {dates.length} days shown{level && n !== rangeDays(range, series.dates.length) ? " (TVL keeps at least 90 days in view)" : ""}. {active === "calls" ? "BigQuery function calls to tracked contracts" : `DefiLlama daily history${level ? "" : ", current partial day excluded"}`}.
       </p>
     </div>
   );

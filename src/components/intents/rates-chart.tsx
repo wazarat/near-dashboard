@@ -2,8 +2,9 @@
 
 import { NOT_TRACKED } from "@/lib/coverage";
 import { useMemo, useState } from "react";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, Brush, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
+import { frameHeight, type ChartFrame } from "@/components/atlas/chart-frame";
 import type { ChartTableSpec } from "@/components/atlas/chart-table";
 import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/chart-tooltip";
 import { Segmented } from "@/components/ui/segmented";
@@ -81,9 +82,11 @@ export function RatesChart({ data, range }: { data: IntentsSummary; range: Range
 
   return (
     <ChartCard
+      id="intents-rates"
       scope="whole-chain"
       title="Outcome rates"
       takeaway={takeaway}
+      source={EXPLORER_LABEL}
       info={`Share of all rows the Explorer API returned per UTC day by final status, ${EXPLORER_LABEL}. SUCCESS / rows, REFUNDED / rows and (FAILED + INCOMPLETE_DEPOSIT) / rows come straight from the per-day files; the grey remainder is pending, processing and any other status. Window follows the date range control. The 30-day figures in the takeaway use complete days only.`}
       actions={
         <Segmented<Mode>
@@ -105,14 +108,16 @@ export function RatesChart({ data, range }: { data: IntentsSummary; range: Range
         </span>
       }
     >
-      {rows.length === 0 ? (
+      {(frame: ChartFrame) => {
+        const height = frameHeight(frame, 240);
+        return rows.length === 0 ? (
         <EmptyState message="No Explorer days to compute status rates from yet." />
       ) : (
         <div>
           <Legend className="mb-2" items={series.map((s) => ({ label: s.label, color: s.color, shape: "square" as const }))} />
-          <div className="h-[240px] w-full" role="img" aria-label={`Daily share of 1Click swap rows by status over the ${RANGE_LONG[range]}`}>
+          <div style={{ height: frame.brush ? height + 32 : height }} className="w-full" role="img" aria-label={`Daily share of 1Click swap rows by status over the ${RANGE_LONG[range]}`}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={rows} margin={{ top: 8, right: 8, bottom: 0, left: 0 }} barCategoryGap={rows.length > 60 ? 0 : 2}>
+              <BarChart data={rows} margin={{ top: 8, right: 8, bottom: frame.brush ? 4 : 0, left: 0 }} barCategoryGap={rows.length > 60 ? 0 : 2}>
                 <CartesianGrid vertical={false} stroke="var(--grid)" />
                 <XAxis dataKey="date" tickFormatter={tickFormat} tickLine={false} axisLine={false} interval="preserveStartEnd" minTickGap={36} tick={{ fontSize: 11 }} />
                 <YAxis
@@ -128,11 +133,13 @@ export function RatesChart({ data, range }: { data: IntentsSummary; range: Range
                 {series.map((s) => (
                   <Bar key={s.key} dataKey={s.key} name={s.label} stackId="status" fill={s.color} isAnimationActive={false} maxBarSize={24} />
                 ))}
+                {frame.brush && <Brush dataKey="date" height={24} travellerWidth={8} tickFormatter={tickFormat} stroke="var(--axis)" fill="var(--surface-chart)" />}
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
-      )}
+      );
+      }}
     </ChartCard>
   );
 }

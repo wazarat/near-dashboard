@@ -89,6 +89,40 @@ test("the legacy switch hides exactly the legacy listings and is counted as a fi
   await expect(page.getByText("1 filter active").first()).toBeVisible();
 });
 
+test("expand opens a larger copy of the chart with a brush, writes ?expand= and closes on Escape", async ({ page }) => {
+  await page.goto("/intents/");
+  await page.getByRole("button", { name: "Expand Daily volume" }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  await expect(page).toHaveURL(/expand=intents-volume/);
+  await expect(dialog.locator(".recharts-brush")).toBeVisible({ timeout: 15_000 });
+  await expect(dialog.getByRole("tab", { name: "Table" })).toBeVisible();
+  const ids = await page.evaluate(() => {
+    const all = Array.from(document.querySelectorAll("[id]")).map((e) => e.id);
+    return all.length - new Set(all).size;
+  });
+  expect(ids, "no duplicate ids while the dialog is open").toBe(0);
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(page).not.toHaveURL(/expand=/);
+});
+
+test("a shared ?expand= link opens the dialog on load and level charts offer a From zero axis", async ({ page }) => {
+  await page.goto("/?expand=chain-over-time");
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible({ timeout: 15_000 });
+  await expect(dialog).toContainText("Chain over time");
+  const axis = dialog.getByRole("radiogroup", { name: "Y axis" });
+  await expect(axis.getByRole("radio", { name: "Fitted" })).toHaveAttribute("aria-checked", "true");
+  // The first panel is NEAR chain TVL, a level series: fitted by default, from zero on request.
+  const tvlPanel = dialog.locator(".recharts-wrapper").first();
+  const zeroTick = tvlPanel.locator(".recharts-cartesian-axis-tick-value", { hasText: /^\$0$/ });
+  await expect(tvlPanel.locator(".recharts-cartesian-axis-tick-value").first()).toBeVisible({ timeout: 15_000 });
+  await expect(zeroTick).toHaveCount(0);
+  await axis.getByRole("radio", { name: "From zero" }).click();
+  await expect(zeroTick.first()).toBeVisible();
+});
+
 test("whole-chain cards say so and do not change when a filter is applied", async ({ page }) => {
   await page.goto("/");
   const card = page.locator('[data-chart-card="Chain over time"]');

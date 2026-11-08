@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, ReferenceArea, ReferenceDot, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
+import { useChartFrame } from "@/components/atlas/chart-frame";
 import type { ChartTableSpec } from "@/components/atlas/chart-table";
 import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/chart-tooltip";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -78,6 +79,7 @@ export function LeadLagChart({ data }: { data: ThesisJson }) {
   return (
     <ChartCard
       scope="whole-chain"
+      id="thesis-lead-lag"
       title="Test 2 · Lead and lag"
       takeaway={takeaway}
       info={`Pearson correlation between week-over-week log changes of the predictor (Intents volume from DefiLlama, or NEAR price from NearBlocks) and of each usage series (NearBlocks counts; BigQuery function calls and contracts called), at lags of −${maxLag} to +${maxLag} weeks. A positive lag means the predictor moves first, so its change this week is compared with the usage change that many weeks later. The shaded band is about 2/√n; correlations inside it cannot be told from noise at this sample size. Dots mark each predictor's strongest positive correlation at a positive lag.`}
@@ -109,6 +111,7 @@ export function LeadLagChart({ data }: { data: ThesisJson }) {
 }
 
 function LagPanel({ panel, yMax }: { panel: Panel; yMax: number }) {
+  const frame = useChartFrame(160, 300);
   const { meta, intents, price, band, rows } = panel;
   const bestI = intents.bestPositiveLead;
   const bestP = price.bestPositiveLead;
@@ -123,7 +126,7 @@ function LagPanel({ panel, yMax }: { panel: Panel; yMax: number }) {
       <p className="mb-1 text-[11px] text-muted-foreground">
         Intents {bestI ? `${fmtLag(bestI.lag)}, r ${fmtR(bestI.r)}` : "no positive lead"} · price {bestP ? `${fmtLag(bestP.lag)}, r ${fmtR(bestP.r)}` : "no positive lead"} · same week {fmtR(intents.r0)} / {fmtR(price.r0)}
       </p>
-      <div className="h-40 w-full">
+      <div style={{ height: frame.height }} className="w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={rows} margin={{ top: 4, right: 4, bottom: 0, left: 0 }} barGap={1} barCategoryGap="30%">
             <CartesianGrid vertical={false} stroke={CHART.grid} />

@@ -44,6 +44,7 @@ export function ListedVsLive({ projects, onSelect }: { projects: Project[]; onSe
 
   return (
     <ChartCard
+      id="listed-vs-live"
       title="Listed vs live by discovery source"
       takeaway={takeawayFor(rows)}
       info={`Projects grouped by where they were found (the Discovered Via column, ${sources}) against the number with any TVL, volume, fee or revenue figure on DefiLlama. A project found in several sources counts once in each. Click a bar to filter by that source.`}

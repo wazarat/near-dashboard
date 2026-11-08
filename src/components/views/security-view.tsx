@@ -124,6 +124,7 @@ export function SecurityView() {
       <div className="grid gap-4 xl:grid-cols-3">
         <ChartCard
           className="xl:col-span-2"
+          id="incidents"
           title="Incident timeline"
           scope="whole-chain"
           takeaway={incidentTakeaway}
@@ -134,6 +135,7 @@ export function SecurityView() {
         </ChartCard>
 
         <ChartCard
+          id="risk-levels"
           title="Security risk levels"
           takeaway={riskTakeaway}
           info="Projects in the current selection grouped by the Security Risk Level column of the research CSV. Not researched (hatched) means the project was never checked; Unknown means it was checked and no audit or incident was found. Click a bar to filter."

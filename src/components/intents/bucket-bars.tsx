@@ -2,6 +2,7 @@
 
 import { Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { EmptyState, HatchDefs } from "@/components/atlas/chart-card";
+import { useSvgId } from "@/components/atlas/chart-frame";
 import type { ChartTableSpec } from "@/components/atlas/chart-table";
 import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/chart-tooltip";
 import { fmtInt, fmtPct, fmtUsd, fmtUsdFull } from "@/lib/format";
@@ -78,7 +79,7 @@ function BucketTick({ x = 0, y = 0, payload }: { x?: number; y?: number; payload
 interface Props {
   rows: BucketRow[];
   color: string;
-  /** Unique per chart so the hatch pattern id does not collide on the page. */
+  /** Base for the hatch pattern id; a per-render suffix keeps it unique even when the chart is shown twice. */
   hatchId: string;
   ariaLabel: string;
   emptyMessage: string;
@@ -87,7 +88,8 @@ interface Props {
 }
 
 /** Horizontal bars by USD for one Bucket[] list. "(other)" is hatched, "(none)" is muted. */
-export function BucketBars({ rows, color, hatchId, ariaLabel, emptyMessage, keyLabel }: Props) {
+export function BucketBars({ rows, color, hatchId: hatchBase, ariaLabel, emptyMessage, keyLabel }: Props) {
+  const hatchId = useSvgId(hatchBase);
   if (rows.length === 0) return <EmptyState message={emptyMessage} />;
   const height = Math.max(120, rows.length * 24 + 28);
   return (

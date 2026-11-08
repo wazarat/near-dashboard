@@ -32,6 +32,7 @@ export function ReferralsCards({ data }: { data: IntentsSummary }) {
     <div className="grid gap-4 md:grid-cols-2">
       <ChartCard
       scope="whole-chain"
+        id="intents-referrals"
         title="Share by referral"
         takeaway={shareTakeaway(referrals, "referral tag", "carried no referral tag", window)}
         info={`The referral field of each SUCCESS swap, summed by amountInUsd over the Explorer's trailing 30 complete days, ${EXPLORER_LABEL}. Integrators set this tag when they route through 1Click; the muted bar is rows with no tag. The hatched bar is everything beyond the top 12.`}
@@ -43,6 +44,7 @@ export function ReferralsCards({ data }: { data: IntentsSummary }) {
       </ChartCard>
       <ChartCard
       scope="whole-chain"
+        id="intents-app-fees"
         title="Share by app-fee recipient"
         takeaway={shareTakeaway(appFees, "app-fee recipient", "paid no app fee", window)}
         info={`Accounts named in appFees[].recipient on each SUCCESS swap, summed by the swap's amountInUsd over the Explorer's trailing 30 complete days, ${EXPLORER_LABEL}. A swap with several fee recipients counts once per recipient, so shares can exceed 100% in total. The muted bar is rows with no app fee. The hatched bar is everything beyond the top 12.`}
