@@ -1,5 +1,6 @@
 "use client";
 
+import { NotTracked } from "@/components/atlas/not-tracked";
 import { useMemo } from "react";
 import { ChartCard, EmptyState } from "@/components/atlas/chart-card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -73,8 +74,8 @@ export function MetricMatrix({ projects, all }: Props) {
                   {row.cells.map((c, i) => (
                     <TableCell key={projects[i].id} className={cn("tabular text-right align-top", c.best && "bg-accent")}>
                       <div className={cn(c.best && "font-semibold")}>
-                        {c.value === null ? <span className="text-muted-foreground">—</span> : row.format(c.value)}
-                        {c.best && <span className="ml-1 rounded border px-1 text-[9px] font-medium uppercase tracking-wide">best</span>}
+                        {c.value === null ? <NotTracked /> : row.format(c.value)}
+                        {c.best && <span className="ml-1 font-mono text-label text-ink-500">best</span>}
                       </div>
                       {c.value !== null && c.rank !== null && (
                         <div className="text-[11px] font-normal text-muted-foreground">

@@ -67,7 +67,7 @@ export function SectorsView() {
       <ChartCard
         title="Traction tier by sector"
         takeaway={tierTakeaway}
-        info="Project counts per traction tier within each sector. Tiers come from the research CSVs: Tier 1 to 3 rank projects with measurable DefiLlama traction, Tracked negligible means a DefiLlama listing with every figure at zero, Not tracked means no listing. Click a bar to open the sector drawer."
+        info="Project counts per traction tier within each sector. Tiers come from the research CSVs. Tier 1 to 3 rank projects with measurable DefiLlama traction, Tracked negligible means a DefiLlama listing with every figure at zero, Not tracked means no listing. Click a bar to open the sector drawer."
         table={tierTable(tiers)}
       >
         <TierBySector projects={filtered} onSelect={openSector} />
@@ -76,7 +76,7 @@ export function SectorsView() {
       <ChartCard
         title="Sector cards"
         takeaway={gridTakeaway}
-        info={`One card per sector in the selection: project count, NEAR-native share, projects with any measurable traction and the summed ${label}. Counts and the Native Chain classification come from the research CSVs; money metrics from DefiLlama. Ranked leaders come from the research leaders CSV and do not change with the filters.`}
+        info={`One card per sector in the selection, with project count, NEAR-native share, projects with any measurable traction and the summed ${label}. Counts and the Native Chain classification come from the research CSVs; money metrics from DefiLlama. Ranked leaders come from the research leaders CSV and do not change with the filters.`}
         footer={metric === "tvl" ? <TvlNote /> : undefined}
         table={sectorCardTable(cards, metric)}
       >

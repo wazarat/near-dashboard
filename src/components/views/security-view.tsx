@@ -31,7 +31,7 @@ function ChecklistItem({ item }: { item: ChainRiskItem }) {
           <span className="text-xs text-muted-foreground">{meta.label}</span>
         </div>
         <p className="text-xs leading-snug text-muted-foreground">{item.detail}</p>
-        {item.source && <p className="mt-0.5 text-[11px] text-muted-foreground/80">Source: {item.source}</p>}
+        {item.source && <p className="mt-0.5 text-[11px] text-muted-foreground/80">Source {item.source}</p>}
       </div>
     </li>
   );
@@ -71,7 +71,7 @@ export function SecurityView() {
   const riskTakeaway =
     filtered.length === 0
       ? "No projects match the current filters."
-      : `${pluralProjects(researched)} of ${fmtInt(filtered.length)} in this selection carry a security rating: ${countOf("High")} High, ${countOf("Medium")} Medium, ${countOf("Low")} Low, ${countOf("Unknown")} Unknown. ${fmtInt(notResearched)} were never checked.`;
+      : `${pluralProjects(researched)} of ${fmtInt(filtered.length)} in this selection carry a security rating, ${countOf("High")} High, ${countOf("Medium")} Medium, ${countOf("Low")} Low, ${countOf("Unknown")} Unknown. ${fmtInt(notResearched)} were never checked.`;
 
   return (
     <div className="space-y-4">
@@ -158,7 +158,7 @@ export function SecurityView() {
         </CardHeader>
         <CardContent className="space-y-1.5 px-4 text-sm text-muted-foreground">
           <p>
-            <strong className="text-foreground">Not researched</strong> means security was never checked for that project. <strong className="text-foreground">Unknown</strong> means it was checked and nothing was found: no published audit and no incident in the sources consulted. Unknown is not the same as unaudited.
+            <strong className="text-foreground">Not researched</strong> means security was never checked for that project. <strong className="text-foreground">Unknown</strong> means it was checked and nothing was found, no published audit and no incident in the sources consulted. Unknown is not the same as unaudited.
           </p>
           <p>
             The security pass covered {fmtInt(researchedAll)} rows of the full list{chainRows > 0 ? `, including the ${chainRows === 1 ? "base-chain entry" : "base-chain entries"} for NEAR and Aurora` : ""}. The remaining {fmtInt(neverCheckedAll)} rows were never checked and show as Not researched everywhere.

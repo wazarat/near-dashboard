@@ -1,5 +1,6 @@
 "use client";
 
+import { NOT_TRACKED } from "@/lib/coverage";
 import { useMemo } from "react";
 import { Bar, CartesianGrid, Cell, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
@@ -39,8 +40,8 @@ export function weekTable(rows: WeekRow[]): ChartTableSpec {
       { key: "volumeUsd", label: "1Click volume (Explorer)", align: "right", format: (v) => fmtUsdFull(v as number) },
       { key: "successCount", label: "Swaps (SUCCESS)", align: "right", format: (v) => fmtInt(v as number) },
       { key: "uniqueRecipients", label: "Recipients (hash, est.)", align: "right", format: (v) => fmtInt(v as number) },
-      { key: "llamaVolume", label: "All channels, same days (DefiLlama)", align: "right", format: (v) => (v === null ? "—" : fmtUsdFull(v as number)) },
-      { key: "ratio", label: "1Click / DefiLlama", align: "right", format: (v) => (v === null ? "—" : fmtPct(v as number, 1)) },
+      { key: "llamaVolume", label: "All channels, same days (DefiLlama)", align: "right", format: (v) => (v === null ? NOT_TRACKED : fmtUsdFull(v as number)) },
+      { key: "ratio", label: "1Click / DefiLlama", align: "right", format: (v) => (v === null ? NOT_TRACKED : fmtPct(v as number, 1)) },
     ],
     rows: [...rows].reverse(),
   };
@@ -65,7 +66,7 @@ export function WeeklyChart({ data }: { data: IntentsSummary }) {
     <ChartCard
       title="Weekly volume and swaps"
       takeaway={takeaway}
-      info={`Bars: ${EXPLORER_LABEL} summed per ISO week (Monday start) over complete Explorer days only. Green line: SUCCESS swap count per week on the right axis. Dashed line: ${LLAMA_LABEL} summed over the same days, drawn only where DefiLlama has a point for every day in the bucket. Weeks with fewer than 7 complete days are hatched.`}
+      info={`Bars show ${EXPLORER_LABEL} summed per ISO week (Monday start) over complete Explorer days only. The green line is the SUCCESS swap count per week on the right axis. The dashed line is ${LLAMA_LABEL} summed over the same days, drawn only where DefiLlama has a point for every day in the bucket. Weeks with fewer than 7 complete days are hatched.`}
       table={weekTable(rows)}
       queries={[EXPLORER_QUERY, LLAMA_QUERY, TRANSFORM_QUERY]}
       footer={<span>Partial Explorer days are excluded before grouping, so a hatched week covers only the complete days it names. DefiLlama&apos;s value is summed over those same days, not the full calendar week.</span>}

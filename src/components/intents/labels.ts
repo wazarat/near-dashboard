@@ -9,7 +9,7 @@ export const SWAPS_COLOR = "var(--series-usage)";
 export const EXPLORER_QUERY = {
   kind: "http" as const,
   title: "NEAR Intents Explorer API (1Click swaps only)",
-  code: `GET https://explorer.near-intents.org/api/v0/transactions
+  code: /* copy-ok */ `GET https://explorer.near-intents.org/api/v0/transactions
   ?numberOfTransactions=1000
   &direction=next                 # older rows
   &lastDepositAddress=<cursor>    # depositAddress of the last row of the previous page
@@ -32,7 +32,7 @@ export const LLAMA_QUERY = {
 export const TRANSFORM_QUERY = {
   kind: "transform" as const,
   title: "Per-day aggregate (data/raw/intents/daily/YYYY-MM-DD.json)",
-  code: `day        = UTC date of createdAt
+  code: /* copy-ok */ `day        = UTC date of createdAt
 volumeUsd  = sum(amountInUsd) where status = SUCCESS
 swaps      = count(*)          where status = SUCCESS
 recipients = count(distinct sha256(recipient)) per day   # estimate: one person can use many addresses

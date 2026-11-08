@@ -1,28 +1,41 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
-import { DataFreshness } from "@/components/atlas/data-freshness";
 import { MainNav, MainNavFallback } from "./main-nav";
+import { SubmitProjectButton } from "./submit-project-button";
 import { ThemeToggle } from "./theme-toggle";
 
+/**
+ * Page frame header (standard section 3): mark and product name on the left,
+ * the page tabs, then "Submit a project" and the theme toggle. Nothing else.
+ */
 export function SiteHeader() {
   return (
-    <header className="border-b bg-background">
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-3 px-4 py-3 sm:px-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <Link href="/" className="block text-lg font-semibold leading-tight tracking-tight sm:text-xl">
-              NEAR Ecosystem Atlas
-            </Link>
-            <p className="mt-0.5 text-xs text-muted-foreground sm:text-sm">Independent research by CanHav Research, built for NEAR Hackathon 2026</p>
+    <header className="border-b border-ink-700/40 bg-ink-950">
+      <div className="mx-auto flex w-full max-w-atlas flex-col px-5 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center gap-6">
+          <Link href="/" className="flex shrink-0 items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60">
+            <Image src="/mark.svg" alt="" width={28} height={28} priority className="size-7 object-contain" />
+            <span className="flex flex-col leading-tight">
+              <span className="font-display text-base font-semibold tracking-tight text-ink-50">CanHav Atlas</span>
+              <span className="text-label text-ink-300">NEAR and Aurora</span>
+            </span>
+          </Link>
+          <div className="hidden min-w-0 flex-1 xl:block">
+            <Suspense fallback={<MainNavFallback />}>
+              <MainNav />
+            </Suspense>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <DataFreshness className="hidden sm:inline-flex" />
+          <div className="ml-auto flex shrink-0 items-center gap-2">
+            <SubmitProjectButton />
             <ThemeToggle />
           </div>
         </div>
-        <Suspense fallback={<MainNavFallback />}>
-          <MainNav />
-        </Suspense>
+        <div className="-mx-5 border-t border-ink-700/40 px-5 sm:-mx-6 sm:px-6 xl:hidden">
+          <Suspense fallback={<MainNavFallback />}>
+            <MainNav />
+          </Suspense>
+        </div>
       </div>
     </header>
   );

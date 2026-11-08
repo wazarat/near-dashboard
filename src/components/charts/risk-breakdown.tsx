@@ -50,7 +50,7 @@ export function RiskBreakdown({ rows, onSelect }: { rows: RiskRow[]; onSelect?: 
   if (total === 0) return <EmptyState />;
   return (
     <div>
-      <div className="h-[200px] w-full" role="img" aria-label={rows.map((r) => `${r.risk}: ${fmtInt(r.count)}`).join("; ")}>
+      <div className="h-[200px] w-full" role="img" aria-label={rows.map((r) => `${r.risk} ${fmtInt(r.count)}`).join("; ")}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={rows}

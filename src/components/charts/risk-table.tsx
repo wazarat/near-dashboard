@@ -1,5 +1,6 @@
 "use client";
 
+import { NONE } from "@/lib/coverage";
 import { ExternalLink } from "lucide-react";
 import { useMemo } from "react";
 import { DataTable, projectColumnHelper as h, type ProjectColumnDef } from "@/components/explorer/data-table";
@@ -21,7 +22,7 @@ export function sortByRisk(projects: Project[]): Project[] {
 }
 
 function Wrapped({ v }: { v: string | undefined }) {
-  return v ? <span className="block max-w-sm whitespace-normal text-xs leading-snug">{v}</span> : <span className="text-muted-foreground">—</span>;
+  return v ? <span className="block max-w-sm whitespace-normal text-xs leading-snug">{v}</span> : <span className="text-ink-400">{NONE}</span>;
 }
 
 const auditsText = h.accessor((p) => p.audits ?? undefined, { id: "audits", header: "Audits", sortUndefined: "last", cell: ({ getValue }) => <Wrapped v={getValue()} /> });
@@ -38,7 +39,7 @@ const sourceColumn = h.accessor((p) => p.securitySourceUrl ?? undefined, {
         source <ExternalLink className="size-3 text-muted-foreground" />
       </a>
     ) : (
-      <span className="text-muted-foreground">—</span>
+      <span className="text-ink-400">{NONE}</span>
     );
   },
 });

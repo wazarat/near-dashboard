@@ -32,13 +32,13 @@ export function validate(expected: Expected, actual: Actual): ValidationResult {
     const act = actual.static[key];
     const ok = act === exp;
     rows.push({ group: "static", key, expected: String(exp), actual: String(act), ok });
-    if (!ok) failures.push(`static.${key}: expected ${exp}, got ${act}`);
+    if (!ok) failures.push(`static.${key} expected ${exp}, got ${act}`);
   }
   for (const [key, exp] of Object.entries(expected.snapshot)) {
     const act = actual.snapshot[key];
     const ok = act === exp;
     rows.push({ group: "snapshot", key, expected: String(exp), actual: String(act), ok });
-    if (!ok) failures.push(`snapshot.${key}: expected ${exp}, got ${act}`);
+    if (!ok) failures.push(`snapshot.${key} expected ${exp}, got ${act}`);
   }
   const maxRatio = expected.liveSanity?.maxDayOverDayRatio ?? 10;
   for (const [key, v] of Object.entries(actual.live)) {
@@ -58,7 +58,7 @@ export function validate(expected: Expected, actual: Actual): ValidationResult {
     if (r === null) continue;
     if (r > maxRatio || r < 1 / maxRatio) warnings.push(`chain ${key} jumped ${r.toFixed(2)}× day over day`);
   }
-  for (const e of actual.sourceErrors) warnings.push(`source: ${e}`);
+  for (const e of actual.sourceErrors) warnings.push(`source ${e}`);
   if (actual.lastRunAgeDays !== null && actual.lastRunAgeDays > 3) warnings.push(`last refresh is ${actual.lastRunAgeDays} days old`);
   return { failures, warnings, rows };
 }

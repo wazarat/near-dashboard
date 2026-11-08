@@ -18,7 +18,7 @@ export const NAV = [
   { href: "/compare/", label: "Compare" },
 ] as const;
 
-/** Keeps the shareable state (metric, range, compare selection) when moving between pages. */
+/** Keeps the shareable state (range, scale, compare selection) when moving between pages. */
 export function carriedQuery(params: URLSearchParams | null): string {
   if (!params) return "";
   const out = new URLSearchParams();
@@ -33,24 +33,23 @@ export function carriedQuery(params: URLSearchParams | null): string {
 function NavLinks({ query, compareCount }: { query: string; compareCount: number }) {
   const pathname = usePathname();
   return (
-    <nav aria-label="Primary" className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-      <ul className="flex gap-1 text-sm">
+    <nav aria-label="Primary" className="overflow-x-auto">
+      <ul className="flex h-10 items-stretch gap-1 text-sm xl:h-16">
         {NAV.map((item) => {
           const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href.replace(/\/$/, ""));
           return (
-            <li key={item.href}>
+            <li key={item.href} className="flex">
               <Link
                 href={`${item.href}${query}`}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-md px-3 font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  active && "bg-accent text-foreground",
+                  "relative inline-flex items-center whitespace-nowrap px-2.5 text-control text-ink-300 transition-colors hover:text-ink-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60",
+                  "after:absolute after:inset-x-2.5 after:bottom-0 after:h-0.5 after:rounded-full after:bg-transparent after:content-['']",
+                  active && "text-ink-50 after:bg-electric-500",
                 )}
               >
                 {item.label}
-                {item.href === "/compare/" && compareCount > 0 && (
-                  <span className="rounded bg-foreground px-1.5 py-px text-[10px] font-semibold text-background">{compareCount}</span>
-                )}
+                {item.href === "/compare/" && compareCount > 0 && <span className="ml-1 font-mono text-label text-ink-500">({compareCount})</span>}
               </Link>
             </li>
           );

@@ -20,7 +20,7 @@ import {
   volumeColumn,
 } from "@/components/explorer/project-columns";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Segmented } from "@/components/ui/segmented";
 import { COL_SETS, type ColSet } from "@/lib/filters";
 import { METRIC_LABEL } from "@/lib/format";
 import type { Range } from "@/lib/ranges";
@@ -78,13 +78,7 @@ export function Leaderboard({ projects, metric, range, cols, onColsChange, onOpe
       <CardHeader className="px-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3 className="text-sm font-semibold">Leaderboard</h3>
-          <ToggleGroup type="single" size="sm" variant="outline" value={cols} onValueChange={(v) => v && onColsChange(v as ColSet)} aria-label="Column set">
-            {COL_SETS.map((c) => (
-              <ToggleGroupItem key={c} value={c} className="h-7 px-2 text-xs">
-                {COL_SET_LABEL[c]}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
+          <Segmented value={cols} onChange={onColsChange} options={COL_SETS.map((c) => ({ value: c, label: COL_SET_LABEL[c] }))} ariaLabel="Column set" />
         </div>
         <p className="text-sm text-muted-foreground">
           {description}

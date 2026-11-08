@@ -1,5 +1,6 @@
 "use client";
 
+import { NONE } from "@/lib/coverage";
 import { ArrowRight } from "lucide-react";
 import { useMemo } from "react";
 import { EmptyState } from "@/components/atlas/chart-card";
@@ -53,7 +54,7 @@ export function sectorCardTable(cards: SectorCard[], metric: MetricKey): ChartTa
       { key: "total", label: METRIC_SHORT[metric], align: "right", format: (v) => fmtMetricFull(metric, v as number | null) },
       { key: "top", label: "Top leaders" },
     ],
-    rows: cards.map((c) => ({ ...c, top: c.leaders.map((l) => `${l.rank}. ${l.name}`).join("; ") || "—" })),
+    rows: cards.map((c) => ({ ...c, top: c.leaders.map((l) => `${l.rank}. ${l.name}`).join("; ") || NONE })),
   };
 }
 

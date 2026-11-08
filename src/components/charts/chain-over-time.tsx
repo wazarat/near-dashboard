@@ -42,7 +42,7 @@ export function ChainOverTime({ range, metric }: { range: Range; metric: MetricK
     <ChartCard
       title="Chain over time"
       takeaway={takeaway}
-      info="DefiLlama chain-level series: default chain TVL (excludes liquid staking and bridges), daily DEX volume, fees and revenue summed across every protocol on the chain. Window follows the date range control; the current partial day is excluded from flows."
+      info="DefiLlama chain-level series. Default chain TVL (excludes liquid staking and bridges), daily DEX volume, fees and revenue summed across every protocol on the chain. Window follows the date range control; the current partial day is excluded from flows."
       footer={<TvlNote />}
       table={{
         columns: [

@@ -1,5 +1,6 @@
 "use client";
 
+import { NONE } from "@/lib/coverage";
 import { useMemo, useState } from "react";
 import { CartesianGrid, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis } from "recharts";
 import { EmptyState } from "@/components/atlas/chart-card";
@@ -45,10 +46,10 @@ export function eventTable(events: EcosystemEvent[]): ChartTableSpec {
       { key: "date", label: "Date" },
       { key: "type", label: "Type" },
       { key: "title", label: "Title" },
-      { key: "projects", label: "Projects", format: (v) => (v ? String(v) : "—") },
-      { key: "amount", label: "Amount (USD)", align: "right", format: (v) => (v === null ? "—" : fmtUsdFull(v as number)) },
-      { key: "amountNote", label: "Amount note", format: (v) => (v ? String(v) : "—") },
-      { key: "source", label: "Source", format: (v) => (v ? displayUrl(String(v)) : "—") },
+      { key: "projects", label: "Projects", format: (v) => (v ? String(v) : NONE) },
+      { key: "amount", label: "Amount (USD)", align: "right", format: (v) => (v === null ? NONE : fmtUsdFull(v as number)) },
+      { key: "amountNote", label: "Amount note", format: (v) => (v ? String(v) : NONE) },
+      { key: "source", label: "Source", format: (v) => (v ? displayUrl(String(v)) : NONE) },
     ],
     rows,
   };

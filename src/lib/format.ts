@@ -1,8 +1,9 @@
+import { NOT_TRACKED } from "./coverage";
 import type { MetricKey } from "./types";
 
-/** $1.2M style. null -> "no data". */
+/** $1.2M style. null reads as Not tracked. */
 export function fmtUsd(v: number | null | undefined, opts: { digits?: number } = {}): string {
-  if (v === null || v === undefined || !Number.isFinite(v)) return "no data";
+  if (v === null || v === undefined || !Number.isFinite(v)) return NOT_TRACKED;
   const digits = opts.digits ?? 1;
   const abs = Math.abs(v);
   const sign = v < 0 ? "-" : "";
@@ -14,17 +15,17 @@ export function fmtUsd(v: number | null | undefined, opts: { digits?: number } =
 }
 
 export function fmtUsdFull(v: number | null | undefined): string {
-  if (v === null || v === undefined || !Number.isFinite(v)) return "no data";
+  if (v === null || v === undefined || !Number.isFinite(v)) return NOT_TRACKED;
   return `$${Math.round(v).toLocaleString("en-US")}`;
 }
 
 export function fmtInt(v: number | null | undefined): string {
-  if (v === null || v === undefined || !Number.isFinite(v)) return "no data";
+  if (v === null || v === undefined || !Number.isFinite(v)) return NOT_TRACKED;
   return Math.round(v).toLocaleString("en-US");
 }
 
 export function fmtPct(v: number | null | undefined, digits = 0): string {
-  if (v === null || v === undefined || !Number.isFinite(v)) return "no data";
+  if (v === null || v === undefined || !Number.isFinite(v)) return NOT_TRACKED;
   return `${(v * 100).toFixed(digits)}%`;
 }
 
@@ -85,9 +86,9 @@ export function xUrl(handle: string): string {
   return `https://x.com/${handle.replace(/^@/, "").replace(/\s.*$/, "")}`;
 }
 
-/** Signed percent with one decimal: +12.3% / -4.1%. null -> "—". */
+/** Signed percent with one decimal, +12.3% or -4.1%. null reads as Not tracked. */
 export function fmtPctSigned(v: number | null | undefined, digits = 1): string {
-  if (v === null || v === undefined || !Number.isFinite(v)) return "—";
+  if (v === null || v === undefined || !Number.isFinite(v)) return NOT_TRACKED;
   const pct = v * 100;
   const sign = pct > 0 ? "+" : "";
   if (Math.abs(pct) >= 1000) return `${sign}${Math.round(pct).toLocaleString("en-US")}%`;
@@ -96,7 +97,7 @@ export function fmtPctSigned(v: number | null | undefined, digits = 1): string {
 
 /** 1.2K / 3.4M style counts. */
 export function fmtCompact(v: number | null | undefined): string {
-  if (v === null || v === undefined || !Number.isFinite(v)) return "no data";
+  if (v === null || v === undefined || !Number.isFinite(v)) return NOT_TRACKED;
   const abs = Math.abs(v);
   if (abs >= 1e9) return `${(v / 1e9).toFixed(1)}B`;
   if (abs >= 1e6) return `${(v / 1e6).toFixed(1)}M`;
@@ -105,11 +106,11 @@ export function fmtCompact(v: number | null | undefined): string {
 }
 
 export function fmtRatio(v: number | null | undefined, digits = 2): string {
-  if (v === null || v === undefined || !Number.isFinite(v)) return "—";
+  if (v === null || v === undefined || !Number.isFinite(v)) return NOT_TRACKED;
   return `${v.toFixed(digits)}×`;
 }
 
 export function fmtNum(v: number | null | undefined, digits = 2): string {
-  if (v === null || v === undefined || !Number.isFinite(v)) return "—";
+  if (v === null || v === undefined || !Number.isFinite(v)) return NOT_TRACKED;
   return v.toFixed(digits);
 }

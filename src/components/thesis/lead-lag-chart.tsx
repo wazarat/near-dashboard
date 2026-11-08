@@ -79,7 +79,7 @@ export function LeadLagChart({ data }: { data: ThesisJson }) {
     <ChartCard
       title="Test 2 · Lead and lag"
       takeaway={takeaway}
-      info={`Pearson correlation between week-over-week log changes of the predictor (Intents volume from DefiLlama, or NEAR price from NearBlocks) and of each usage series (NearBlocks counts; BigQuery function calls and contracts called), at lags of −${maxLag} to +${maxLag} weeks. A positive lag means the predictor moves first: its change this week is compared with the usage change that many weeks later. The shaded band is about 2/√n; correlations inside it cannot be told from noise at this sample size. Dots mark each predictor's strongest positive correlation at a positive lag.`}
+      info={`Pearson correlation between week-over-week log changes of the predictor (Intents volume from DefiLlama, or NEAR price from NearBlocks) and of each usage series (NearBlocks counts; BigQuery function calls and contracts called), at lags of −${maxLag} to +${maxLag} weeks. A positive lag means the predictor moves first, so its change this week is compared with the usage change that many weeks later. The shaded band is about 2/√n; correlations inside it cannot be told from noise at this sample size. Dots mark each predictor's strongest positive correlation at a positive lag.`}
       table={table}
       queries={pickQueries(data.queries, ["weekly", "leadLag", "intentsLlama", "nearblocks", "dailyChain", "dailyReceipts"])}
     >
@@ -112,7 +112,7 @@ function LagPanel({ panel, yMax }: { panel: Panel; yMax: number }) {
   const bestI = intents.bestPositiveLead;
   const bestP = price.bestPositiveLead;
   return (
-    <figure className="rounded-md border p-2" aria-label={`${meta.label}: correlation by lag`}>
+    <figure className="rounded-md border p-2" aria-label={`${meta.label}, correlation by lag`}>
       <figcaption className="mb-1 flex flex-wrap items-baseline justify-between gap-x-2 text-xs">
         <span className="font-medium">{meta.label}</span>
         <span className="text-muted-foreground">

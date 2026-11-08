@@ -1,9 +1,8 @@
 "use client";
 
-import { Info } from "lucide-react";
 import { EmptyState } from "@/components/atlas/chart-card";
 import { EstimateLabel } from "@/components/atlas/estimate-label";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { InfoTip } from "@/components/ui/info-tip";
 import { fmtDateShort, fmtInt, fmtPct, fmtUsd, fmtUsdFull } from "@/lib/format";
 import type { IntentsSummary } from "@/lib/intents";
 import { EXPLORER_LABEL, LLAMA_LABEL } from "./labels";
@@ -64,7 +63,7 @@ export function IntentsKpis({ data }: { data: IntentsSummary }) {
       value: fmtUsd(last30.medianUsd, { digits: 0 }),
       sub: `median of daily medians · ${window}`,
       full: last30.medianUsd === null ? undefined : fmtUsdFull(last30.medianUsd),
-      info: `Each day's median amountInUsd across SUCCESS swaps, then the median of those ${n} daily values. Not a pooled median: the per-swap rows are not kept in the committed data.`,
+      info: `Each day's median amountInUsd across SUCCESS swaps, then the median of those ${n} daily values. Not a pooled median, since the per-swap rows are not kept in the committed data.`,
     },
     {
       label: "Success rate",
@@ -77,29 +76,22 @@ export function IntentsKpis({ data }: { data: IntentsSummary }) {
       value: fmtUsd(last30.llamaVolume),
       sub: last30.llamaVolume === null ? `DefiLlama missing for part of the window` : `1Click share of all-channel volume ${fmtPct(last30.ratio)} · ${window}`,
       full: last30.llamaVolume === null ? undefined : fmtUsdFull(last30.llamaVolume),
-      info: `${LLAMA_LABEL}: DefiLlama's "NEAR Intents" daily volume summed over the same ${n} day${n === 1 ? "" : "s"}. The ratio is Explorer volume divided by DefiLlama volume; DefiLlama covers every channel, the Explorer only 1Click swaps.`,
+      info: `${LLAMA_LABEL}. DefiLlama's "NEAR Intents" daily volume summed over the same ${n} day${n === 1 ? "" : "s"}. The ratio is Explorer volume divided by DefiLlama volume; DefiLlama covers every channel, the Explorer only 1Click swaps.`,
     },
   ];
 
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
       {tiles.map((t) => (
-        <div key={t.label} className="rounded-lg border bg-card p-3">
+        <div key={t.label} className="rounded-xl border border-ink-700/60 bg-ink-900 px-4 py-3.5">
           <div className="flex items-center justify-between gap-2">
-            <span className="min-w-0 truncate text-xs text-muted-foreground">{t.estimate ? <EstimateLabel note={t.estimate}>{t.label}</EstimateLabel> : t.label}</span>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button type="button" className="shrink-0 rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`About ${t.label}`}>
-                  <Info className="size-3.5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-xs text-xs leading-relaxed">{t.info}</TooltipContent>
-            </Tooltip>
+            <span className="min-w-0 truncate text-label uppercase tracking-wider text-ink-300">{t.estimate ? <EstimateLabel note={t.estimate}>{t.label}</EstimateLabel> : t.label}</span>
+            <InfoTip label={`About ${t.label}`}>{t.info}</InfoTip>
           </div>
-          <div className="mt-1 text-2xl font-semibold leading-none tracking-tight" title={t.full}>
+          <div className="tabular mt-1.5 font-display text-stat tracking-tight text-ink-50" title={t.full}>
             {t.value}
           </div>
-          <div className="mt-1.5 truncate text-xs text-muted-foreground" title={t.sub}>
+          <div className="mt-1 truncate text-label text-ink-300" title={t.sub}>
             {t.sub}
           </div>
         </div>

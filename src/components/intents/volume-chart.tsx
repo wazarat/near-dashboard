@@ -1,5 +1,6 @@
 "use client";
 
+import { NOT_TRACKED } from "@/lib/coverage";
 import { useMemo } from "react";
 import { Bar, CartesianGrid, Cell, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
@@ -52,18 +53,18 @@ export function volumeRows(data: Data, range: Range): VolumeRow[] {
 }
 
 export function volumeTable(rows: VolumeRow[], range: Range): ChartTableSpec {
-  const usd = (v: unknown) => (v === null || v === undefined ? "—" : fmtUsdFull(v as number));
+  const usd = (v: unknown) => (v === null || v === undefined ? NOT_TRACKED : fmtUsdFull(v as number));
   return {
-    caption: "Daily NEAR Intents volume: 1Click swaps from the Explorer API against DefiLlama's all-channel series",
+    caption: "Daily NEAR Intents volume, 1Click swaps from the Explorer API against DefiLlama's all-channel series",
     filename: `intents-daily-volume-${range}.csv`,
     maxRows: 120,
     columns: [
       { key: "date", label: "Date" },
       { key: "explorer", label: "1Click volume (Explorer)", align: "right", format: usd },
-      { key: "swaps", label: "Swaps (SUCCESS)", align: "right", format: (v) => (v === null ? "—" : fmtInt(v as number)) },
-      { key: "recipients", label: "Recipients (hash, est.)", align: "right", format: (v) => (v === null ? "—" : fmtInt(v as number)) },
+      { key: "swaps", label: "Swaps (SUCCESS)", align: "right", format: (v) => (v === null ? NOT_TRACKED : fmtInt(v as number)) },
+      { key: "recipients", label: "Recipients (hash, est.)", align: "right", format: (v) => (v === null ? NOT_TRACKED : fmtInt(v as number)) },
       { key: "llama", label: "All channels (DefiLlama)", align: "right", format: usd },
-      { key: "ratio", label: "1Click / DefiLlama", align: "right", format: (v) => (v === null ? "—" : fmtPct(v as number, 1)) },
+      { key: "ratio", label: "1Click / DefiLlama", align: "right", format: (v) => (v === null ? NOT_TRACKED : fmtPct(v as number, 1)) },
       { key: "partial", label: "Explorer day", format: (v) => (v === true ? "partial" : "complete") },
     ],
     rows: [...rows].reverse().map((r) => ({ ...r, partial: r.explorer === null ? null : r.partial })),
@@ -103,7 +104,7 @@ export function VolumeChart({ data, range, scale, onScaleChange }: { data: Data;
     <ChartCard
       title="Daily volume"
       takeaway={takeaway}
-      info={`Bars: ${EXPLORER_LABEL}, the sum of amountInUsd for SUCCESS swaps per UTC day of createdAt. Line: ${LLAMA_LABEL}, DefiLlama's "NEAR Intents" entry in the NEAR DEX overview. The Explorer covers 1Click swaps only and its backfill is still filling in older days; DefiLlama covers every channel from ${data.llamaDaily[0]?.[0] ? fmtDate(data.llamaDaily[0][0]) : "its first day"}. Window follows the date range control.`}
+      info={`Bars show ${EXPLORER_LABEL}, the sum of amountInUsd for SUCCESS swaps per UTC day of createdAt. The line shows ${LLAMA_LABEL}, DefiLlama's "NEAR Intents" entry in the NEAR DEX overview. The Explorer covers 1Click swaps only and its backfill is still filling in older days; DefiLlama covers every channel from ${data.llamaDaily[0]?.[0] ? fmtDate(data.llamaDaily[0][0]) : "its first day"}. Window follows the date range control.`}
       scale={scale}
       onScaleChange={onScaleChange}
       table={volumeTable(rows, range)}
@@ -158,7 +159,7 @@ export function VolumeChart({ data, range, scale, onScaleChange }: { data: Data;
               </ComposedChart>
             </ResponsiveContainer>
           </div>
-          {useLog && <p className="mt-1 text-xs text-muted-foreground">Log axis: days with zero volume are not drawn.</p>}
+          {useLog && <p className="mt-1 text-xs text-muted-foreground">Log axis, days with zero volume are not drawn.</p>}
         </div>
       )}
     </ChartCard>
@@ -175,7 +176,7 @@ function VolumeTip({ active, payload }: TipProps<VolumeRow>) {
       {r.recipients !== null && <TooltipRow label="Recipients (hash, est.)" value={fmtInt(r.recipients)} />}
       <TooltipRow label={LLAMA_LABEL} value={r.llama === null ? "no DefiLlama point" : fmtUsdFull(r.llama)} color={LLAMA_COLOR} />
       {r.ratio !== null && <TooltipRow label="1Click share" value={fmtPct(r.ratio, 1)} />}
-      {r.explorer !== null && r.partial && <div className="pt-1 text-muted-foreground">Partial Explorer day: more rows may still arrive.</div>}
+      {r.explorer !== null && r.partial && <div className="pt-1 text-muted-foreground">Partial Explorer day, more rows may still arrive.</div>}
     </TooltipFrame>
   );
 }

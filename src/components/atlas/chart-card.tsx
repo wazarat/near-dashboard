@@ -1,10 +1,9 @@
 "use client";
 
-import { Info } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { InfoTip } from "@/components/ui/info-tip";
+import { Segmented } from "@/components/ui/segmented";
 import { meta } from "@/lib/data";
 import type { Scale } from "@/lib/filters";
 import { cn } from "@/lib/utils";
@@ -36,6 +35,11 @@ interface ChartCardProps {
   queries?: QuerySpec[];
 }
 
+const SCALE_OPTIONS = [
+  { value: "log" as const, label: "Log" },
+  { value: "linear" as const, label: "Linear" },
+];
+
 export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries }: ChartCardProps) {
   const [view, setView] = useState<ChartView>("chart");
   const hasQuery = Boolean(queries && queries.length);
@@ -44,33 +48,15 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
       <CardHeader className="gap-1 px-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               <h3 className="text-sm font-semibold leading-tight">{title}</h3>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button type="button" className="rounded-full text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`About ${title}`}>
-                    <Info className="size-3.5" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs text-xs leading-relaxed">
-                  {info}
-                </TooltipContent>
-              </Tooltip>
+              <InfoTip label={`About ${title}`}>{info}</InfoTip>
             </div>
-            <p className="mt-1 text-sm text-muted-foreground">{takeaway}</p>
+            <p className="mt-1 text-sm text-ink-300">{takeaway}</p>
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
             {actions}
-            {scale && onScaleChange && view === "chart" && (
-              <ToggleGroup type="single" size="sm" variant="outline" value={scale} onValueChange={(v) => v && onScaleChange(v as Scale)} aria-label="Axis scale">
-                <ToggleGroupItem value="log" className="h-7 px-2 text-xs">
-                  Log
-                </ToggleGroupItem>
-                <ToggleGroupItem value="linear" className="h-7 px-2 text-xs">
-                  Linear
-                </ToggleGroupItem>
-              </ToggleGroup>
-            )}
+            {scale && onScaleChange && view === "chart" && <Segmented value={scale} onChange={onScaleChange} options={SCALE_OPTIONS} ariaLabel="Axis scale" />}
             {(table || hasQuery) && <ChartTableToggle view={view} onChange={setView} hasQuery={hasQuery} />}
           </div>
         </div>
@@ -78,7 +64,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
       <CardContent className="px-4">
         {view === "table" && table ? <ChartTable spec={table} /> : view === "query" && queries ? <QueryView queries={queries} /> : children}
       </CardContent>
-      {footer && <div className="px-4 text-xs text-muted-foreground">{footer}</div>}
+      {footer && <div className="px-4 text-xs text-ink-300">{footer}</div>}
     </Card>
   );
 }
@@ -88,11 +74,11 @@ function QueryView({ queries }: { queries: QuerySpec[] }) {
     <div className="space-y-3">
       {queries.map((q, i) => (
         <div key={i}>
-          <div className="mb-1 flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="rounded border px-1.5 py-px font-mono text-[10px] uppercase">{q.kind}</span>
+          <div className="mb-1 flex items-center gap-2 text-xs text-ink-300">
+            <span className="font-mono text-label uppercase text-ink-500">{q.kind}</span>
             <span>{q.title}</span>
           </div>
-          <pre className="max-h-80 overflow-auto rounded-md border bg-muted/40 p-3 font-mono text-[11px] leading-relaxed">
+          <pre className="max-h-80 overflow-auto rounded-lg border border-ink-700/40 bg-ink-950/60 p-3 font-mono text-[11px] leading-relaxed text-ink-100">
             <code>{q.code}</code>
           </pre>
         </div>
@@ -103,7 +89,7 @@ function QueryView({ queries }: { queries: QuerySpec[] }) {
 
 export function EmptyState({ message = "No projects match the current filters.", className }: { message?: string; className?: string }) {
   return (
-    <div role="status" className={cn("flex h-40 items-center justify-center rounded-md border border-dashed px-4 text-center text-sm text-muted-foreground", className)}>
+    <div role="status" className={cn("flex h-40 items-center justify-center rounded-lg border border-dashed border-ink-700/60 px-4 text-center text-sm text-ink-300", className)}>
       {message}
     </div>
   );
@@ -111,11 +97,11 @@ export function EmptyState({ message = "No projects match the current filters.",
 
 export function Legend({ items, className }: { items: { label: string; color: string; shape?: "circle" | "square" | "hatch" | "line" }[]; className?: string }) {
   return (
-    <ul className={cn("flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground", className)} aria-label="Legend">
+    <ul className={cn("flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-300", className)} aria-label="Legend">
       {items.map((it) => (
         <li key={it.label} className="inline-flex items-center gap-1.5">
           {it.shape === "hatch" ? (
-            <span aria-hidden="true" className="inline-block size-2.5 rounded-[2px] border border-muted-foreground/60" style={{ backgroundImage: "repeating-linear-gradient(45deg, var(--ink-muted) 0 1px, transparent 1px 3px)" }} />
+            <span aria-hidden="true" className="inline-block size-2.5 rounded-[2px] border border-ink-400/60" style={{ backgroundImage: "repeating-linear-gradient(45deg, var(--ink-muted) 0 1px, transparent 1px 3px)" }} />
           ) : it.shape === "line" ? (
             <span aria-hidden="true" className="inline-block h-0.5 w-3" style={{ backgroundColor: it.color }} />
           ) : (
@@ -133,7 +119,7 @@ export function TvlNote() {
   const chain = meta.chainTvl.near;
   return (
     <span>
-      TVL note: summed protocol TVL double counts liquid staking and bridges. DefiLlama&apos;s default chain TVL, which excludes them, was{" "}
+      Summed protocol TVL double counts liquid staking and bridges. DefiLlama&apos;s default chain TVL, which excludes them, was{" "}
       {chain !== null ? `$${(chain / 1e6).toFixed(1)}M for NEAR and $${((meta.chainTvl.aurora ?? 0) / 1e6).toFixed(1)}M for Aurora` : "$174.9M for NEAR and $3.8M for Aurora on Nov 8, 2026"}. CEX reserves held on NEAR
       (Binance about $522M) are excluded from TVL and shown as an &ldquo;Other traction signal&rdquo;.
     </span>

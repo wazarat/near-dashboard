@@ -1,5 +1,6 @@
 "use client";
 
+import { NotTracked } from "@/components/atlas/not-tracked";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
@@ -15,7 +16,7 @@ interface Props {
 export function SparkLine({ points, width = 80, height = 20, stroke = "var(--ink-secondary)", label, className }: Props) {
   if (points === null || points === undefined) return <Skeleton className={className} style={{ width, height }} aria-label={`${label} loading`} />;
   const vals = points.filter((v): v is number => v !== null && Number.isFinite(v));
-  if (vals.length < 2) return <span className="text-xs text-muted-foreground">—</span>;
+  if (vals.length < 2) return <NotTracked />;
   const min = Math.min(...vals);
   const max = Math.max(...vals);
   const span = max - min || 1;

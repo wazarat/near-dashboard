@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { Suspense } from "react";
 import "./globals.css";
 import { Providers } from "./providers";
@@ -8,17 +8,19 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { AtlasShell } from "@/components/layout/atlas-shell";
 import { meta } from "@/lib/data";
 
-const geistSans = Geist({ variable: "--font-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+/* Self-hosted latin variable cuts (see src/app/fonts/LICENSE.txt) so a build needs no network. */
+const sans = localFont({ src: "./fonts/inter-latin-wght-normal.woff2", variable: "--font-sans", weight: "100 900", display: "swap" });
+const display = localFont({ src: "./fonts/space-grotesk-latin-wght-normal.woff2", variable: "--font-display", weight: "300 700", display: "swap" });
+const mono = localFont({ src: "./fonts/jetbrains-mono-latin-wght-normal.woff2", variable: "--font-mono", weight: "100 800", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "NEAR Ecosystem Atlas", template: "%s · NEAR Ecosystem Atlas" },
-  description: `Independent research by CanHav Research on ${meta.counts.projects} projects in the NEAR and Aurora ecosystem: traction, funding, security, chain activity and NEAR Intents volume. Data as of ${meta.asOfLabel}.`,
+  title: { default: "CanHav Atlas, NEAR and Aurora", template: "%s · CanHav Atlas" },
+  description: `Independent research by CanHav Research on ${meta.counts.projects} projects in the NEAR and Aurora ecosystem. Traction, funding, security, chain activity and NEAR Intents volume, data as of ${meta.asOfLabel}.`,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="en" suppressHydrationWarning className={`${sans.variable} ${display.variable} ${mono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <Providers>
           <SiteHeader />

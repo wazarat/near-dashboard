@@ -1,5 +1,6 @@
 "use client";
 
+import { NONE } from "@/lib/coverage";
 import { useMemo } from "react";
 import { InvestorsBars } from "@/components/charts/investors-bars";
 import { DataTable, makeColumnHelper, type AnyColumnDef } from "@/components/explorer/data-table";
@@ -32,7 +33,7 @@ export function investorTakeaway(list: Investor[], all: Round[]): InvestorTakeaw
 }
 
 function PortfolioChips({ inv, onOpen }: { inv: Investor; onOpen: (id: string) => void }) {
-  if (inv.projects.length === 0) return <span className="text-muted-foreground">—</span>;
+  if (inv.projects.length === 0) return <span className="text-ink-400">{NONE}</span>;
   return (
     <span className="flex max-w-md flex-wrap gap-1">
       {inv.projects.map((name, i) => {
@@ -46,12 +47,12 @@ function PortfolioChips({ inv, onOpen }: { inv: Investor; onOpen: (id: string) =
               e.stopPropagation();
               onOpen(known.id);
             }}
-            className="rounded-md border px-1.5 py-0.5 text-xs hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="text-xs text-ink-100 underline-offset-2 hover:text-ink-50 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60"
           >
             {name}
           </button>
         ) : (
-          <span key={`${name}-${i}`} className="rounded-md border border-dashed px-1.5 py-0.5 text-xs text-muted-foreground" title="No project row in the Atlas">
+          <span key={`${name}-${i}`} className="text-xs text-ink-400" title="No project row in the Atlas">
             {name}
           </span>
         );

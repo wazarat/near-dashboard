@@ -1,5 +1,6 @@
 "use client";
 
+import { NOT_TRACKED } from "@/lib/coverage";
 import { useMemo, useState } from "react";
 import { ChartTable, ChartTableToggle, type ChartView } from "@/components/atlas/chart-table";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -56,7 +57,7 @@ export function HistoryChart({ projectId, range, metric }: { projectId: string; 
           spec={{
             columns: [
               { key: "date", label: "Date" },
-              { key: "v", label, align: "right", format: (v) => (v === null ? "—" : money ? fmtUsd(v as number) : fmtCompact(v as number)) },
+              { key: "v", label, align: "right", format: (v) => (v === null ? NOT_TRACKED : money ? fmtUsd(v as number) : fmtCompact(v as number)) },
             ],
             rows: dates.map((d, i) => ({ date: d, v: values[i] })).reverse(),
             filename: `${projectId}-${active}.csv`,

@@ -30,14 +30,14 @@ export function Confounders({ items }: { items: Confounder[] }) {
                   <time dateTime={c.date} className="tabular">
                     {fmtEventDate(c.date, c.monthOnly)}
                   </time>
-                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border px-1.5 py-0.5 text-foreground">
+                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-label text-ink-200">
                     <span aria-hidden="true" className="inline-block size-2 rounded-full" style={{ backgroundColor: kindColor(c.kind) }} />
                     {c.kind}
                   </span>
                 </div>
                 <p className="text-sm font-medium leading-snug">{c.title}</p>
                 <p className="text-xs leading-relaxed text-muted-foreground">
-                  <span className="font-medium text-foreground">Why it matters: </span>
+                  <span className="font-medium text-foreground">Why it matters. </span>
                   {c.why}
                 </p>
                 {c.detail && <p className="text-[11px] leading-relaxed text-muted-foreground/80">{c.detail}</p>}

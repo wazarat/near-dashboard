@@ -95,7 +95,7 @@ describe("matrix", () => {
     expect(calls.cells[1]).toMatchObject({ value: null, rank: null, share: null, best: false });
     expect(calls.cells[0].best).toBe(false);
     expect(calls.cells[0].of).toBe(2);
-    expect(calls.format(null)).toBe("—");
+    expect(calls.format(null)).toBe("Not tracked");
   });
   it("survives projects without live data", () => {
     const rows = compareMatrix([e], all);

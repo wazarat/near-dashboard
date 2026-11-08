@@ -1,5 +1,7 @@
 "use client";
 
+import { NONE } from "@/lib/coverage";
+import { NotTracked } from "@/components/atlas/not-tracked";
 import { ExternalLink } from "lucide-react";
 import { ChainChip, RiskBadge, StatusBadge, TierBadge } from "@/components/atlas/badges";
 import { ChangeCell } from "@/components/atlas/change-cell";
@@ -14,7 +16,7 @@ import { projectColumnHelper as h, type ProjectColumnDef } from "./data-table";
 const num = (v: number | null) => v ?? undefined;
 
 export function Usd({ v }: { v: number | null | undefined }) {
-  if (v === null || v === undefined) return <span className="text-muted-foreground">—</span>;
+  if (v === null || v === undefined) return <NotTracked />;
   return <span title={fmtUsdFull(v)}>{fmtUsd(v)}</span>;
 }
 
@@ -36,7 +38,7 @@ function NameCell({ p, onOpen }: { p: Project; onOpen: (id: string) => void }) {
 const right = { meta: { align: "right" } };
 const Truncated = ({ v, max = "max-w-xs" }: { v: string | undefined; max?: string }) => (
   <span className={`block ${max} truncate`} title={v}>
-    {v ?? <span className="text-muted-foreground">—</span>}
+    {v ?? ""}
   </span>
 );
 
@@ -62,7 +64,7 @@ export const captureColumn = h.accessor((p) => num(p.revenueCapture), {
   header: "Revenue capture",
   cell: ({ getValue }) => {
     const v = getValue();
-    return v === undefined ? <span className="text-muted-foreground">—</span> : fmtPct(v);
+    return v === undefined ? <NotTracked /> : fmtPct(v);
   },
   sortUndefined: "last",
   ...right,
@@ -71,7 +73,7 @@ export const otherTractionColumn = h.accessor((p) => p.otherTraction ?? undefine
 export const fundingColumn = h.accessor("fundingType", { header: "Funding type", cell: ({ getValue }) => <span className={getValue() === "Not researched" ? "text-muted-foreground" : undefined}>{getValue()}</span> });
 export const investorsColumn = h.accessor((p) => p.investors ?? undefined, { id: "investors", header: "Investors / backers", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });
 export const amountColumn = h.accessor((p) => p.amountRaised ?? undefined, { id: "amountRaised", header: "Amount raised", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });
-export const tokenColumn = h.accessor((p) => p.tokenRaw ?? undefined, { id: "token", header: "Token", sortUndefined: "last", cell: ({ getValue }) => getValue() ?? <span className="text-muted-foreground">—</span> });
+export const tokenColumn = h.accessor((p) => p.tokenRaw ?? undefined, { id: "token", header: "Token", sortUndefined: "last", cell: ({ getValue }) => getValue() ?? <span className="text-ink-400">{NONE}</span> });
 export const riskColumn = h.accessor("risk", { header: "Security risk", cell: ({ getValue }) => <RiskBadge risk={getValue()} /> });
 export const auditsColumn = h.accessor((p) => p.audits ?? undefined, { id: "audits", header: "Audits", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });
 export const incidentsColumn = h.accessor((p) => p.incidents ?? undefined, { id: "incidents", header: "Incidents", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });
@@ -89,7 +91,7 @@ export const websiteColumn = h.accessor((p) => p.website ?? undefined, {
         <span className="truncate">{displayUrl(v)}</span> <ExternalLink className="size-3 shrink-0 text-muted-foreground" />
       </a>
     ) : (
-      <span className="text-muted-foreground">—</span>
+      <span className="text-ink-400">{NONE}</span>
     );
   },
 });
@@ -104,7 +106,7 @@ export const xColumn = h.accessor((p) => p.xHandle ?? undefined, {
         {v} <ExternalLink className="size-3 text-muted-foreground" />
       </a>
     ) : (
-      <span className="text-muted-foreground">—</span>
+      <span className="text-ink-400">{NONE}</span>
     );
   },
 });
@@ -137,13 +139,13 @@ export function sparkColumn(metric: MetricKey, range: Range): ProjectColumnDef {
   return h.display({
     id: "spark",
     header: `Trend (${range === "all" ? "90d" : changeLabel(range)})`,
-    cell: ({ row }) => (row.original.live ? <SparkCell id={row.original.id} metric={m} range={range} /> : <span className="text-muted-foreground">—</span>),
+    cell: ({ row }) => (row.original.live ? <SparkCell id={row.original.id} metric={m} range={range} /> : <NotTracked />),
     meta: { hideBelow: "md" },
   });
 }
 
 function Count({ v }: { v: number | null | undefined }) {
-  if (v === null || v === undefined) return <span className="text-muted-foreground">—</span>;
+  if (v === null || v === undefined) return <NotTracked />;
   return <span>{fmtInt(v)}</span>;
 }
 

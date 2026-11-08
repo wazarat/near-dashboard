@@ -70,7 +70,7 @@ export function SectorTreemap({ projects, metric, onSelect }: Props) {
         </ResponsiveContainer>
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-        <span>Box size = {METRIC_SHORT[metric].toLowerCase()}. Colour = share of the sector&apos;s projects that are NEAR-native:</span>
+        <span>Box size is {METRIC_SHORT[metric].toLowerCase()}. Colour is the share of the sector&apos;s projects that are NEAR-native.</span>
         <span className="inline-flex items-center gap-1">
           0%
           {SEQ.map((c) => (

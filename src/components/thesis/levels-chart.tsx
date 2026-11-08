@@ -1,5 +1,6 @@
 "use client";
 
+import { NOT_TRACKED } from "@/lib/coverage";
 import { useMemo, useState } from "react";
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState } from "@/components/atlas/chart-card";
@@ -91,7 +92,7 @@ export function LevelsChart({ data, scale, onScaleChange }: Props) {
         key: `raw_${s.key}`,
         label: s.key === "intentsVolume" ? "Intents volume (USD)" : s.key === "price" ? "NEAR price (USD)" : s.label,
         align: "right" as const,
-        format: (v: unknown) => (s.key === "intentsVolume" ? fmtUsd(v as number | null) : s.key === "price" ? (v === null ? "—" : `$${fmtNum(v as number, 2)}`) : fmtInt(v as number | null)),
+        format: (v: unknown) => (s.key === "intentsVolume" ? fmtUsd(v as number | null) : s.key === "price" ? (v === null ? NOT_TRACKED : `$${fmtNum(v as number, 2)}`) : fmtInt(v as number | null)),
       })),
       ...series.map((s) => ({ key: `idx_${s.key}`, label: `${s.label} (index)`, align: "right" as const, format: (v: unknown) => fmtNum(v as number | null, 1) })),
     ],
@@ -164,7 +165,7 @@ function LevelsTip({ active, payload, shown }: TipProps<Row> & { shown: SeriesDe
     <TooltipFrame title={`Week of ${fmtDate(row.date)}`}>
       {shown.map((s) => {
         const v = row[s.key];
-        return <TooltipRow key={s.key} label={s.label} value={v === null || v === undefined ? "—" : `${fmtNum(v, 1)} (${fmtTimes(v / 100)})`} color={s.color} />;
+        return <TooltipRow key={s.key} label={s.label} value={v === null || v === undefined ? NOT_TRACKED : `${fmtNum(v, 1)} (${fmtTimes(v / 100)})`} color={s.color} />;
       })}
     </TooltipFrame>
   );

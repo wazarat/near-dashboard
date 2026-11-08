@@ -2,9 +2,9 @@
 
 import { ExternalLink } from "lucide-react";
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { PlainState } from "@/components/ui/plain-state";
 import { newlyDetected } from "@/lib/data";
 import { fmtDate, fmtUsd } from "@/lib/format";
 import type { NewlyDetected } from "@/lib/history-types";
@@ -35,9 +35,7 @@ export function NewlyDetectedCard() {
                   <span className="truncate">{i.name}</span>
                   <ExternalLink className="size-3 shrink-0 text-muted-foreground" />
                 </a>
-                <Badge variant="outline" className="text-[10px]">
-                  {SOURCE_LABEL[i.source]}
-                </Badge>
+                <PlainState proof={SOURCE_LABEL[i.source]}>from</PlainState>
                 <span className="text-xs text-muted-foreground">{i.category}</span>
                 <span className="text-xs text-muted-foreground">{i.chain}</span>
               </span>

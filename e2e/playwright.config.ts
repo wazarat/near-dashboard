@@ -2,9 +2,15 @@ import { defineConfig } from "@playwright/test";
 import path from "node:path";
 
 /**
- * Page checks against the static export at desktop and phone widths.
+ * Page checks against the static export at desktop and phone widths, dark and light.
  * Run `npm run build` first, then `npm run e2e`.
  */
+/** The site stores the theme choice under localStorage "theme" (next-themes), so the light projects seed it. */
+const LIGHT = {
+  colorScheme: "light" as const,
+  storageState: { cookies: [], origins: [{ origin: "http://127.0.0.1:3200", localStorage: [{ name: "theme", value: "light" }] }] },
+};
+
 export default defineConfig({
   testDir: ".",
   testMatch: /pages\.spec\.ts/,
@@ -25,5 +31,7 @@ export default defineConfig({
   projects: [
     { name: "desktop", use: { viewport: { width: 1440, height: 900 } } },
     { name: "phone", use: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } },
+    { name: "desktop-light", use: { viewport: { width: 1440, height: 900 }, ...LIGHT } },
+    { name: "phone-light", use: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, ...LIGHT } },
   ],
 });

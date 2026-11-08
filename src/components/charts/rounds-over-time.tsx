@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState, HatchDefs, Legend } from "@/components/atlas/chart-card";
 import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/chart-tooltip";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Segmented } from "@/components/ui/segmented";
 import { CAT } from "@/lib/colors";
 import { fmtInt, fmtUsd, fmtUsdFull } from "@/lib/format";
 import { ROUND_BUCKETS } from "@/lib/parse";
@@ -87,14 +87,15 @@ export function RoundsOverTime({ rounds, className }: { rounds: Round[]; classNa
       takeaway={takeaway}
       info="Rounds from the rounds file by the quarter of their date, stacked by round type bucket (seed and pre-seed; Series A and later; strategic and private; token sales; grants; public-market deals such as PIPEs; acquisitions; other). Switch between the number of rounds and disclosed USD. Hatched segments are rounds whose type fits no bucket."
       actions={
-        <ToggleGroup type="single" size="sm" variant="outline" value={mode} onValueChange={(v) => v && setMode(v as Mode)} aria-label="Measure">
-          <ToggleGroupItem value="count" className="h-7 px-2 text-xs">
-            Rounds
-          </ToggleGroupItem>
-          <ToggleGroupItem value="usd" className="h-7 px-2 text-xs">
-            Disclosed USD
-          </ToggleGroupItem>
-        </ToggleGroup>
+        <Segmented<Mode>
+          value={mode}
+          onChange={setMode}
+          options={[
+            { value: "count", label: "Rounds" },
+            { value: "usd", label: "Disclosed USD" },
+          ]}
+          ariaLabel="Measure"
+        />
       }
       footer={`${undisclosed} of ${rounds.length} rounds have no disclosed amount and ${undated} ${undated === 1 ? "is" : "are"} undated. Undated rounds are left out of the bars; undisclosed rounds count as rounds but add nothing to USD.`}
       table={{

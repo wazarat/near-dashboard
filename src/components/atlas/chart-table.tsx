@@ -1,9 +1,10 @@
 "use client";
 
+import { NOT_TRACKED } from "@/lib/coverage";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Segmented } from "@/components/ui/segmented";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 
 export interface ChartTableColumn {
@@ -26,7 +27,7 @@ export type ChartView = "chart" | "table" | "query";
 
 function cellText(col: ChartTableColumn, v: unknown): string {
   if (col.format) return col.format(v);
-  if (v === null || v === undefined) return "—";
+  if (v === null || v === undefined) return NOT_TRACKED;
   if (typeof v === "number") return Number.isInteger(v) ? v.toLocaleString("en-US") : v.toLocaleString("en-US", { maximumFractionDigits: 4 });
   return String(v);
 }
@@ -92,19 +93,10 @@ export function ChartTable({ spec }: { spec: ChartTableSpec }) {
 }
 
 export function ChartTableToggle({ view, onChange, hasQuery }: { view: ChartView; onChange: (v: ChartView) => void; hasQuery?: boolean }) {
-  return (
-    <ToggleGroup type="single" size="sm" variant="outline" value={view} onValueChange={(v) => v && onChange(v as ChartView)} aria-label="View as">
-      <ToggleGroupItem value="chart" className="h-7 px-2 text-xs">
-        Chart
-      </ToggleGroupItem>
-      <ToggleGroupItem value="table" className="h-7 px-2 text-xs">
-        Table
-      </ToggleGroupItem>
-      {hasQuery && (
-        <ToggleGroupItem value="query" className="h-7 px-2 text-xs">
-          Query
-        </ToggleGroupItem>
-      )}
-    </ToggleGroup>
-  );
+  const options: Array<{ value: ChartView; label: string }> = [
+    { value: "chart", label: "Chart" },
+    { value: "table", label: "Table" },
+  ];
+  if (hasQuery) options.push({ value: "query", label: "Query" });
+  return <Segmented value={view} onChange={onChange} options={options} ariaLabel="View as" role="tablist" />;
 }

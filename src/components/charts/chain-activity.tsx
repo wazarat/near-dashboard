@@ -12,7 +12,7 @@ const BQ_DAILY_CHAIN = `SELECT block_date, COUNT(*) AS transactions, COUNT(DISTI
 FROM \`bigquery-public-data.crypto_near_mainnet_us.transactions\`
 WHERE block_date BETWEEN @start AND @end GROUP BY block_date ORDER BY block_date`;
 
-const BQ_DAILY_RECEIPTS = `-- one scan of receipt_actions: chain totals (account_id NULL) and per-receiver rows for tracked accounts
+const BQ_DAILY_RECEIPTS = /* copy-ok */ `-- one scan of receipt_actions: chain totals (account_id NULL) and per-receiver rows for tracked accounts
 SELECT block_date, account_id, COUNTIF(action_kind = 'FUNCTION_CALL') AS function_calls,
   COUNT(DISTINCT IF(action_kind = 'FUNCTION_CALL', signer_account_id, NULL)) AS distinct_signers,
   COUNT(DISTINCT IF(action_kind = 'FUNCTION_CALL', receipt_receiver_account_id, NULL)) AS contracts_called,
@@ -52,7 +52,7 @@ export function ChainActivity({ range }: { range: Range }) {
     <ChartCard
       title="Chain activity"
       takeaway={takeaway}
-      info="NearBlocks daily charts (transactions, active accounts, new accounts) since 2020 plus the NEAR BigQuery public dataset for the last year: transactions, distinct signers, CREATE_ACCOUNT actions, FUNCTION_CALL receipts, distinct contracts called, and receipts to the aurora and intents.near accounts. Distinct signers are an estimate: one person can use many accounts, and relayers or intents hide the end user."
+      info="NearBlocks daily charts (transactions, active accounts, new accounts) since 2020 plus the NEAR BigQuery public dataset for the last year, which adds transactions, distinct signers, CREATE_ACCOUNT actions, FUNCTION_CALL receipts, distinct contracts called, and receipts to the aurora and intents.near accounts. Distinct signers are an estimate, since one person can use many accounts, and relayers or intents hide the end user."
       queries={[
         { kind: "sql", title: "queries/daily_chain.sql (transactions table)", code: BQ_DAILY_CHAIN },
         { kind: "sql", title: "queries/daily_receipts.sql (receipt_actions table)", code: BQ_DAILY_RECEIPTS },

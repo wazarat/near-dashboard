@@ -1,5 +1,6 @@
 "use client";
 
+import { NotTracked } from "@/components/atlas/not-tracked";
 import { useMemo } from "react";
 import { ChartCard, EmptyState } from "@/components/atlas/chart-card";
 import { DataTable, projectColumnHelper as h, type ProjectColumnDef } from "@/components/explorer/data-table";
@@ -32,7 +33,7 @@ export function financialColumns(onOpen: (id: string) => void, withPs: boolean):
         header: "P/S",
         cell: ({ getValue }) => {
           const v = getValue();
-          return v === undefined ? <span className="text-muted-foreground">—</span> : <span title="Market cap divided by annualised 30d revenue">{fmtRatio(v, 1)}</span>;
+          return v === undefined ? <NotTracked /> : <span title="Market cap divided by annualised 30d revenue">{fmtRatio(v, 1)}</span>;
         },
         sortUndefined: "last",
         meta: { align: "right", hideBelow: "md" },

@@ -248,7 +248,7 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
                 <div key={r.id} className={`text-sm ${r.sourced ? "" : "text-muted-foreground"}`}>
                   <span className="text-muted-foreground">{r.date ? fmtEventDate(r.date, r.monthOnly) : "undated"}</span> · {r.roundType} · <span className="tabular">{r.amount === null ? "undisclosed" : fmtUsd(r.amount)}</span>
                   {r.investors.length > 0 && <span className="text-muted-foreground"> · {r.investors.join(", ")}</span>}
-                  {!r.sourced && <span className="ml-1 rounded border border-dashed px-1 text-[10px]">{r.confidence}</span>}
+                  {!r.sourced && <span className="ml-1 font-mono text-label text-ink-500">{r.confidence}</span>}
                   {r.sourceUrl && (
                     <>
                       {" "}

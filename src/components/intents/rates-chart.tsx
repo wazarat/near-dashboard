@@ -1,11 +1,12 @@
 "use client";
 
+import { NOT_TRACKED } from "@/lib/coverage";
 import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
 import type { ChartTableSpec } from "@/components/atlas/chart-table";
 import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/chart-tooltip";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Segmented } from "@/components/ui/segmented";
 import { fmtDate, fmtDateShort, fmtInt, fmtMonth, fmtPct } from "@/lib/format";
 import type { IntentsSummary } from "@/lib/intents";
 import { rangeDays, RANGE_LONG, sliceTail, type Range } from "@/lib/ranges";
@@ -40,7 +41,7 @@ export function rateRows(data: IntentsSummary, range: Range): RateRow[] {
 }
 
 export function rateTable(rows: RateRow[], range: Range): ChartTableSpec {
-  const pct = (v: unknown) => (v === null || v === undefined ? "—" : fmtPct(v as number, 2));
+  const pct = (v: unknown) => (v === null || v === undefined ? NOT_TRACKED : fmtPct(v as number, 2));
   return {
     caption: "Daily share of 1Click swap rows by final status, Explorer API",
     filename: `intents-status-rates-${range}.csv`,
@@ -71,7 +72,7 @@ export function RatesChart({ data, range }: { data: IntentsSummary; range: Range
       return `Over the last ${last30.days} complete day${last30.days === 1 ? "" : "s"}, ${fmtPct(last30.successRate, 1)} of 1Click swap rows ended in SUCCESS, ${fmtPct(last30.refundRate, 1)} were refunded and ${fmtPct(last30.failRate, 2)} failed or never received a full deposit.`;
     }
     const last = rows[rows.length - 1];
-    return `Only partial Explorer days so far: on ${fmtDateShort(last.date)} ${fmtPct(last.success, 1)} of ${fmtInt(last.rows)} rows were SUCCESS, ${fmtPct(last.refunded, 1)} refunded and ${fmtPct(last.failed, 2)} failed; the day is still filling in.`;
+    return `Only partial Explorer days so far. On ${fmtDateShort(last.date)} ${fmtPct(last.success, 1)} of ${fmtInt(last.rows)} rows were SUCCESS, ${fmtPct(last.refunded, 1)} refunded and ${fmtPct(last.failed, 2)} failed; the day is still filling in.`;
   }, [rows, last30]);
 
   const series = mode === "all" ? STATUS : STATUS.filter((s) => s.key !== "success");
@@ -84,14 +85,15 @@ export function RatesChart({ data, range }: { data: IntentsSummary; range: Range
       takeaway={takeaway}
       info={`Share of all rows the Explorer API returned per UTC day by final status, ${EXPLORER_LABEL}. SUCCESS / rows, REFUNDED / rows and (FAILED + INCOMPLETE_DEPOSIT) / rows come straight from the per-day files; the grey remainder is pending, processing and any other status. Window follows the date range control. The 30-day figures in the takeaway use complete days only.`}
       actions={
-        <ToggleGroup type="single" size="sm" variant="outline" value={mode} onValueChange={(v) => v && setMode(v as Mode)} aria-label="Statuses shown">
-          <ToggleGroupItem value="all" className="h-7 px-2 text-xs">
-            All statuses
-          </ToggleGroupItem>
-          <ToggleGroupItem value="nonsuccess" className="h-7 px-2 text-xs">
-            Non-success only
-          </ToggleGroupItem>
-        </ToggleGroup>
+        <Segmented<Mode>
+          value={mode}
+          onChange={setMode}
+          options={[
+            { value: "all", label: "All statuses" },
+            { value: "nonsuccess", label: "Non-success only" },
+          ]}
+          ariaLabel="Statuses shown"
+        />
       }
       table={rateTable(rows, range)}
       queries={[EXPLORER_QUERY, TRANSFORM_QUERY]}

@@ -24,20 +24,20 @@ export function pickQueries(queries: ThesisJson["queries"], keys: string[]): Que
 
 /** Signed lag in weeks or days: "+7 w", "0 w", "−2 w". */
 export function fmtLag(lag: number | null | undefined, unit = "w"): string {
-  if (lag === null || lag === undefined || !Number.isFinite(lag)) return "—";
+  if (lag === null || lag === undefined || !Number.isFinite(lag)) return "n/a";
   const sign = lag > 0 ? "+" : lag < 0 ? "−" : "";
   return `${sign}${Math.abs(lag)} ${unit}`;
 }
 
 /** Correlation or R² with two decimals and a typographic minus. */
 export function fmtR(v: number | null | undefined): string {
-  if (v === null || v === undefined || !Number.isFinite(v)) return "—";
+  if (v === null || v === undefined || !Number.isFinite(v)) return "n/a";
   return v.toFixed(2).replace("-", "−");
 }
 
 /** "1,059×" for large multiples, "7.5×" for small ones, "0.07×" below one. */
 export function fmtTimes(v: number | null | undefined): string {
-  if (v === null || v === undefined || !Number.isFinite(v)) return "—";
+  if (v === null || v === undefined || !Number.isFinite(v)) return "n/a";
   if (Math.abs(v) >= 100) return `${Math.round(v).toLocaleString("en-US")}×`;
   if (Math.abs(v) >= 10) return `${v.toFixed(0)}×`;
   if (Math.abs(v) >= 1) return `${v.toFixed(1)}×`;

@@ -115,7 +115,7 @@ function BucketTip({ active, payload, keyLabel }: TipProps<BucketRow> & { keyLab
   if (!active || !payload?.length) return null;
   const r = payload[0].payload;
   return (
-    <TooltipFrame title={`${keyLabel}: ${r.label}`}>
+    <TooltipFrame title={`${keyLabel}, ${r.label}`}>
       <TooltipRow label="Volume (SUCCESS swaps)" value={fmtUsdFull(r.usd)} />
       <TooltipRow label="Swaps" value={fmtInt(r.count)} />
       <TooltipRow label="Share of window volume" value={fmtPct(r.share, 1)} />

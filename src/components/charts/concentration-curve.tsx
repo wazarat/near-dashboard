@@ -98,13 +98,13 @@ export function ConcentrationCurve({ projects, metric, scale, onOpen }: Props) {
             {top3 !== null && (
               <>
                 <ReferenceLine x={3} stroke="var(--axis)" strokeDasharray="3 3" />
-                <ReferenceDot x={3} y={top3} r={5} fill="var(--chain-near)" stroke="var(--background)" strokeWidth={2} label={{ value: `top 3: ${fmtPct(top3)}`, position: "bottom", fontSize: 11, fill: "var(--foreground)" }} />
+                <ReferenceDot x={3} y={top3} r={5} fill="var(--chain-near)" stroke="var(--background)" strokeWidth={2} label={{ value: `top 3 at ${fmtPct(top3)}`, position: "bottom", fontSize: 11, fill: "var(--foreground)" }} />
               </>
             )}
             {top10 !== null && (
               <>
                 <ReferenceLine x={10} stroke="var(--axis)" strokeDasharray="3 3" />
-                <ReferenceDot x={10} y={top10} r={5} fill="var(--chain-near)" stroke="var(--background)" strokeWidth={2} label={{ value: `top 10: ${fmtPct(top10)}`, position: "bottom", fontSize: 11, fill: "var(--foreground)" }} />
+                <ReferenceDot x={10} y={top10} r={5} fill="var(--chain-near)" stroke="var(--background)" strokeWidth={2} label={{ value: `top 10 at ${fmtPct(top10)}`, position: "bottom", fontSize: 11, fill: "var(--foreground)" }} />
               </>
             )}
           </LineChart>

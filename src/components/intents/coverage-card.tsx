@@ -13,7 +13,7 @@ export function CoverageCard({ data }: { data: IntentsSummary & { llamaDaily: Se
   const { coverage, ratioStats, llamaDaily } = data;
   const llamaFirst = llamaDaily[0]?.[0] ?? null;
   const llamaLast = llamaDaily.at(-1)?.[0] ?? null;
-  const backfill = !data.available ? "not started (needs NEAR_INTENTS_JWT)" : coverage.backfillDone ? "complete" : "running: older days are still being fetched";
+  const backfill = !data.available ? "not started (needs NEAR_INTENTS_JWT)" : coverage.backfillDone ? "complete" : "running, older days are still being fetched";
 
   const items: Array<{ label: string; value: string; note?: string }> = [
     { label: "First Explorer day", value: coverage.firstDay ? fmtDate(coverage.firstDay) : "none yet", note: EXPLORER_LABEL },
@@ -68,7 +68,7 @@ export function CoverageCard({ data }: { data: IntentsSummary & { llamaDaily: Se
             <ul className="mt-1.5 space-y-0.5 text-muted-foreground">
               {data.anomalies.map((a) => (
                 <li key={a.date}>
-                  {fmtDate(a.date)}: {fmtPct(a.refundRate)} of {fmtInt(a.rows)} swaps refunded{a.medianUsd !== null ? `, median successful swap ${fmtUsdShort(a.medianUsd)}` : ""}
+                  {fmtDate(a.date)}, {fmtPct(a.refundRate)} of {fmtInt(a.rows)} swaps refunded{a.medianUsd !== null ? `, median successful swap ${fmtUsdShort(a.medianUsd)}` : ""}
                 </li>
               ))}
             </ul>

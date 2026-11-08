@@ -3,240 +3,317 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant light (&:is(.light *));
 
+/*
+ * CanHav Atlas UI standard (docs/ATLAS-UI.md). Every colour is a token
+ * from the CanHav design system; the ink scale inverts between themes so
+ * ink-950 is always the page and ink-50 the strongest text. Dark is the
+ * default and what the server renders; html.light flips the scale.
+ */
 @theme inline {
+  --color-ink-950: var(--ink-950);
+  --color-ink-900: var(--ink-900);
+  --color-ink-850: var(--ink-850);
+  --color-ink-800: var(--ink-800);
+  --color-ink-700: var(--ink-700);
+  --color-ink-600: var(--ink-600);
+  --color-ink-500: var(--ink-500);
+  --color-ink-400: var(--ink-400);
+  --color-ink-300: var(--ink-300);
+  --color-ink-200: var(--ink-200);
+  --color-ink-100: var(--ink-100);
+  --color-ink-50: var(--ink-50);
+  --color-electric-200: var(--electric-200);
+  --color-electric-300: var(--electric-300);
+  --color-electric-400: var(--electric-400);
+  --color-electric-500: var(--electric-500);
+  --color-electric-600: var(--electric-600);
+  --color-electric-700: var(--electric-700);
+  --color-neon-200: var(--neon-200);
+  --color-neon-300: var(--neon-300);
+  --color-neon-400: var(--neon-400);
+  --color-neon-500: var(--neon-500);
+  --color-neon-600: var(--neon-600);
+  --color-signal-400: var(--signal-400);
+  --color-signal-500: var(--signal-500);
+  --color-rose-400: var(--rose-400);
+  --color-on-electric: var(--on-electric);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--card);
+  --color-sidebar-foreground: var(--foreground);
+  --color-sidebar-primary: var(--primary);
+  --color-sidebar-primary-foreground: var(--primary-foreground);
+  --color-sidebar-accent: var(--accent);
+  --color-sidebar-accent-foreground: var(--accent-foreground);
+  --color-sidebar-border: var(--border);
+  --color-sidebar-ring: var(--ring);
+
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+  --font-heading: var(--font-display);
+
+  /* Type scale from the design system. */
+  --text-micro: 0.625rem;
+  --text-micro--line-height: 0.875rem;
+  --text-micro--font-weight: 500;
+  --text-label: 0.75rem;
+  --text-label--line-height: 1rem;
+  --text-label--font-weight: 500;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.625;
+  --text-control: 0.875rem;
+  --text-control--line-height: 1.25rem;
+  --text-control--font-weight: 500;
+  --text-card-title: 1.125rem;
+  --text-card-title--line-height: 1.75rem;
+  --text-card-title--font-weight: 600;
+  --text-title: 1.25rem;
+  --text-title--line-height: 1.75rem;
+  --text-title--font-weight: 600;
+  --text-stat: 1.5rem;
+  --text-stat--line-height: 2rem;
+  --text-stat--font-weight: 600;
+  --text-title-lg: 1.875rem;
+  --text-title-lg--line-height: 2.25rem;
+  --text-title-lg--font-weight: 600;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
+  --radius-4xl: 32px;
+
+  --shadow-segment: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-popover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  --container-atlas: 1320px;
 }
 
+/* Dark theme, the default. */
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  color-scheme: dark;
+  --ink-950: #05060a;
+  --ink-900: #0a0c14;
+  --ink-850: #10131d;
+  --ink-800: #161a26;
+  --ink-700: #1f2433;
+  --ink-600: #2c3242;
+  --ink-500: #3a4255;
+  --ink-400: #5b6377;
+  --ink-300: #7c8499;
+  --ink-200: #a8aebf;
+  --ink-100: #d4d8e4;
+  --ink-50: #eef0f7;
+  --electric-200: #bdd2ff;
+  --electric-300: #8fb3ff;
+  --electric-400: #5c92ff;
+  --electric-500: #3d7bff;
+  --electric-600: #2563eb;
+  --electric-700: #1d4ed8;
+  --neon-200: #ddd6fe;
+  --neon-300: #c4b5fd;
+  --neon-400: #a78bfa;
+  --neon-500: #8b5cf6;
+  --neon-600: #7c3aed;
+  --signal-400: #22d3ee;
+  --signal-500: #06b6d4;
+  --rose-400: #fb7185;
+  --on-electric: #ffffff;
+
+  /* shadcn semantic names mapped onto the scale so every primitive follows. */
+  --background: var(--ink-950);
+  --foreground: var(--ink-50);
+  --card: var(--ink-900);
+  --card-foreground: var(--ink-50);
+  --popover: var(--ink-900);
+  --popover-foreground: var(--ink-50);
+  --primary: var(--electric-500);
+  --primary-foreground: var(--on-electric);
+  --secondary: var(--ink-800);
+  --secondary-foreground: var(--ink-50);
+  --muted: var(--ink-800);
+  --muted-foreground: var(--ink-300);
+  --accent: var(--ink-800);
+  --accent-foreground: var(--ink-50);
+  --destructive: var(--rose-400);
+  --border: color-mix(in srgb, var(--ink-700) 60%, transparent);
+  --input: color-mix(in srgb, var(--ink-700) 60%, transparent);
+  --ring: var(--electric-500);
+  --radius: 0.5rem;
+
+  /* Chart palette, built from the brand hues plus neutrals (section 1, Chart colours). */
+  --chart-1: #3d7bff;
+  --chart-2: #8b5cf6;
+  --chart-3: #22d3ee;
+  --chart-4: #bdd2ff;
+  --chart-5: #c4b5fd;
+  --chart-6: #0e7490;
+  --chart-7: #1d4ed8;
+  --chart-8: #a8aebf;
+  --chart-not-disclosed: #3a4255;
+  --chart-not-researched: #3a4255;
+  --seq-1: #1e3a8a;
+  --seq-2: #1d4ed8;
+  --seq-3: #2563eb;
+  --seq-4: #3d7bff;
+  --seq-5: #8fb3ff;
+  --seq-6: #bdd2ff;
+  --up: var(--signal-400);
+  --down: var(--rose-400);
+  --surface-chart: var(--ink-900);
+  --grid: var(--ink-800);
+  --axis: var(--ink-700);
+  --ink-muted: var(--ink-300);
+  --ink-secondary: var(--ink-200);
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+/* Light theme, the flat #f5f5f7 canvas with the inverted ink scale. */
+.light {
+  color-scheme: light;
+  --ink-950: #f5f5f7;
+  --ink-900: #ffffff;
+  --ink-850: #fafafb;
+  --ink-800: #e8eae6;
+  --ink-700: #caccc7;
+  --ink-600: #b6b9b3;
+  --ink-500: #6b7164;
+  --ink-400: #5a6052;
+  --ink-300: #3d4433;
+  --ink-200: #2a3120;
+  --ink-100: #1a2210;
+  --ink-50: #0c1500;
+  --electric-200: #1d4ed8;
+  --electric-300: #2563eb;
+  --electric-400: #3d7bff;
+  --electric-500: #2563eb;
+  --electric-600: #1d4ed8;
+  --electric-700: #1e40af;
+  --neon-200: #5b21b6;
+  --neon-300: #6d28d9;
+  --neon-400: #7c3aed;
+  --neon-500: #6d28d9;
+  --neon-600: #5b21b6;
+  --signal-400: #0e7490;
+  --signal-500: #155e75;
+  --rose-400: #e11d48;
+  --on-electric: #ffffff;
+
+  --chart-1: #2563eb;
+  --chart-2: #6d28d9;
+  --chart-3: #0e7490;
+  --chart-4: #8fb3ff;
+  --chart-5: #c4b5fd;
+  --chart-6: #22d3ee;
+  --chart-7: #1e3a8a;
+  --chart-8: #6b7164;
+  --chart-not-disclosed: #b6b9b3;
+  --chart-not-researched: #b6b9b3;
+  --seq-1: #dbe7ff;
+  --seq-2: #b3ccff;
+  --seq-3: #7fa9ff;
+  --seq-4: #3d7bff;
+  --seq-5: #2563eb;
+  --seq-6: #1e40af;
+}
+
+/* Category aliases kept for the chart code: one fixed colour per category across every chart. */
+:root,
+.light {
+  --cat-1: var(--chart-1);
+  --cat-2: var(--chart-2);
+  --cat-3: var(--chart-3);
+  --cat-4: var(--chart-4);
+  --cat-5: var(--chart-5);
+  --cat-6: var(--chart-6);
+  --cat-7: var(--chart-7);
+  --cat-8: var(--chart-8);
+  --cat-notresearched: var(--chart-not-researched);
+  --cat-notdisclosed: var(--chart-not-disclosed);
+  --chain-near: var(--chart-1);
+  --chain-aurora: var(--chart-2);
+  --chain-other-evm: var(--chart-3);
+  --chain-other-nonevm: var(--chart-4);
+  --chain-cex: var(--chart-8);
+  --chain-octopus: var(--chart-5);
+  --tier-1: var(--seq-5);
+  --tier-2: var(--seq-4);
+  --tier-3: var(--seq-3);
+  --tier-negligible: var(--seq-2);
+  --tier-none: var(--ink-500);
+  --event-incident: var(--rose-400);
+  --event-milestone: var(--chart-1);
+  --event-integration: var(--chart-3);
+  --event-program: var(--chart-2);
+  --event-funding: var(--chart-4);
+  --event-grant: var(--chart-5);
+  --event-listing: var(--chart-6);
+  --event-governance: var(--chart-7);
+  --event-acquisition: var(--chart-8);
+  --series-price: var(--neon-400);
+  --series-intents: var(--electric-500);
+  --series-usage: var(--signal-400);
+  --status-good: var(--signal-400);
+  --status-warning: var(--ink-200);
+  --status-serious: var(--rose-400);
+  --status-critical: var(--rose-400);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
   html {
     @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-background text-ink-100;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-ink-50;
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--electric-500) 40%, transparent);
+    color: var(--ink-50);
+  }
+  table {
+    font-variant-numeric: tabular-nums;
   }
 }
 
-/* ---- Atlas chart tokens. One colour per Native Chain value, reused in every chart. ---- */
-:root {
-  --surface-chart: #fcfcfb;
-  --chain-near: #2a78d6;
-  --chain-aurora: #1baf7a;
-  --chain-other-evm: #eb6834;
-  --chain-other-nonevm: #be185d;
-  --chain-cex: #6250d6;
-  --chain-octopus: #b07a00;
-  --tier-1: #184f95;
-  --tier-2: #2a78d6;
-  --tier-3: #6da7ec;
-  --tier-negligible: #b7d3f6;
-  --tier-none: #a8a69f;
-  --risk-high: #d03b3b;
-  --risk-medium: #ec835a;
-  --risk-low: #0ca30c;
-  --risk-unknown: #898781;
-  --risk-notresearched: #d6d5cf;
-  --event-incident: #d03b3b;
-  --event-milestone: #2a78d6;
-  --event-integration: #eb6834;
-  --event-program: #1baf7a;
-  --event-funding: #eda100;
-  --event-grant: #7a9b00;
-  --event-listing: #6250d6;
-  --event-governance: #0e9aa7;
-  --event-acquisition: #e87ba4;
-  --cat-1: #2a78d6;
-  --cat-2: #eb6834;
-  --cat-3: #1baf7a;
-  --cat-4: #eda100;
-  --cat-5: #e87ba4;
-  --cat-6: #0e9aa7;
-  --cat-7: #6250d6;
-  --cat-8: #e34948;
-  --cat-notresearched: #d6d5cf;
-  --cat-notdisclosed: #898781;
-  --seq-1: #b7d3f6;
-  --seq-2: #86b6ef;
-  --seq-3: #5598e7;
-  --seq-4: #2a78d6;
-  --seq-5: #1c5cab;
-  --seq-6: #0d366b;
-  --series-price: #c98500;
-  --series-intents: #2a78d6;
-  --series-usage: #1baf7a;
-  --grid: #e1e0d9;
-  --axis: #c3c2b7;
-  --ink-muted: #898781;
-  --ink-secondary: #52514e;
-  --status-good: #0ca30c;
-  --status-warning: #fab219;
-  --status-serious: #ec835a;
-  --status-critical: #d03b3b;
-}
-.dark {
-  --surface-chart: #1a1a19;
-  --chain-near: #3987e5;
-  --chain-aurora: #199e70;
-  --chain-other-evm: #d95926;
-  --chain-other-nonevm: #e256a8;
-  --chain-cex: #9085e9;
-  --chain-octopus: #d9a21b;
-  --tier-1: #86b6ef;
-  --tier-2: #3987e5;
-  --tier-3: #184f95;
-  --tier-negligible: #0d366b;
-  --tier-none: #55544f;
-  --risk-high: #d03b3b;
-  --risk-medium: #ec835a;
-  --risk-low: #0ca30c;
-  --risk-unknown: #898781;
-  --risk-notresearched: #3a3a37;
-  --event-incident: #d03b3b;
-  --event-milestone: #3987e5;
-  --event-integration: #d95926;
-  --event-program: #199e70;
-  --event-funding: #c98500;
-  --event-grant: #8fb300;
-  --event-listing: #9085e9;
-  --event-governance: #19b3c2;
-  --event-acquisition: #d55181;
-  --cat-1: #3987e5;
-  --cat-2: #d95926;
-  --cat-3: #199e70;
-  --cat-4: #c98500;
-  --cat-5: #d55181;
-  --cat-6: #19b3c2;
-  --cat-7: #9085e9;
-  --cat-8: #e66767;
-  --cat-notresearched: #3a3a37;
-  --cat-notdisclosed: #898781;
-  --seq-1: #184f95;
-  --seq-2: #256abf;
-  --seq-3: #3987e5;
-  --seq-4: #6da7ec;
-  --seq-5: #9ec5f4;
-  --seq-6: #cde2fb;
-  --series-price: #e0a21c;
-  --series-intents: #3987e5;
-  --series-usage: #2bbf8a;
-  --grid: #2c2c2a;
-  --axis: #383835;
-  --ink-muted: #898781;
-  --ink-secondary: #c3c2b7;
-}
-
+/* Charts. */
 .recharts-wrapper,
 .recharts-surface {
   outline: none;
@@ -251,6 +328,10 @@
 .recharts-text {
   fill: var(--ink-muted);
   font-size: 11px;
+}
+.recharts-brush rect.recharts-brush-slide {
+  fill: var(--electric-500);
+  fill-opacity: 0.15;
 }
 .tabular {
   font-variant-numeric: tabular-nums;

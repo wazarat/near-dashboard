@@ -31,9 +31,9 @@ export function RobustnessTable({ data }: { data: ThesisJson }) {
       { key: "variant", label: "Variant" },
       { key: "usage", label: "Usage series" },
       { key: "intentsR", label: "Intents r", align: "right", format: (v) => fmtR(v as number | null) },
-      { key: "intentsLag", label: "Intents lag", align: "right", format: (v) => (v === null ? "—" : String(v)) },
+      { key: "intentsLag", label: "Intents lag", align: "right", format: (v) => (v === null ? "n/a" : String(v)) },
       { key: "priceR", label: "Price r", align: "right", format: (v) => fmtR(v as number | null) },
-      { key: "priceLag", label: "Price lag", align: "right", format: (v) => (v === null ? "—" : String(v)) },
+      { key: "priceLag", label: "Price lag", align: "right", format: (v) => (v === null ? "n/a" : String(v)) },
       { key: "n", label: "Pairs", align: "right" },
       { key: "intentsWins", label: "Intents wins", align: "right" },
       { key: "priceWins", label: "Price wins", align: "right" },
@@ -65,7 +65,7 @@ export function RobustnessTable({ data }: { data: ThesisJson }) {
     <ChartCard
       title="Test 4 · Robustness"
       takeaway={takeaway}
-      info="The lead-lag test from Test 2 repeated under variants of the inputs: Intents volume with its largest days capped, function calls with receipts to aurora and intents.near removed, daily instead of weekly changes. Each cell shows each predictor's strongest positive correlation at a positive lag and the lag it occurs at; a predictor wins a series when its correlation is the larger one and clears the noise band. Sources are the same as above: DefiLlama, NearBlocks and the NEAR BigQuery public dataset."
+      info="The lead-lag test from Test 2 repeated under variants of the inputs. Intents volume with its largest days capped, function calls with receipts to aurora and intents.near removed, daily instead of weekly changes. Each cell shows each predictor's strongest positive correlation at a positive lag and the lag it occurs at; a predictor wins a series when its correlation is the larger one and clears the noise band. Sources are the same as above, DefiLlama, NearBlocks and the NEAR BigQuery public dataset."
       table={table}
       queries={pickQueries(data.queries, ["weekly", "leadLag"])}
       footer={<span>Lags are in weeks, or days for the daily variant. Base row first.</span>}
@@ -99,7 +99,7 @@ export function RobustnessTable({ data }: { data: ThesisJson }) {
                     if (!cell) {
                       return (
                         <TableCell key={u.key} className="align-top text-muted-foreground">
-                          —
+                          n/a
                         </TableCell>
                       );
                     }

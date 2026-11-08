@@ -1,0 +1,8 @@
+Fonts in this folder are the latin variable cuts of three open source faces,
+each released under the SIL Open Font License 1.1 (https://openfontlicense.org):
+
+  Inter            Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)
+  Space Grotesk    Copyright 2020 The Space Grotesk Project Authors (https://github.com/floriankarsten/space-grotesk)
+  JetBrains Mono   Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)
+
+They are self-hosted so the site builds without a network connection.

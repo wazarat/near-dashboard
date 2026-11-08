@@ -1,5 +1,6 @@
 "use client";
 
+import { NOT_TRACKED } from "@/lib/coverage";
 import { useMemo } from "react";
 import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
 import type { ChartTableSpec } from "@/components/atlas/chart-table";
@@ -34,7 +35,7 @@ export function CoverageStrip({ data }: { data: ThesisJson }) {
       { key: "llama", label: "DefiLlama volume (all channels)", align: "right", format: (v) => fmtUsd(v as number | null) },
       { key: "explorer", label: "Explorer volume (1Click swaps only)", align: "right", format: (v) => fmtUsd(v as number | null) },
       { key: "ratio", label: "Explorer / DefiLlama", align: "right", format: (v) => fmtPct(v as number | null) },
-      { key: "price", label: "NEAR price (USD)", align: "right", format: (v) => (v === null || v === undefined ? "—" : `$${(v as number).toFixed(2)}`) },
+      { key: "price", label: "NEAR price (USD)", align: "right", format: (v) => (v === null || v === undefined ? NOT_TRACKED : `$${(v as number).toFixed(2)}`) },
     ],
     rows: daily.dates
       .map((d, i) => {
@@ -58,7 +59,7 @@ export function CoverageStrip({ data }: { data: ThesisJson }) {
       footer={
         total ? (
           <span>
-            Chart shows the last {dates.length} days to {fmtDateShort(dates[dates.length - 1])}; the table holds all {total} days from {fmtDateShort(daily.dates[0])}. Latest ratio where both exist: {fmtPct(coverage.ratioLatest)}.
+            Chart shows the last {dates.length} days to {fmtDateShort(dates[dates.length - 1])}; the table holds all {total} days from {fmtDateShort(daily.dates[0])}. The latest ratio where both exist is {fmtPct(coverage.ratioLatest)}.
           </span>
         ) : undefined
       }
@@ -82,7 +83,7 @@ export function CoverageStrip({ data }: { data: ThesisJson }) {
             </div>
             <div>
               <dt className="text-muted-foreground">First complete day</dt>
-              <dd className="text-sm font-medium">{coverage.explorerFirstDay ? fmtDate(coverage.explorerFirstDay) : "—"}</dd>
+              <dd className="text-sm font-medium">{coverage.explorerFirstDay ? fmtDate(coverage.explorerFirstDay) : "none yet"}</dd>
             </div>
             <div>
               <dt className="text-muted-foreground">Median Explorer / DefiLlama</dt>

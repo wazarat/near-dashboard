@@ -1,9 +1,10 @@
+import { NotTracked } from "@/components/atlas/not-tracked";
 import { fmtPctSigned } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 /** Signed percent change with a direction glyph, so colour is never the only cue. */
 export function ChangeCell({ value, digits = 1, className, label }: { value: number | null | undefined; digits?: number; className?: string; label?: string }) {
-  if (value === null || value === undefined || !Number.isFinite(value)) return <span className={cn("text-muted-foreground", className)}>—</span>;
+  if (value === null || value === undefined || !Number.isFinite(value)) return <NotTracked className={className} />;
   const pct = value * 100;
   const flat = Math.abs(pct) < 0.05;
   const up = pct > 0;

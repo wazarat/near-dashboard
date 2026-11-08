@@ -38,7 +38,7 @@ export function parseNumber(v: string | undefined | null): number | null {
   const t = clean(v);
   if (t === null) return null;
   const n = Number(t.replace(/[$,\s]/g, ""));
-  if (!Number.isFinite(n)) throw new Error(`Not a number: "${v}"`);
+  if (!Number.isFinite(n)) throw new Error(`Not a number "${v}"`);
   return n;
 }
 
@@ -100,7 +100,7 @@ export function normalizeToken(v: string | null): string | null {
 
 function oneOf<T extends readonly string[]>(list: T, v: string | null, field: string, name: string): T[number] {
   if (v !== null && (list as readonly string[]).includes(v)) return v as T[number];
-  throw new Error(`Row "${name}": unexpected ${field} value "${v}"`);
+  throw new Error(`Row "${name}" has an unexpected ${field} value "${v}"`);
 }
 
 export function parsePresence(v: string | undefined | null): ChainPresence[] {
@@ -227,10 +227,10 @@ export function toEvent(row: RawRow, index: number, resolver: NameResolver): Eco
   const projects = splitList(row["Projects"]);
   const type = clean(row["Event Type"]);
   if (!type || !(EVENT_TYPES as readonly string[]).includes(type)) {
-    throw new Error(`Event ${index}: unexpected Event Type "${type}"`);
+    throw new Error(`Event ${index} has an unexpected Event Type "${type}"`);
   }
   const parsed = parseDate(row["Date"]);
-  if (!parsed) throw new Error(`Event ${index}: missing date`);
+  if (!parsed) throw new Error(`Event ${index} is missing a date`);
   const title = clean(row["Title"]) ?? "";
   return {
     id: `${parsed.date}-${slugify(title || String(index))}`,
@@ -263,7 +263,7 @@ export function roundBucket(roundType: string): (typeof ROUND_BUCKETS)[number] {
 
 export function toRound(row: RawRow, index: number, resolver: NameResolver): Round {
   const project = clean(row["Project"]);
-  if (!project) throw new Error(`Round ${index}: missing project`);
+  if (!project) throw new Error(`Round ${index} is missing a project`);
   const parsed = parseDate(row["Date"]);
   const roundType = clean(row["Round Type"]) ?? "Unknown";
   const leadInvestors = splitList(row["Lead Investors"]);

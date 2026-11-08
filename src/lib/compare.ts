@@ -3,6 +3,7 @@
  * ids). Everything here is a pure function over Project rows and the 90-day
  * series file, except useCompare() at the bottom, which wraps the URL state.
  */
+import { NOT_TRACKED } from "./coverage";
 import { useCallback, useMemo } from "react";
 import { projectById } from "./data";
 import { useFilters } from "./filters";
@@ -116,7 +117,7 @@ export interface MatrixRow {
 }
 
 export function formatMatrixValue(kind: MatrixKind, v: number | null): string {
-  if (v === null || !Number.isFinite(v)) return "—";
+  if (v === null || !Number.isFinite(v)) return NOT_TRACKED;
   if (kind === "money") return fmtUsd(v);
   if (kind === "count") return fmtInt(v);
   return `${v.toFixed(1)}×`;
@@ -172,18 +173,18 @@ export interface RatioRow {
   best: boolean[];
 }
 
-const perDollar = (v: number | null) => (v === null ? "—" : `$${v.toFixed(4)}`);
-const times = (v: number | null) => (v === null ? "—" : `${v.toFixed(2)}×`);
-const pct = (v: number | null) => (v === null ? "—" : `${(v * 100).toFixed(0)}%`);
-const one = (v: number | null) => (v === null ? "—" : v.toFixed(1));
+const perDollar = (v: number | null) => (v === null ? NOT_TRACKED : `$${v.toFixed(4)}`);
+const times = (v: number | null) => (v === null ? NOT_TRACKED : `${v.toFixed(2)}×`);
+const pct = (v: number | null) => (v === null ? NOT_TRACKED : `${(v * 100).toFixed(0)}%`);
+const one = (v: number | null) => (v === null ? NOT_TRACKED : v.toFixed(1));
 
 /** Size-independent ratios. Every input may be null and every division is guarded. */
 export function compareRatios(selected: readonly Project[], metric: MetricKey): RatioRow[] {
   const m = numericMetric(metric);
   const rows: Array<Omit<RatioRow, "best">> = [
-    { key: "feesPerTvl", label: "30d fees per $1 TVL", info: "30-day fees divided by TVL: how hard the locked capital works.", values: selected.map((p) => ratio(p.fees, p.tvl)), format: perDollar, higherIsBetter: true },
-    { key: "capture", label: "Revenue capture", info: "30-day revenue divided by 30-day fees: the share of fees the protocol or its token keeps.", values: selected.map((p) => ratio(p.revenue, p.fees)), format: pct, higherIsBetter: true },
-    { key: "turnover", label: "30d volume / TVL", info: "30-day DEX volume divided by TVL: capital turnover.", values: selected.map((p) => ratio(p.volume, p.tvl)), format: times, higherIsBetter: true },
+    { key: "feesPerTvl", label: "30d fees per $1 TVL", info: "30-day fees divided by TVL, how hard the locked capital works.", values: selected.map((p) => ratio(p.fees, p.tvl)), format: perDollar, higherIsBetter: true },
+    { key: "capture", label: "Revenue capture", info: "30-day revenue divided by 30-day fees, the share of fees the protocol or its token keeps.", values: selected.map((p) => ratio(p.revenue, p.fees)), format: pct, higherIsBetter: true },
+    { key: "turnover", label: "30d volume / TVL", info: "30-day DEX volume divided by TVL, capital turnover.", values: selected.map((p) => ratio(p.volume, p.tvl)), format: times, higherIsBetter: true },
     {
       key: "change30",
       label: `30d change (${METRIC_SHORT[m]})`,
@@ -195,7 +196,7 @@ export function compareRatios(selected: readonly Project[], metric: MetricKey): 
     {
       key: "callsPerTvl",
       label: "7d calls per $1M TVL",
-      info: "Function calls to tracked contracts over 7 days (BigQuery) per million dollars of TVL: activity relative to size.",
+      info: "Function calls to tracked contracts over 7 days (BigQuery) per million dollars of TVL, activity relative to size.",
       values: selected.map((p) => {
         const r = ratio(p.live?.calls7d ?? null, p.tvl);
         return r === null ? null : r * 1e6;

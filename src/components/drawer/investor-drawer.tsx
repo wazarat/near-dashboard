@@ -52,11 +52,11 @@ export function InvestorDrawer() {
                     return (
                       <li key={`${name}-${i}`}>
                         {known ? (
-                          <button type="button" onClick={() => openProject(known.id)} className="rounded-md border px-2 py-0.5 text-xs hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                          <button type="button" onClick={() => openProject(known.id)} className="text-xs text-ink-100 underline-offset-2 hover:text-ink-50 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60">
                             {name}
                           </button>
                         ) : (
-                          <span className="rounded-md border border-dashed px-2 py-0.5 text-xs text-muted-foreground" title="No project row in the Atlas">
+                          <span className="text-xs text-ink-400" title="No project row in the Atlas">
                             {name}
                           </span>
                         )}
@@ -95,7 +95,7 @@ export function InvestorDrawer() {
                           </div>
                           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                             <span>{r.date ? fmtEventDate(r.date, r.monthOnly) : "undated"}</span>
-                            <span className={`rounded border px-1.5 py-px text-[10px] uppercase tracking-wide ${lead ? "text-foreground" : ""}`}>{lead ? "lead" : "other"}</span>
+                            <span className={`font-mono text-label ${lead ? "text-ink-200" : "text-ink-500"}`}>{lead ? "lead" : "other"}</span>
                             {r.nearRelated.startsWith("Yes") ? <span title={r.nearRelated}>◆ NEAR</span> : <span title={r.nearRelated}>partial</span>}
                             {r.confidence !== "Sourced" && <ConfidenceTag confidence={r.confidence} />}
                             {r.sourceUrl && (

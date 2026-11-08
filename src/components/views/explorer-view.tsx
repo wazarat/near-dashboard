@@ -1,6 +1,5 @@
 "use client";
 
-import { ExternalLink } from "lucide-react";
 import { useMemo } from "react";
 import { DataTable, type ProjectColumnDef } from "@/components/explorer/data-table";
 import { DownloadCsv } from "@/components/explorer/download-csv";
@@ -35,9 +34,7 @@ import {
   websiteColumn,
   xColumn,
 } from "@/components/explorer/project-columns";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { TALLY_SUBMIT_URL } from "@/lib/env";
 import { useFilters } from "@/lib/filters";
 
 /** Columns hidden until the reader picks them from the chooser. */
@@ -114,19 +111,8 @@ export function ExplorerView() {
             initialVisibility={INITIAL_VISIBILITY}
             onRowClick={(p) => openProject(p.id)}
             getRowId={(p) => p.id}
-            toolbar={
-              <>
-                <DownloadCsv rows={filtered} />
-                {TALLY_SUBMIT_URL && (
-                  <Button asChild variant="outline" size="sm" className="h-8 gap-1.5 text-xs">
-                    <a href={TALLY_SUBMIT_URL} target="_blank" rel="noopener noreferrer">
-                      Submit a project <ExternalLink className="size-3.5" />
-                    </a>
-                  </Button>
-                )}
-              </>
-            }
-            footer={<p>Blank cells mean no data, never zero. Not researched means the field was never checked.</p>}
+            toolbar={<DownloadCsv rows={filtered} />}
+            footer={<p>Not tracked means DefiLlama does not report the metric for the project, never zero. Not researched means the field was never checked.</p>}
           />
         </CardContent>
       </Card>

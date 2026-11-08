@@ -1,5 +1,6 @@
 "use client";
 
+import { NotTracked } from "@/components/atlas/not-tracked";
 import { useMemo } from "react";
 import { ChartCard, EmptyState } from "@/components/atlas/chart-card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -68,7 +69,7 @@ export function RatiosTable({ projects, metric }: Props) {
                   <TableCell scope="row" className="sticky left-0 z-10 bg-card pl-3 font-medium shadow-[inset_-1px_0_0_var(--border)]">
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <button type="button" className="cursor-help rounded text-left underline decoration-dotted underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`${r.label}: ${r.info}`}>
+                        <button type="button" className="cursor-help rounded text-left underline decoration-dotted underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`${r.label}. ${r.info}`}>
                           {r.label}
                         </button>
                       </TooltipTrigger>
@@ -77,8 +78,8 @@ export function RatiosTable({ projects, metric }: Props) {
                   </TableCell>
                   {r.values.map((v, i) => (
                     <TableCell key={projects[i].id} className={cn("tabular text-right", r.best[i] && "bg-accent font-semibold")}>
-                      {v === null ? <span className="text-muted-foreground">—</span> : r.format(v)}
-                      {r.best[i] && <span className="ml-1 rounded border px-1 text-[9px] font-medium uppercase tracking-wide">best</span>}
+                      {v === null ? <NotTracked /> : r.format(v)}
+                      {r.best[i] && <span className="ml-1 font-mono text-label text-ink-500">best</span>}
                     </TableCell>
                   ))}
                 </TableRow>

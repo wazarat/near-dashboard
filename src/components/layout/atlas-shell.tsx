@@ -13,7 +13,7 @@ export function AtlasShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <FilterBar />
-      <main className={cn("mx-auto w-full max-w-[1440px] flex-1 px-4 py-6 sm:px-6", ids.length > 0 && "pb-24")}>{children}</main>
+      <main className={cn("mx-auto w-full max-w-atlas flex-1 px-5 py-8 sm:px-6 lg:px-8", ids.length > 0 && "pb-28")}>{children}</main>
       <CompareTray />
       <InvestorDrawer />
       <ProjectDrawer />

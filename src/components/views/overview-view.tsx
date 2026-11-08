@@ -62,7 +62,7 @@ export function OverviewView() {
     const counts = EVENT_TYPES.map((t) => ({ t, c: events.filter((e) => e.type === t).length })).sort((a, b) => b.c - a.c);
     const withAmount = events.filter((e) => e.amount !== null).length;
     const incidents = counts.find((c) => c.t === "Incident")?.c ?? 0;
-    return `${fmtInt(events.length)} events from ${fmtMonthYear(dates[0])} to ${fmtMonthYear(dates[dates.length - 1])}: ${counts[0].t.toLowerCase()} leads with ${counts[0].c}, ${incidents} are incidents, and ${withAmount} carry a USD amount.`;
+    return `${fmtInt(events.length)} events from ${fmtMonthYear(dates[0])} to ${fmtMonthYear(dates[dates.length - 1])}. ${counts[0].t} leads with ${counts[0].c}, ${incidents} are incidents, and ${withAmount} carry a USD amount.`;
   }, []);
 
   return (
@@ -120,7 +120,7 @@ export function OverviewView() {
       </ChartCard>
 
       <p className="text-xs text-muted-foreground">
-        Selection: {fmtInt(n)} of {fmtInt(all.length)} projects · metric {METRIC_LABEL[metric]}
+        Selection, {fmtInt(n)} of {fmtInt(all.length)} projects, metric {METRIC_LABEL[metric]}
         {metric !== "count" && ` · selection total ${fmtMetric(metric, treemapRows.reduce((a, r) => a + r.size, 0) || null)}`}
       </p>
     </div>

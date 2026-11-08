@@ -31,14 +31,14 @@ export function CompareView() {
         <CardHeader className="px-4">
           <h3 className="text-sm font-semibold">Compare projects</h3>
           <p className="text-sm text-muted-foreground">
-            Put up to {COMPARE_MAX} projects side by side: each metric with its rank and share inside the project&apos;s own sector, ratios that remove size, indexed trends from DefiLlama daily history, and the funding, token, chain and security profile. Add projects here, from any project drawer, or with a preset. The selection
+            Put up to {COMPARE_MAX} projects side by side. Each metric with its rank and share inside the project&apos;s own sector, ratios that remove size, indexed trends from DefiLlama daily history, and the funding, token, chain and security profile. Add projects here, from any project drawer, or with a preset. The selection
             sits in the URL, so the comparison can be shared as a link.
           </p>
         </CardHeader>
         <CardContent className="space-y-4 px-4">
           <PresetChips all={all} onApply={set} />
           <div className="space-y-1.5">
-            <p className="text-xs text-muted-foreground">Or start from the largest by {METRIC_LABEL[m].toLowerCase()}:</p>
+            <p className="text-xs text-muted-foreground">Or start from the largest by {METRIC_LABEL[m].toLowerCase()}</p>
             <TopProjectButtons projects={top} metric={m} onAdd={add} />
           </div>
           <AddProjectPopover all={all} exclude={ids} onAdd={add} />

@@ -1,4 +1,4 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { InfoTip } from "@/components/ui/info-tip";
 import { meta } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -11,33 +11,33 @@ const SOURCE_LABEL: Record<string, string> = {
   bigquery: "NEAR BigQuery",
 };
 
-/** Header badge: when the daily refresh ran, with per-source status on hover. */
+/** Footer line: when the daily refresh ran, with per-source status behind an InfoTip. The date reads from _meta.json. */
 export function DataFreshness({ className }: { className?: string }) {
   const live = meta.live;
   const sources = live ? Object.entries(live.perSource) : [];
   const failing = sources.filter(([, s]) => !s.ok && !s.skipped).length;
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span className={cn("inline-flex cursor-default items-center gap-1.5 rounded-md border px-2 py-1 text-xs text-muted-foreground", className)}>
-          Data as of {meta.asOfLabel}
-          {live && <span className="hidden text-muted-foreground/80 md:inline">· updated daily</span>}
-          {failing > 0 && (
-            <span className="rounded bg-[var(--status-warning)]/20 px-1 text-[10px] font-semibold text-foreground" title={`${failing} sources failed on the last refresh`}>
-              {failing} stale
-            </span>
-          )}
+    <span className={cn("inline-flex flex-wrap items-center gap-x-1.5 gap-y-1 text-label text-ink-300", className)}>
+      <span>
+        Data as of {meta.asOfLabel}
+        {live ? ", updated daily" : ""}
+      </span>
+      {failing > 0 && (
+        <span className="text-rose-400">
+          {failing} {failing === 1 ? "source" : "sources"} failed on the last refresh
         </span>
-      </TooltipTrigger>
-      <TooltipContent side="bottom" className="max-w-xs text-xs leading-relaxed">
+      )}
+      <InfoTip label="About the data refresh" side="top">
         {live ? (
-          <div className="space-y-1">
+          <div className="space-y-2">
             <p>Daily numbers cover complete UTC days up to {meta.asOfLabel}. The research snapshot (sectors, funding, security) is from {meta.snapshotAsOfLabel}.</p>
             <ul className="space-y-0.5">
               {sources.map(([id, s]) => (
                 <li key={id} className="flex justify-between gap-3">
                   <span>{SOURCE_LABEL[id] ?? id}</span>
-                  <span className={cn(s.ok ? "text-muted-foreground" : "font-medium")}>{s.skipped ? "skipped" : s.ok ? (s.lastSuccess ? `ok · ${s.lastSuccess.slice(0, 10)}` : "not run yet") : "failed"}</span>
+                  <span className={cn("font-mono", s.ok || s.skipped ? "text-ink-500" : "text-rose-400")}>
+                    {s.skipped ? "skipped" : s.ok ? (s.lastSuccess ? `ok ${s.lastSuccess.slice(0, 10)}` : "not run yet") : "failed"}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -45,7 +45,7 @@ export function DataFreshness({ className }: { className?: string }) {
         ) : (
           <p>Traction metrics come from the {meta.snapshotAsOfLabel} research snapshot. No daily history is loaded in this build.</p>
         )}
-      </TooltipContent>
-    </Tooltip>
+      </InfoTip>
+    </span>
   );
 }

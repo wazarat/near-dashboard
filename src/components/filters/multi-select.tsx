@@ -36,18 +36,18 @@ export function MultiSelect({ label, options, selected, onChange, className, sea
           role="combobox"
           aria-expanded={open}
           aria-label={`${label} filter${n ? `, ${n} selected` : ""}`}
-          className={cn("h-8 justify-between gap-1.5 px-2.5 text-xs font-normal", n > 0 && "border-foreground/40", className)}
+          className={cn("h-8 justify-between gap-1.5 px-2.5 text-xs font-normal", n > 0 && "border-electric-500 bg-electric-500/10 text-ink-50", className)}
         >
           <span className="truncate">
             {label}
-            {n > 0 && <span className="ml-1.5 rounded bg-foreground px-1.5 py-px text-[10px] font-semibold text-background">{n}</span>}
+            {n > 0 && <span className="ml-1 font-mono text-ink-500">({n})</span>}
           </span>
-          <ChevronsUpDown className="size-3.5 shrink-0 opacity-60" />
+          <ChevronsUpDown className="size-3.5 shrink-0 text-ink-400" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-72 p-0" align="start">
+      <PopoverContent className="w-72 border border-ink-700/60 bg-ink-900 p-0 shadow-popover ring-0" align="start">
         <Command>
-          {searchable && <CommandInput placeholder={`Search ${label.toLowerCase()}…`} className="h-9 text-xs" />}
+          {searchable && <CommandInput placeholder={`Search ${label.toLowerCase()}`} className="h-9 text-xs" />}
           <CommandList className="max-h-72">
             <CommandEmpty>No match.</CommandEmpty>
             <CommandGroup>
@@ -61,20 +61,20 @@ export function MultiSelect({ label, options, selected, onChange, className, sea
                     className="gap-2 text-xs"
                     title={o.hint}
                   >
-                    <span className={cn("flex size-4 shrink-0 items-center justify-center rounded-sm border", on ? "border-foreground bg-foreground text-background" : "border-input")} aria-hidden="true">
+                    <span className={cn("flex size-4 shrink-0 items-center justify-center rounded-sm border", on ? "border-electric-500 bg-electric-500 text-on-electric" : "border-ink-600")} aria-hidden="true">
                       {on && <Check className="size-3" />}
                     </span>
                     {o.color && <span aria-hidden="true" className="size-2 rounded-full" style={{ backgroundColor: o.color }} />}
                     <span className="flex-1 truncate">{o.label ?? o.value}</span>
-                    {o.count !== undefined && <span className="tabular text-muted-foreground">{o.count}</span>}
+                    {o.count !== undefined && <span className="tabular text-ink-400">{o.count}</span>}
                   </CommandItem>
                 );
               })}
             </CommandGroup>
           </CommandList>
           {n > 0 && (
-            <div className="border-t p-1">
-              <Button variant="ghost" size="sm" className="h-7 w-full justify-start gap-1 text-xs" onClick={() => onChange([])}>
+            <div className="border-t border-ink-700/40 p-1">
+              <Button variant="ghost" size="sm" className="h-7 w-full justify-start gap-1" onClick={() => onChange([])}>
                 <X className="size-3" /> Clear {label.toLowerCase()}
               </Button>
             </div>

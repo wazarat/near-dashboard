@@ -1,11 +1,12 @@
 "use client";
 
+import { NOT_TRACKED } from "@/lib/coverage";
 import { useMemo } from "react";
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
 import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/chart-tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Segmented } from "@/components/ui/segmented";
 import { CAT } from "@/lib/colors";
 import { alignByFirstData, indexTo100, numericMetric, seriesFor } from "@/lib/compare";
 import type { Align } from "@/lib/filters";
@@ -93,18 +94,19 @@ export function CompareOverlay({ projects, metric, range, align, onAlignChange }
       takeaway={takeaway}
       info="DefiLlama daily history (TVL as a level; volume, fees and revenue as daily flows). Every line is divided by its value on the start date and multiplied by 100, which removes size so growth rates line up. In the days view each project is re-based on its own first day with data so launches of different ages can be read together."
       actions={
-        <ToggleGroup type="single" size="sm" variant="outline" value={align} onValueChange={(v) => v && onAlignChange(v as Align)} aria-label="Align series">
-          <ToggleGroupItem value="date" className="h-7 px-2 text-xs">
-            By date
-          </ToggleGroupItem>
-          <ToggleGroupItem value="days" className="h-7 px-2 text-xs">
-            Days since first data
-          </ToggleGroupItem>
-        </ToggleGroup>
+        <Segmented<Align>
+          value={align}
+          onChange={onAlignChange}
+          options={[
+            { value: "date", label: "By date" },
+            { value: "days", label: "Days since first data" },
+          ]}
+          ariaLabel="Align series"
+        />
       }
       table={{
         caption: `${label} indexed to 100`,
-        columns: [{ key: "x", label: align === "days" ? "Day" : "Date" }, ...projects.map((p) => ({ key: p.id, label: p.name, align: "right" as const, format: (v: unknown) => (typeof v === "number" ? v.toFixed(1) : "—") }))],
+        columns: [{ key: "x", label: align === "days" ? "Day" : "Date" }, ...projects.map((p) => ({ key: p.id, label: p.name, align: "right" as const, format: (v: unknown) => (typeof v === "number" ? v.toFixed(1) : NOT_TRACKED) }))],
         rows: rows as Record<string, unknown>[],
         filename: `compare-${m}-indexed.csv`,
         maxRows: 200,
@@ -149,7 +151,7 @@ function OverlayTip({ active, payload, projects, align }: TipProps<Row> & { proj
   return (
     <TooltipFrame title={align === "days" ? `Day ${r.x}` : fmtDateShort(String(r.x))}>
       {projects.map((p, i) => (
-        <TooltipRow key={p.id} label={p.name} color={CAT[i]} value={typeof r[p.id] === "number" ? (r[p.id] as number).toFixed(1) : "—"} />
+        <TooltipRow key={p.id} label={p.name} color={CAT[i]} value={typeof r[p.id] === "number" ? (r[p.id] as number).toFixed(1) : NOT_TRACKED} />
       ))}
     </TooltipFrame>
   );

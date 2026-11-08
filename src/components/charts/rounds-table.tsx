@@ -1,5 +1,6 @@
 "use client";
 
+import { NONE } from "@/lib/coverage";
 import { ExternalLink } from "lucide-react";
 import { useId, useMemo } from "react";
 import { DataTable, makeColumnHelper, type AnyColumnDef } from "@/components/explorer/data-table";
@@ -22,7 +23,7 @@ export function ConfidenceTag({ confidence }: { confidence: string }) {
   const sourced = confidence === "Sourced";
   return (
     <span
-      className={cn("inline-flex whitespace-nowrap rounded border px-1.5 py-0.5 text-[10px] uppercase tracking-wide", sourced ? "text-foreground" : "border-dashed text-muted-foreground")}
+      className={cn("whitespace-nowrap font-mono text-label", sourced ? "text-ink-300" : "text-ink-500")}
       title={sourced ? "Backed by the linked source" : "Not fully verified against a primary source; re-verify before quoting"}
     >
       {confidence}
@@ -31,7 +32,7 @@ export function ConfidenceTag({ confidence }: { confidence: string }) {
 }
 
 function InvestorList({ names, onOpen }: { names: string[]; onOpen?: (id: string) => void }) {
-  if (names.length === 0) return <span className="text-muted-foreground">—</span>;
+  if (names.length === 0) return <span className="text-ink-400">{NONE}</span>;
   return (
     <span className="flex max-w-xs flex-wrap gap-x-1">
       {names.map((n, i) => {
@@ -122,7 +123,7 @@ export function roundColumns(onOpenProject: (id: string) => void, onOpenInvestor
             {v}
           </span>
         ) : (
-          <span className="text-muted-foreground">—</span>
+          <span className="text-ink-400">{NONE}</span>
         );
       },
       sortUndefined: "last",
@@ -153,7 +154,7 @@ export function roundColumns(onOpenProject: (id: string) => void, onOpenInvestor
             link <ExternalLink className="size-3 text-muted-foreground" />
           </a>
         ) : (
-          <span className="text-muted-foreground">—</span>
+          <span className="text-ink-400">{NONE}</span>
         );
       },
       sortUndefined: "last",

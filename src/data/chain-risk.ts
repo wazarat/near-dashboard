@@ -36,7 +36,7 @@ export const chainRisk: ChainRiskEntity[] = [
   {
     id: "near-l1",
     name: "NEAR L1",
-    summary: "The base chain: validator set, protocol upgrades, liveness record and governance.",
+    summary: "The base chain, its validator set, protocol upgrades, liveness record and governance.",
     items: [
       {
         id: "validators",
@@ -69,7 +69,7 @@ export const chainRisk: ChainRiskEntity[] = [
         id: "bounties",
         label: "Node bugs caught by bounty",
         status: "good",
-        detail: "Two node-crash bugs caught through bounties: an oversized receipt (Nov 2024) and Zellic's \"Ping of Death\" ($150K bounty).",
+        detail: "Two node-crash bugs caught through bounties, an oversized receipt (Nov 2024) and Zellic's \"Ping of Death\" ($150K bounty).",
         source: "Bug bounty disclosures",
       },
       {

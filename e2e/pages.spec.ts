@@ -65,7 +65,7 @@ test("metric switcher writes the URL", async ({ page }) => {
 
 test("chart cards offer a table view", async ({ page }) => {
   await page.goto("/");
-  const toggles = page.getByRole("radio", { name: "Table" }).or(page.getByRole("button", { name: "Table" }));
+  const toggles = page.getByRole("tab", { name: "Table" });
   expect(await toggles.count()).toBeGreaterThan(2);
   await toggles.first().click();
   await expect(page.locator("table").first()).toBeVisible();
@@ -87,7 +87,7 @@ test("project drawer opens from a shared URL with history tabs", async ({ page }
 
 test("thesis charts expose a Query tab with SQL", async ({ page }) => {
   await page.goto("/thesis/");
-  const query = page.getByRole("radio", { name: "Query" }).or(page.getByRole("button", { name: "Query" }));
+  const query = page.getByRole("tab", { name: "Query" });
   expect(await query.count()).toBeGreaterThan(2);
   await query.first().click();
   await expect(page.locator("pre").first()).toBeVisible();
