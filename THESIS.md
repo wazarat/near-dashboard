@@ -87,7 +87,7 @@ Correlations inside roughly ±0.20 are indistinguishable from noise at this samp
 
 ## Data gaps and metrics that could not be computed
 
-- The NEAR Intents Explorer API covers 1Click swaps only and starts in late May 2025; the committed backfill covers 8 complete days from 2026-10-31 and is still running. Where both sources exist the Explorer reports a median 30% of DefiLlama's daily volume. Until the backfill completes, every Intents chart uses DefiLlama's series and labels the source.
+- The NEAR Intents Explorer API covers 1Click swaps only and starts in late May 2025; the committed backfill covers 18 complete days from 2026-10-21 and is still running. Where both sources exist the Explorer reports a median 29% of DefiLlama's daily volume. Until the backfill completes, every Intents chart uses DefiLlama's series and labels the source.
 - BigQuery usage series (function calls, contracts called, distinct signers) cover 51 weeks only, to stay inside the 300 GB query budget; the NearBlocks series cover the whole window.
 - Distinct signers are an estimate of users: one person can hold many accounts, and relayers or intents hide the end user, so no "unique users" metric is claimed.
 - No incentive or emissions data is available from a free source (DefiLlama's emissions endpoint is paid), so wash-like or incentive-driven volume cannot be separated from organic volume; the confounders above are the known programs.
