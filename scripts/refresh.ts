@@ -81,7 +81,11 @@ async function main() {
     disk.cursors = { ...emptyMeta().cursors, ...(disk.cursors ?? {}) };
     for (const id of SOURCE_IDS) disk.perSource[id] = { ...emptySourceStatus(), ...(disk.perSource[id] ?? {}) };
     for (const id of ran) disk.perSource[id] = meta.perSource[id];
-    if (ran.has("intents")) disk.cursors.intents = meta.cursors.intents;
+    if (ran.has("intents")) {
+      // A daily run only refreshes the recent window; it must not clobber the backfill cursor a long local run is advancing.
+      const continuing = args.backfill || process.env.INTENTS_CONTINUE_BACKFILL === "1";
+      disk.cursors.intents = continuing ? meta.cursors.intents : { ...disk.cursors.intents, newestCreatedAt: meta.cursors.intents.newestCreatedAt };
+    }
     if (ran.has("bigquery")) disk.cursors.bigquery = meta.cursors.bigquery;
     if (ran.has("defillama")) {
       disk.cursors.llamaMissing = meta.cursors.llamaMissing;

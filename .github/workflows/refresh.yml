@@ -1,7 +1,8 @@
 name: Refresh data
 
 # Pulls the latest day from every free source into data/history and data/raw, re-validates the
-# build, and commits the result. The push triggers the Vercel deploy.
+# build, and commits the result. The push triggers the Vercel deploy. Daily runs fetch only the
+# recent Intents window; a backfill (manual run with the switch) continues the cursor.
 on:
   schedule:
     - cron: "23 3 * * *" # 03:23 UTC daily, off the hour
