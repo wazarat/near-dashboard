@@ -1,12 +1,12 @@
 import { PlainState } from "@/components/ui/plain-state";
 import { CHAIN_SHORT, TIER_SHORT, statusGroupLabel } from "@/lib/colors";
-import type { NativeChain, RiskLevel, StatusGroup, Tier } from "@/lib/types";
+import type { NativeChain, StatusGroup, Tier } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 /**
- * Tier, native-chain, risk and status labels are plain text (CanHav Atlas UI
+ * Tier, native-chain and status labels are plain text (CanHav Atlas UI
  * standard, section 1). The component names stay so call sites read the same;
- * only chart legends keep a colour swatch.
+ * only chart legends keep a colour swatch. There is no risk label anywhere.
  */
 
 export function ChainChip({ chain, className, short = true }: { chain: NativeChain; className?: string; short?: boolean }) {
@@ -22,19 +22,6 @@ export function TierBadge({ tier, className }: { tier: Tier; className?: string 
   return (
     <PlainState tone={quiet ? "neutral" : "strong"} className={className} title={tier === "Tracked, negligible" ? "Listed on DefiLlama but every figure is zero" : tier}>
       {TIER_SHORT[tier]}
-    </PlainState>
-  );
-}
-
-export function RiskBadge({ risk, className }: { risk: RiskLevel; className?: string }) {
-  const quiet = risk === "Unknown" || risk === "Not researched";
-  return (
-    <PlainState
-      tone={quiet ? "neutral" : "strong"}
-      className={className}
-      title={risk === "Not researched" ? "Security was never checked for this project" : risk === "Unknown" ? "Checked, no audit or incident information found" : undefined}
-    >
-      {risk}
     </PlainState>
   );
 }

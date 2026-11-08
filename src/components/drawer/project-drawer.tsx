@@ -2,7 +2,7 @@
 
 import { ExternalLink } from "lucide-react";
 import type { ReactNode } from "react";
-import { ChainChip, RiskBadge, StatusBadge, TierBadge } from "@/components/atlas/badges";
+import { ChainChip, StatusBadge, TierBadge } from "@/components/atlas/badges";
 import { ChangeCell } from "@/components/atlas/change-cell";
 import { EstimateLabel } from "@/components/atlas/estimate-label";
 import { HistoryChart } from "@/components/charts/history-chart";
@@ -99,7 +99,6 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
           <TierBadge tier={p.tier} />
           <ChainChip chain={p.chain} short={false} />
           <StatusBadge group={p.statusGroup} status={p.status} />
-          <RiskBadge risk={p.risk} />
         </div>
         <SheetTitle className="text-xl">{p.name}</SheetTitle>
         <SheetDescription>{p.description}</SheetDescription>
@@ -264,14 +263,15 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
         <Separator />
 
         <Section title="Security">
-          <Field label="Risk level">
-            {p.risk}
-            {p.risk === "Not researched" && <span className="text-muted-foreground"> · never checked</span>}
-            {p.risk === "Unknown" && <span className="text-muted-foreground"> · checked, no audit or incident found</span>}
-          </Field>
-          <Field label="Audits">{p.audits}</Field>
-          <Field label="Incidents">{p.incidents}</Field>
-          <Field label="Red flags">{p.redFlags}</Field>
+          {p.risk === "Not researched" ? (
+            <p className="text-sm text-ink-300">Security was not researched for this project.</p>
+          ) : (
+            <>
+              <Field label="Audits">{p.audits ?? <span className="text-ink-300">No published audit found in the sources checked</span>}</Field>
+              <Field label="Incidents">{p.incidents ?? <span className="text-ink-300">None recorded</span>}</Field>
+              <Field label="Red flags">{p.redFlags ?? <span className="text-ink-300">None noted</span>}</Field>
+            </>
+          )}
         </Section>
 
         {related.length > 0 && (

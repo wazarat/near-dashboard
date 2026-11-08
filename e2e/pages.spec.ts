@@ -175,6 +175,26 @@ test("the funding chart shows disclosed funding only and sums the rest in one li
   await expect(card.locator(".recharts-cartesian-axis-tick-value", { hasText: "Not researched" })).toHaveCount(0);
 });
 
+test("security publishes facts, not ratings, and lists incidents as a sortable table", async ({ page }) => {
+  await page.goto("/security/");
+  await expect(page.locator('[data-chart-card="Security facts"]')).toContainText("No published audit found");
+  await expect(page.getByText(/\b(High|Medium|Low) risk\b/)).toHaveCount(0);
+  await expect(page.getByText(/Security risk levels|High and Medium risk projects/)).toHaveCount(0);
+  const table = page.locator('[data-chart-card="Incidents"] table');
+  await expect(table).toBeVisible();
+  const first = await table.locator("tbody tr").first().locator("td").first().textContent();
+  await table.getByRole("button", { name: /Date/ }).click();
+  await expect.poll(async () => table.locator("tbody tr").first().locator("td").first().textContent()).not.toBe(first);
+  // The explorer and the drawer carry no risk column or label either.
+  await page.goto("/explorer/?project=near-intents");
+  await expect(page.getByRole("dialog")).toContainText("Security");
+  await expect(page.getByRole("dialog").getByText(/^(High|Medium|Low|Unknown)$/)).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toBeHidden();
+  await page.getByRole("button", { name: "Columns" }).click();
+  await expect(page.getByRole("menuitemcheckbox", { name: "Security risk" })).toHaveCount(0);
+});
+
 test("whole-chain cards say so and do not change when a filter is applied", async ({ page }) => {
   await page.goto("/");
   const card = page.locator('[data-chart-card="Chain over time"]');

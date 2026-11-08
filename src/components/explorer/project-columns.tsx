@@ -3,7 +3,8 @@
 import { NONE } from "@/lib/coverage";
 import { NotTracked } from "@/components/atlas/not-tracked";
 import { ExternalLink } from "lucide-react";
-import { ChainChip, RiskBadge, StatusBadge, TierBadge } from "@/components/atlas/badges";
+import { ChainChip, StatusBadge, TierBadge } from "@/components/atlas/badges";
+import { ClampedText } from "@/components/ui/clamped-text";
 import { ChangeCell } from "@/components/atlas/change-cell";
 import { EstimateLabel } from "@/components/atlas/estimate-label";
 import { SparkLine } from "@/components/atlas/spark-line";
@@ -36,11 +37,8 @@ function NameCell({ p, onOpen }: { p: Project; onOpen: (id: string) => void }) {
 }
 
 const right = { meta: { align: "right" } };
-const Truncated = ({ v, max = "max-w-xs" }: { v: string | undefined; max?: string }) => (
-  <span className={`block ${max} truncate`} title={v}>
-    {v ?? ""}
-  </span>
-);
+/** Long text wraps, clamps at three lines and offers Show more (standard section 11). */
+const Truncated = ({ v, max = "max-w-xs" }: { v: string | undefined; max?: string }) => (v ? <ClampedText text={v} maxWidth={max} /> : <span />);
 
 export function nameColumn(onOpen: (id: string) => void): ProjectColumnDef {
   return h.accessor("name", { header: "Project", cell: ({ row }) => <NameCell p={row.original} onOpen={onOpen} />, sortFn: "alphanumeric" });
@@ -74,7 +72,6 @@ export const fundingColumn = h.accessor("fundingType", { header: "Funding type",
 export const investorsColumn = h.accessor((p) => p.investors ?? undefined, { id: "investors", header: "Investors / backers", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });
 export const amountColumn = h.accessor((p) => p.amountRaised ?? undefined, { id: "amountRaised", header: "Amount raised", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });
 export const tokenColumn = h.accessor((p) => p.tokenRaw ?? undefined, { id: "token", header: "Token", sortUndefined: "last", cell: ({ getValue }) => getValue() ?? <span className="text-ink-400">{NONE}</span> });
-export const riskColumn = h.accessor("risk", { header: "Security risk", cell: ({ getValue }) => <RiskBadge risk={getValue()} /> });
 export const auditsColumn = h.accessor((p) => p.audits ?? undefined, { id: "audits", header: "Audits", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });
 export const incidentsColumn = h.accessor((p) => p.incidents ?? undefined, { id: "incidents", header: "Incidents", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });
 export const redFlagsColumn = h.accessor((p) => p.redFlags ?? undefined, { id: "redFlags", header: "Red flags", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });

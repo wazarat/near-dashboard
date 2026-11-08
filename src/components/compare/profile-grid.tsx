@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { ChainChip, RiskBadge, StatusBadge, TierBadge } from "@/components/atlas/badges";
+import { ChainChip, StatusBadge, TierBadge } from "@/components/atlas/badges";
 import { ChartCard, EmptyState } from "@/components/atlas/chart-card";
 import { Button } from "@/components/ui/button";
 import { CAT } from "@/lib/colors";
@@ -81,10 +81,9 @@ export function ProfileGrid({ projects, onOpen }: Props) {
                   </Row>
                   <Row label="Amount raised">{p.amountRaised ?? <Muted>{p.fundingType === "Not researched" ? "not researched" : "not disclosed"}</Muted>}</Row>
                   <Row label="Token">{p.tokenRaw ?? <Muted>none recorded</Muted>}</Row>
-                  <Row label="Security risk">
-                    <RiskBadge risk={p.risk} />
-                  </Row>
-                  <Row label="Audits">{p.audits ?? <Muted>{p.risk === "Not researched" ? "not researched" : "none found"}</Muted>}</Row>
+                  <Row label="Security checked">{p.risk === "Not researched" ? <Muted>not researched</Muted> : "yes"}</Row>
+                  <Row label="Audits">{p.audits ?? <Muted>{p.risk === "Not researched" ? "not researched" : "no published audit found"}</Muted>}</Row>
+                  <Row label="Incidents">{p.incidents ?? <Muted>{p.risk === "Not researched" ? "not researched" : "none recorded"}</Muted>}</Row>
                   <Row label="Discovered via">{p.discoveredVia}</Row>
                 </dl>
                 <Button variant="outline" size="sm" className="mt-3 h-7 text-xs" onClick={() => onOpen(p.id)}>

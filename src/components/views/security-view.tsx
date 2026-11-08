@@ -1,38 +1,39 @@
 "use client";
 
-import { CircleCheck, CircleHelp, OctagonAlert, TriangleAlert, type LucideIcon } from "lucide-react";
 import { useMemo } from "react";
-import { ChartCard } from "@/components/atlas/chart-card";
-import { IncidentTimeline, incidentTableSpec, summariseIncidents } from "@/components/charts/incident-timeline";
-import { RiskBreakdown, riskCounts, riskTableSpec } from "@/components/charts/risk-breakdown";
-import { RiskTable } from "@/components/charts/risk-table";
+import { ScopeNote } from "@/components/atlas/chart-card";
+import { IncidentsTable, summariseIncidents } from "@/components/charts/incidents-table";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { CHAIN_RISK_STATUSES, CHAIN_RISK_STATUS_META, chainRisk, type ChainRiskItem, type ChainRiskStatus } from "@/data/chain-risk";
+import { InfoTip } from "@/components/ui/info-tip";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { CHAIN_RISK_STATUS_META, chainRisk, type ChainRiskItem, type ChainRiskStatus } from "@/data/chain-risk";
 import { events } from "@/lib/data";
 import { useFilters } from "@/lib/filters";
 import { fmtInt, fmtUsd } from "@/lib/format";
-import type { RiskLevel } from "@/lib/types";
+import { FACT_HELP, FACT_TYPES, securityAggregates } from "@/lib/security";
+import { cn } from "@/lib/utils";
 
-const STATUS_ICON: Record<ChainRiskStatus, LucideIcon> = { good: CircleCheck, watch: TriangleAlert, serious: OctagonAlert, unknown: CircleHelp };
+/** Status as a plain word; colour sits on the word only when a condition is met or material (standard section 10). */
+const STATUS_WORD: Record<ChainRiskStatus, string> = { good: "text-signal-400", watch: "text-ink-100", serious: "text-rose-400", unknown: "text-ink-400" };
 
-function StatusGlyph({ status, className }: { status: ChainRiskStatus; className?: string }) {
-  const Icon = STATUS_ICON[status];
-  return <Icon aria-hidden="true" className={className ?? "size-4 shrink-0"} style={{ color: CHAIN_RISK_STATUS_META[status].color }} />;
+function StatusWord({ status }: { status: ChainRiskStatus }) {
+  const meta = CHAIN_RISK_STATUS_META[status];
+  return (
+    <span className={cn("font-medium", STATUS_WORD[status])} title={meta.description}>
+      {meta.label}
+    </span>
+  );
 }
 
 function ChecklistItem({ item }: { item: ChainRiskItem }) {
-  const meta = CHAIN_RISK_STATUS_META[item.status];
   return (
-    <li className="flex gap-2.5 py-2.5 text-sm">
-      <StatusGlyph status={item.status} className="mt-0.5 size-4 shrink-0" />
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-baseline gap-x-2">
-          <span className="font-medium">{item.label}</span>
-          <span className="text-xs text-muted-foreground">{meta.label}</span>
-        </div>
-        <p className="text-xs leading-snug text-muted-foreground">{item.detail}</p>
-        {item.source && <p className="mt-0.5 text-[11px] text-muted-foreground/80">Source {item.source}</p>}
+    <li className="py-2.5 text-sm">
+      <div className="flex flex-wrap items-baseline gap-x-2">
+        <span className="font-medium">{item.label}</span>
+        <StatusWord status={item.status} />
       </div>
+      <p className="text-xs leading-snug text-ink-300">{item.detail}</p>
+      {item.source && <p className="mt-0.5 text-label text-ink-400">Source {item.source}</p>}
     </li>
   );
 }
@@ -42,21 +43,12 @@ function pluralProjects(n: number) {
 }
 
 export function SecurityView() {
-  const { filtered, all, openProject } = useFilters();
+  const { filtered, all } = useFilters();
 
   const incidents = useMemo(() => events.filter((e) => e.type === "Incident"), []);
   const incidentSummary = useMemo(() => summariseIncidents(incidents), [incidents]);
-  const incidentTable = useMemo(() => incidentTableSpec(incidents), [incidents]);
-
-  const riskRows = useMemo(() => riskCounts(filtered), [filtered]);
-  const riskTable = useMemo(() => riskTableSpec(riskRows), [riskRows]);
-  const countOf = (r: RiskLevel) => riskRows.find((x) => x.risk === r)?.count ?? 0;
-  const notResearched = countOf("Not researched");
-  const researched = filtered.length - notResearched;
-  const flagged = useMemo(() => filtered.filter((p) => p.risk === "High" || p.risk === "Medium"), [filtered]);
-
-  const neverCheckedAll = all.filter((p) => p.risk === "Not researched").length;
-  const researchedAll = all.length - neverCheckedAll;
+  const facts = useMemo(() => securityAggregates(filtered), [filtered]);
+  const factsAll = useMemo(() => securityAggregates(all), [all]);
   const chainRows = all.filter((p) => p.risk !== "Not researched" && (p.name === "NEAR Protocol" || p.name === "Aurora")).length;
 
   const incidentTakeaway = (() => {
@@ -68,48 +60,33 @@ export function SecurityView() {
     return `${s.count} incidents recorded${span};${stated}${largest}.`;
   })();
 
-  const riskTakeaway =
+  const factsTakeaway =
     filtered.length === 0
       ? "No projects match the current filters."
-      : `${pluralProjects(researched)} of ${fmtInt(filtered.length)} in this selection carry a security rating, ${countOf("High")} High, ${countOf("Medium")} Medium, ${countOf("Low")} Low, ${countOf("Unknown")} Unknown. ${fmtInt(notResearched)} were never checked.`;
+      : `Security was checked for ${pluralProjects(facts.checked)} of ${fmtInt(filtered.length)} in this selection; ${facts.auditFound} list a published audit, ${facts.byFact[1].count} record a past incident and ${facts.byFact[3].count} carry a noted red flag. ${fmtInt(facts.notChecked)} were never checked.`;
 
   return (
     <div className="space-y-4">
       <Card className="gap-3 py-4">
         <CardHeader className="px-4">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-            <div>
-              <h2 className="text-sm font-semibold">Chain-level checklist</h2>
-              <p className="mt-1 text-sm text-muted-foreground">NEAR L1, NEAR Intents and Aurora as recorded in the research memo&apos;s Security section. Independent of the project filters.</p>
-            </div>
-            <ul className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground" aria-label="Status legend">
-              {CHAIN_RISK_STATUSES.map((s) => (
-                <li key={s} className="inline-flex items-center gap-1" title={CHAIN_RISK_STATUS_META[s].description}>
-                  <StatusGlyph status={s} className="size-3.5 shrink-0" /> {CHAIN_RISK_STATUS_META[s].label}
-                </li>
-              ))}
-            </ul>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <h2 className="text-sm font-semibold">Chain-level checklist</h2>
+            <ScopeNote scope="whole-chain" />
           </div>
+          <p className="mt-1 text-sm text-ink-300">NEAR L1, NEAR Intents and Aurora as recorded in the research memo&apos;s Security section. Good means mitigated or a positive finding, Watch a partial mitigation or an open question, Serious a material risk as recorded, Unknown not documented.</p>
         </CardHeader>
         <CardContent className="px-4">
           <div className="grid gap-4 md:grid-cols-3">
             {chainRisk.map((entity) => {
-              const tally = CHAIN_RISK_STATUSES.map((s) => ({ s, n: entity.items.filter((i) => i.status === s).length })).filter((t) => t.n > 0);
+              const tally = (["good", "watch", "serious", "unknown"] as ChainRiskStatus[]).map((s) => ({ s, n: entity.items.filter((i) => i.status === s).length })).filter((t) => t.n > 0);
               return (
-                <section key={entity.id} aria-labelledby={`chain-risk-${entity.id}`} className="rounded-lg border bg-card p-3">
+                <section key={entity.id} aria-labelledby={`chain-risk-${entity.id}`} className="rounded-lg border border-ink-700/40 p-3">
                   <h3 id={`chain-risk-${entity.id}`} className="text-sm font-semibold">
                     {entity.name}
                   </h3>
-                  <p className="mt-0.5 text-xs text-muted-foreground">{entity.summary}</p>
-                  <p className="mt-1.5 flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] text-muted-foreground">
-                    {tally.map((t) => (
-                      <span key={t.s} className="inline-flex items-center gap-1">
-                        <StatusGlyph status={t.s} className="size-3 shrink-0" />
-                        {t.n} {CHAIN_RISK_STATUS_META[t.s].label.toLowerCase()}
-                      </span>
-                    ))}
-                  </p>
-                  <ul className="mt-1 divide-y">
+                  <p className="mt-0.5 text-xs text-ink-300">{entity.summary}</p>
+                  <p className="mt-1.5 text-label text-ink-400">{tally.map((t) => `${t.n} ${CHAIN_RISK_STATUS_META[t.s].label.toLowerCase()}`).join(", ")}</p>
+                  <ul className="mt-1 divide-y divide-ink-700/40">
                     {entity.items.map((item) => (
                       <ChecklistItem key={item.id} item={item} />
                     ))}
@@ -122,36 +99,109 @@ export function SecurityView() {
       </Card>
 
       <div className="grid gap-4 xl:grid-cols-3">
-        <ChartCard
-          className="xl:col-span-2"
-          id="incidents"
-          title="Incident timeline"
-          scope="whole-chain"
-          takeaway={incidentTakeaway}
-          info="Events of type Incident from the research events file (data/near-ecosystem-events CSV). Marker area tracks the stated USD amount, which can be a loss, a bounty paid or value at risk as the amount note says; incidents without a stated amount use the smallest hollow marker. Month-only dates sit on the first of the month. Hover for detail, click to open the source. Independent of the project filters."
-          table={incidentTable}
-        >
-          <IncidentTimeline events={incidents} />
-        </ChartCard>
+        <Card className="gap-3 py-4" data-chart-card="Security facts">
+          <CardHeader className="px-4">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+              <h2 className="text-sm font-semibold">Security facts</h2>
+              <ScopeNote />
+            </div>
+            <p className="mt-1 text-sm text-ink-300">{factsTakeaway}</p>
+          </CardHeader>
+          <CardContent className="px-4">
+            <Table className="text-sm">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Fact</TableHead>
+                  <TableHead className="text-right">Projects</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {facts.byFact.map((f) => (
+                  <TableRow key={f.fact}>
+                    <TableCell>
+                      <span className="inline-flex items-center gap-1">
+                        {f.fact}
+                        <InfoTip label={`About ${f.fact}`}>{FACT_HELP[f.fact]}</InfoTip>
+                      </span>
+                    </TableCell>
+                    <TableCell className="tabular text-right">{fmtInt(f.count)}</TableCell>
+                  </TableRow>
+                ))}
+                <TableRow>
+                  <TableCell className="text-ink-300">Security checked</TableCell>
+                  <TableCell className="tabular text-right">{fmtInt(facts.checked)}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="text-ink-300">Not researched</TableCell>
+                  <TableCell className="tabular text-right">{fmtInt(facts.notChecked)}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+            <p className="mt-2 text-xs text-ink-300">Counts from the Audits, Incidents, Red Flags and Status columns of the research CSV. A project can carry more than one fact. No rating is published; the drawer quotes each fact with its source.</p>
+          </CardContent>
+        </Card>
 
-        <ChartCard
-          id="risk-levels"
-          title="Security risk levels"
-          takeaway={riskTakeaway}
-          info="Projects in the current selection grouped by the Security Risk Level column of the research CSV. Not researched (hatched) means the project was never checked; Unknown means it was checked and no audit or incident was found. Click a bar to filter."
-          table={riskTable}
-        >
-          <RiskBreakdown rows={riskRows} />
-        </ChartCard>
+        <Card className="gap-3 py-4 xl:col-span-2" data-chart-card="Security facts by sector">
+          <CardHeader className="px-4">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+              <h2 className="text-sm font-semibold">Security facts by sector</h2>
+              <ScopeNote />
+            </div>
+            <p className="mt-1 text-sm text-ink-300">Sectors with at least one checked project in the selection, most checked first.</p>
+          </CardHeader>
+          <CardContent className="px-0">
+            <div className="overflow-x-auto">
+              <Table className="text-xs">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="pl-4">Sector</TableHead>
+                    <TableHead className="text-right">Projects</TableHead>
+                    <TableHead className="text-right">Checked</TableHead>
+                    {FACT_TYPES.map((f) => (
+                      <TableHead key={f} className="text-right">
+                        {f}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {facts.bySector.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={3 + FACT_TYPES.length} className="pl-4 text-ink-300">
+                        No checked project in this selection.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {facts.bySector.map((s) => (
+                    <TableRow key={s.sector}>
+                      <TableCell className="whitespace-nowrap pl-4 font-medium">{s.sector}</TableCell>
+                      <TableCell className="tabular text-right">{fmtInt(s.projects)}</TableCell>
+                      <TableCell className="tabular text-right">{fmtInt(s.checked)}</TableCell>
+                      {FACT_TYPES.map((f) => (
+                        <TableCell key={f} className={cn("tabular text-right", s.counts[f] === 0 && "text-ink-400")}>
+                          {fmtInt(s.counts[f])}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <Card className="gap-3 py-4">
+      <Card className="gap-3 py-4" data-chart-card="Incidents">
         <CardHeader className="px-4">
-          <h2 className="text-sm font-semibold">High and Medium risk projects ({fmtInt(flagged.length)})</h2>
-          <p className="text-sm text-muted-foreground">Audits, incidents and red flags as recorded by the researcher, from the Security columns of the research CSV. High first, then by TVL. Each row links to its security source where one exists.</p>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <h2 className="text-sm font-semibold">Incidents</h2>
+            <ScopeNote scope="whole-chain" />
+          </div>
+          <p className="mt-1 text-sm text-ink-300">{incidentTakeaway}</p>
+          <p className="text-label text-ink-400">Events of type Incident from the research events file, in its own wording. Amounts can be a loss, a bounty paid or value at risk, as the note says. Sort any column.</p>
         </CardHeader>
         <CardContent className="px-0">
-          <RiskTable projects={flagged} onOpen={openProject} />
+          <IncidentsTable events={incidents} />
         </CardContent>
       </Card>
 
@@ -159,14 +209,14 @@ export function SecurityView() {
         <CardHeader className="px-4">
           <h2 className="text-sm font-semibold">How to read this</h2>
         </CardHeader>
-        <CardContent className="space-y-1.5 px-4 text-sm text-muted-foreground">
+        <CardContent className="space-y-1.5 px-4 text-sm text-ink-300">
           <p>
-            <strong className="text-foreground">Not researched</strong> means security was never checked for that project. <strong className="text-foreground">Unknown</strong> means it was checked and nothing was found, no published audit and no incident in the sources consulted. Unknown is not the same as unaudited.
+            <strong className="font-medium text-ink-100">Not researched</strong> means security was never checked for that project. <strong className="font-medium text-ink-100">No published audit found</strong> means it was checked and no audit turned up in the sources consulted, which is not the same as unaudited.
           </p>
           <p>
-            The security pass covered {fmtInt(researchedAll)} rows of the full list{chainRows > 0 ? `, including the ${chainRows === 1 ? "base-chain entry" : "base-chain entries"} for NEAR and Aurora` : ""}. The remaining {fmtInt(neverCheckedAll)} rows were never checked and show as Not researched everywhere.
+            The security pass covered {fmtInt(factsAll.checked)} rows of the full list{chainRows > 0 ? `, including the ${chainRows === 1 ? "base-chain entry" : "base-chain entries"} for NEAR and Aurora` : ""}. The remaining {fmtInt(factsAll.notChecked)} rows were never checked and read as Not researched everywhere.
           </p>
-          <p>Risk levels are the researcher&apos;s judgement from audits, incidents, admin powers and red flags. They are not a rating of code quality, and Low does not mean safe. The chain-level checklist above is independent of the project filters; the risk chart and table follow them.</p>
+          <p>This page publishes facts, not ratings. Audits, dated incidents and noted red flags are quoted from the research CSV with their source links in each project drawer. The chain-level checklist is independent of the project filters; the two facts cards follow them.</p>
         </CardContent>
       </Card>
     </div>
@@ -174,3 +224,4 @@ export function SecurityView() {
 }
 
 /** Name the route file imports. */
+export default SecurityView;

@@ -71,7 +71,7 @@ export function ChartTable({ spec }: { spec: ChartTableSpec }) {
             {rows.map((r, i) => (
               <TableRow key={i}>
                 {spec.columns.map((c) => (
-                  <TableCell key={c.key} className={cn("whitespace-nowrap", c.align === "right" && "tabular text-right")}>
+                  <TableCell key={c.key} className={cn(c.align === "right" ? "tabular whitespace-nowrap text-right" : "max-w-md whitespace-normal break-words")}>
                     {cellText(c, r[c.key])}
                   </TableCell>
                 ))}

@@ -1,4 +1,4 @@
-import type { EventType, NativeChain, RiskLevel, StatusGroup, Tier } from "./types";
+import type { EventType, NativeChain, StatusGroup, Tier } from "./types";
 
 /**
  * Every colour is a CSS variable defined in globals.css for light and dark,
@@ -45,14 +45,6 @@ export const TIER_SHORT: Record<Tier, string> = {
   "Tier 3 - Emerging": "Tier 3",
   "Tracked, negligible": "Negligible",
   "Not tracked": "Not tracked",
-};
-
-export const RISK_COLOR: Record<RiskLevel, string> = {
-  High: "var(--risk-high)",
-  Medium: "var(--risk-medium)",
-  Low: "var(--risk-low)",
-  Unknown: "var(--risk-unknown)",
-  "Not researched": "var(--risk-notresearched)",
 };
 
 /** Display labels where the group name alone would mislead. The CSV value and the group key are unchanged. */

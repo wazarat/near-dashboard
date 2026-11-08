@@ -29,7 +29,7 @@ const COLUMNS: Array<[string, (p: Project) => string | number | null]> = [
   ["Amount Raised", (p) => p.amountRaised],
   ["Token", (p) => p.tokenRaw],
   ["Funding Source URL", (p) => p.fundingSourceUrl],
-  ["Security Risk Level", (p) => p.risk],
+  ["Security Checked", (p) => (p.risk === "Not researched" ? "No" : "Yes")],
   ["Audits", (p) => p.audits],
   ["Incidents", (p) => p.incidents],
   ["Red Flags", (p) => p.redFlags],

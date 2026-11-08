@@ -86,9 +86,11 @@ export function generateInsights(projects: Project[], metric: MetricKey): Insigh
   }
 
   const researched = projects.filter((p) => p.fundingType !== "Not researched").length;
-  const highMed = projects.filter((p) => p.risk === "High" || p.risk === "Medium").length;
+  const checked = projects.filter((p) => p.risk !== "Not researched");
+  const withIncident = checked.filter((p) => p.incidents).length;
+  const noAudit = checked.filter((p) => !p.audits).length;
   if (researched > 0) {
-    out.push({ id: "coverage", text: `${researched} of ${n} were researched for funding and security; ${highMed} rated High or Medium risk.` });
+    out.push({ id: "coverage", text: `${researched} of ${n} were researched for funding and ${checked.length} for security; ${withIncident} record a past incident and ${noAudit} have no published audit found.` });
   }
 
   const t1 = projects.filter((p) => p.tier === "Tier 1 - Leader").length;
