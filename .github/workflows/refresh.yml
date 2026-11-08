@@ -1,0 +1,84 @@
+name: Refresh data
+
+# Pulls the latest day from every free source into data/history and data/raw, re-validates the
+# build, and commits the result. The push triggers the Vercel deploy.
+on:
+  schedule:
+    - cron: "23 3 * * *" # 03:23 UTC daily, off the hour
+  workflow_dispatch:
+    inputs:
+      backfill:
+        description: "Fetch full history (one-off)"
+        type: boolean
+        default: false
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/refresh.yml"
+
+permissions:
+  contents: write
+  id-token: write # Workload Identity Federation to Google Cloud (no key files)
+
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Optional: BigQuery through Workload Identity Federation. Skipped (not failed) when the secrets are absent.
+      - name: Authenticate to Google Cloud
+        if: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER != '' && secrets.GCP_SERVICE_ACCOUNT != '' }}
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Refresh history
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          NEAR_INTENTS_JWT: ${{ secrets.NEAR_INTENTS_JWT }}
+          COINGECKO_DEMO_KEY: ${{ secrets.COINGECKO_DEMO_KEY }}
+          INTENTS_BACKFILL_DAYS: ${{ vars.INTENTS_BACKFILL_DAYS || '90' }}
+        run: |
+          if [ "${{ github.event.inputs.backfill }}" = "true" ]; then
+            npm run refresh -- --backfill --max-calls 450
+          else
+            npm run refresh -- --max-calls 450
+          fi
+
+      - name: Rebuild generated data and THESIS.md (reads only committed files)
+        run: npm run rebuild
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build (validates the data)
+        run: npm run build
+
+      - name: Commit data
+        run: |
+          git config user.name "Wazarat Hussain"
+          git config user.email "wazarat100@gmail.com"
+          git add data/history data/raw THESIS.md
+          if git diff --cached --quiet; then
+            echo "No data changes."
+            exit 0
+          fi
+          git commit -m "data: refresh $(date -u +%Y-%m-%d)"
+          git pull --rebase origin main
+          git push origin HEAD:main

@@ -1,0 +1,97 @@
+Sector/Category,Rank in Sector,Project/Company Name,Website,Why It Leads,Status,X Handle,Evidence Source
+Bridges & Interoperability,1,NEAR Intents,https://app.near-intents.org,"$3.88B of 30d volume (92% of chain DEX volume), $5.9M 30d fees, $99M TVL; passed $31B cumulative volume in Oct 2026",Mainnet,@nearprotocol,https://defillama.com/protocol/near-intents
+Bridges & Interoperability,2,NEAR Omni Bridge,https://near.org,Canonical NEAR bridge (Omni / Rainbow successor) holding $48.5M TVL,Mainnet,,https://defillama.com/protocol/near-bridge
+Bridges & Interoperability,3,Portal (Wormhole),https://portalbridge.com,"$4.7M bridged TVL on NEAR, largest third-party bridge",Mainnet,@portalbridge_,https://defillama.com/protocol/portal
+Bridges & Interoperability,4,Rainbow Bridge,https://rainbowbridge.app,"Original Ethereum, NEAR and Aurora bridge, fake-block attacks repelled in 2022",Mainnet,@auroraisnear,https://aurora.dev/ecosystem/rainbow-bridge
+DEXs & Liquidity,1,LeoDex,https://leodex.io,"Top NEAR Intents aggregator on DefiLlama, $54.8K 30d aggregator volume",Mainnet,@leodexio,https://defillama.com/protocol/leodex
+DEXs & Liquidity,2,Rhea Finance,https://app.rhea.finance,"#1 DEX on NEAR, $23.3M TVL, $306M 30d volume and $615K 30d fees; Ref Finance and Burrow merged into it in 2025",Mainnet,@rhea_finance,https://defillama.com/protocol/rhea-dex
+DEXs & Liquidity,3,Trisolaris,https://trisolaris.io,"Largest DEX on Aurora, $1.86M TVL and $3.76M 30d volume",Inactive,@trisolarislabs,https://defillama.com/protocol/trisolaris
+DEXs & Liquidity,4,Jumbo Exchange,https://jumbo.exchange,"$1.12M TVL on NEAR, second native AMM after Rhea",Mainnet,@jumbo_exchange,https://defillama.com/protocol/jumbo-exchange
+DEXs & Liquidity,5,AuroraSwap,https://auroraswap.net,$372K 30d volume on Aurora,Defunct (DefiLlama dead URL),@auroraswap,https://defillama.com/protocol/auroraswap
+DEXs & Liquidity,6,Veax,https://veax.com,NEAR-native CLMM with $47K 30d volume,Mainnet,@veaxlabs,https://defillama.com/protocol/veax-clmm
+DEXs & Liquidity,7,Intear DEX,https://dex.intea.rs,"Open-source swap and launchpad hub from Intear, routing for new memecoin launchpads",Mainnet,@intea_rs,https://nearcatalog.xyz/project/intear-trade-alpha
+Lending & Credit,1,Rhea Lend (formerly Burrow),https://burrow.cash,Largest protocol on NEAR by TVL ($149M) with $269K 30d fees; hit by an $18.4M margin-trading exploit in Apr 2026,Mainnet,@burrowcash,https://defillama.com/protocol/rhea-lend
+Lending & Credit,2,Templar Protocol,https://templarfi.org,"Cross-chain lending, $572K TVL, $4M pre-seed (Robot Ventures) and Certora formal verification",Mainnet,@TemplarProtocol,https://defillama.com/protocol/templar-lending
+Lending & Credit,3,Bastion,https://bastionprotocol.com,Largest lender on Aurora at $823K TVL,Mainnet,@bastionprotocol,https://defillama.com/protocol/bastion
+Lending & Credit,4,Aurigami,https://aurigami.finance,Aurora money market with $628K TVL,Inactive,@aurigami_PLY,https://defillama.com/protocol/aurigami
+Liquid Staking & Restaking,1,Meta Pool,https://metapool.app,"Largest NEAR liquid staking protocol, $80.8M TVL",Mainnet,@meta_pool,https://defillama.com/protocol/meta-pool-near
+Liquid Staking & Restaking,2,Rhea LST (rNEAR),https://rhea.finance,$69.7M TVL within a year of listing (Nov 2025),Mainnet,@rhea_finance,https://defillama.com/protocol/rhea-lst
+Liquid Staking & Restaking,3,LiNEAR Protocol,https://linearprotocol.io,$47.6M TVL in LiNEAR staking,Mainnet,@LinearProtocol,https://defillama.com/protocol/linear-protocol
+Liquid Staking & Restaking,4,Allstake,https://allstake.org,Omnichain restaking with $566K TVL and a clean BlockSec audit,Inactive,@allstake_fi,https://defillama.com/protocol/allstake
+Liquid Staking & Restaking,5,TruFin,https://trufin.io,$235K TVL on NEAR; strategic round led by SC Ventures in Feb 2026,Mainnet,@TruFinProtocol,https://defillama.com/protocol/trustake
+Yield & Asset Management,1,Aurora+,https://aurora.plus,"$2.5M TVL, the largest Aurora-native pool",Inactive,@auroraisnear,https://defillama.com/protocol/aurora-plus
+Yield & Asset Management,2,Dew Finance,https://dew.finance,Cross-chain capital allocator with $268K TVL,Mainnet,@DewFinance,https://defillama.com/protocol/dewfinance
+RWA & Tokenized Assets,1,KAIO (Libre Capital),https://kaio.xyz,$4.0M of tokenized fund TVL on NEAR,Building,@KAIO_xyz,https://defillama.com/protocol/kaio
+RWA & Tokenized Assets,2,Ondo Finance,https://ondo.finance,20 tokenized US stocks and ETFs on near.com via NEAR Intents since Sep 2026,Mainnet,@Ondo,https://nearcatalog.xyz/project/ondo-finance
+RWA & Tokenized Assets,3,SVRN (Sovereign AI),https://svrn.net,"Nasdaq-listed NEAR treasury company, $120M PIPE, held 53.9M NEAR, buys NEAR with Intents fees",Mainnet,@svrn_ai,https://nearcatalog.xyz/project/svrn
+RWA & Tokenized Assets,4,Bitwise NEAR ETF (NRR),https://bitwiseinvestments.com,"First US spot NEAR ETF, trading on NYSE Arca since Sep 29, 2026",Mainnet,@Bitwise,https://nearcatalog.xyz/project/bitwise-near-etf-nrr
+Trading Tools & Bots,1,Delta Trade,https://deltatrade.ai,Grid and DCA vaults with $448K 30d volume and $101K TVL,Mainnet,@DeltaBotTeam,https://defillama.com/protocol/deltatrade
+Trading Tools & Bots,2,Banana Gun,https://bananagun.io,"Major multichain trading bot, live on NEAR since Oct 2026",Mainnet,@bananagun,https://nearcatalog.xyz/project/banana-gun
+Trading Tools & Bots,3,NearFi,https://nearfi.trade,"Swap router across Rhea, Rhea DCL, Plach and Aidols on web, terminal and Telegram",Mainnet,@NearFiTrade,https://nearcatalog.xyz/project/nearfi
+Trading Tools & Bots,4,NOMO,https://nomo.trading,Trading terminal for NEAR launches and positions,Mainnet,@nomotrading,https://nearcatalog.xyz/project/nomo
+Launchpads,1,Pump.fun,https://pump.fun,"Largest memecoin launchpad, live on NEAR from Nov 2026",Mainnet,@pumpfun,https://nearcatalog.xyz/project/pump-fun
+Launchpads,2,Meme Cooking,https://meme.cooking,"Only NEAR launchpad tracked by DefiLlama, $2.4K 30d volume",Mainnet,@memedotcooking,https://defillama.com/protocol/meme-cooking
+Launchpads,3,JustHoot,https://justhoot.fun,Meme launchpad where every launch gets a Rhea pool,Mainnet,@justhootfun,https://nearcatalog.xyz/project/justhoot
+Launchpads,4,Nearly,https://nearly.trade,"Token launchpad, high in NEAR Catalog trending",Mainnet,@nearlytrade,https://nearcatalog.xyz/project/nearly
+Launchpads,5,Shards,https://shards.market,Launchpad with NEAR Intents and RWA support,Mainnet,@shardsmarket,https://nearcatalog.xyz/project/shards
+AI Agents,1,NEAR AI,https://near.ai,"AI Cloud and Private Chat (Dec 2025), Agent Market (Feb 2026), users include Brave, Venice and the Government of Bermuda",Mainnet,@near_ai,https://nearcatalog.xyz/project/near-ai
+AI Agents,2,NEAR AI Agent Market,https://market.near.ai,Escrowed USDC marketplace where people and agents hire agents,Mainnet,@near_ai,https://nearcatalog.xyz/project/near-ai-agent-market
+AI Agents,3,IronClaw,https://agent.near.ai,"Open-source agent platform in encrypted enclaves, launched at NEARCON 2026",Mainnet,@IronClawAI,https://nearcatalog.xyz/project/ironclaw
+AI Agents,4,Bitte Protocol,https://bitte.ai,"Agent platform (formerly Mintbase), acquired by Amadeus Protocol for $1.7M in Feb 2026",Mainnet,@BitteProtocol,https://bitte.ai
+AI Agents,5,Phala Network,https://phala.network,Confidential compute partner behind NEAR AI Cloud,Mainnet,@PhalaNetwork,https://nearcatalog.xyz/project/phala-network
+"Perps, Options & Derivatives",1,Orderly Network,https://orderly.network,"Orderbook infra born on NEAR, ~$25M raised, $326K bridge TVL on NEAR",Mainnet,@OrderlyNetwork,https://defillama.com/protocol/orderly-bridge
+"Perps, Options & Derivatives",2,HeX (HOT Exchange),https://app.hex.exchange,Cross-chain spot and perps exchange being built by HOT Labs,Building,@hotdao_,https://nearcatalog.xyz/project/hex-hot-exchange
+"Perps, Options & Derivatives",3,Spin,https://spin.fi,"Former NEAR perps and options venue ($3.75M seed), now defunct with $94K stranded TVL",Defunct (DefiLlama dead URL),@spin_fi,https://defillama.com/protocol/spin-spot
+Wallets & Custody,1,HOT Wallet (HOT Protocol),https://hot-labs.org/wallet,Chain-signature wallet; Omni Balance passed 1M active users in May 2025,Mainnet,@hotdao_,https://nearcatalog.xyz/project/hot-near-wallet-telegram
+Wallets & Custody,2,Meteor Wallet,https://wallet.meteorwallet.app,"Leading NEAR browser and mobile wallet (Learn NEAR Club score 48,361)",Mainnet,@MeteorWallet,https://nearcatalog.xyz/project/meteor-wallet
+Wallets & Custody,3,MyNearWallet,https://app.mynearwallet.com,Successor to the original NEAR web wallet,Mainnet,@MyNearWallet_,https://nearcatalog.xyz/project/mynearwallet
+Wallets & Custody,4,Intear Wallet,https://wallet.intear.tech,Open-source NEAR wallet from Intear,Mainnet,@intea_rs,https://nearcatalog.xyz/project/intear-wallet
+Wallets & Custody,5,NEAR Mobile Wallet,https://nearmobile.app,Mobile wallet with NEAR Intents swaps and NPRO token,Mainnet,@NEARMobile_app,https://nearcatalog.xyz/project/near-mobile-app
+Exchanges & On/Off-Ramps,1,Binance,https://binance.com,"$522M of NEAR-chain reserves, the largest exchange holder",Mainnet,@binance,https://defillama.com/protocol/binance-cex
+Exchanges & On/Off-Ramps,2,Bitget,https://bitget.com,$19.4M of NEAR-chain reserves,Mainnet,@bitgetglobal,https://defillama.com/protocol/bitget
+Exchanges & On/Off-Ramps,3,KuCoin,https://kucoin.com,$18.6M of NEAR-chain reserves,Mainnet,@kucoincom,https://defillama.com/protocol/kucoin
+Exchanges & On/Off-Ramps,4,Backpack Exchange,https://backpack.exchange,"Listed NEAR spot, perps and native USDC in Oct 2026, $2.9M reserves",Mainnet,@Backpack,https://defillama.com/protocol/backpack
+Stablecoins & Payments,1,USDC,https://circle.com,Circle native USDC on NEAR since Sep 2023,Mainnet,@circle,https://nearcatalog.xyz/project/usdc
+Stablecoins & Payments,2,USDT,https://tether.to,Tether native USDT on NEAR since Sep 2022,Mainnet,@Tether_to,https://nearcatalog.xyz/project/usdt
+Stablecoins & Payments,3,Ping Pay,https://pingpay.io,Commerce payment layer settling on NEAR Intents,Mainnet,@pingpay_io,https://nearcatalog.xyz/project/ping
+Stablecoins & Payments,4,HOT Pay,https://pay.hot-labs.org,Open-source non-custodial merchant payments from HOT Labs,Mainnet,@hotdao_,https://nearcatalog.xyz/project/hot-pay-crypto-payment-for-merchants-made-easy
+Stablecoins & Payments,5,reply.cash,https://reply.cash,Private stablecoin payouts to local rails in Kenya and Nigeria,Mainnet,@replydotcash,https://nearcatalog.xyz/project/reply-cash-use-stablecoins-to-send-to-local-payment-rails-privately
+Prediction Markets,1,Noa Market,https://noamarket.xyz,Open prediction markets on NEAR with creator fee sharing,Mainnet,@noamarket_near,https://nearcatalog.xyz/project/noa-market-prediction-market-on-near
+Prediction Markets,2,Prophet,https://app.prophet.zone,Sports and event markets on NEAR Intents,Mainnet,@Prophetzone,https://nearcatalog.xyz/project/prophet
+Prediction Markets,3,Kalshi,https://kalshi.com,US-regulated market that added native NEAR deposits in Nov 2025,Mainnet,@Kalshi,https://nearcatalog.xyz/project/kalshi
+Infrastructure & Dev Tools,1,NEAR Protocol,https://near.org,L1 with 600ms blocks; $170K 30d chain fees and $119K revenue; inflation cut to 2.5% in Oct 2025,Mainnet,@nearprotocol,https://defillama.com/chain/near
+Infrastructure & Dev Tools,2,Aurora,https://aurora.dev,"NEAR's EVM chain and virtual-chain platform, now refocused on Intents Connect; chain TVL $3.8M",Mainnet,@auroraisnear,https://defillama.com/chain/aurora
+Infrastructure & Dev Tools,3,FastNEAR,https://fastnear.com,"Core RPC and API provider, acquired by SVRN in Oct 2026",Mainnet,@fast_near,https://nearcatalog.xyz/project/fastnear
+Infrastructure & Dev Tools,4,Chain Signatures / NEAR MPC,https://docs.near.org/chain-abstraction/chain-signatures,"MPC network that lets NEAR accounts sign on other chains, base layer for HOT and Intents",Mainnet,,https://docs.near.org/chain-abstraction/chain-signatures
+Infrastructure & Dev Tools,5,Calimero Network,https://calimero.network,"$8.5M seed (NEAR Foundation, Khosla, Lyrik) for private shards",Mainnet,@CalimeroNetwork,https://calimero.network
+Infrastructure & Dev Tools,6,Nuffle Labs,https://nuffle.xyz,NEAR DA spinout that raised $13M led by Electric Capital,Mainnet,@nufflelabs,https://nuffle.xyz
+Data & Analytics,1,NearBlocks,https://nearblocks.io,Leading NEAR block explorer and API,Mainnet,@nearblocks,https://nearcatalog.xyz/project/near-blocks
+Data & Analytics,2,Pikespeak,https://pikespeak.ai,"Live and historical NEAR analytics (Learn NEAR Club score 12,725)",Mainnet,@pikespeak_ai,https://nearcatalog.xyz/project/pikespeak
+Data & Analytics,3,DefiLlama,https://defillama.com,Standard TVL and volume tracker for NEAR and Aurora,Mainnet,@DefiLlama,https://defillama.com/chain/near
+Data & Analytics,4,Intear DeFi Map,https://defi.intea.rs,Compares NEAR DeFi yields with loss and risk flags,Mainnet,@intea_rs,https://nearcatalog.xyz/project/intear-defi-map
+"Security, Risk & Compliance",1,HackenProof,https://hackenproof.com,Runs the NEAR Intents bug bounty (up to $300K),Mainnet,@HackenProof,https://nearcatalog.xyz/project/hackenproof
+"Security, Risk & Compliance",2,Hacken,https://hacken.io,Audited NEAR Intents (Dec 2024),Mainnet,@hackenclub,https://nearcatalog.xyz/project/hacken
+"Security, Risk & Compliance",3,Immunefi,https://immunefi.com,"Hosted the $6M Aurora inflation-bug bounty, largest in NEAR history",Mainnet,@immunefi,https://nearcatalog.xyz/project/immunefi
+"Security, Risk & Compliance",4,BlockSec,https://blocksec.com,Audited Burrow and Allstake; built the Rustle auditor for NEAR,Mainnet,@blocksecteam,https://nearcatalog.xyz/project/blocksec
+"NFTs, Gaming & Collectibles",1,SWEAT (Sweat Economy),https://sweateconomy.com,"Move-to-earn app with the largest user base on NEAR, $13M token sale",Mainnet,@SweatEconomy,https://nearcatalog.xyz/project/sweat
+"NFTs, Gaming & Collectibles",2,Namesky,https://namesky.app,"NEAR account NFT market with the highest Learn NEAR Club score (127,907)",Mainnet,@NameSkyApp,https://nearcatalog.xyz/project/namesky
+"NFTs, Gaming & Collectibles",3,Paras,https://paras.id,Original NEAR NFT marketplace (~$5M raised),Mainnet,@ParasHQ,https://nearcatalog.xyz/project/paras
+"NFTs, Gaming & Collectibles",4,Hot Craft NFT Marketplace,https://hotcraft.art,Chain-abstracted NFT marketplace from HOT Labs,Mainnet,,https://nearcatalog.xyz/project/hot-craft-nft-marketplace
+"NFTs, Gaming & Collectibles",5,Few and Far,https://fewfar.com,NFT marketplace that raised $10.5M led by Pantera,Mainnet,@FewandFarNFT,https://fewfar.com
+Memecoins & Community,1,Shitzu,https://shitzuapes.xyz,"First OG community memecoin on NEAR, built nearprotocol.eco",Mainnet,@ShitzuCommunity,https://nearcatalog.xyz/project/shitzu
+Memecoins & Community,2,Black Dragon,https://blackdragon.casino,Second-generation NEAR memecoin,Mainnet,@dragonisnear,https://nearcatalog.xyz/project/black-dragon
+Memecoins & Community,3,JAMBO,https://meme.cooking,Meme Cooking launch with its own coinflip game,Mainnet,@jamboonnear,https://nearcatalog.xyz/project/jambo
+Memecoins & Community,4,HOODL,https://justhoodl.fun,Community-owned owl memecoin,Mainnet,@HoodlCTO,https://nearcatalog.xyz/project/hoodl
+"DAOs, Governance & Public Goods",1,NEAR House of Stake,https://gov.houseofstake.org,veNEAR governance framework live since Oct 2025,Building,@NEARGovernance,https://nearcatalog.xyz/project/near-house-of-stake-alpha
+"DAOs, Governance & Public Goods",2,POTLOCK,https://potlock.org,Public goods funding with on-chain donations,Mainnet,@potlock_,https://nearcatalog.xyz/project/potlock
+"DAOs, Governance & Public Goods",3,AstroDAO,https://astrodao.com,No-code DAO launcher on SputnikDAO,Mainnet,@AstroDao,https://awesomenear.com/astrodao
+"DAOs, Governance & Public Goods",4,NEAR Treasury,https://neartreasury.com,Multisig treasury dashboard featured on near.org,Mainnet,,https://www.near.org/ecosystem
+Social & Identity,1,Near Social,https://near.social,"Social data protocol (Learn NEAR Club score 9,226)",Mainnet,@NearSocial_,https://nearcatalog.xyz/project/near-social
+Social & Identity,2,NEAR Email,https://near.email,NEAR account as an email address,Mainnet,"@zacodil (creator, inferred)",https://nearcatalog.xyz/project/near-email
+Validators & Node Operators,1,Chorus One,https://chorus.one,Major NEAR validator; refused the 2025 inflation upgrade,Mainnet,@chorusone,https://awesomenear.com/chorus-one
+Validators & Node Operators,2,Figment,https://figment.io,Institutional NEAR validator,Mainnet,@Figment_io,https://awesomenear.com/figment
+Validators & Node Operators,3,Everstake,https://everstake.one,Large NEAR staking provider,Mainnet,@everstake_pool,https://awesomenear.com/everstake
+"Ecosystem, Funding & Education",1,NEAR Foundation,https://near.foundation,"Runs grants, the $20M AI agent fund and ecosystem investments",Mainnet,@NEARFoundation,https://nearcatalog.xyz/project/near-foundation
+"Ecosystem, Funding & Education",2,Proximity Labs,https://proximity.dev,"DeFi R&D and grants ($350M vehicle, Aurora $90M fund)",Mainnet,@proximityfi,https://www.near.org/ecosystem
+"Ecosystem, Funding & Education",3,NEAR One,https://nearone.org,Core protocol R&D spun out of Pagoda in 2024,Mainnet,,https://www.near.org/ecosystem
+"Ecosystem, Funding & Education",4,Learn NEAR Club,https://learnnear.club,Main learn-and-earn education hub,Mainnet,@LearnNear,https://nearcatalog.xyz/project/learn-near-club

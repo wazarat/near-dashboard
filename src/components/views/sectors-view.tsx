@@ -1,0 +1,88 @@
+"use client";
+
+import { useMemo } from "react";
+import { ChartCard, TvlNote } from "@/components/atlas/chart-card";
+import { SectorBars, sectorBarRows, sectorBarTable } from "@/components/charts/sector-bars";
+import { SectorGrid, sectorCards, sectorCardTable } from "@/components/charts/sector-grid";
+import { TierBySector, tierRows, tierTable } from "@/components/charts/tier-by-sector";
+import { useFilters } from "@/lib/filters";
+import { fmtInt, fmtMetric, fmtPct, METRIC_LABEL } from "@/lib/format";
+
+export function SectorsView() {
+  const { filtered, metric, scale, setState, openSector, openProject } = useFilters();
+  const label = METRIC_LABEL[metric].toLowerCase();
+  const n = filtered.length;
+
+  const barRows = useMemo(() => sectorBarRows(filtered, metric), [filtered, metric]);
+  const barTakeaway = useMemo(() => {
+    if (n === 0) return "No projects match the current filters.";
+    const total = barRows.reduce((a, r) => a + r.total, 0);
+    const withData = barRows.filter((r) => r.total > 0).length;
+    if (withData === 0) return `No ${label} data in this selection.`;
+    const top = barRows[0];
+    const topShare = total > 0 ? top.total / total : null;
+    if (metric === "count") {
+      return `${top.sector} has the most projects (${fmtInt(top.total)}, ${fmtPct(topShare)} of the selection) across ${barRows.length} sectors.`;
+    }
+    return `${top.sector} leads ${label} with ${fmtMetric(metric, top.total)} (${fmtPct(topShare)} of the selection); ${withData} of ${barRows.length} sectors report any ${label}.`;
+  }, [barRows, n, metric, label]);
+
+  const tiers = useMemo(() => tierRows(filtered), [filtered]);
+  const tierTakeaway = useMemo(() => {
+    if (n === 0) return "No projects match the current filters.";
+    const tracked = tiers.reduce((a, r) => a + r.tracked, 0);
+    const t1 = tiers.reduce((a, r) => a + r["Tier 1 - Leader"], 0);
+    const t1Sectors = tiers.filter((r) => r["Tier 1 - Leader"] > 0);
+    const lead = [...t1Sectors].sort((a, b) => b["Tier 1 - Leader"] - a["Tier 1 - Leader"])[0];
+    const base = `${fmtInt(tracked)} of ${fmtInt(n)} projects (${fmtPct(tracked / n)}) have a DefiLlama listing`;
+    if (t1 === 0) return `${base}; no Tier 1 leaders in this selection.`;
+    return `${base}; the ${t1} Tier 1 leader${t1 === 1 ? "" : "s"} sit${t1 === 1 ? "s" : ""} in ${t1Sectors.length} sector${t1Sectors.length === 1 ? "" : "s"}, most in ${lead.sector} (${lead["Tier 1 - Leader"]}).`;
+  }, [tiers, n]);
+
+  const cards = useMemo(() => sectorCards(filtered, metric), [filtered, metric]);
+  const gridTakeaway = useMemo(() => {
+    if (n === 0) return "No projects match the current filters.";
+    const sized = cards.filter((c) => c.count >= 5 && c.nativeShare !== null);
+    if (sized.length < 2) return `${cards.length} sector${cards.length === 1 ? "" : "s"} in the selection.`;
+    const byNative = [...sized].sort((a, b) => (b.nativeShare as number) - (a.nativeShare as number));
+    const most = byNative[0];
+    const least = byNative[byNative.length - 1];
+    return `Among ${sized.length} sectors with five or more projects, ${most.sector} is the most NEAR-native (${fmtPct(most.nativeShare)}) and ${least.sector} the least (${fmtPct(least.nativeShare)}).`;
+  }, [cards, n]);
+
+  return (
+    <div className="space-y-4">
+      <ChartCard
+        title={`Sectors by ${label}`}
+        takeaway={barTakeaway}
+        info={`All sectors in the current selection ranked by ${label}. Money metrics are summed from DefiLlama (blank rows excluded); project counts come from the research CSVs. Sectors with no data are hidden on the log scale. Click a bar or a sector name to open the sector drawer.`}
+        scale={metric === "count" ? undefined : scale}
+        onScaleChange={(s) => void setState({ scale: s })}
+        footer={metric === "tvl" ? <TvlNote /> : undefined}
+        table={sectorBarTable(barRows, metric)}
+      >
+        <SectorBars projects={filtered} metric={metric} scale={scale} onSelect={openSector} />
+      </ChartCard>
+
+      <ChartCard
+        title="Traction tier by sector"
+        takeaway={tierTakeaway}
+        info="Project counts per traction tier within each sector. Tiers come from the research CSVs: Tier 1 to 3 rank projects with measurable DefiLlama traction, Tracked negligible means a DefiLlama listing with every figure at zero, Not tracked means no listing. Click a bar to open the sector drawer."
+        table={tierTable(tiers)}
+      >
+        <TierBySector projects={filtered} onSelect={openSector} />
+      </ChartCard>
+
+      <ChartCard
+        title="Sector cards"
+        takeaway={gridTakeaway}
+        info={`One card per sector in the selection: project count, NEAR-native share, projects with any measurable traction and the summed ${label}. Counts and the Native Chain classification come from the research CSVs; money metrics from DefiLlama. Ranked leaders come from the research leaders CSV and do not change with the filters.`}
+        footer={metric === "tvl" ? <TvlNote /> : undefined}
+        table={sectorCardTable(cards, metric)}
+      >
+        <SectorGrid projects={filtered} metric={metric} onSelect={openSector} onOpen={openProject} />
+      </ChartCard>
+    </div>
+  );
+}
+

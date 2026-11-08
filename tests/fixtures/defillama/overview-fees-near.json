@@ -1,0 +1,182 @@
+{
+ "chain": "Near",
+ "totalDataChartBreakdown": [
+  [
+   1793750400,
+   {
+    "Rhea Dex": 9331,
+    "Rhea Lend": 9341,
+    "Meme Cooking": 0.02,
+    "KAIO": 17,
+    "NEAR Intents": 255718,
+    "RHEA LST": 425,
+    "RHEA Cross Chain": 21
+   }
+  ],
+  [
+   1793836800,
+   {
+    "Rhea Dex": 18998,
+    "Rhea Lend": 9185,
+    "Veax CLMM": 0.21,
+    "Meme Cooking": 0.04,
+    "KAIO": 17,
+    "NEAR Intents": 228625,
+    "RHEA LST": 501,
+    "RHEA Cross Chain": 19
+   }
+  ],
+  [
+   1793923200,
+   {
+    "Rhea Dex": 14654,
+    "Rhea Lend": 7788,
+    "Veax CLMM": 0.1,
+    "KAIO": 17,
+    "NEAR Intents": 252865,
+    "RHEA LST": 373,
+    "RHEA Cross Chain": 8.17
+   }
+  ],
+  [
+   1794009600,
+   {
+    "Rhea Dex": 4723,
+    "Rhea Lend": 8815,
+    "Veax CLMM": 0.08,
+    "Meme Cooking": 0.13,
+    "KAIO": 17,
+    "NEAR Intents": 187484,
+    "RHEA LST": 498,
+    "RHEA Cross Chain": 28
+   }
+  ],
+  [
+   1794096000,
+   {
+    "Rhea Dex": 5040,
+    "Rhea Lend": 8148,
+    "Veax CLMM": 0.08,
+    "Meme Cooking": 0.15,
+    "KAIO": 17,
+    "RHEA LST": 497,
+    "RHEA Cross Chain": 21,
+    "NEAR Intents": 187484
+   }
+  ]
+ ],
+ "protocols": [
+  {
+   "name": "Rhea Dex",
+   "module": "ref-finance",
+   "slug": "rhea-dex",
+   "parentProtocol": "parent#rhea-finance",
+   "category": "Dexs",
+   "total30d": 614902
+  },
+  {
+   "name": "Allbridge Classic",
+   "module": "allbridge-classic",
+   "slug": "allbridge-classic",
+   "parentProtocol": "parent#allbridge",
+   "category": "Bridge",
+   "total30d": null
+  },
+  {
+   "name": "Rhea Lend",
+   "module": "rhea-lend",
+   "slug": "rhea-lend",
+   "parentProtocol": "parent#rhea-finance",
+   "category": "Lending",
+   "total30d": 269263
+  },
+  {
+   "name": "Veax CLMM",
+   "module": "veax",
+   "slug": "veax-clmm",
+   "parentProtocol": "parent#veax",
+   "category": "Dexs",
+   "total30d": 8.24
+  },
+  {
+   "name": "Meme Cooking",
+   "module": "memecooking",
+   "slug": "meme-cooking",
+   "parentProtocol": null,
+   "category": "Launchpad",
+   "total30d": 6.81
+  },
+  {
+   "name": "KAIO",
+   "module": "kaio",
+   "slug": "kaio",
+   "parentProtocol": null,
+   "category": "RWA",
+   "total30d": 391
+  },
+  {
+   "name": "NEAR Intents",
+   "module": "near-intents",
+   "slug": "near-intents",
+   "parentProtocol": "parent#near-protocol",
+   "category": "Bridge",
+   "total30d": 5926106
+  },
+  {
+   "name": "GAIB",
+   "module": "gaib",
+   "slug": "gaib",
+   "parentProtocol": null,
+   "category": "RWA",
+   "total30d": null
+  },
+  {
+   "name": "RHEA LST",
+   "module": "rhea-lst",
+   "slug": "rhea-lst",
+   "parentProtocol": "parent#rhea-finance",
+   "category": "Liquid Staking",
+   "total30d": 12093
+  },
+  {
+   "name": "RHEA Cross Chain",
+   "module": "rhea-cross-chain",
+   "slug": "rhea-cross-chain",
+   "parentProtocol": "parent#rhea-finance",
+   "category": "Cross Chain Bridge",
+   "total30d": 813.33
+  },
+  {
+   "name": "Lunar Finance Aggregator",
+   "module": "lunar-finance",
+   "slug": "lunar-finance-aggregator",
+   "parentProtocol": null,
+   "category": "DEX Aggregator",
+   "total30d": 0
+  },
+  {
+   "name": "Lunar Finance Bridge Aggregator",
+   "module": "lunar-finance-bridge",
+   "slug": "lunar-finance-bridge-aggregator",
+   "parentProtocol": null,
+   "category": "Bridge Aggregators",
+   "total30d": 0
+  },
+  {
+   "name": "Pyth Core",
+   "module": "pyth-network",
+   "slug": "pyth-core",
+   "parentProtocol": "parent#pyth",
+   "category": "Oracle",
+   "total30d": 0
+  },
+  {
+   "name": "Near",
+   "module": "near",
+   "slug": "near",
+   "parentProtocol": null,
+   "category": "Chain",
+   "total30d": 170376
+  }
+ ]
+}

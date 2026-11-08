@@ -1,0 +1,136 @@
+{
+ "ref-finance": {
+  "slug": "ref-finance",
+  "profile": {
+   "name": "Rhea Finance",
+   "tagline": "The Chain-Abstracted Liquidity Solution",
+   "image": {
+    "url": "https://indexer.nearcatalog.xyz/wp-content/uploads/2026/10/Rhea-Finance.jpg"
+   },
+   "tags": {
+    "dapp": "Dapp",
+    "prediction-market": "Prediction market",
+    "near-intents": "NEAR Intents",
+    "borrowing-lending": "Borrowing / Lending",
+    "chain-abstraction": "Chain Abstraction",
+    "defi": "DeFi",
+    "dex": "DEX"
+   },
+   "published_date": 1700812920,
+   "updated_date": 1790846775,
+   "updated_at": "2026-10-01 09:26:15",
+   "phase": "mainnet",
+   "status": "active",
+   "lnc": {
+    "score": 70003,
+    "slug": "reffinance"
+   }
+  }
+ },
+ "near-com-super-app": {
+  "slug": "near-com-super-app",
+  "profile": {
+   "name": "Near.com Super App",
+   "tagline": " Swap, access yield, and go confidential \u2014 across 35+ networks powered by NEAR",
+   "image": {
+    "url": "https://indexer.nearcatalog.xyz/wp-content/uploads/2026/10/Near.com-Super-App.jpg"
+   },
+   "tags": {
+    "dapp": "Dapp",
+    "near-intents": "NEAR Intents",
+    "dex": "DEX"
+   },
+   "published_date": 1771954532,
+   "updated_date": 1791753077,
+   "updated_at": "2026-10-11 21:11:17",
+   "phase": "mainnet",
+   "status": "active",
+   "lnc": ""
+  }
+ },
+ "intear-trade-alpha": {
+  "slug": "intear-trade-alpha",
+  "profile": {
+   "name": "Intear DEX",
+   "tagline": "Intear DEX is a one-stop solution for fast, efficient token swaps, token launchpad with the best rates! Fast & Safe & Open source",
+   "image": {
+    "url": "https://indexer.nearcatalog.xyz/wp-content/uploads/2026/02/Intear-Wallet.webp"
+   },
+   "tags": {
+    "dapp": "Dapp",
+    "defi": "DeFi",
+    "dex": "DEX"
+   },
+   "published_date": 1770574529,
+   "updated_date": 1792116375,
+   "updated_at": "2026-10-16 02:06:15",
+   "phase": "mainnet",
+   "status": "",
+   "lnc": ""
+  }
+ },
+ "nearly": {
+  "slug": "nearly",
+  "profile": {
+   "name": "Nearly",
+   "tagline": "The token launchpad on NEAR",
+   "image": {
+    "url": "https://indexer.nearcatalog.xyz/wp-content/uploads/2026/09/Nearly.jpg"
+   },
+   "tags": {
+    "dapp": "Dapp",
+    "launchpad": "Launchpad",
+    "memecoin": "Memecoin"
+   },
+   "published_date": 1790286523,
+   "updated_date": 1790286774,
+   "updated_at": "2026-09-24 21:52:54",
+   "phase": "mainnet",
+   "status": "active",
+   "lnc": ""
+  }
+ },
+ "near-ai": {
+  "slug": "near-ai",
+  "profile": {
+   "name": "NEAR AI",
+   "tagline": "Building User-Owned AI: NEAR AI Cloud, NEAR Agent Market, NEAR AI Private Chat",
+   "image": {
+    "url": "https://indexer.nearcatalog.xyz/wp-content/uploads/2026/10/NEAR-AI.jpg"
+   },
+   "tags": {
+    "infrastructure": "Infrastructure",
+    "near-ai": "NEAR AI",
+    "ai": "AI"
+   },
+   "published_date": 1724088417,
+   "updated_date": 1791753399,
+   "updated_at": "2026-10-11 21:16:39",
+   "phase": "mainnet",
+   "status": "",
+   "lnc": ""
+  }
+ },
+ "justhoot": {
+  "slug": "justhoot",
+  "profile": {
+   "name": "JustHoot",
+   "tagline": "Meme launchpad on NEAR \u2014 every launch gets a RHEA pool",
+   "image": {
+    "url": "https://indexer.nearcatalog.xyz/wp-content/uploads/2026/09/JustHoot.jpg"
+   },
+   "tags": {
+    "dapp": "Dapp",
+    "dex": "DEX",
+    "launchpad": "Launchpad",
+    "memecoin": "Memecoin"
+   },
+   "published_date": 1790800691,
+   "updated_date": 1792406191,
+   "updated_at": "2026-10-19 10:36:31",
+   "phase": "mainnet",
+   "status": "active",
+   "lnc": ""
+  }
+ }
+}

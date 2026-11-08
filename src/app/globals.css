@@ -1,0 +1,257 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* ---- Atlas chart tokens. One colour per Native Chain value, reused in every chart. ---- */
+:root {
+  --surface-chart: #fcfcfb;
+  --chain-near: #2a78d6;
+  --chain-aurora: #1baf7a;
+  --chain-other-evm: #eb6834;
+  --chain-other-nonevm: #be185d;
+  --chain-cex: #6250d6;
+  --chain-octopus: #b07a00;
+  --tier-1: #184f95;
+  --tier-2: #2a78d6;
+  --tier-3: #6da7ec;
+  --tier-negligible: #b7d3f6;
+  --tier-none: #a8a69f;
+  --risk-high: #d03b3b;
+  --risk-medium: #ec835a;
+  --risk-low: #0ca30c;
+  --risk-unknown: #898781;
+  --risk-notresearched: #d6d5cf;
+  --event-incident: #d03b3b;
+  --event-milestone: #2a78d6;
+  --event-integration: #eb6834;
+  --event-program: #1baf7a;
+  --event-funding: #eda100;
+  --event-grant: #7a9b00;
+  --event-listing: #6250d6;
+  --event-governance: #0e9aa7;
+  --event-acquisition: #e87ba4;
+  --cat-1: #2a78d6;
+  --cat-2: #eb6834;
+  --cat-3: #1baf7a;
+  --cat-4: #eda100;
+  --cat-5: #e87ba4;
+  --cat-6: #0e9aa7;
+  --cat-7: #6250d6;
+  --cat-8: #e34948;
+  --cat-notresearched: #d6d5cf;
+  --cat-notdisclosed: #898781;
+  --seq-1: #b7d3f6;
+  --seq-2: #86b6ef;
+  --seq-3: #5598e7;
+  --seq-4: #2a78d6;
+  --seq-5: #1c5cab;
+  --seq-6: #0d366b;
+  --series-price: #c98500;
+  --series-intents: #2a78d6;
+  --series-usage: #1baf7a;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --ink-muted: #898781;
+  --ink-secondary: #52514e;
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+}
+.dark {
+  --surface-chart: #1a1a19;
+  --chain-near: #3987e5;
+  --chain-aurora: #199e70;
+  --chain-other-evm: #d95926;
+  --chain-other-nonevm: #e256a8;
+  --chain-cex: #9085e9;
+  --chain-octopus: #d9a21b;
+  --tier-1: #86b6ef;
+  --tier-2: #3987e5;
+  --tier-3: #184f95;
+  --tier-negligible: #0d366b;
+  --tier-none: #55544f;
+  --risk-high: #d03b3b;
+  --risk-medium: #ec835a;
+  --risk-low: #0ca30c;
+  --risk-unknown: #898781;
+  --risk-notresearched: #3a3a37;
+  --event-incident: #d03b3b;
+  --event-milestone: #3987e5;
+  --event-integration: #d95926;
+  --event-program: #199e70;
+  --event-funding: #c98500;
+  --event-grant: #8fb300;
+  --event-listing: #9085e9;
+  --event-governance: #19b3c2;
+  --event-acquisition: #d55181;
+  --cat-1: #3987e5;
+  --cat-2: #d95926;
+  --cat-3: #199e70;
+  --cat-4: #c98500;
+  --cat-5: #d55181;
+  --cat-6: #19b3c2;
+  --cat-7: #9085e9;
+  --cat-8: #e66767;
+  --cat-notresearched: #3a3a37;
+  --cat-notdisclosed: #898781;
+  --seq-1: #184f95;
+  --seq-2: #256abf;
+  --seq-3: #3987e5;
+  --seq-4: #6da7ec;
+  --seq-5: #9ec5f4;
+  --seq-6: #cde2fb;
+  --series-price: #e0a21c;
+  --series-intents: #3987e5;
+  --series-usage: #2bbf8a;
+  --grid: #2c2c2a;
+  --axis: #383835;
+  --ink-muted: #898781;
+  --ink-secondary: #c3c2b7;
+}
+
+.recharts-wrapper,
+.recharts-surface {
+  outline: none;
+}
+.recharts-cartesian-grid line {
+  stroke: var(--grid);
+}
+.recharts-cartesian-axis line,
+.recharts-cartesian-axis-tick line {
+  stroke: var(--axis);
+}
+.recharts-text {
+  fill: var(--ink-muted);
+  font-size: 11px;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+}

@@ -1,0 +1,34 @@
+{
+ "coins": {
+  "coingecko:near": {
+   "symbol": "NEAR",
+   "confidence": 0.99,
+   "prices": [
+    {
+     "timestamp": 1704067197,
+     "price": 3.65
+    },
+    {
+     "timestamp": 1704153604,
+     "price": 3.8
+    },
+    {
+     "timestamp": 1704240004,
+     "price": 3.92
+    },
+    {
+     "timestamp": 1704326399,
+     "price": 3.7800000000000002
+    },
+    {
+     "timestamp": 1704412799,
+     "price": 3.92
+    },
+    {
+     "timestamp": 1704499188,
+     "price": 3.55
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,61 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# AI tool config (never committed)
+CLAUDE.md
+.claude/
+AGENTS.md
+
+# generated data (rebuilt by npm run rebuild / prebuild)
+/src/data/generated/
+
+# raw NEAR Intents swap rows (regenerable from the Explorer API; aggregates are committed)
+/data/raw/intents/days/
+
+# playwright
+/e2e/screenshots/
+/e2e/test-results/
+/playwright-report/
+
+# local GCP key if dropped in the repo folder
+*.json.key
+gcp-key.json

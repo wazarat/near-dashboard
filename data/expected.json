@@ -1,0 +1,22 @@
+{
+  "static": {
+    "projects": 1088,
+    "sectors": 24,
+    "nativeChains": 6,
+    "leaders": 96,
+    "events": 141,
+    "rounds": 42,
+    "snapshotTier1": 4
+  },
+  "snapshot": {
+    "tvl": 537708656,
+    "volume": 4196750718,
+    "fees": 6996195,
+    "revenue": 2267817,
+    "tvlNear": 531210719,
+    "tvlAurora": 6497937
+  },
+  "liveSanity": {
+    "maxDayOverDayRatio": 10
+  }
+}

@@ -1,0 +1,71 @@
+[
+ {
+  "depositAddress": "addr1",
+  "depositMemo": null,
+  "status": "SUCCESS",
+  "createdAt": "2026-11-07T10:00:00.000Z",
+  "createdAtTimestamp": 1794132000,
+  "originAsset": "nep141:eth-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.omft.near",
+  "destinationAsset": "nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+  "amountInUsd": "100.5",
+  "amountOutUsd": "100.1",
+  "recipient": "alice.near",
+  "referral": "wallet-a",
+  "appFees": [
+   {
+    "recipient": "fees.wallet-a.near",
+    "fee": 50
+   }
+  ],
+  "senders": [
+   "0xabc"
+  ]
+ },
+ {
+  "depositAddress": "addr2",
+  "depositMemo": "7",
+  "status": "SUCCESS",
+  "createdAt": "2026-11-07T12:00:00.000Z",
+  "createdAtTimestamp": 1794139200,
+  "originAsset": "nep141:btc.omft.near",
+  "destinationAsset": "nep141:sol.omft.near",
+  "amountInUsd": "1000",
+  "amountOutUsd": "995",
+  "recipient": "bob.near",
+  "referral": null,
+  "appFees": [],
+  "senders": [
+   "bc1q"
+  ]
+ },
+ {
+  "depositAddress": "addr3",
+  "depositMemo": null,
+  "status": "REFUNDED",
+  "createdAt": "2026-11-07T13:00:00.000Z",
+  "createdAtTimestamp": 1794142800,
+  "originAsset": "nep141:wrap.near",
+  "destinationAsset": "nep141:btc.omft.near",
+  "amountInUsd": "50",
+  "amountOutUsd": "0",
+  "recipient": "alice.near",
+  "referral": "wallet-a",
+  "appFees": [],
+  "senders": []
+ },
+ {
+  "depositAddress": "addr4",
+  "depositMemo": null,
+  "status": "SUCCESS",
+  "createdAt": "2026-11-06T23:59:00.000Z",
+  "createdAtTimestamp": 1794095940,
+  "originAsset": "nep141:sol.omft.near",
+  "destinationAsset": "nep141:zec.omft.near",
+  "amountInUsd": "20",
+  "amountOutUsd": "19.5",
+  "recipient": "carol.near",
+  "referral": "zashi",
+  "appFees": [],
+  "senders": []
+ }
+]

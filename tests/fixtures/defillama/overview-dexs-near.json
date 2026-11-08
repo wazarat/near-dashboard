@@ -1,0 +1,133 @@
+{
+ "chain": "Near",
+ "totalDataChartBreakdown": [
+  [
+   1793750400,
+   {
+    "Rhea Dex": 6841139,
+    "DeltaTrade": 23519,
+    "Meme Cooking": 8.07,
+    "NEAR Intents": 143981404,
+    "RHEA Cross Chain": 37298
+   }
+  ],
+  [
+   1793836800,
+   {
+    "Rhea Dex": 9123279,
+    "Veax CLMM": 200,
+    "DeltaTrade": 13623,
+    "Meme Cooking": 7.4,
+    "NEAR Intents": 131020261,
+    "RHEA Cross Chain": 20507
+   }
+  ],
+  [
+   1793923200,
+   {
+    "Rhea Dex": 9179486,
+    "Veax CLMM": 424,
+    "DeltaTrade": 6044,
+    "Meme Cooking": 7.46,
+    "NEAR Intents": 141555971,
+    "RHEA Cross Chain": 21912
+   }
+  ],
+  [
+   1794009600,
+   {
+    "Rhea Dex": 3852036,
+    "Veax CLMM": 57,
+    "DeltaTrade": 1895,
+    "Meme Cooking": 26,
+    "NEAR Intents": 114752674,
+    "RHEA Cross Chain": 40889
+   }
+  ],
+  [
+   1794096000,
+   {
+    "Rhea Dex": 3468645,
+    "Veax CLMM": 57,
+    "DeltaTrade": 462,
+    "Meme Cooking": 30,
+    "RHEA Cross Chain": 30983,
+    "NEAR Intents": 114752674
+   }
+  ]
+ ],
+ "protocols": [
+  {
+   "name": "Rhea Dex",
+   "module": "ref-finance",
+   "slug": "rhea-dex",
+   "parentProtocol": "parent#rhea-finance",
+   "category": "Dexs",
+   "total30d": 306446550
+  },
+  {
+   "name": "Allbridge Classic",
+   "module": "allbridge-classic",
+   "slug": "allbridge-classic",
+   "parentProtocol": "parent#allbridge",
+   "category": "Bridge",
+   "total30d": null
+  },
+  {
+   "name": "Veax CLMM",
+   "module": "veax",
+   "slug": "veax-clmm",
+   "parentProtocol": "parent#veax",
+   "category": "Dexs",
+   "total30d": 46971
+  },
+  {
+   "name": "DeltaTrade",
+   "module": "delta-trade",
+   "slug": "deltatrade",
+   "parentProtocol": null,
+   "category": "Dexs",
+   "total30d": 447997
+  },
+  {
+   "name": "Orderly AMM",
+   "module": "orderly-network-orderly-network",
+   "slug": "orderly-amm",
+   "parentProtocol": "parent#orderly-network",
+   "category": "Dexs",
+   "total30d": null
+  },
+  {
+   "name": "Meme Cooking",
+   "module": "memecooking",
+   "slug": "meme-cooking",
+   "parentProtocol": null,
+   "category": "Launchpad",
+   "total30d": 2397.42
+  },
+  {
+   "name": "MITTE",
+   "module": "mitte",
+   "slug": "mitte",
+   "parentProtocol": null,
+   "category": "NftFi",
+   "total30d": null
+  },
+  {
+   "name": "NEAR Intents",
+   "module": "near-intents",
+   "slug": "near-intents",
+   "parentProtocol": "parent#near-protocol",
+   "category": "Bridge",
+   "total30d": 3882727887
+  },
+  {
+   "name": "RHEA Cross Chain",
+   "module": "rhea-cross-chain",
+   "slug": "rhea-cross-chain",
+   "parentProtocol": "parent#rhea-finance",
+   "category": "Cross Chain Bridge",
+   "total30d": 2860079
+  }
+ ]
+}

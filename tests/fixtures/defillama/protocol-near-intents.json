@@ -1,0 +1,44 @@
+{
+ "chainTvls": {
+  "Near": {
+   "tvl": [
+    {
+     "date": 1793836800,
+     "totalLiquidityUSD": 107620386
+    },
+    {
+     "date": 1793923200,
+     "totalLiquidityUSD": 99578325
+    },
+    {
+     "date": 1794009600,
+     "totalLiquidityUSD": 97521116
+    },
+    {
+     "date": 1794096000,
+     "totalLiquidityUSD": 99104190
+    },
+    {
+     "date": 1794147635,
+     "totalLiquidityUSD": 98558688
+    }
+   ]
+  },
+  "Ethereum": {
+   "tvl": [
+    {
+     "date": 1794009600,
+     "totalLiquidityUSD": 58032396
+    },
+    {
+     "date": 1794096000,
+     "totalLiquidityUSD": 56888118
+    },
+    {
+     "date": 1794147635,
+     "totalLiquidityUSD": 56997051
+    }
+   ]
+  }
+ }
+}
