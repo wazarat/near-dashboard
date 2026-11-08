@@ -9,7 +9,7 @@ fs.mkdirSync(SHOTS, { recursive: true });
 const PAGES: Array<{ name: string; url: string; expect: string }> = [
   { name: "overview", url: "/", expect: "Sectors by" },
   { name: "overview-tvl-log", url: "/?metric=tvl&scale=log", expect: "Concentration curve" },
-  { name: "overview-drawer", url: "/?project=near-intents", expect: "NEAR Intents" },
+  { name: "overview-drawer", url: "/?project=near-intents", expect: "Similar projects" },
   { name: "sectors", url: "/sectors/", expect: "Sectors by" },
   { name: "traction", url: "/traction/", expect: "Leaderboard" },
   { name: "traction-fees-momentum", url: "/traction/?metric=fees&cols=momentum", expect: "Leaderboard" },
@@ -75,4 +75,11 @@ test("project drawer opens from the leaderboard and shows sources", async ({ pag
   await page.getByRole("button", { name: "NEAR Intents" }).first().click();
   await expect(page).toHaveURL(/project=near-intents/);
   await expect(page.getByRole("dialog")).toContainText("Sources");
+});
+
+test("project drawer opens from a shared URL with history tabs", async ({ page }) => {
+  await page.goto("/traction/?project=meta-pool&range=30d");
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toContainText("Meta Pool", { timeout: 15_000 });
+  await expect(dialog).toContainText("History");
 });

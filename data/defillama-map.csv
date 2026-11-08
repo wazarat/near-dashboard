@@ -1,0 +1,127 @@
+Project,DefiLlama slug,Chain,Role,Notes
+Rhea Finance,rhea-dex,near,tvl,traction source url
+Rhea Finance,rhea-cross-chain,both,tvl,alias slug
+Trisolaris,trisolaris,aurora,tvl,traction source url
+Jumbo Exchange,jumbo-exchange,near,tvl,traction source url
+AuroraSwap,auroraswap,aurora,tvl,traction source url
+Rose,rose,aurora,tvl,traction source url
+WannaSwap,wannaswap,aurora,tvl,traction source url
+Pad.fi (ex-NearPad),nearpad,aurora,tvl,traction source url
+Tonic DEX,tonic,near,tvl,traction source url
+DODO,dodo-amm,aurora,tvl,traction source url
+Curve Finance,curve-dex,aurora,tvl,traction source url
+Veax,veax-clmm,near,tvl,traction source url
+Amaterasu Finance,amaterasu-finance,aurora,tvl,traction source url
+Polaris Finance,polaris-finance,aurora,tvl,traction source url
+Holdr,holdr,aurora,tvl,traction source url
+iZiSwap,iziswap,aurora,tvl,traction source url
+iZiSwap,izumi-liquidbox,both,tvl,traction source url
+Arctic,arctic,aurora,tvl,traction source url
+OpenBiSea,openbisea,aurora,tvl,traction source url
+Saddle,saddle-finance,aurora,tvl,traction source url
+DONASWAP V2,donaswap-v2,both,tvl,traction source url
+Emiswap,emiswap,aurora,tvl,traction source url
+KyberSwap,kyberswap-classic,aurora,tvl,traction source url
+LeoDex,leodex,both,tvl,alias slug
+Impossible Finance,impossible,aurora,tvl,traction source url
+Meme Cooking,meme-cooking,near,tvl,traction source url
+SmartPad,smartpad,both,tvl,traction source url
+NEAR Protocol,near,both,chain-fees,alias slug
+Aurora,aurora,both,chain-fees,alias slug
+Chronicle,chronicle,aurora,tvl,traction source url
+Octopus Network,octopus-network,near,tvl,traction source url
+Pyth Network,pyth-core,both,tvl,alias slug
+LazyFi,lazyfi,near,tvl,traction source url
+CryptoBlades,cryptoblades,aurora,tvl,traction source url
+Rhea Lend (formerly Burrow),rhea-lend,near,tvl,traction source url
+Bastion,bastion,aurora,tvl,traction source url
+Aurigami,aurigami,aurora,tvl,traction source url
+Templar Protocol,templar-lending,near,tvl,traction source url
+WePiggy,wepiggy,aurora,tvl,traction source url
+Nearlend DAO,nearlend-dao,near,tvl,traction source url
+Ante Finance,ante-finance,aurora,tvl,traction source url
+Risk Harbor,risk-harbor,aurora,tvl,traction source url
+Solace,solace,aurora,tvl,traction source url
+Aurora+,aurora-plus,aurora,tvl,traction source url
+Dew Finance,dewfinance,near,tvl,traction source url
+Rift Finance,rift-finance,aurora,tvl,traction source url
+Pickle Finance,pickle,aurora,tvl,traction source url
+PinkPea Finance,pinkpea-finance,aurora,tvl,traction source url
+UNO Farm,uno-farm,aurora,tvl,traction source url
+Autofarm,autofarm,aurora,tvl,traction source url
+Magik Finance,magik-farm,aurora,tvl,traction source url
+Securo Finance,securo-finance,aurora,tvl,traction source url
+Beefy Finance,beefy,aurora,tvl,traction source url
+BlueBit Finance,bluebit,both,tvl,traction source url
+KillSwitch Finance,killswitch,aurora,tvl,traction source url
+MoonFlower Farmers,moon-flower-farmers,aurora,tvl,traction source url
+MoreMarkets.xyz,moremarkets.xyz,near,tvl,traction source url
+NEKO,neko,near,tvl,traction source url
+PembRock Finance,pembrock-finance,near,tvl,traction source url
+Vaporwave Finance,vaporwave,both,tvl,traction source url
+KAIO (Libre Capital),kaio,near,tvl,traction source url
+Delta Trade,deltatrade,near,tvl,traction source url
+HERE Wallet,here-wallet-staking,near,tvl,traction source url
+Orderly Network,orderly-bridge,near,tvl,traction source url
+Spin,spin-dov,near,tvl,traction source url
+Spin,spin-perps,near,tvl,traction source url
+Spin,spin-spot,near,tvl,traction source url
+Crafting Finance,crafting-finance,aurora,tvl,traction source url
+NEX,nex,aurora,tvl,traction source url
+Thetanuts Finance,thetanuts-finance,aurora,tvl,traction source url
+NEAR Intents,near-intents,both,tvl,traction source url
+NEAR Omni Bridge,near-bridge,near,tvl,traction source url
+Portal (Wormhole),portal,both,tvl,traction source url
+Celer cBridge,cbridge,aurora,tvl,traction source url
+Rainbow Bridge,rainbow-bridge,near,tvl,traction source url
+Router Protocol,router-protocol,aurora,tvl,traction source url
+Allbridge,allbridge-classic,both,tvl,traction source url
+Synapse Protocol,synapse-cross-chain-bridge,aurora,tvl,traction source url
+Stargate,stargate-v2,aurora,tvl,traction source url
+BoringDAO,boringdao,aurora,tvl,traction source url
+Axelar Network,axelar,aurora,tvl,traction source url
+Hashport,hashport,aurora,tvl,traction source url
+Meson,meson,aurora,tvl,traction source url
+Multichain,multichain,aurora,tvl,traction source url
+Spherium,spherium,aurora,tvl,traction source url
+Symbiosis,symbiosis,aurora,tvl,traction source url
+Backpack Exchange,backpack,near,cex-reserves,traction source url
+Binance,binance-cex,near,cex-reserves,traction source url
+Bitfinex,bitfinex,near,cex-reserves,traction source url
+Bitget,bitget,near,cex-reserves,traction source url
+Bitlo,bitlo,near,cex-reserves,traction source url
+Bitstamp,bitstamp,near,cex-reserves,traction source url
+Flipster,flipster,near,cex-reserves,traction source url
+Gate,gate,both,cex-reserves,traction source url
+Gate,gate-us,near,cex-reserves,traction source url
+KuCoin,kucoin,near,cex-reserves,traction source url
+MEXC,mexc,near,cex-reserves,traction source url
+SwissBorg,swissborg,near,cex-reserves,traction source url
+Roketo,roketo,near,tvl,traction source url
+Empyrean DAO,empyrean-dao,both,tvl,traction source url
+OIN Finance,oin-finance,both,tvl,traction source url
+ORA Finance,ora-finance,aurora,tvl,traction source url
+PAPR Ecosystem,paprprintr,aurora,tvl,traction source url
+Meta Pool,meta-pool-near,both,tvl,traction source url
+Rhea LST (rNEAR),rhea-lst,near,tvl,traction source url
+LiNEAR Protocol,linear-protocol,near,tvl,traction source url
+Allstake,allstake,near,tvl,traction source url
+TruFin,trustake,near,tvl,traction source url
+Phoenix Bonds,phoenix-bonds,near,tvl,traction source url
+Stader (NEAR),stader,near,tvl,traction source url
+De1,de1,both,tvl,exact name
+DZap,dzap,both,tvl,exact name
+Rango Exchange,rango,both,tvl,exact name
+Rubic,rubic,both,tvl,exact name
+Socket,socket-protocol,both,tvl,exact name
+Bungee,bungee-dex,both,tvl,exact name
+Chainspot,chainspot,both,tvl,exact name
+LayerZero,layerzero-v1,both,tvl,exact name
+LayerZero,layerzero-v2,both,tvl,exact name
+Jumper.Exchange,jumper-bridge-aggregator,both,tvl,parent name parent#jumper-exchange
+Jumper.Exchange,jumper-dex-aggregator,both,tvl,parent name parent#jumper-exchange
+LI.FI,li.fi-bridge-aggregator,both,tvl,parent name parent#li.fi
+LI.FI,li.fi-dex-aggregator,both,tvl,parent name parent#li.fi
+Orderly Network,orderly-amm,both,tvl,parent name parent#orderly-network
+Bungee,bungee-bridge-aggregator,both,tvl,parent name parent#bungee
+Frax Finance,frax-swap,both,tvl,parent name parent#frax-finance

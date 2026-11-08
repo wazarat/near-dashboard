@@ -105,8 +105,12 @@ async function main() {
   const claimed = new Map<string, string>(existing.filter((r) => r.project).map((r) => [r.slug, r.project as string]));
   const report: string[] = [];
   const add = (project: string, p: LlamaProtocolSnap, note: string) => {
-    if (have.has(p.slug)) return;
     if (claimed.has(p.slug) && claimed.get(p.slug) !== project) {
+      if (!/^parent name/.test(note)) report.push(`  conflict: ${p.slug} already mapped to ${claimed.get(p.slug)}, wanted by ${project} (${note})`);
+      return;
+    }
+    if (have.has(p.slug)) return;
+    if (false) {
       report.push(`  conflict: ${p.slug} already mapped to ${claimed.get(p.slug)}, wanted by ${project}`);
       return;
     }
@@ -115,22 +119,23 @@ async function main() {
     claimed.set(p.slug, project);
   };
 
+  // Three passes so a strong signal for one project is never pre-empted by a weak match for another:
+  // 1) the slug in the row's Traction Source URL and the hand aliases, 2) exact normalized names,
+  // 3) parent-protocol names (claims only children nobody else owns).
   for (const pr of projects) {
-    // 1. The slug in the research row's Traction Source URL is the strongest signal.
     for (const u of pr.tractionSources) {
       const m = u.match(/defillama\.com\/protocol\/([a-z0-9.\-]+)/i);
       if (m && bySlug.has(m[1])) add(pr.name, bySlug.get(m[1])!, "traction source url");
     }
-    // 2. Hand aliases.
     for (const a of ALIASES[pr.name] ?? []) {
       if (a.startsWith("parent#")) for (const p of byParent.get(a) ?? []) add(pr.name, p, `alias ${a}`);
       else if (bySlug.has(a)) add(pr.name, bySlug.get(a)!, "alias slug");
       else report.push(`  alias slug not on DefiLlama: ${a} (${pr.name})`);
     }
-    // 3. Exact normalized name, then parent name.
-    const n = normalizeName(pr.name);
-    for (const p of byNorm.get(n) ?? []) add(pr.name, p, "exact name");
-    const par = parentNorm.get(n);
+  }
+  for (const pr of projects) for (const p of byNorm.get(normalizeName(pr.name)) ?? []) add(pr.name, p, "exact name");
+  for (const pr of projects) {
+    const par = parentNorm.get(normalizeName(pr.name));
     if (par) for (const p of byParent.get(par) ?? []) add(pr.name, p, `parent name ${par}`);
   }
 

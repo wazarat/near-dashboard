@@ -2,6 +2,8 @@
 
 import { useMemo } from "react";
 import { ChartCard, TvlNote } from "@/components/atlas/chart-card";
+import { ChainOverTime } from "@/components/charts/chain-over-time";
+import { MoversPanel } from "@/components/charts/movers-panel";
 import { ConcentrationCurve, concentrationFocus, concentrationTable } from "@/components/charts/concentration-curve";
 import { EventTimeline, eventTable } from "@/components/charts/event-timeline";
 import { InsightsPanel } from "@/components/charts/insights-panel";
@@ -15,7 +17,7 @@ import { concentration, nativeShare, topNShare } from "@/lib/metrics";
 import { EVENT_TYPES } from "@/lib/types";
 
 export function OverviewView() {
-  const { filtered, all, metric, scale, setState, setFacet, openProject } = useFilters();
+  const { filtered, all, metric, scale, range, state, setState, setFacet, openProject } = useFilters();
   const label = METRIC_LABEL[metric].toLowerCase();
   const n = filtered.length;
 
@@ -66,7 +68,8 @@ export function OverviewView() {
     <div className="space-y-4">
       <KpiTiles projects={filtered} total={all.length} />
 
-      {/* chain-over-time and movers are mounted here in a later milestone */}
+      <ChainOverTime range={range} metric={metric} />
+      <MoversPanel projects={filtered} metric={metric} range={range} minSize={state.minSize} onMinSizeChange={(minSize) => void setState({ minSize })} onOpen={openProject} />
 
       <div className="grid gap-4 xl:grid-cols-3">
         <ChartCard

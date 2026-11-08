@@ -61,6 +61,10 @@ Blank numeric cells are null, never zero. "Not researched" means a field was nev
 
 Deferred (paid): DefiLlama `/raises`, `/emissions` and `/summary/derivatives/*` (HTTP 402), Dune API, Token Terminal, Artemis, Nansen, Flipside API, RootData, CryptoRank, the X API.
 
+## Operations
+
+The daily GitHub Action, the Workload Identity Federation setup for BigQuery, how to rerun a backfill and the history store layout are documented in `docs/OPERATIONS.md`.
+
 ## Setup with secrets (optional)
 
 Copy `.env.example` to `.env.local`. Locally, BigQuery uses Application Default Credentials (`gcloud auth application-default login`); no key file is needed or supported. In GitHub Actions the workflow authenticates with Workload Identity Federation. Sources whose secret is missing are skipped and logged in `data/history/_meta.json`; the site still builds.
