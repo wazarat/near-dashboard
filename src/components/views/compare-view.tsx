@@ -3,6 +3,7 @@
 import { AlertTriangle, X } from "lucide-react";
 import { useMemo } from "react";
 import { TierBadge } from "@/components/atlas/badges";
+import { NumericMetricSegmented } from "@/components/atlas/chart-metric";
 import { AddProjectPopover, PresetChips, TopProjectButtons } from "@/components/compare/add-project";
 import { CompareOverlay } from "@/components/compare/compare-overlay";
 import { MetricMatrix } from "@/components/compare/metric-matrix";
@@ -19,8 +20,10 @@ import { topN } from "@/lib/metrics";
 /** Compare page: up to four projects side by side, selection carried in the URL. */
 export function CompareView() {
   const { ids, projects, add, remove, set, clear, isFull } = useCompare();
-  const { all, metric, range, state, setState, openProject } = useFilters();
+  const { all, range, state, setState, openProject } = useFilters();
+  const metric = state.cm;
   const m = numericMetric(metric);
+  const metricControl = <NumericMetricSegmented value={m} onChange={(cm) => void setState({ cm })} ariaLabel="Compare metric" />;
   const sectors = useMemo(() => crossSector(projects), [projects]);
   const sentences = useMemo(() => compareSentences(projects, metric), [projects, metric]);
   const top = useMemo(() => topN(all, m, 6), [all, m]);
@@ -38,7 +41,10 @@ export function CompareView() {
         <CardContent className="space-y-4 px-4">
           <PresetChips all={all} onApply={set} />
           <div className="space-y-1.5">
-            <p className="text-xs text-muted-foreground">Or start from the largest by {METRIC_LABEL[m].toLowerCase()}</p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-xs text-muted-foreground">Or start from the largest by {METRIC_LABEL[m].toLowerCase()}</p>
+              {metricControl}
+            </div>
             <TopProjectButtons projects={top} metric={m} onAdd={add} />
           </div>
           <AddProjectPopover all={all} exclude={ids} onAdd={add} />
@@ -71,7 +77,13 @@ export function CompareView() {
               </Button>
             )}
           </div>
-          <PresetChips all={all} onApply={set} />
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <PresetChips all={all} onApply={set} />
+            <label className="flex items-center gap-2 text-label text-ink-300">
+              Metric for ratios and trends
+              {metricControl}
+            </label>
+          </div>
           {projects.length === 1 && <p className="text-sm text-muted-foreground">Add at least one more project to see ranks, ratios and sentences.</p>}
           {sectors.length > 1 && (
             <p className="flex items-start gap-2 rounded-md border px-3 py-2 text-xs" style={{ borderColor: "var(--status-warning)" }} role="note">

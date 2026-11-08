@@ -37,6 +37,7 @@ export function RatiosTable({ projects, metric }: Props) {
   const takeaway = useMemo(() => ratiosTakeaway(rows, projects), [rows, projects]);
   return (
     <ChartCard
+      scope="selection"
       id="compare-ratios"
       title="Ratios that remove size"
       takeaway={takeaway}

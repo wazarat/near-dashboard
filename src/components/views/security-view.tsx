@@ -42,7 +42,7 @@ function pluralProjects(n: number) {
 }
 
 export function SecurityView() {
-  const { filtered, all, setFacet, openProject } = useFilters();
+  const { filtered, all, openProject } = useFilters();
 
   const incidents = useMemo(() => events.filter((e) => e.type === "Incident"), []);
   const incidentSummary = useMemo(() => summariseIncidents(incidents), [incidents]);
@@ -125,6 +125,7 @@ export function SecurityView() {
         <ChartCard
           className="xl:col-span-2"
           title="Incident timeline"
+          scope="whole-chain"
           takeaway={incidentTakeaway}
           info="Events of type Incident from the research events file (data/near-ecosystem-events CSV). Marker area tracks the stated USD amount, which can be a loss, a bounty paid or value at risk as the amount note says; incidents without a stated amount use the smallest hollow marker. Month-only dates sit on the first of the month. Hover for detail, click to open the source. Independent of the project filters."
           table={incidentTable}
@@ -138,7 +139,7 @@ export function SecurityView() {
           info="Projects in the current selection grouped by the Security Risk Level column of the research CSV. Not researched (hatched) means the project was never checked; Unknown means it was checked and no audit or incident was found. Click a bar to filter."
           table={riskTable}
         >
-          <RiskBreakdown rows={riskRows} onSelect={(r) => setFacet("risk", [r])} />
+          <RiskBreakdown rows={riskRows} />
         </ChartCard>
       </div>
 

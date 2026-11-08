@@ -39,6 +39,7 @@ export function MetricMatrix({ projects, all }: Props) {
   const takeaway = useMemo(() => matrixTakeaway(rows, projects), [rows, projects]);
   return (
     <ChartCard
+      scope="selection"
       id="compare-matrix"
       title="Metrics, with rank and share in sector"
       takeaway={takeaway}

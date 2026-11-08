@@ -5,8 +5,7 @@ import { ChartCard, EmptyState, TvlNote } from "@/components/atlas/chart-card";
 import { chainData, meta } from "@/lib/data";
 import { fmtDateShort, fmtPctSigned, fmtUsd } from "@/lib/format";
 import { rangeDays, RANGE_LONG, sliceTail, type Range } from "@/lib/ranges";
-import type { ChainSeriesKey, MetricKey } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import type { ChainSeriesKey } from "@/lib/types";
 import { MiniSeries } from "./mini-series";
 
 const PANELS: Array<{ key: ChainSeriesKey; label: string; kind: "line" | "bar" }> = [
@@ -17,10 +16,9 @@ const PANELS: Array<{ key: ChainSeriesKey; label: string; kind: "line" | "bar" }
 ];
 
 /** DefiLlama chain-level history for NEAR and Aurora as 2×4 small multiples, each with its own axis. */
-export function ChainOverTime({ range, metric }: { range: Range; metric: MetricKey }) {
+export function ChainOverTime({ range }: { range: Range }) {
   const n = rangeDays(range, chainData.dates.length);
   const dates = useMemo(() => sliceTail(chainData.dates, n), [n]);
-  const active: ChainSeriesKey | null = metric === "count" ? null : metric;
   const near = chainData.latest.near;
   const aurora = chainData.latest.aurora;
   const chg = (k: ChainSeriesKey) => near.change[k]?.[range === "7d" ? "d7" : range === "30d" ? "d30" : "d90"] ?? null;
@@ -40,8 +38,10 @@ export function ChainOverTime({ range, metric }: { range: Range; metric: MetricK
 
   return (
     <ChartCard
+      id="chain-over-time"
       title="Chain over time"
       takeaway={takeaway}
+      scope="whole-chain"
       info="DefiLlama chain-level series. Default chain TVL (excludes liquid staking and bridges), daily DEX volume, fees and revenue summed across every protocol on the chain. Window follows the date range control; the current partial day is excluded from flows."
       footer={<TvlNote />}
       table={{
@@ -62,7 +62,7 @@ export function ChainOverTime({ range, metric }: { range: Range; metric: MetricK
       ) : (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           {PANELS.map((p) => (
-            <div key={p.key} className={cn("rounded-md border p-2", active === p.key && "ring-1 ring-foreground/40")}>
+            <div key={p.key} className="rounded-lg border border-ink-700/40 p-2">
               <div className="mb-1 flex items-center justify-between text-xs">
                 <span className="font-medium">{p.label}</span>
                 <span className="text-muted-foreground">NEAR</span>

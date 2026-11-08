@@ -7,12 +7,13 @@ import { CAT } from "@/lib/colors";
 import { useCompare } from "@/lib/compare";
 import { filterParsers, useFilters } from "@/lib/filters";
 
-/** Link to the compare page carrying the selection plus any non-default metric, range and scale. */
-export function compareHref(ids: readonly string[], state: { metric: string; range: string; scale: string }): string {
+/** Link to the compare page carrying the selection plus any non-default compare metric, range, scale and legacy switch. */
+export function compareHref(ids: readonly string[], state: { cm: string; range: string; scale: string; legacy?: string }): string {
   const parts = [`compare=${ids.join(",")}`];
-  if (state.metric !== filterParsers.metric.defaultValue) parts.push(`metric=${state.metric}`);
+  if (state.cm !== filterParsers.cm.defaultValue) parts.push(`cm=${state.cm}`);
   if (state.range !== filterParsers.range.defaultValue) parts.push(`range=${state.range}`);
   if (state.scale !== filterParsers.scale.defaultValue) parts.push(`scale=${state.scale}`);
+  if (state.legacy && state.legacy !== filterParsers.legacy.defaultValue) parts.push(`legacy=${state.legacy}`);
   return `/compare/?${parts.join("&")}`;
 }
 
@@ -22,14 +23,15 @@ export function CompareTray() {
   const { state } = useFilters();
   if (ids.length === 0) return null;
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85" role="region" aria-label="Compare tray" data-testid="compare-tray">
-      <div className="mx-auto flex w-full max-w-[1440px] items-center gap-2 px-4 py-2 sm:px-6">
-        <span className="hidden text-xs text-muted-foreground sm:inline">Compare</span>
-        <ul className="flex min-w-0 flex-1 gap-1.5 overflow-x-auto" aria-label="Projects in compare">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-700/60 bg-ink-900" role="region" aria-label="Compare tray" data-testid="compare-tray">
+      <div className="mx-auto flex w-full max-w-atlas items-center gap-2 px-5 py-2 sm:px-6 lg:px-8">
+        <span className="hidden text-label text-ink-300 sm:inline">Compare</span>
+        <ul className="flex min-w-0 flex-1 gap-3 overflow-x-auto" aria-label="Projects in compare">
           {projects.map((p, i) => (
-            <li key={p.id} className="inline-flex shrink-0 items-center gap-1 rounded-md border py-1 pl-2 pr-1 text-xs" style={{ borderLeftWidth: 3, borderLeftColor: CAT[i] }}>
+            <li key={p.id} className="inline-flex shrink-0 items-center gap-1.5 text-xs text-ink-100">
+              <span aria-hidden="true" className="size-2 rounded-full" style={{ backgroundColor: CAT[i] }} />
               <span className="max-w-[9rem] truncate">{p.name}</span>
-              <button type="button" onClick={() => remove(p.id)} aria-label={`Remove ${p.name} from compare`} className="rounded text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <button type="button" onClick={() => remove(p.id)} aria-label={`Remove ${p.name} from compare`} className="rounded text-ink-400 hover:text-ink-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60">
                 <X className="size-3" />
               </button>
             </li>

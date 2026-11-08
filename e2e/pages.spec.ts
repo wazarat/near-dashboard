@@ -8,11 +8,11 @@ fs.mkdirSync(SHOTS, { recursive: true });
 /** Every page, plus a few states worth a picture. */
 const PAGES: Array<{ name: string; url: string; expect: string }> = [
   { name: "overview", url: "/", expect: "Sectors by" },
-  { name: "overview-tvl-log", url: "/?metric=tvl&scale=log", expect: "Concentration curve" },
+  { name: "overview-tvl-log", url: "/?tm=tvl&cc=fees&scale=log", expect: "Concentration curve" },
   { name: "overview-drawer", url: "/?project=near-intents", expect: "Similar projects" },
   { name: "sectors", url: "/sectors/", expect: "Sectors by" },
   { name: "traction", url: "/traction/", expect: "Leaderboard" },
-  { name: "traction-fees-momentum", url: "/traction/?metric=fees&cols=momentum", expect: "Leaderboard" },
+  { name: "traction-fees-momentum", url: "/traction/?lb=fees&cols=momentum", expect: "Leaderboard" },
   { name: "funding", url: "/funding/", expect: "Rounds" },
   { name: "security", url: "/security/", expect: "NEAR Intents" },
   { name: "explorer", url: "/explorer/", expect: "Download filtered CSV" },
@@ -21,7 +21,7 @@ const PAGES: Array<{ name: string; url: string; expect: string }> = [
   { name: "thesis", url: "/thesis/", expect: "Cross-chain volume through NEAR Intents" },
   { name: "investors", url: "/investors/?investor=dragonfly-capital", expect: "Portfolio (" },
   { name: "compare-empty", url: "/compare/", expect: "Liquid staking" },
-  { name: "compare-liquid-staking", url: "/compare/?compare=meta-pool,rhea-lst-rnear,linear-protocol&metric=tvl", expect: "Meta Pool" },
+  { name: "compare-liquid-staking", url: "/compare/?compare=meta-pool,rhea-lst-rnear,linear-protocol&cm=fees", expect: "Meta Pool" },
 ];
 
 async function collectErrors(page: Page): Promise<string[]> {
@@ -57,10 +57,46 @@ test("filters round-trip through the URL and the count updates", async ({ page }
   await expect(page.getByText(/Showing \d+ of 1,088 projects/)).toBeVisible();
 });
 
-test("metric switcher writes the URL", async ({ page }) => {
+test("each chart owns its metric key; the treemap control writes tm and nothing else", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("radio", { name: "Fees" }).or(page.getByRole("button", { name: "Fees" })).first().click();
-  await expect(page).toHaveURL(/metric=fees/);
+  await page.getByRole("radiogroup", { name: "Treemap metric" }).getByRole("radio", { name: "Fees" }).click();
+  await expect(page).toHaveURL(/tm=fees/);
+  await expect(page).not.toHaveURL(/metric=/);
+  await expect(page.getByRole("radiogroup", { name: "Concentration metric" }).getByRole("radio", { name: "TVL" })).toHaveAttribute("aria-checked", "true");
+});
+
+test("the legacy switch hides exactly the legacy listings and is counted as a filter", async ({ page }) => {
+  await page.goto("/explorer/");
+  const total = page.getByText(/Showing [\d,]+ of [\d,]+ projects/);
+  await expect(total).toBeVisible();
+  // Below the xl breakpoint the switch lives inside the Filters sheet.
+  let sw = page.getByRole("switch", { name: "Hide legacy listings" }).first();
+  if (!(await sw.isVisible())) {
+    await page.getByRole("button", { name: /Filters/ }).click();
+    sw = page.getByRole("switch", { name: "Hide legacy listings" }).first();
+    await expect(sw).toBeVisible();
+  }
+  const legacyLabel = await page.getByText(/Hide legacy listings/).first().textContent();
+  const legacyCount = Number(legacyLabel?.match(/\(([\d,]+)\)/)?.[1].replace(/,/g, ""));
+  expect(legacyCount).toBeGreaterThan(0);
+  await sw.click();
+  await expect(page).toHaveURL(/legacy=hide/);
+  await page.keyboard.press("Escape");
+  const text = await total.textContent();
+  const shown = Number(text?.match(/Showing ([\d,]+) of ([\d,]+)/)?.[1].replace(/,/g, ""));
+  const all = Number(text?.match(/Showing ([\d,]+) of ([\d,]+)/)?.[2].replace(/,/g, ""));
+  expect(all - shown).toBe(legacyCount);
+  await expect(page.getByText("1 filter active").first()).toBeVisible();
+});
+
+test("whole-chain cards say so and do not change when a filter is applied", async ({ page }) => {
+  await page.goto("/");
+  const card = page.locator('[data-chart-card="Chain over time"]');
+  await expect(card.getByText("Whole chain, not filtered")).toBeVisible();
+  const before = await card.locator("p").first().textContent();
+  await page.goto("/?sector=Lending+%26+Credit");
+  await expect(page.locator('[data-chart-card="Chain over time"]').locator("p").first()).toHaveText(before ?? "");
+  await expect(page.locator('[data-chart-card="Native vs imported"]').getByText("1 filter active")).toBeVisible();
 });
 
 test("chart cards offer a table view", async ({ page }) => {

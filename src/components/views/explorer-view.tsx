@@ -34,6 +34,7 @@ import {
   websiteColumn,
   xColumn,
 } from "@/components/explorer/project-columns";
+import { ScopeNote } from "@/components/atlas/chart-card";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useFilters } from "@/lib/filters";
 
@@ -97,7 +98,10 @@ export function ExplorerView() {
       <NewlyDetectedCard />
       <Card className="gap-3 py-4">
         <CardHeader className="px-4">
-          <h2 className="text-sm font-semibold">Explorer</h2>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <h2 className="text-sm font-semibold">Explorer</h2>
+            <ScopeNote />
+          </div>
           <p className="text-sm text-muted-foreground">Every project in the current selection with every research column. Click a name or row for the full record and its sources; use Columns to show more fields.</p>
         </CardHeader>
         <CardContent className="px-0">

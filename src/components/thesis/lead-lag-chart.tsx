@@ -77,6 +77,7 @@ export function LeadLagChart({ data }: { data: ThesisJson }) {
 
   return (
     <ChartCard
+      scope="whole-chain"
       title="Test 2 · Lead and lag"
       takeaway={takeaway}
       info={`Pearson correlation between week-over-week log changes of the predictor (Intents volume from DefiLlama, or NEAR price from NearBlocks) and of each usage series (NearBlocks counts; BigQuery function calls and contracts called), at lags of −${maxLag} to +${maxLag} weeks. A positive lag means the predictor moves first, so its change this week is compared with the usage change that many weeks later. The shaded band is about 2/√n; correlations inside it cannot be told from noise at this sample size. Dots mark each predictor's strongest positive correlation at a positive lag.`}

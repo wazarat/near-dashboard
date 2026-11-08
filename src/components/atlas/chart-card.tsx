@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { InfoTip } from "@/components/ui/info-tip";
 import { Segmented } from "@/components/ui/segmented";
 import { meta } from "@/lib/data";
-import type { Scale } from "@/lib/filters";
+import { useActiveFilterCount, type Scale } from "@/lib/filters";
 import { cn } from "@/lib/utils";
 import { ChartTable, ChartTableToggle, type ChartTableSpec, type ChartView } from "./chart-table";
 
@@ -33,14 +33,33 @@ interface ChartCardProps {
   table?: ChartTableSpec;
   /** When given, a Query tab shows the exact SQL, API call and transform behind the chart. */
   queries?: QuerySpec[];
+  /**
+   * What the card responds to (standard section 4). Filtered cards say how
+   * many filters are active; whole-chain and selection cards say they ignore them.
+   */
+  scope?: ChartScope;
 }
+
+export type ChartScope = "filtered" | "whole-chain" | "selection";
 
 const SCALE_OPTIONS = [
   { value: "log" as const, label: "Log" },
   { value: "linear" as const, label: "Linear" },
 ];
 
-export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries }: ChartCardProps) {
+/** One line of plain text under a title that says whether the filters apply. */
+export function ScopeNote({ scope = "filtered", className }: { scope?: ChartScope; className?: string }) {
+  const active = useActiveFilterCount();
+  const text = scope === "whole-chain" ? "Whole chain, not filtered" : scope === "selection" ? "Selected projects only, not filtered" : active > 0 ? `${active} filter${active === 1 ? "" : "s"} active` : null;
+  if (!text) return null;
+  return (
+    <span className={cn("text-label text-ink-400", className)} data-scope={scope}>
+      {text}
+    </span>
+  );
+}
+
+export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries, scope }: ChartCardProps) {
   const [view, setView] = useState<ChartView>("chart");
   const hasQuery = Boolean(queries && queries.length);
   return (
@@ -48,9 +67,12 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
       <CardHeader className="gap-1 px-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1">
-              <h3 className="text-sm font-semibold leading-tight">{title}</h3>
-              <InfoTip label={`About ${title}`}>{info}</InfoTip>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+              <span className="flex items-center gap-1">
+                <h3 className="text-sm font-semibold leading-tight">{title}</h3>
+                <InfoTip label={`About ${title}`}>{info}</InfoTip>
+              </span>
+              <ScopeNote scope={scope} />
             </div>
             <p className="mt-1 text-sm text-ink-300">{takeaway}</p>
           </div>

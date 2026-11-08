@@ -107,6 +107,7 @@ export function InvestorsBars({ investors, totalRounds, onOpen, className }: Pro
 
   return (
     <ChartCard
+      scope="whole-chain"
       id="top-investors"
       className={className}
       title={`Top ${Math.min(TOP_INVESTORS, rows.length) || TOP_INVESTORS} investors by deals`}

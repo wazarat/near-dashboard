@@ -2,6 +2,7 @@
 
 import { ExternalLink } from "lucide-react";
 import { ChainChip, TierBadge } from "@/components/atlas/badges";
+import { MetricSegmented } from "@/components/atlas/chart-metric";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { leadersBySector, projects as allProjects } from "@/lib/data";
@@ -10,7 +11,8 @@ import { displayUrl, fmtMetric, METRIC_SHORT } from "@/lib/format";
 import { metricValue, sumMetric } from "@/lib/metrics";
 
 export function SectorDrawer() {
-  const { state, openSector, openProject, metric } = useFilters();
+  const { state, setState, openSector, openProject } = useFilters();
+  const metric = state.sm;
   const sector = state.sectorDrawer;
   const open = Boolean(sector);
   const leaders = sector ? (leadersBySector.get(sector) ?? []) : [];
@@ -28,14 +30,18 @@ export function SectorDrawer() {
             <SheetHeader>
               <SheetTitle className="text-xl">{sector}</SheetTitle>
               <SheetDescription>
-                {inSector.length} projects · {native} NEAR-native · {live} with any measurable metric
+                {inSector.length} projects, {native} NEAR-native, {live} with any measurable metric
                 {metric !== "count" && (
                   <>
-                    {" "}
-                    · {METRIC_SHORT[metric]} {fmtMetric(metric, sumMetric(inSector, metric))}
+                    {", "}
+                    {METRIC_SHORT[metric]} {fmtMetric(metric, sumMetric(inSector, metric))}
                   </>
                 )}
               </SheetDescription>
+              <div className="flex items-center gap-2 pt-1 text-label text-ink-300">
+                Order by
+                <MetricSegmented value={metric} onChange={(sm) => void setState({ sm })} ariaLabel="Sector drawer metric" />
+              </div>
             </SheetHeader>
             <div className="space-y-5 px-4 pb-8">
               <section className="space-y-2">

@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { ChartCard, TvlNote } from "@/components/atlas/chart-card";
+import { MetricSegmented } from "@/components/atlas/chart-metric";
 import { SectorBars, sectorBarRows, sectorBarTable } from "@/components/charts/sector-bars";
 import { SectorGrid, sectorCards, sectorCardTable } from "@/components/charts/sector-grid";
 import { TierBySector, tierRows, tierTable } from "@/components/charts/tier-by-sector";
@@ -9,11 +10,13 @@ import { useFilters } from "@/lib/filters";
 import { fmtInt, fmtMetric, fmtPct, METRIC_LABEL } from "@/lib/format";
 
 export function SectorsView() {
-  const { filtered, metric, scale, setState, openSector, openProject } = useFilters();
-  const label = METRIC_LABEL[metric].toLowerCase();
+  const { filtered, scale, state, setState, openSector, openProject } = useFilters();
+  const { sb, sg } = state;
+  const label = METRIC_LABEL[sb].toLowerCase();
+  const cardLabel = METRIC_LABEL[sg].toLowerCase();
   const n = filtered.length;
 
-  const barRows = useMemo(() => sectorBarRows(filtered, metric), [filtered, metric]);
+  const barRows = useMemo(() => sectorBarRows(filtered, sb), [filtered, sb]);
   const barTakeaway = useMemo(() => {
     if (n === 0) return "No projects match the current filters.";
     const total = barRows.reduce((a, r) => a + r.total, 0);
@@ -21,11 +24,11 @@ export function SectorsView() {
     if (withData === 0) return `No ${label} data in this selection.`;
     const top = barRows[0];
     const topShare = total > 0 ? top.total / total : null;
-    if (metric === "count") {
+    if (sb === "count") {
       return `${top.sector} has the most projects (${fmtInt(top.total)}, ${fmtPct(topShare)} of the selection) across ${barRows.length} sectors.`;
     }
-    return `${top.sector} leads ${label} with ${fmtMetric(metric, top.total)} (${fmtPct(topShare)} of the selection); ${withData} of ${barRows.length} sectors report any ${label}.`;
-  }, [barRows, n, metric, label]);
+    return `${top.sector} leads ${label} with ${fmtMetric(sb, top.total)} (${fmtPct(topShare)} of the selection); ${withData} of ${barRows.length} sectors report any ${label}.`;
+  }, [barRows, n, sb, label]);
 
   const tiers = useMemo(() => tierRows(filtered), [filtered]);
   const tierTakeaway = useMemo(() => {
@@ -39,7 +42,7 @@ export function SectorsView() {
     return `${base}; the ${t1} Tier 1 leader${t1 === 1 ? "" : "s"} sit${t1 === 1 ? "s" : ""} in ${t1Sectors.length} sector${t1Sectors.length === 1 ? "" : "s"}, most in ${lead.sector} (${lead["Tier 1 - Leader"]}).`;
   }, [tiers, n]);
 
-  const cards = useMemo(() => sectorCards(filtered, metric), [filtered, metric]);
+  const cards = useMemo(() => sectorCards(filtered, sg), [filtered, sg]);
   const gridTakeaway = useMemo(() => {
     if (n === 0) return "No projects match the current filters.";
     const sized = cards.filter((c) => c.count >= 5 && c.nativeShare !== null);
@@ -53,18 +56,21 @@ export function SectorsView() {
   return (
     <div className="space-y-4">
       <ChartCard
+        id="sector-bars"
         title={`Sectors by ${label}`}
         takeaway={barTakeaway}
         info={`All sectors in the current selection ranked by ${label}. Money metrics are summed from DefiLlama (blank rows excluded); project counts come from the research CSVs. Sectors with no data are hidden on the log scale. Click a bar or a sector name to open the sector drawer.`}
-        scale={metric === "count" ? undefined : scale}
+        actions={<MetricSegmented value={sb} onChange={(m) => void setState({ sb: m })} ariaLabel="Sector bars metric" />}
+        scale={sb === "count" ? undefined : scale}
         onScaleChange={(s) => void setState({ scale: s })}
-        footer={metric === "tvl" ? <TvlNote /> : undefined}
-        table={sectorBarTable(barRows, metric)}
+        footer={sb === "tvl" ? <TvlNote /> : undefined}
+        table={sectorBarTable(barRows, sb)}
       >
-        <SectorBars projects={filtered} metric={metric} scale={scale} onSelect={openSector} />
+        <SectorBars projects={filtered} metric={sb} scale={scale} onSelect={openSector} />
       </ChartCard>
 
       <ChartCard
+        id="tier-by-sector"
         title="Traction tier by sector"
         takeaway={tierTakeaway}
         info="Project counts per traction tier within each sector. Tiers come from the research CSVs. Tier 1 to 3 rank projects with measurable DefiLlama traction, Tracked negligible means a DefiLlama listing with every figure at zero, Not tracked means no listing. Click a bar to open the sector drawer."
@@ -74,15 +80,16 @@ export function SectorsView() {
       </ChartCard>
 
       <ChartCard
+        id="sector-cards"
         title="Sector cards"
         takeaway={gridTakeaway}
-        info={`One card per sector in the selection, with project count, NEAR-native share, projects with any measurable traction and the summed ${label}. Counts and the Native Chain classification come from the research CSVs; money metrics from DefiLlama. Ranked leaders come from the research leaders CSV and do not change with the filters.`}
-        footer={metric === "tvl" ? <TvlNote /> : undefined}
-        table={sectorCardTable(cards, metric)}
+        info={`One card per sector in the selection, with project count, NEAR-native share, projects with any measurable traction and the summed ${cardLabel}. Counts and the Native Chain classification come from the research CSVs; money metrics from DefiLlama. Ranked leaders come from the research leaders CSV and do not change with the filters.`}
+        actions={<MetricSegmented value={sg} onChange={(m) => void setState({ sg: m })} ariaLabel="Sector cards metric" />}
+        footer={sg === "tvl" ? <TvlNote /> : undefined}
+        table={sectorCardTable(cards, sg)}
       >
-        <SectorGrid projects={filtered} metric={metric} onSelect={openSector} onOpen={openProject} />
+        <SectorGrid projects={filtered} metric={sg} onSelect={openSector} onOpen={openProject} />
       </ChartCard>
     </div>
   );
 }
-

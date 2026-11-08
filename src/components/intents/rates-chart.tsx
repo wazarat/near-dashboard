@@ -81,6 +81,7 @@ export function RatesChart({ data, range }: { data: IntentsSummary; range: Range
 
   return (
     <ChartCard
+      scope="whole-chain"
       title="Outcome rates"
       takeaway={takeaway}
       info={`Share of all rows the Explorer API returned per UTC day by final status, ${EXPLORER_LABEL}. SUCCESS / rows, REFUNDED / rows and (FAILED + INCOMPLETE_DEPOSIT) / rows come straight from the per-day files; the grey remainder is pending, processing and any other status. Window follows the date range control. The 30-day figures in the takeaway use complete days only.`}

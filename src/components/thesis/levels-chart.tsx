@@ -113,6 +113,7 @@ export function LevelsChart({ data, scale, onScaleChange }: Props) {
 
   return (
     <ChartCard
+      scope="whole-chain"
       title="Test 1 · Levels, indexed to 100"
       takeaway={takeaway}
       info={`Weekly sums (flows) or last values (price) over ${window.weeks} ISO weeks, each divided by its first positive week and multiplied by 100 so series of very different size share one axis. Intents volume is DefiLlama's NEAR Intents adapter; price and the chain-level counts are NearBlocks daily charts; function calls and contracts called are the NEAR BigQuery public dataset and only exist for its ${bigqueryWindow.weeks}-week window. A log axis keeps the small movers readable next to Intents volume.`}

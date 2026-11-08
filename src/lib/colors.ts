@@ -55,6 +55,15 @@ export const RISK_COLOR: Record<RiskLevel, string> = {
   "Not researched": "var(--risk-notresearched)",
 };
 
+/** Display labels where the group name alone would mislead. The CSV value and the group key are unchanged. */
+export const STATUS_GROUP_LABEL: Partial<Record<StatusGroup, string>> = {
+  "Legacy listing": "Legacy listing, status unverified",
+};
+
+export function statusGroupLabel(group: StatusGroup): string {
+  return STATUS_GROUP_LABEL[group] ?? group;
+}
+
 export const STATUS_COLOR: Record<StatusGroup, string> = {
   Mainnet: "var(--status-good)",
   Testnet: "var(--cat-2)",

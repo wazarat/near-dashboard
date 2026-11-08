@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyFilters } from "../src/lib/filters";
+import { CARRIED_PARAMS, FACETS, activeFilterCount, applyFilters, filterParsers } from "../src/lib/filters";
 import { generateInsights } from "../src/lib/insights";
 import { concentration, nativeShare, topNShare } from "../src/lib/metrics";
 import { toProject } from "../src/lib/parse";
@@ -8,6 +8,7 @@ const mk = (name: string, chain: string, tvl: string, fees = "", rev = "", via =
   toProject({ "Project/Company Name": name, "Sector/Category": "DEXs & Liquidity", "Native Chain": chain, "Native Chain Confidence": "High", "Traction Tier": "Tier 3 - Emerging", "TVL on NEAR + Aurora (USD)": tvl, "30d Fees (USD)": fees, "30d Revenue (USD)": rev, "Security Risk Level": "Not researched", Description: "d", Status: "Mainnet", "Discovered Via": via, "Funding Type": "Not researched", "Chain Presence": presence });
 
 const projects = [mk("A", "NEAR native", "90", "100", "50", "NEAR Catalog; DefiLlama"), mk("B", "Aurora native", "10", "", "", "Aurora ecosystem page", "Aurora"), mk("C", "Other EVM", "", "", "", "AwesomeNEAR", "")];
+const legacy = toProject({ ...{ "Project/Company Name": "L", "Sector/Category": "DEXs & Liquidity", "Native Chain": "NEAR native", "Native Chain Confidence": "Low", "Traction Tier": "Not tracked", "TVL on NEAR + Aurora (USD)": "", "Security Risk Level": "Not researched", Description: "d", Status: "Unknown (legacy 2021-23 listing)", "Discovered Via": "AwesomeNEAR", "Funding Type": "Not researched", "Chain Presence": "NEAR" } });
 
 describe("applyFilters", () => {
   it("filters by multi-valued facets and search", () => {
@@ -16,6 +17,35 @@ describe("applyFilters", () => {
     expect(applyFilters(projects, { chain: ["Aurora native", "Other EVM"] })).toHaveLength(2);
     expect(applyFilters(projects, { q: "b" }).map((p) => p.name)).toEqual(["B"]);
     expect(applyFilters(projects, { status: ["Mainnet"] })).toHaveLength(3);
+  });
+
+  it("shows legacy listings by default and hides exactly them with legacy=hide", () => {
+    const all = [...projects, legacy];
+    expect(legacy.statusGroup).toBe("Legacy listing");
+    expect(applyFilters(all, {})).toHaveLength(4);
+    expect(applyFilters(all, { legacy: "show" })).toHaveLength(4);
+    expect(applyFilters(all, { legacy: "hide" }).map((p) => p.name)).toEqual(["A", "B", "C"]);
+    expect(applyFilters(all, { legacy: "hide", status: ["Legacy listing"] })).toHaveLength(0);
+  });
+
+  it("counts the legacy switch as an active filter and carries it between pages", () => {
+    const base = { q: "", sector: [], chain: [], presence: [], tier: [], status: [], funding: [], via: [], legacy: "show" as const };
+    expect(activeFilterCount(base)).toBe(0);
+    expect(activeFilterCount({ ...base, legacy: "hide" })).toBe(1);
+    expect(activeFilterCount({ ...base, q: "x", sector: ["a", "b"] })).toBe(3);
+    expect(CARRIED_PARAMS).toContain("legacy");
+    expect(CARRIED_PARAMS).not.toContain("metric");
+  });
+
+  it("has no global metric and no security risk facet; each chart owns a metric key", () => {
+    const keys = Object.keys(filterParsers);
+    expect(keys).not.toContain("metric");
+    expect(keys).not.toContain("risk");
+    expect(FACETS.map((f) => f.key)).not.toContain("risk");
+    for (const k of ["tm", "cc", "mv", "ins", "sb", "sg", "lb", "cm", "sm"]) expect(keys).toContain(k);
+    expect(filterParsers.tm.defaultValue).toBe("count");
+    expect(filterParsers.cc.defaultValue).toBe("tvl");
+    expect(filterParsers.cm.defaultValue).toBe("tvl");
   });
 });
 

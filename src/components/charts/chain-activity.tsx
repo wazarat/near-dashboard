@@ -50,8 +50,10 @@ export function ChainActivity({ range }: { range: Range }) {
 
   return (
     <ChartCard
+      id="chain-activity"
       title="Chain activity"
       takeaway={takeaway}
+      scope="whole-chain"
       info="NearBlocks daily charts (transactions, active accounts, new accounts) since 2020 plus the NEAR BigQuery public dataset for the last year, which adds transactions, distinct signers, CREATE_ACCOUNT actions, FUNCTION_CALL receipts, distinct contracts called, and receipts to the aurora and intents.near accounts. Distinct signers are an estimate, since one person can use many accounts, and relayers or intents hide the end user."
       queries={[
         { kind: "sql", title: "queries/daily_chain.sql (transactions table)", code: BQ_DAILY_CHAIN },

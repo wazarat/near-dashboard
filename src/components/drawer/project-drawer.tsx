@@ -68,13 +68,13 @@ function Src({ p, k }: { p: Project; k: NumericMetricKey }) {
 }
 
 export function ProjectDrawer() {
-  const { state, openProject, all, metric, range } = useFilters();
+  const { state, openProject, all, range } = useFilters();
   const p = projectById(state.project);
   const open = Boolean(p);
   return (
     <Sheet open={open} onOpenChange={(o) => !o && openProject(null)}>
       <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-xl">
-        {p && <ProjectBody p={p} all={all} metric={metric} range={range} onOpen={openProject} />}
+        {p && <ProjectBody p={p} all={all} metric="tvl" range={range} onOpen={openProject} />}
       </SheetContent>
     </Sheet>
   );

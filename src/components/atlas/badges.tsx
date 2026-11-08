@@ -1,5 +1,5 @@
 import { PlainState } from "@/components/ui/plain-state";
-import { CHAIN_SHORT, TIER_SHORT } from "@/lib/colors";
+import { CHAIN_SHORT, TIER_SHORT, statusGroupLabel } from "@/lib/colors";
 import type { NativeChain, RiskLevel, StatusGroup, Tier } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -43,7 +43,7 @@ export function StatusBadge({ group, status, className }: { group: StatusGroup; 
   const quiet = group === "Unknown" || group === "Legacy listing";
   return (
     <PlainState tone={quiet ? "neutral" : "strong"} className={className} title={status}>
-      {group}
+      {statusGroupLabel(group)}
     </PlainState>
   );
 }

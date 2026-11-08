@@ -89,6 +89,7 @@ export function CompareOverlay({ projects, metric, range, align, onAlignChange }
 
   return (
     <ChartCard
+      scope="selection"
       id="compare-overlay"
       title={`${label} trend, indexed`}
       takeaway={takeaway}

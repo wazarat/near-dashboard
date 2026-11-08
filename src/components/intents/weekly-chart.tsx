@@ -64,6 +64,7 @@ export function WeeklyChart({ data }: { data: IntentsSummary }) {
 
   return (
     <ChartCard
+      scope="whole-chain"
       title="Weekly volume and swaps"
       takeaway={takeaway}
       info={`Bars show ${EXPLORER_LABEL} summed per ISO week (Monday start) over complete Explorer days only. The green line is the SUCCESS swap count per week on the right axis. The dashed line is ${LLAMA_LABEL} summed over the same days, drawn only where DefiLlama has a point for every day in the bucket. Weeks with fewer than 7 complete days are hatched.`}

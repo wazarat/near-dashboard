@@ -102,6 +102,7 @@ export function VolumeChart({ data, range, scale, onScaleChange }: { data: Data;
 
   return (
     <ChartCard
+      scope="whole-chain"
       title="Daily volume"
       takeaway={takeaway}
       info={`Bars show ${EXPLORER_LABEL}, the sum of amountInUsd for SUCCESS swaps per UTC day of createdAt. The line shows ${LLAMA_LABEL}, DefiLlama's "NEAR Intents" entry in the NEAR DEX overview. The Explorer covers 1Click swaps only and its backfill is still filling in older days; DefiLlama covers every channel from ${data.llamaDaily[0]?.[0] ? fmtDate(data.llamaDaily[0][0]) : "its first day"}. Window follows the date range control.`}

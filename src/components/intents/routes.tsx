@@ -32,6 +32,7 @@ export function RoutesChart({ data }: { data: IntentsSummary }) {
 
   return (
     <ChartCard
+      scope="whole-chain"
       title="Top routes"
       takeaway={takeaway}
       info={`Origin chain → destination chain of each SUCCESS swap, summed by amountInUsd over the Explorer's trailing 30 complete days, ${EXPLORER_LABEL}. Chain ids are the Explorer's asset prefixes (eth, tron, sol, btc, near, 1cs_v1 and so on). The hatched bar folds the long tail beyond the top 15 together with routes the per-day files already grouped as (other).`}
@@ -60,6 +61,7 @@ export function ChainsCards({ data }: { data: IntentsSummary }) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <ChartCard
+      scope="whole-chain"
         title="Origin chains"
         takeaway={takeawayFor(origin, "from")}
         info={`Chain the deposit came from, by amountInUsd of SUCCESS swaps over the Explorer's trailing 30 complete days, ${EXPLORER_LABEL}. The hatched bar is everything beyond the top 12.`}
@@ -69,6 +71,7 @@ export function ChainsCards({ data }: { data: IntentsSummary }) {
         <BucketBars rows={origin} color="var(--cat-6)" hatchId="hatch-intents-origin-chains" keyLabel="Origin chain" ariaLabel="1Click volume by origin chain" emptyMessage="No complete Explorer days yet." />
       </ChartCard>
       <ChartCard
+      scope="whole-chain"
         title="Destination chains"
         takeaway={takeawayFor(dest, "to")}
         info={`Chain the swap paid out on, by amountInUsd of SUCCESS swaps over the Explorer's trailing 30 complete days, ${EXPLORER_LABEL}. The hatched bar is everything beyond the top 12.`}

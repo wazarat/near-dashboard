@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { TvlNote } from "@/components/atlas/chart-card";
+import { ScopeNote, TvlNote } from "@/components/atlas/chart-card";
+import { MetricSegmented } from "@/components/atlas/chart-metric";
 import { DataTable, type ProjectColumnDef } from "@/components/explorer/data-table";
 import {
   calls30Column,
@@ -35,14 +36,15 @@ const numeric = (metric: MetricKey): NumericMetricKey => (metric === "count" ? "
 interface Props {
   projects: Project[];
   metric: MetricKey;
+  onMetricChange: (m: MetricKey) => void;
   range: Range;
   cols: ColSet;
   onColsChange: (cols: ColSet) => void;
   onOpen: (id: string) => void;
 }
 
-/** Sortable table of every project with a value for the selected metric, with four swappable column sets. */
-export function Leaderboard({ projects, metric, range, cols, onColsChange, onOpen }: Props) {
+/** Sortable table of every project with a value for the chart's own metric, with four swappable column sets. */
+export function Leaderboard({ projects, metric, onMetricChange, range, cols, onColsChange, onOpen }: Props) {
   const rows = useMemo(() => (metric === "count" ? projects.filter((p) => p.hasTraction) : projects.filter((p) => p[metric] !== null)), [projects, metric]);
   const m = numeric(metric);
 
@@ -77,8 +79,14 @@ export function Leaderboard({ projects, metric, range, cols, onColsChange, onOpe
     <Card className="gap-3 py-4" data-chart-card="Leaderboard">
       <CardHeader className="px-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-sm font-semibold">Leaderboard</h3>
-          <Segmented value={cols} onChange={onColsChange} options={COL_SETS.map((c) => ({ value: c, label: COL_SET_LABEL[c] }))} ariaLabel="Column set" />
+          <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <h3 className="text-sm font-semibold">Leaderboard</h3>
+            <ScopeNote />
+          </span>
+          <div className="flex flex-wrap items-center gap-2">
+            <MetricSegmented value={metric} onChange={onMetricChange} ariaLabel="Leaderboard metric" />
+            <Segmented value={cols} onChange={onColsChange} options={COL_SETS.map((c) => ({ value: c, label: COL_SET_LABEL[c] }))} ariaLabel="Column set" />
+          </div>
         </div>
         <p className="text-sm text-muted-foreground">
           {description}

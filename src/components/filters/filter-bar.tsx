@@ -4,14 +4,13 @@ import { Check, Link2, RotateCcw, Search, SlidersHorizontal } from "lucide-react
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Segmented } from "@/components/ui/segmented";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { CHAIN_COLOR, RISK_COLOR, STATUS_COLOR, TIER_COLOR } from "@/lib/colors";
+import { Switch } from "@/components/ui/switch";
+import { CHAIN_COLOR, STATUS_COLOR, STATUS_GROUP_LABEL, TIER_COLOR } from "@/lib/colors";
 import { meta, projects as allProjects } from "@/lib/data";
-import { FACETS, applyFilters, facetValue, useFilters, type FacetKey } from "@/lib/filters";
-import { METRIC_SHORT } from "@/lib/format";
+import { FACETS, LEGACY_GROUP, applyFilters, facetValue, useFilters, type FacetKey } from "@/lib/filters";
 import type { Range } from "@/lib/ranges";
-import { CHAIN_PRESENCE, METRICS, NATIVE_CHAINS, RISK_LEVELS, STATUS_GROUPS, TIERS, type MetricKey } from "@/lib/types";
+import { CHAIN_PRESENCE, NATIVE_CHAINS, STATUS_GROUPS, TIERS } from "@/lib/types";
 import { DateRangeControl } from "./date-range-control";
 import { MultiSelect, type Option } from "./multi-select";
 
@@ -19,7 +18,7 @@ const FACET_HINTS: Partial<Record<string, string>> = {
   "Not researched": "This field was never checked for the project",
   Unknown: "Checked, nothing found",
   "Not disclosed": "Checked, no funding disclosed",
-  "Legacy listing": "Listed only in the 2021 to 2023 AwesomeNEAR directory, which marks everything active, so the current status is unverified",
+  [LEGACY_GROUP]: "Listed only in the 2021 to 2023 AwesomeNEAR directory, which marks everything active, so the current status is unverified",
   Defunct: "DefiLlama page no longer resolves",
   "Tracked, negligible": "Listed on DefiLlama but every figure is zero",
 };
@@ -32,8 +31,6 @@ function orderedValues(key: FacetKey): string[] {
       return [...CHAIN_PRESENCE, "Unknown"];
     case "tier":
       return [...TIERS];
-    case "risk":
-      return [...RISK_LEVELS];
     case "status":
       return [...STATUS_GROUPS];
     case "sector":
@@ -48,13 +45,18 @@ function orderedValues(key: FacetKey): string[] {
 function colorFor(key: FacetKey, value: string): string | undefined {
   if (key === "chain") return CHAIN_COLOR[value as keyof typeof CHAIN_COLOR];
   if (key === "tier") return TIER_COLOR[value as keyof typeof TIER_COLOR];
-  if (key === "risk") return RISK_COLOR[value as keyof typeof RISK_COLOR];
   if (key === "status") return STATUS_COLOR[value as keyof typeof STATUS_COLOR];
   return undefined;
 }
 
-const METRIC_OPTIONS = METRICS.map((m) => ({ value: m, label: METRIC_SHORT[m] }));
+function labelFor(key: FacetKey, value: string): string | undefined {
+  if (key === "status") return STATUS_GROUP_LABEL[value as keyof typeof STATUS_GROUP_LABEL];
+  return undefined;
+}
 
+const legacyCount = allProjects.filter((p) => p.statusGroup === LEGACY_GROUP).length;
+
+/** The sticky filter bar: search, facets, the one global range control and the legacy-listing switch (standard section 4). */
 export function FilterBar() {
   const { state, setState, filtered, setFacet, reset, activeCount, range } = useFilters();
   const [copied, setCopied] = useState(false);
@@ -69,7 +71,7 @@ export function FilterBar() {
       for (const p of base) for (const v of facetValue(p, key)) counts.set(v, (counts.get(v) ?? 0) + 1);
       out[key] = orderedValues(key)
         .filter((v) => counts.has(v) || state[key].includes(v) || key !== "presence")
-        .map((v) => ({ value: v, count: counts.get(v) ?? 0, color: colorFor(key, v), hint: FACET_HINTS[v] }));
+        .map((v) => ({ value: v, label: labelFor(key, v), count: counts.get(v) ?? 0, color: colorFor(key, v), hint: FACET_HINTS[v] }));
     }
     return out;
   }, [state]);
@@ -88,6 +90,15 @@ export function FilterBar() {
     FACETS.map(({ key, label }) => (
       <MultiSelect key={key} label={label} options={optionsByFacet[key]} selected={state[key]} onChange={(vals) => setFacet(key, vals)} className={vertical ? "w-full" : undefined} />
     ));
+
+  const legacySwitch = (
+    <label className="inline-flex cursor-pointer items-center gap-2 text-label text-ink-300">
+      <Switch checked={state.legacy === "hide"} onCheckedChange={(on) => void setState({ legacy: on ? "hide" : "show" })} aria-label="Hide legacy listings" />
+      <span>
+        Hide legacy listings <span className="font-mono text-ink-500">({legacyCount.toLocaleString("en-US")})</span>
+      </span>
+    </label>
+  );
 
   return (
     <div className="sticky top-0 z-30 border-b border-ink-700/40 bg-ink-950">
@@ -120,6 +131,7 @@ export function FilterBar() {
                 </SheetHeader>
                 <div className="flex flex-col gap-2 px-4 pb-6">
                   {facetControls(true)}
+                  <div className="pt-1">{legacySwitch}</div>
                   <div className="mt-2 flex gap-2">
                     <Button variant="outline" size="sm" className="flex-1" onClick={reset} disabled={activeCount === 0}>
                       Reset
@@ -142,11 +154,10 @@ export function FilterBar() {
             </Button>
           </div>
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex min-w-0 max-w-full flex-wrap items-center gap-2">
-            <Segmented value={state.metric} onChange={(v: MetricKey) => void setState({ metric: v })} options={METRIC_OPTIONS} ariaLabel="Metric" />
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+          <div className="flex min-w-0 max-w-full flex-wrap items-center gap-x-4 gap-y-2">
             <DateRangeControl value={range} onChange={(r: Range) => void setState({ range: r })} />
-            <span className="hidden text-label text-ink-400 lg:inline">metric and range drive the charts</span>
+            <span className="hidden xl:inline">{legacySwitch}</span>
           </div>
           <p className="text-label text-ink-300" aria-live="polite">
             Showing <span className="tabular font-medium text-ink-50">{filtered.length.toLocaleString("en-US")}</span> of {allProjects.length.toLocaleString("en-US")} projects

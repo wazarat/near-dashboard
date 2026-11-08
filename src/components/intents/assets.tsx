@@ -28,6 +28,7 @@ export function AssetsCards({ data }: { data: IntentsSummary }) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <ChartCard
+      scope="whole-chain"
         title="Origin assets"
         takeaway={assetTakeaway(origin, "sold", window)}
         info={`originAsset of each SUCCESS swap, summed by amountInUsd over the Explorer's trailing 30 complete days, ${EXPLORER_LABEL}. Keys are the Explorer's asset ids (NEP-141 account ids such as …omft.near, or chain:address pairs), shortened in the per-day files; hover a label for the stored key. The hatched bar is everything beyond the top 12.`}
@@ -37,6 +38,7 @@ export function AssetsCards({ data }: { data: IntentsSummary }) {
         <BucketBars rows={origin} color="var(--cat-6)" hatchId="hatch-intents-origin-assets" keyLabel="Origin asset" ariaLabel="1Click volume by origin asset" emptyMessage="No complete Explorer days yet." />
       </ChartCard>
       <ChartCard
+      scope="whole-chain"
         title="Destination assets"
         takeaway={assetTakeaway(dest, "bought", window)}
         info={`destinationAsset of each SUCCESS swap, summed by the swap's amountInUsd over the Explorer's trailing 30 complete days, ${EXPLORER_LABEL}. Keys are the Explorer's asset ids, shortened in the per-day files; hover a label for the stored key. The hatched bar is everything beyond the top 12.`}

@@ -39,7 +39,7 @@ interface Props {
 /** One card per project: the qualitative profile that the numbers above cannot show. */
 export function ProfileGrid({ projects, onOpen }: Props) {
   return (
-    <ChartCard id="compare-profile" title="Profile side by side" takeaway={profileTakeaway(projects)} info="Sector, chain, status, funding, token, security and discovery fields from the research CSVs (data/near-ecosystem-*.csv); round counts from the funding rounds file. 'Not researched' means the field was never checked; 'Not disclosed' or 'Unknown' means it was checked and nothing was found.">
+    <ChartCard scope="selection" id="compare-profile" title="Profile side by side" takeaway={profileTakeaway(projects)} info="Sector, chain, status, funding, token, security and discovery fields from the research CSVs (data/near-ecosystem-*.csv); round counts from the funding rounds file. 'Not researched' means the field was never checked; 'Not disclosed' or 'Unknown' means it was checked and nothing was found.">
       {projects.length === 0 ? (
         <EmptyState message="No projects selected." />
       ) : (
