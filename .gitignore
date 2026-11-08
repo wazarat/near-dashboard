@@ -59,3 +59,6 @@ AGENTS.md
 # local GCP key if dropped in the repo folder
 *.json.key
 gcp-key.json
+
+# community submissions (Tally exports can contain contact details)
+/data/submissions/

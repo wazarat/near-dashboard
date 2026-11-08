@@ -289,7 +289,7 @@ export function toRound(row: RawRow, index: number, resolver: NameResolver): Rou
   };
 }
 
-const NOT_AN_INVESTOR = /^(investors not named|\d+ backers|.*institutional investors\)?$)/i;
+const NOT_AN_INVESTOR = /^(investors not named|developed with|\d+ backers|.*institutional investors\)?$)/i;
 
 /** Aggregates rounds into investors. Parenthetical notes like "(28 institutional investors)" are stripped. */
 export function aggregateInvestors(rounds: Round[]): Investor[] {

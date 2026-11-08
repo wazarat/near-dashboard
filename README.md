@@ -1,81 +1,120 @@
 # NEAR Ecosystem Atlas
 
-Independent research by CanHav Research, built for NEAR Hackathon 2026 (track: `thesis`, Investment Thesis).
+Independent research by CanHav Research, built for NEAR Hackathon 2026. Track: `thesis` (Investment Thesis).
 
-An atlas of 1,088 projects in the NEAR and Aurora ecosystem with traction, funding and security research, daily history from free sources, chain activity from NearBlocks and the NEAR BigQuery public dataset, and NEAR Intents cross-chain volume. It also tests one hypothesis: that cross-chain volume through NEAR Intents is a better leading indicator of real network usage than token price. The result, for and against, lives in `THESIS.md` and on the `/thesis` page once that milestone lands.
+Live: https://near-dashboard-puce.vercel.app · Thesis: [`THESIS.md`](THESIS.md) · Submission notes: [`docs/SUBMISSION.md`](docs/SUBMISSION.md)
+
+An atlas of 1,088 projects across NEAR and Aurora with researched traction, funding and security, refreshed daily from free sources: DefiLlama (per-protocol and chain history), NearBlocks (daily chain activity since genesis), the NEAR BigQuery public dataset (function calls, contracts called, distinct signers, receipts to `aurora` and `intents.near`) and the NEAR Intents Explorer API (1Click swap volume, routes, assets, referrals). It tests one hypothesis, that cross-chain volume through NEAR Intents is a better leading indicator of real network usage than the token price, and reports what the data says, for and against, in `THESIS.md` and on `/thesis`.
 
 Not affiliated with, endorsed by or sponsored by the NEAR Foundation, NEAR Protocol or Aurora. Nothing here is investment advice.
 
-## Two commands
+## The two commands
 
 ```bash
-npm run rebuild   # regenerates every chart, table and THESIS.md from the committed raw files. No network, no secrets.
-npm run refresh   # fetches new raw data from the free sources into data/history and data/raw (needs .env.local for some sources).
+npm run rebuild   # regenerates every chart, table, THESIS.md and the thesis JSON from the committed raw files. No network, no secrets.
+npm run refresh   # fetches new raw data from the free sources into data/history and data/raw (some sources need .env.local).
 ```
 
-## Try it
+## Try it: do X, see Y
 
 ```bash
 git clone https://github.com/wazarat/near-dashboard.git
 cd near-dashboard
 npm ci
-npm run build      # runs `npm run rebuild` first, validates the data, writes the static site to out/
-npx serve out      # open http://localhost:3000
+npm run build        # runs `npm run rebuild`, prints the strict data checks, writes the static site to out/
+npx serve out        # open http://localhost:3000
 ```
 
-Do this and you should see the Overview with 1,088 projects, 24 sectors and summed TVL of $537.7M from the Nov 8, 2026 research snapshot. `npm test` runs the unit tests (fixtures only, no live calls). `npm run e2e` runs the Playwright page checks against `out/` at 1440 and 390 px.
+- Do `npm run build`: see 13 checks pass (1,088 projects, 24 sectors, 6 native chains, 96 leaders, 141 events, 42 rounds, 4 Tier 1 rows, and six USD totals), then the live-vs-snapshot totals, then the thesis summary line (window, cutoff, lead-lag wins, out-of-sample wins, verdict).
+- Open `/`: see the KPI tiles, chain over time and chain activity (NearBlocks with the BigQuery overlay), the sector treemap, native vs imported shares, concentration curve, analyst notes and the events timeline.
+- Open `/thesis`: see the verdict badge, then one card per test. Click **Query** on any card: see the exact SQL or API call and the transform behind it. The same numbers are in `THESIS.md`.
+- Open `/intents`: see 1Click swap volume from the Explorer API next to DefiLlama's all-channel series with the share, plus routes, assets and referrals.
+- Run `npm test`: see the unit tests (fixtures only, no live calls). Run `npm run e2e` after a build: see the Playwright checks at 1440 and 390 px with zero console errors.
+- Run `npm run rebuild` twice: see no diff in `src/data/generated/` or `THESIS.md`.
 
 ## Pages
 
 | Page | What it shows |
 |---|---|
-| `/` Overview | KPI tiles, sector treemap, native vs imported shares, concentration curve, live insights and the research memo's analyst notes, the events timeline |
+| `/` Overview | KPI tiles, chain over time (NEAR and Aurora), chain activity, risers and fallers, sector treemap, native vs imported, concentration curve, live insights and analyst notes, events timeline |
 | `/sectors` | Sector bars, tier by sector, sector cards with ranked leaders |
-| `/traction` | Leaderboard with column sets, business-model scatter (fees vs revenue with capture lines), listed vs live by discovery source |
-| `/funding` | Funding type breakdown, ecosystem money cards, rounds table, rounds over time |
+| `/traction` | Leaderboard with traction, momentum, activity and financials column sets, business-model scatter, activity without TVL, listed vs live by discovery source |
+| `/intents` | 1Click swap volume, weekly series, success and refund rates, routes, assets, referrals, coverage against DefiLlama |
+| `/thesis` | The claim, verdict and four tests with Chart, Table and Query tabs, confounders, evidence for and against, what would change the conclusion |
+| `/funding` | Funding type breakdown, ecosystem money cards, rounds table, rounds over time, financials |
+| `/investors` | Investors by deals, portfolios, investor drawer |
 | `/security` | Chain-level checklist for NEAR L1, NEAR Intents and Aurora, incident timeline, risk breakdown, High and Medium table |
-| `/explorer` | Every column with a column chooser and CSV download of the filtered view, plus a "Newly detected" review list |
-| `/intents`, `/thesis`, `/investors`, `/compare` | Added in later milestones |
+| `/explorer` | Every column with a column chooser and CSV download of the filtered view, plus the "Newly detected" review list |
+| `/compare` | Up to four projects: metric matrix with sector ranks, ratios, indexed overlay, side-by-side profiles |
 
-Every chart has a one-line takeaway, an info icon naming its source, an empty state and a table view. Filters, metric, range and the open drawer live in the URL, so any view can be shared.
+Every chart has a one-line takeaway, an info icon naming its source, an empty state and a table view; the thesis and chain-activity charts also have a Query tab. Filters, metric, date range, compare selection and the open drawer live in the URL.
 
 ## Data
 
-`data/` holds the research snapshot (source of truth for who is in the ecosystem):
+`data/` holds the research snapshot (the source of truth for who is in the ecosystem; live data only adds metrics):
 
 - `near-ecosystem-2026-11-08.csv` (1,088 projects, 32 columns), `near-sector-leaders-2026-11-08.csv` (96), `near-events-2026-11-08.csv` (141), `near-funding-rounds-2026-11-08.csv` (42), `near-traction-funding-security-2026-11-08.md` (the findings memo).
-- `aliases.csv` maps event and round names to project rows. `expected.json` holds the strict counts and sums the build must reproduce (1,088 / 24 / 6 / 96 / 141 / 42 / 4 and six USD totals); any difference fails the build.
+- `aliases.csv` maps event and round names to project rows; `defillama-map.csv` maps projects to DefiLlama slugs (seeded by `npm run seed:map`, hand-maintained); `contracts.csv` lists tracked NEAR accounts per project (seeded by `npm run seed:contracts`); `expected.json` holds the strict counts and sums the build must reproduce.
+- New protocols seen on DefiLlama or NEAR Catalog go to the "Newly detected" list on `/explorer` for review; nothing is added to the project list automatically.
 
-Blank numeric cells are null, never zero. "Not researched" means a field was never checked; "Unknown" and "Not disclosed" mean it was checked and nothing was found. Summed protocol TVL double counts liquid staking and bridges; DefiLlama's default chain TVL (NEAR $174.9M, Aurora $3.8M on Nov 8, 2026) is shown separately. CEX reserves on NEAR are excluded from TVL.
+Conventions: blank numeric cells are null, never zero. "Not researched" means a field was never checked; "Unknown" and "Not disclosed" mean it was checked and nothing was found. Summed protocol TVL double counts liquid staking and bridges; DefiLlama's default chain TVL is shown separately. CEX reserves on NEAR are excluded from TVL. Tiers follow the snapshot thresholds (Tier 1: TVL ≥ $50M, 30d volume ≥ $500M or 30d fees ≥ $1M; Tier 2: $5M, $50M or $100K; Tier 3: any measurable activity; "Tracked, negligible": listed but all zero).
+
+### History store
+
+```
+data/history/_meta.json                      last run, per-source status, cursors, newly detected list
+data/history/chain.json                      NEAR and Aurora chain series (DefiLlama), NearBlocks daily series, BigQuery daily series, price cross-checks
+data/history/defillama/protocols.json        trimmed listing of every protocol on NEAR or Aurora
+data/history/defillama/tvl-{near,aurora}.json                         slug -> [date, usd]
+data/history/defillama/{volume,fees,revenue,holders-revenue,supply-side-revenue,aggregators}-{near,aurora}.json   display name -> [date, usd]
+data/history/bigquery/{receivers,project-activity}.json   per-account and per-project [date, calls, signers]
+data/raw/bigquery/*.csv                      query results, one file per query and 14-day window
+data/raw/intents/daily/YYYY-MM-DD.json       committed per-day aggregates of 1Click swaps (volume, statuses, routes, assets, referrals, row count, hash)
+data/raw/intents/days/YYYY-MM-DD.json.gz     trimmed swap rows (gitignored; regenerable from the API)
+data/raw/{nearblocks,catalog,llama}/*.json   raw NearBlocks charts, NEAR Catalog listing, DefiLlama price
+```
+
+The store is idempotent: a second refresh with the same upstream data changes no file. Only the last three days of a series may be revised; older points are frozen.
 
 ## Sources (all free)
 
-| Source | Used for | Limits |
+| Source | Used for | Limits and notes |
 |---|---|---|
-| DefiLlama `api.llama.fi` | protocol list, per-chain TVL, chain overviews for DEX volume, fees, revenue, aggregators, chain TVL | no key, 1 request/s in our client |
+| DefiLlama `api.llama.fi` | protocol list, per-chain TVL, chain overviews for DEX volume, fees, revenue, aggregators, chain TVL | no key; the client spaces requests 1 s apart |
 | DefiLlama `coins.llama.fi` | daily NEAR price cross-check | 500 points per call |
-| NearBlocks `api.nearblocks.io/v1/charts` | daily transactions, active and new accounts, contracts, price, market cap since genesis | no key |
+| NearBlocks `api.nearblocks.io/v1/charts` | daily transactions, active and new accounts, contracts, price, market cap since 2020-07-21 | no key |
 | NEAR Catalog `api.nearcatalog.xyz` | newly detected projects, contract account ids | no key |
-| NEAR BigQuery `bigquery-public-data.crypto_near_mainnet_us` | per-day chain and per-contract activity | your own GCP project; every query filters on `block_date`, dry-runs first and is capped by `maximumBytesBilled` |
-| NEAR Intents Explorer API | 1Click swap rows (volume, routes, assets, referrals) | partner JWT, 1 request per 5 s |
+| NEAR BigQuery `bigquery-public-data.crypto_near_mainnet_us` | daily chain activity and per-account function calls and signers | your own GCP project; every query filters on `block_date`, dry-runs first, is capped by `maximumBytesBilled` (20 GB default) and the backfill stops at 300 GB; the 365-day backfill scanned 244 GB |
+| NEAR Intents Explorer API | 1Click swap rows | partner JWT, 1 request per 5 s, 1,000 rows per page; covers 1Click swaps only, from late May 2025 |
 
-Deferred (paid): DefiLlama `/raises`, `/emissions` and `/summary/derivatives/*` (HTTP 402), Dune API, Token Terminal, Artemis, Nansen, Flipside API, RootData, CryptoRank, the X API.
-
-## Operations
-
-The daily GitHub Action, the Workload Identity Federation setup for BigQuery, how to rerun a backfill and the history store layout are documented in `docs/OPERATIONS.md`.
+Deferred (paid): DefiLlama `/raises`, `/emissions` and `/summary/derivatives/*` (HTTP 402), Dune API, Token Terminal, Artemis, Nansen, Flipside API, RootData, CryptoRank, the X API. Consequences: no incentive or emissions data, no third-party raises feed, no X metrics.
 
 ## Setup with secrets (optional)
 
-Copy `.env.example` to `.env.local`. Locally, BigQuery uses Application Default Credentials (`gcloud auth application-default login`); no key file is needed or supported. In GitHub Actions the workflow authenticates with Workload Identity Federation. Sources whose secret is missing are skipped and logged in `data/history/_meta.json`; the site still builds.
+Copy `.env.example` to `.env.local`:
+
+- `GCP_PROJECT_ID`: BigQuery runs with Application Default Credentials (`gcloud auth application-default login`); no key file is needed or supported.
+- `NEAR_INTENTS_JWT`: Explorer-type key from https://partners.near-intents.org. Without it the Intents source is skipped and DefiLlama's NEAR Intents series stands in, labelled.
+- `COINGECKO_DEMO_KEY`: optional price fallback.
+- `NEXT_PUBLIC_TALLY_SUBMIT_URL`, `NEXT_PUBLIC_TALLY_CORRECT_URL`: the community forms; buttons stay hidden while unset.
+
+A missing secret skips that source and records the reason in `data/history/_meta.json`; the site always builds.
+
+## Daily refresh and backfills
+
+`.github/workflows/refresh.yml` runs at 03:23 UTC: `npm run refresh`, `npm run rebuild`, `npm test`, `npm run build`, then commits `data/history`, `data/raw` and `THESIS.md` when they changed, authored as Wazarat Hussain. BigQuery authenticates with Workload Identity Federation. To rerun a backfill: Actions, Refresh data, Run workflow with `backfill` ticked, or locally `npm run refresh -- --backfill` (`--only a,b`, `--max-calls N`, `--dry-run`). Details, the federation setup and the required repository secrets are in [`docs/OPERATIONS.md`](docs/OPERATIONS.md). Community corrections: [`docs/REVIEW.md`](docs/REVIEW.md).
+
+## Thesis method in one paragraph
+
+Weekly ISO-week series of Intents volume (DefiLlama, all channels, since 2024-12-10; the 1Click Explorer series where backfilled), NEAR price (NearBlocks) and five usage series (transactions, active accounts, new accounts from NearBlocks; function calls and contracts called from BigQuery) are turned into week-over-week log changes. Lead-lag cross-correlations at −8 to +8 weeks say which predictor moves first; a one-variable regression fitted before 2026-05-01 and scored after it says which predicts better out of sample; robustness variants cap spikes, remove Intents settlement receipts from usage, use daily data and swap in the Explorer series. Only positive lead correlations outside the ±2/√n noise band count as evidence. `scripts/thesis.ts` computes all of it and renders `THESIS.md` from `docs/templates/THESIS.template.md`, so the page and the document cannot drift.
 
 ## Disclosure
 
-The architecture (store raw data by source key and join at build time, static export, daily GitHub Action, idempotent history store, fixtures-based tests, generic data table, chart cards with a table view, URL state) follows my earlier Robinhood Chain Ecosystem Atlas. This repository was written fresh for NEAR Hackathon 2026 and shares no code at runtime.
+The architecture (store raw data by source key and join at build time, static export, daily GitHub Action, idempotent history store, fixtures-based tests, generic data table, chart cards with a table view, URL state) follows my earlier Robinhood Chain Ecosystem Atlas. This repository was written fresh for NEAR Hackathon 2026 and shares no code at runtime. All code in this repository was written during the hackathon window.
 
 ## Libraries
 
-Next.js, React, Tailwind CSS, shadcn/ui, Recharts, TanStack Table, nuqs, Papa Parse, @google-cloud/bigquery (scripts only), Vitest, Playwright, tsx.
+Next.js, React, Tailwind CSS, shadcn/ui, Recharts, TanStack Table, nuqs, Papa Parse, @google-cloud/bigquery (scripts only), Vitest, Playwright, tsx, serve.
 
 ## License
 

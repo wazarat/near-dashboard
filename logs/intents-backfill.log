@@ -2,3 +2,7 @@
 > near-dashboard@0.1.0 refresh
 > tsx scripts/refresh.ts --only intents --backfill --max-calls 20000 --verbose
 
+
+NEAR Ecosystem Atlas refresh — backfill — 2026-11-08 — max 20000 paged calls per source
+
+  intents      

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { FinancialsTable } from "@/components/charts/financials-table";
 import { FundingTypeBreakdown } from "@/components/charts/funding-type-breakdown";
 import { MoneyCards } from "@/components/charts/money-cards";
 import { RoundsOverTime } from "@/components/charts/rounds-over-time";
@@ -27,6 +28,7 @@ export function FundingView() {
       </div>
       <RoundsOverTime rounds={visibleRounds} />
       <RoundsTable rounds={rounds} visible={visibleRounds} onlySelection={onlySelection} onOnlySelectionChange={setOnlySelection} onOpenProject={openProject} onOpenInvestor={openInvestor} />
+      <FinancialsTable projects={filtered} onOpen={openProject} />
     </div>
   );
 }

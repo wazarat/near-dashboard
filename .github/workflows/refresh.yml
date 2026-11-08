@@ -28,6 +28,10 @@ jobs:
   refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 55
+    env:
+      # Step-level `if` cannot read the secrets context, so the presence check goes through env.
+      GCP_WIF_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_SA: ${{ secrets.GCP_SERVICE_ACCOUNT }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,18 +46,18 @@ jobs:
 
       # Optional: BigQuery through Workload Identity Federation. Skipped (not failed) when the secrets are absent.
       - name: Authenticate to Google Cloud
-        if: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER != '' && secrets.GCP_SERVICE_ACCOUNT != '' }}
+        if: ${{ env.GCP_WIF_PROVIDER != '' && env.GCP_SA != '' }}
         uses: google-github-actions/auth@v2
         with:
-          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ env.GCP_WIF_PROVIDER }}
+          service_account: ${{ env.GCP_SA }}
 
       - name: Refresh history
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
           NEAR_INTENTS_JWT: ${{ secrets.NEAR_INTENTS_JWT }}
           COINGECKO_DEMO_KEY: ${{ secrets.COINGECKO_DEMO_KEY }}
-          INTENTS_BACKFILL_DAYS: ${{ vars.INTENTS_BACKFILL_DAYS || '90' }}
+          INTENTS_BACKFILL_DAYS: ${{ vars.INTENTS_BACKFILL_DAYS || '560' }}
         run: |
           if [ "${{ github.event.inputs.backfill }}" = "true" ]; then
             npm run refresh -- --backfill --max-calls 450

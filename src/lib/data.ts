@@ -7,7 +7,11 @@ import metaJson from "@/data/generated/meta.json";
 import newlyDetectedJson from "@/data/generated/newly-detected.json";
 import projectsJson from "@/data/generated/projects.json";
 import roundsJson from "@/data/generated/rounds.json";
-import type { NewlyDetected } from "./history-types";
+import intentsJson from "@/data/generated/intents.json";
+import thesisJson from "@/data/generated/thesis.json";
+import type { NewlyDetected, Series } from "./history-types";
+import type { IntentsSummary } from "./intents";
+import type { ThesisJson } from "./thesis-types";
 import type { ChainData, EcosystemEvent, Investor, Leader, MemoInsight, Meta, Project, Round, SeriesFile } from "./types";
 
 export const projects = projectsJson as unknown as Project[];
@@ -18,6 +22,8 @@ export const investors = investorsJson as unknown as Investor[];
 export const memoInsights = insightsJson as unknown as MemoInsight[];
 export const meta = metaJson as unknown as Meta;
 export const chainData = chainJson as unknown as ChainData;
+export const intentsData = intentsJson as unknown as IntentsSummary & { llamaDaily: Series };
+export const thesisData = thesisJson as unknown as ThesisJson | { available: false; reason: string };
 export const newlyDetected = newlyDetectedJson as unknown as { items: NewlyDetected[]; unmatchedCsv: string[]; unmatchedMap: string[] };
 
 /** 90-day per-project series are loaded lazily so the main bundle stays small. */

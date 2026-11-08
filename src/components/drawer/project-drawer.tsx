@@ -15,6 +15,9 @@ import { similarProjects } from "@/lib/metrics";
 import type { Range } from "@/lib/ranges";
 import type { MetricKey, MetricSource, NumericMetricKey, Project } from "@/lib/types";
 import { CompareButton } from "@/components/compare/compare-button";
+import { TALLY_CORRECT_URL, tallyCorrectUrl } from "@/lib/env";
+import { Button } from "@/components/ui/button";
+import { Flag } from "lucide-react";
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   if (children === null || children === undefined || children === "") return null;
@@ -104,6 +107,13 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
           {p.website && <Ext href={p.website} />}
           {p.xHandle && <Ext href={xUrl(p.xHandle)}>{p.xHandle}</Ext>}
           <CompareButton id={p.id} />
+          {TALLY_CORRECT_URL && (
+            <Button asChild variant="ghost" size="sm" className="h-7 gap-1 text-xs text-muted-foreground">
+              <a href={tallyCorrectUrl(TALLY_CORRECT_URL, p.name, typeof window === "undefined" ? "" : window.location.href)} target="_blank" rel="noopener noreferrer">
+                <Flag className="size-3.5" /> Suggest a correction
+              </a>
+            </Button>
+          )}
         </div>
       </SheetHeader>
 

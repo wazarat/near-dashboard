@@ -17,10 +17,11 @@ const PAGES: Array<{ name: string; url: string; expect: string }> = [
   { name: "security", url: "/security/", expect: "NEAR Intents" },
   { name: "explorer", url: "/explorer/", expect: "Download filtered CSV" },
   { name: "explorer-empty", url: "/explorer/?q=zzzzqqq", expect: "No projects match" },
-  { name: "intents", url: "/intents/", expect: "Intents" },
-  { name: "thesis", url: "/thesis/", expect: "Thesis" },
-  { name: "investors", url: "/investors/", expect: "Investors" },
-  { name: "compare", url: "/compare/", expect: "Compare" },
+  { name: "intents", url: "/intents/", expect: "Daily volume" },
+  { name: "thesis", url: "/thesis/", expect: "Cross-chain volume through NEAR Intents" },
+  { name: "investors", url: "/investors/?investor=dragonfly-capital", expect: "Portfolio (" },
+  { name: "compare-empty", url: "/compare/", expect: "Liquid staking" },
+  { name: "compare-liquid-staking", url: "/compare/?compare=meta-pool,rhea-lst-rnear,linear-protocol&metric=tvl", expect: "Meta Pool" },
 ];
 
 async function collectErrors(page: Page): Promise<string[]> {
@@ -82,4 +83,27 @@ test("project drawer opens from a shared URL with history tabs", async ({ page }
   const dialog = page.getByRole("dialog");
   await expect(dialog).toContainText("Meta Pool", { timeout: 15_000 });
   await expect(dialog).toContainText("History");
+});
+
+test("thesis charts expose a Query tab with SQL", async ({ page }) => {
+  await page.goto("/thesis/");
+  const query = page.getByRole("radio", { name: "Query" }).or(page.getByRole("button", { name: "Query" }));
+  expect(await query.count()).toBeGreaterThan(2);
+  await query.first().click();
+  await expect(page.locator("pre").first()).toBeVisible();
+  await expect(page.locator("pre").first()).toContainText(/SELECT|GET|weekly/);
+});
+
+test("compare tray and presets drive the URL", async ({ page }) => {
+  await page.goto("/compare/");
+  await page.getByRole("button", { name: /Liquid staking/ }).first().click();
+  await expect(page).toHaveURL(/compare=/);
+  await expect(page.getByText(/Compare 3/).first()).toBeVisible();
+});
+
+test("investor drawer opens from the investors table", async ({ page }) => {
+  await page.goto("/investors/");
+  await page.locator("table").getByRole("button", { name: "Pantera Capital", exact: true }).first().click();
+  await expect(page).toHaveURL(/investor=pantera-capital/);
+  await expect(page.getByRole("dialog")).toContainText("Pantera Capital");
 });

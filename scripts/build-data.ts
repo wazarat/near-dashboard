@@ -14,7 +14,9 @@ import { alignSeries, applyLive, changes, computeLive, emptyLive, sparkDates, su
 import { parseMapRows, rowsByProject } from "../src/lib/mapping";
 import { aggregateInvestors, NameResolver, parseMemoInsights, toEvent, toLeader, toProject, toRound, uniqueSorted } from "../src/lib/parse";
 import { CHAIN_SERIES, NEARBLOCKS_SERIES, TIERS, type ChainData, type ChainLatest, type ContractInfo, type Meta, type Project, type SeriesFile, type Tier } from "../src/lib/types";
+import { EMPTY_INTENTS, summarizeIntents } from "../src/lib/intents";
 import { validate, type Expected } from "../src/lib/validate";
+import { readDaily as readIntentsDaily } from "./fetch/intents";
 import { dateFromName, findFile, readCsv, readCsvOrEmpty } from "./lib/csv";
 import { DATA, HISTORY, OUT } from "./lib/paths";
 import { readJson } from "./lib/store";
@@ -375,6 +377,12 @@ function main() {
   write("series.json", series);
   write("chain.json", chain ?? emptyChain(asOf));
   write("newly-detected.json", { items: history?.meta.newlyDetected ?? [], unmatchedCsv, unmatchedMap: history?.meta.unmatchedMap ?? [] });
+  // NEAR Intents (1Click) per-day aggregates with DefiLlama's NEAR Intents volume as the cross-check.
+  const intentsDays = readIntentsDaily();
+  const llamaIntents: Series = history ? (history.store.volume.near["NEAR Intents"] ?? []) : [];
+  const intents = intentsDays.length ? summarizeIntents(intentsDays, llamaIntents, history?.meta.cursors.intents.backfillDone ?? false) : EMPTY_INTENTS;
+  write("intents.json", { ...intents, llamaDaily: llamaIntents });
+  console.log(`  intents: ${intents.coverage.days} days of 1Click aggregates${intents.coverage.firstDay ? ` from ${intents.coverage.firstDay}` : ""} · DefiLlama series ${llamaIntents.length} days`);
   console.log(`\n  wrote ${OUT}\n`);
 }
 

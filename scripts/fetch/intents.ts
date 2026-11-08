@@ -320,7 +320,10 @@ export async function run(ctx: Ctx): Promise<RunResult> {
   notes.push(`recent window: ${rows} rows in ${calls} calls`);
 
   // Phase B (remaining budget): walk older from the backfill cursor until the target date.
-  if (!cursor.backfillDone) {
+  // Daily runs only continue an unfinished backfill when asked (INTENTS_CONTINUE_BACKFILL=1), so a
+  // scheduled run never races a long local backfill for the same cursor.
+  const continueBackfill = ctx.mode === "backfill" || ctx.env.INTENTS_CONTINUE_BACKFILL === "1";
+  if (!cursor.backfillDone && continueBackfill) {
     const before = cursor.oldestCreatedAt ? Math.floor(Date.parse(cursor.oldestCreatedAt) / 1000) : recentStart;
     let older: Page["cursor"] = null;
     let oldest = before;
