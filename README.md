@@ -21,15 +21,15 @@ npm run refresh   # fetches new raw data from the free sources into data/history
 git clone https://github.com/wazarat/near-dashboard.git
 cd near-dashboard
 npm ci
-npm run build        # runs `npm run rebuild`, prints the strict data checks, writes the static site to out/
-npx serve out        # open http://localhost:3000
+npm run build        # runs `npm run rebuild`, prints the strict data checks, prerenders every page
+npm start            # open http://localhost:3000
 ```
 
 - Do `npm run build`: see 13 checks pass (1,088 projects, 24 sectors, 6 native chains, 96 leaders, 141 events, 42 rounds, 4 Tier 1 rows, and six USD totals), then the live-vs-snapshot totals, then the thesis summary line (window, cutoff, lead-lag wins, out-of-sample wins, verdict).
 - Open `/`: see the KPI tiles, chain over time and chain activity (NearBlocks with the BigQuery overlay), the sector treemap, native vs imported shares, concentration curve, analyst notes and the events timeline.
 - Open `/thesis`: see the verdict badge, then one card per test. Click **Query** on any card: see the exact SQL or API call and the transform behind it. The same numbers are in `THESIS.md`.
 - Open `/intents`: see 1Click swap volume from the Explorer API next to DefiLlama's all-channel series with the share, plus routes, assets and referrals.
-- Run `npm test`: see the unit tests (fixtures only, no live calls). Run `npm run e2e` after a build: see the Playwright checks at 1440 and 390 px with zero console errors.
+- Run `npm test`: see the unit tests (fixtures only, no live calls). Run `npm run e2e` (it builds for itself): see the Playwright checks at 1440 and 390 px with zero console errors.
 - Run `npm run rebuild` twice: see no diff in `src/data/generated/` or `THESIS.md`.
 
 ## Pages
@@ -127,7 +127,7 @@ Until then the public origin is the Vercel URL above, set through the same two v
 
 ## Libraries
 
-Next.js, React, Tailwind CSS, shadcn/ui, Recharts, TanStack Table, nuqs, Papa Parse, @google-cloud/bigquery (scripts only), Vitest, Playwright, tsx, serve.
+Next.js, React, Tailwind CSS, shadcn/ui, Recharts, TanStack Table, nuqs, Papa Parse, @google-cloud/bigquery (scripts only), Vitest, Playwright, tsx.
 
 ## License
 

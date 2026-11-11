@@ -25,6 +25,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # The generated data is not committed; the type check and the tests read it.
+      - run: npm run rebuild
       - run: npm run check:copy
       - run: npm run lint
       - run: npm run typecheck

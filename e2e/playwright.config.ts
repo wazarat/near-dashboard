@@ -2,8 +2,10 @@ import { defineConfig } from "@playwright/test";
 import path from "node:path";
 
 /**
- * Page checks against the static export at desktop and phone widths, dark and light.
- * Run `npm run build` first, then `npm run e2e`.
+ * Page checks against a production build at desktop and phone widths, dark and light, with
+ * the login wall off (Clerk keys blanked even if .env.local has them) so the whole UI is
+ * covered. The web server builds for itself, so `npm run e2e` needs no build first. It
+ * rewrites .next, so run this suite and the login-wall one (`npm run e2e:auth`) one at a time.
  */
 /** The site stores the theme choice under localStorage "theme" (next-themes), so the light projects seed it. */
 const LIGHT = {
@@ -20,13 +22,13 @@ export default defineConfig({
   reporter: [["list"]],
   use: { baseURL: "http://127.0.0.1:3200", colorScheme: "dark" },
   webServer: {
-    command: "npx serve out -l tcp://127.0.0.1:3200",
+    command: "sh -c 'export NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY= CLERK_SECRET_KEY=; npm run rebuild >/dev/null && npx next build >/dev/null && npx next start -H 127.0.0.1 -p 3200'",
     cwd: path.resolve(__dirname, ".."),
     stdout: "ignore",
     stderr: "pipe",
     url: "http://127.0.0.1:3200",
-    reuseExistingServer: true,
-    timeout: 60_000,
+    reuseExistingServer: false,
+    timeout: 300_000,
   },
   projects: [
     { name: "desktop", use: { viewport: { width: 1440, height: 900 } } },
