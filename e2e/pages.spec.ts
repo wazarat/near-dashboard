@@ -258,6 +258,87 @@ test("an event opened from a project's Events list sits over the project and clo
   await expect(page).toHaveURL(/project=near-intents/);
 });
 
+test("each card owns its time range under its own URL key, and the filter bar has none", async ({ page }) => {
+  const errors = await collectErrors(page);
+  await page.goto("/");
+  const group = (name: string) => page.getByRole("radiogroup", { name });
+  const cot = group("Chain over time range");
+  await expect(cot.getByRole("radio", { name: "30d" })).toHaveAttribute("aria-checked", "true", { timeout: 15_000 });
+  await expect(group("Date range")).toHaveCount(0);
+  const card = page.locator('[data-chart-card="Chain over time"]');
+  const stats = card.getByTestId("range-stats").first();
+  // The level series keeps its 90-day floor, so its stats line reads 90 days at 30d.
+  await expect(stats).toHaveText(/over 90 days$/);
+  await expect(card).toContainText("flows follow the range control (last 30 days)");
+  await cot.getByRole("radio", { name: "90d" }).click();
+  await expect(page).toHaveURL(/[?&]cr=90d/);
+  await expect(page).not.toHaveURL(/[?&]range=/);
+  await expect(card).toContainText("Every panel covers the last 90 days");
+  // Nothing else on the page moved.
+  await expect(group("Chain activity range").getByRole("radio", { name: "30d" })).toHaveAttribute("aria-checked", "true");
+  await expect(group("Movers range").getByRole("radio", { name: "30d" })).toHaveAttribute("aria-checked", "true");
+  await expect(page.locator('[data-chart-card^="Risers and fallers"]')).toHaveAttribute("data-chart-card", "Risers and fallers (30d)");
+  await group("Movers range").getByRole("radio", { name: "7d" }).click();
+  await expect(page).toHaveURL(/[?&]mr=7d/);
+  await expect(page.locator('[data-chart-card="Risers and fallers (7d)"]')).toBeVisible();
+  await expect(cot.getByRole("radio", { name: "90d" })).toHaveAttribute("aria-checked", "true");
+  // Back at the default the key leaves the URL.
+  await cot.getByRole("radio", { name: "30d" }).click();
+  await expect(page).not.toHaveURL(/[?&]cr=/);
+  await expect(page).toHaveURL(/[?&]mr=7d/);
+  expect(errors, errors.join("\n")).toEqual([]);
+});
+
+test("a link shared with the old global range still opens every card on it", async ({ page }) => {
+  await page.goto("/?range=90d");
+  const group = (name: string) => page.getByRole("radiogroup", { name });
+  for (const name of ["Chain over time range", "Chain activity range", "Movers range"]) await expect(group(name).getByRole("radio", { name: "90d" })).toHaveAttribute("aria-checked", "true", { timeout: 15_000 });
+  // A pick on one card overrides the old key for that card only.
+  await group("Chain activity range").getByRole("radio", { name: "30d" }).click();
+  await expect(page).toHaveURL(/[?&]ar=30d/);
+  await expect(page).toHaveURL(/[?&]range=90d/);
+  await expect(group("Chain over time range").getByRole("radio", { name: "90d" })).toHaveAttribute("aria-checked", "true");
+  // The old key follows the reader to another page, as it always did.
+  await page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Intents" }).click();
+  await expect(page).toHaveURL(/\/intents\/\?.*range=90d/);
+  await expect(group("Daily volume range").getByRole("radio", { name: "90d" })).toHaveAttribute("aria-checked", "true", { timeout: 15_000 });
+});
+
+test("Intents, Traction, Compare and the project pop-up each keep their own range", async ({ page }) => {
+  const group = (name: string) => page.getByRole("radiogroup", { name });
+  await page.goto("/intents/");
+  await expect(group("Daily volume range").getByRole("radio", { name: "30d" })).toHaveAttribute("aria-checked", "true", { timeout: 15_000 });
+  await group("Daily volume range").getByRole("radio", { name: "All" }).click();
+  await expect(page).toHaveURL(/[?&]ir=all/);
+  await expect(group("Outcome rates range").getByRole("radio", { name: "30d" })).toHaveAttribute("aria-checked", "true");
+  await group("Outcome rates range").getByRole("radio", { name: "7d" }).click();
+  await expect(page).toHaveURL(/[?&]rr=7d/);
+
+  // The leaderboard's range drives its Trend column; the Activity column set has no Trend column and stays available.
+  await page.goto("/traction/");
+  const board = page.locator('[data-chart-card="Leaderboard"]');
+  await expect(board.locator("thead")).toContainText("Trend (30d)", { timeout: 15_000 });
+  await group("Leaderboard trend range").getByRole("radio", { name: "7d" }).click();
+  await expect(page).toHaveURL(/[?&]lr=7d/);
+  await expect(board.locator("thead")).toContainText("Trend (7d)");
+  await group("Column set").getByRole("radio", { name: "Activity" }).click();
+  await expect(board.locator("thead")).toContainText("7d function calls");
+  await expect(group("Leaderboard trend range")).toHaveCount(0);
+
+  await page.goto("/compare/?compare=meta-pool,rhea-lst-rnear,linear-protocol");
+  await expect(group("Trend range").getByRole("radio", { name: "30d" })).toHaveAttribute("aria-checked", "true", { timeout: 15_000 });
+  await group("Trend range").getByRole("radio", { name: "90d" }).click();
+  await expect(page).toHaveURL(/[?&]xr=90d/);
+
+  await page.goto("/?project=near-intents");
+  const history = page.getByTestId("project-modal").getByRole("radiogroup", { name: "History range" });
+  await expect(history.getByRole("radio", { name: "30d" })).toHaveAttribute("aria-checked", "true", { timeout: 15_000 });
+  await history.getByRole("radio", { name: "All" }).click();
+  await expect(page).toHaveURL(/[?&]hr=all/);
+  // The Overview card behind the pop-up is untouched (it is hidden from the accessibility tree while the pop-up is open).
+  await expect(page.locator('[role="radiogroup"][aria-label="Chain over time range"] [aria-checked="true"]')).toHaveText("30d");
+});
+
 test("the funding chart shows disclosed funding only and sums the rest in one line", async ({ page }) => {
   await page.goto("/funding/");
   const card = page.locator('[data-chart-card="Funding type"]');

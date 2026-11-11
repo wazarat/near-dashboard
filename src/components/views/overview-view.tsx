@@ -19,7 +19,7 @@ import { concentration, nativeShare, topNShare } from "@/lib/metrics";
 import { TIMELINE_DEFAULT_START } from "@/lib/timeline";
 
 export function OverviewView() {
-  const { filtered, all, scale, range, state, setState, setFacet, openProject } = useFilters();
+  const { filtered, all, scale, rangeOf, setRange, state, setState, setFacet, openProject } = useFilters();
   const { tm, cc, mv, ins, tmSector } = state;
   const label = METRIC_LABEL[tm].toLowerCase();
   const n = filtered.length;
@@ -68,9 +68,9 @@ export function OverviewView() {
     <div className="space-y-4">
       <KpiTiles projects={filtered} total={all.length} />
 
-      <ChainOverTime range={range} />
-      <ChainActivity range={range} />
-      <MoversPanel projects={filtered} metric={mv} onMetricChange={(m) => void setState({ mv: m })} range={range} minSize={state.minSize} onMinSizeChange={(minSize) => void setState({ minSize })} onOpen={openProject} />
+      <ChainOverTime range={rangeOf("cr")} onRangeChange={(r) => setRange("cr", r)} />
+      <ChainActivity range={rangeOf("ar")} onRangeChange={(r) => setRange("ar", r)} />
+      <MoversPanel projects={filtered} metric={mv} onMetricChange={(m) => void setState({ mv: m })} range={rangeOf("mr")} onRangeChange={(r) => setRange("mr", r)} minSize={state.minSize} onMinSizeChange={(minSize) => void setState({ minSize })} onOpen={openProject} />
 
       <div className="grid gap-4 xl:grid-cols-3">
         <ChartCard

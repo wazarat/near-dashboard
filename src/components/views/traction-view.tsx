@@ -8,7 +8,7 @@ import { useFilters } from "@/lib/filters";
 
 /** Traction page: who has measurable onchain activity, how fees turn into revenue, and which listings are live. */
 export function TractionView() {
-  const { filtered, range, scale, state, setState, openProject, setFacet } = useFilters();
+  const { filtered, rangeOf, setRange, scale, state, setState, openProject, setFacet } = useFilters();
 
   return (
     <div className="space-y-4">
@@ -16,7 +16,8 @@ export function TractionView() {
         projects={filtered}
         metric={state.lb}
         onMetricChange={(lb) => void setState({ lb })}
-        range={range}
+        range={rangeOf("lr")}
+        onRangeChange={(r) => setRange("lr", r)}
         cols={state.cols}
         onColsChange={(cols) => void setState({ cols })}
         onOpen={openProject}

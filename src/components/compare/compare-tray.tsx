@@ -7,7 +7,7 @@ import { CAT } from "@/lib/colors";
 import { useCompare } from "@/lib/compare";
 import { filterParsers, useFilters } from "@/lib/filters";
 
-/** Link to the compare page carrying the selection plus any non-default compare metric, range, scale and legacy switch. */
+/** Link to the compare page carrying the selection plus any non-default compare metric, scale, legacy switch and old global range (which only a link shared before per-card ranges carries). */
 export function compareHref(ids: readonly string[], state: { cm: string; range: string; scale: string; legacy?: string }): string {
   const parts = [`compare=${ids.join(",")}`];
   if (state.cm !== filterParsers.cm.defaultValue) parts.push(`cm=${state.cm}`);

@@ -6,7 +6,7 @@ import { CARRIED_PARAMS } from "@/lib/filters";
 import { NAV } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 
-/** Keeps the shareable state (range, scale, compare selection) when moving between pages. */
+/** Keeps the shareable state (scale, compare selection, the legacy switch and the old global range of a link shared before per-card ranges) when moving between pages. */
 export function carriedQuery(params: URLSearchParams | null): string {
   if (!params) return "";
   const out = new URLSearchParams();

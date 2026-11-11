@@ -4,7 +4,7 @@ import { parseAsArrayOf, parseAsString, parseAsStringLiteral, useQueryStates, ty
 import { useCallback, useMemo } from "react";
 import { projects as allProjects } from "./data";
 import { MIN_SIZES } from "./movers";
-import { RANGES } from "./ranges";
+import { RANGES, type Range } from "./ranges";
 import { METRICS, type MetricKey, type NumericMetricKey, type Project } from "./types";
 
 export const SCALES = ["log", "linear"] as const;
@@ -27,6 +27,18 @@ export const LEGACY_GROUP = "Legacy listing" as const;
 
 const NUMERIC_METRICS = ["tvl", "volume", "fees", "revenue"] as const satisfies readonly NumericMetricKey[];
 
+/**
+ * Per-card time range (standard section 4). There is no global range control; each card that shows
+ * a time window keeps its own choice under one of these keys. `cr` chain over time, `ar` chain
+ * activity, `mr` risers and fallers, `hr` project history and `xr` compare trend are the standard's
+ * names; `lr` (leaderboard trend), `ir` (Intents daily volume) and `rr` (Intents status rates) are
+ * NEAR's own.
+ */
+export const RANGE_KEYS = ["cr", "ar", "mr", "lr", "hr", "xr", "ir", "rr"] as const;
+export type RangeKey = (typeof RANGE_KEYS)[number];
+/** No default, so an absent key can fall back to the old global key (see `cardRange`). */
+const cardRangeParser = parseAsStringLiteral(RANGES);
+
 const list = parseAsArrayOf(parseAsString, ",").withDefault([]);
 const metricParser = (fallback: MetricKey) => parseAsStringLiteral(METRICS).withDefault(fallback);
 const numericMetricParser = (fallback: NumericMetricKey) => parseAsStringLiteral(NUMERIC_METRICS).withDefault(fallback);
@@ -46,7 +58,16 @@ export const filterParsers = {
   via: list,
   legacy: parseAsStringLiteral(LEGACY_MODES).withDefault("show"),
   scale: parseAsStringLiteral(SCALES).withDefault("log"),
+  /** The old global range. Nothing writes it any more; it is read so a link shared before the change opens as it did. */
   range: parseAsStringLiteral(RANGES).withDefault("30d"),
+  cr: cardRangeParser,
+  ar: cardRangeParser,
+  mr: cardRangeParser,
+  lr: cardRangeParser,
+  hr: cardRangeParser,
+  xr: cardRangeParser,
+  ir: cardRangeParser,
+  rr: cardRangeParser,
   minSize: parseAsStringLiteral(MIN_SIZES).withDefault("100k"),
   cols: parseAsStringLiteral(COL_SETS).withDefault("traction"),
   align: parseAsStringLiteral(ALIGNS).withDefault("date"),
@@ -82,7 +103,20 @@ export const filterParsers = {
 
 export type FilterState = inferParserType<typeof filterParsers>;
 
-/** Params that follow the reader from page to page. Chart keys stay on their page. */
+/**
+ * A card's range: its own key, else the old global `range` key from a link shared before the
+ * per-card controls, else 30d (that key's default). Pure, so it is tested.
+ */
+export function cardRange(state: Pick<FilterState, RangeKey | "range">, key: RangeKey): Range {
+  return state[key] ?? state.range;
+}
+
+/** What picking a range on a card writes: its own key, or nothing when the pick is what the card shows without one. */
+export function cardRangeWrite(state: Pick<FilterState, "range">, key: RangeKey, next: Range): Partial<Record<RangeKey, Range | null>> {
+  return { [key]: next === state.range ? null : next };
+}
+
+/** Params that follow the reader from page to page. Chart keys stay on their page; `range` is the old global key, carried so an old link keeps working. */
 export const CARRIED_PARAMS = ["compare", "range", "scale", "legacy"] as const;
 
 export const FACETS = [
@@ -171,6 +205,8 @@ export function useFilters() {
   const openInvestor = useCallback((id: string | null) => void setState({ investor: id }), [setState]);
   const openFundingType = useCallback((bucket: string | null) => void setState({ fundingType: bucket }), [setState]);
   const openEvent = useCallback((id: string | null) => void setState({ event: id }), [setState]);
+  const rangeOf = useCallback((key: RangeKey) => cardRange(state, key), [state]);
+  const setRange = useCallback((key: RangeKey, next: Range) => void setState((prev) => cardRangeWrite(prev, key, next)), [setState]);
 
   return {
     state,
@@ -178,7 +214,8 @@ export function useFilters() {
     filtered,
     all: allProjects,
     scale: state.scale,
-    range: state.range,
+    rangeOf,
+    setRange,
     reset,
     toggleFacet,
     setFacet,

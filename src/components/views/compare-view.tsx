@@ -20,7 +20,7 @@ import { topN } from "@/lib/metrics";
 /** Compare page: up to four projects side by side, selection carried in the URL. */
 export function CompareView() {
   const { ids, projects, add, remove, set, clear, isFull } = useCompare();
-  const { all, range, state, setState, openProject } = useFilters();
+  const { all, rangeOf, setRange, state, setState, openProject } = useFilters();
   const metric = state.cm;
   const m = numericMetric(metric);
   const metricControl = <NumericMetricSegmented value={m} onChange={(cm) => void setState({ cm })} ariaLabel="Compare metric" />;
@@ -105,7 +105,7 @@ export function CompareView() {
 
       <MetricMatrix projects={projects} all={all} />
       <RatiosTable projects={projects} metric={metric} />
-      <CompareOverlay projects={projects} metric={metric} range={range} align={state.align} onAlignChange={(align) => void setState({ align })} />
+      <CompareOverlay projects={projects} metric={metric} range={rangeOf("xr")} onRangeChange={(r) => setRange("xr", r)} align={state.align} onAlignChange={(align) => void setState({ align })} />
       <ProfileGrid projects={projects} onOpen={openProject} />
     </div>
   );

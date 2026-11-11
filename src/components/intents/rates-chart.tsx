@@ -4,6 +4,7 @@ import { NOT_TRACKED } from "@/lib/coverage";
 import { useMemo, useState } from "react";
 import { Bar, BarChart, Brush, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
+import { RangeControl } from "@/components/atlas/range-control";
 import { frameHeight, type ChartFrame } from "@/components/atlas/chart-frame";
 import type { ChartTableSpec } from "@/components/atlas/chart-table";
 import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/chart-tooltip";
@@ -62,7 +63,7 @@ export function rateTable(rows: RateRow[], range: Range): ChartTableSpec {
 
 type Mode = "all" | "nonsuccess";
 
-export function RatesChart({ data, range }: { data: IntentsSummary; range: Range }) {
+export function RatesChart({ data, range, onRangeChange }: { data: IntentsSummary; range: Range; onRangeChange: (r: Range) => void }) {
   const rows = useMemo(() => rateRows(data, range), [data, range]);
   const [mode, setMode] = useState<Mode>("all");
   const { last30 } = data;
@@ -87,17 +88,20 @@ export function RatesChart({ data, range }: { data: IntentsSummary; range: Range
       title="Outcome rates"
       takeaway={takeaway}
       source={EXPLORER_LABEL}
-      info={`Share of all rows the Explorer API returned per UTC day by final status, ${EXPLORER_LABEL}. SUCCESS / rows, REFUNDED / rows and (FAILED + INCOMPLETE_DEPOSIT) / rows come straight from the per-day files; the grey remainder is pending, processing and any other status. Window follows the date range control. The 30-day figures in the takeaway use complete days only.`}
+      info={`Share of all rows the Explorer API returned per UTC day by final status, ${EXPLORER_LABEL}. SUCCESS / rows, REFUNDED / rows and (FAILED + INCOMPLETE_DEPOSIT) / rows come straight from the per-day files; the grey remainder is pending, processing and any other status. Window follows this card's range control. The 30-day figures in the takeaway use complete days only.`}
       actions={
-        <Segmented<Mode>
-          value={mode}
-          onChange={setMode}
-          options={[
-            { value: "all", label: "All statuses" },
-            { value: "nonsuccess", label: "Non-success only" },
-          ]}
-          ariaLabel="Statuses shown"
-        />
+        <>
+          <RangeControl value={range} onChange={onRangeChange} ariaLabel="Outcome rates range" />
+          <Segmented<Mode>
+            value={mode}
+            onChange={setMode}
+            options={[
+              { value: "all", label: "All statuses" },
+              { value: "nonsuccess", label: "Non-success only" },
+            ]}
+            ariaLabel="Statuses shown"
+          />
+        </>
       }
       table={rateTable(rows, range)}
       queries={[EXPLORER_QUERY, TRANSFORM_QUERY]}

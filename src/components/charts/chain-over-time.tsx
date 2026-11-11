@@ -3,6 +3,7 @@
 import { ChartCard, EmptyState, TvlNote } from "@/components/atlas/chart-card";
 import { frameHeight, type ChartFrame } from "@/components/atlas/chart-frame";
 import { RangeBrush } from "@/components/atlas/range-brush";
+import { RangeControl } from "@/components/atlas/range-control";
 import { brushSlice, fittedDomain, levelWindow, rangeStats } from "@/lib/chart-frame";
 import { chainData, meta } from "@/lib/data";
 import { fmtDateShort, fmtPctSigned, fmtUsd } from "@/lib/format";
@@ -25,9 +26,9 @@ const CHAIN_COLOR: Record<Chain, string> = { near: "var(--chain-near)", aurora: 
  * DefiLlama chain-level history for NEAR and Aurora as 2×4 small multiples,
  * each with its own axis. TVL is a level series (fitted axis, 90-day floor,
  * "From zero" toggle); volume, fees and revenue are flows that start at zero
- * and follow the global range (standard section 6).
+ * and follow the card's own range control (standard sections 4 and 6).
  */
-export function ChainOverTime({ range }: { range: Range }) {
+export function ChainOverTime({ range, onRangeChange }: { range: Range; onRangeChange: (r: Range) => void }) {
   const total = chainData.dates.length;
   const flowN = rangeDays(range, total);
   const levelN = levelWindow(range, total);
@@ -40,7 +41,7 @@ export function ChainOverTime({ range }: { range: Range }) {
     total === 0
       ? "Daily chain history appears after the first refresh run."
       : `NEAR chain TVL ${fmtUsd(near.tvl)} (${fmtPctSigned(chg("tvl"))} over the ${RANGE_LONG[range]}), 30d volume ${fmtUsd(near.volume30d)}, 30d fees ${fmtUsd(near.fees30d)}; Aurora TVL ${fmtUsd(aurora.tvl)}.`;
-  const subtitle = total === 0 ? undefined : levelN !== flowN ? `TVL shown over ${levelN} days so the level has shape to read, flows follow the date range (${RANGE_LONG[range]})` : `Every panel covers the ${RANGE_LONG[range]}`;
+  const subtitle = total === 0 ? undefined : levelN !== flowN ? `TVL shown over ${levelN} days so the level has shape to read, flows follow the range control (${RANGE_LONG[range]})` : `Every panel covers the ${RANGE_LONG[range]}`;
 
   const rows = levelDates.map((d, i) => {
     const r: Record<string, unknown> = { date: d };
@@ -114,7 +115,8 @@ export function ChainOverTime({ range }: { range: Range }) {
       subtitle={subtitle}
       scope="whole-chain"
       level
-      info="DefiLlama chain-level series. Default chain TVL (excludes liquid staking and bridges), daily DEX volume, fees and revenue summed across every protocol on the chain. TVL keeps at least 90 days in view; flows follow the date range control and exclude the current partial day."
+      info="DefiLlama chain-level series. Default chain TVL (excludes liquid staking and bridges), daily DEX volume, fees and revenue summed across every protocol on the chain. TVL keeps at least 90 days in view; flows follow this card's range control and exclude the current partial day."
+      actions={<RangeControl value={range} onChange={onRangeChange} ariaLabel="Chain over time range" />}
       source="DefiLlama chain TVL and the NEAR and Aurora DEX, fees and revenue overviews, daily"
       footer={<TvlNote />}
       table={{

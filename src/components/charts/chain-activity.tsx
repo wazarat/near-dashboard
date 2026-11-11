@@ -4,6 +4,7 @@ import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
 import { frameHeight, type ChartFrame } from "@/components/atlas/chart-frame";
 import { EstimateLabel } from "@/components/atlas/estimate-label";
 import { RangeBrush } from "@/components/atlas/range-brush";
+import { RangeControl } from "@/components/atlas/range-control";
 import { brushSlice } from "@/lib/chart-frame";
 import { chainData } from "@/lib/data";
 import { fmtCompact, fmtDateShort, fmtPctSigned } from "@/lib/format";
@@ -28,7 +29,7 @@ HAVING account_id IS NOT NULL OR GROUPING(account_id) = 1`;
 type Panel = { label: string; nb: Array<number | null>; bq?: Array<number | null>; kind: "line" | "bar"; bqOnly?: boolean; pair?: readonly ["aurora", "intents.near"] };
 
 /** Daily chain usage: NearBlocks since genesis with the BigQuery series overlaid where it exists. Every panel is a flow and starts at zero. */
-export function ChainActivity({ range }: { range: Range }) {
+export function ChainActivity({ range, onRangeChange }: { range: Range; onRangeChange: (r: Range) => void }) {
   const total = chainData.dates.length;
   const n = rangeDays(range, total);
   const windowDates = sliceTail(chainData.dates, n);
@@ -105,6 +106,7 @@ export function ChainActivity({ range }: { range: Range }) {
       title="Chain activity"
       takeaway={takeaway}
       scope="whole-chain"
+      actions={<RangeControl value={range} onChange={onRangeChange} ariaLabel="Chain activity range" />}
       info="NearBlocks daily charts (transactions, active accounts, new accounts) since 2020 plus the NEAR BigQuery public dataset for the last year, which adds transactions, distinct signers, CREATE_ACCOUNT actions, FUNCTION_CALL receipts, distinct contracts called, and receipts to the aurora and intents.near accounts. Distinct signers are an estimate, since one person can use many accounts, and relayers or intents hide the end user."
       source="NearBlocks daily charts and the NEAR BigQuery public dataset (transactions and receipt_actions)"
       queries={[

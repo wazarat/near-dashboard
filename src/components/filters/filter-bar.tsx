@@ -9,10 +9,8 @@ import { Switch } from "@/components/ui/switch";
 import { CHAIN_COLOR, STATUS_COLOR, STATUS_GROUP_LABEL, TIER_COLOR } from "@/lib/colors";
 import { meta, projects as allProjects } from "@/lib/data";
 import { FACETS, LEGACY_GROUP, applyFilters, facetValue, useFilters, type FacetKey } from "@/lib/filters";
-import type { Range } from "@/lib/ranges";
 import { TBD_LINE, tierLabel } from "@/lib/tier";
 import { CHAIN_PRESENCE, NATIVE_CHAINS, STATUS_GROUPS, TIERS, type Tier } from "@/lib/types";
-import { DateRangeControl } from "./date-range-control";
 import { MultiSelect, type Option } from "./multi-select";
 
 const FACET_HINTS: Partial<Record<string, string>> = {
@@ -59,9 +57,9 @@ function labelFor(key: FacetKey, value: string): string | undefined {
 
 const legacyCount = allProjects.filter((p) => p.statusGroup === LEGACY_GROUP).length;
 
-/** The sticky filter bar: search, facets, the one global range control and the legacy-listing switch (standard section 4). */
+/** The sticky filter bar: search, facets, the result count, Reset, Copy link and the legacy-listing switch. Time ranges live on each card (standard section 4). */
 export function FilterBar() {
-  const { state, setState, filtered, setFacet, reset, activeCount, range } = useFilters();
+  const { state, setState, filtered, setFacet, reset, activeCount } = useFilters();
   const [copied, setCopied] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -107,9 +105,8 @@ export function FilterBar() {
     <div className="sticky top-0 z-30 border-b border-ink-700/40 bg-ink-950/80 backdrop-blur-xl">
       {/*
         One wrapping row with a forced break, so each control exists once and only its place changes with the width.
-        Wide screens: search, facets and the result count, then the range, the legacy switch and, under the count,
-        Reset and Copy link (standard section 4). Narrow screens: search and Filters, then the range, the count and
-        the two icon buttons.
+        Wide screens: search, facets and the result count, then the legacy switch and, under the count, Reset and
+        Copy link (standard section 4). Narrow screens: search and Filters, then the count and the two icon buttons.
       */}
       <div className="mx-auto flex w-full max-w-atlas flex-wrap items-center gap-x-2 gap-y-2 px-5 py-2.5 sm:px-6 lg:px-8">
         <div className="relative order-1 min-w-0 flex-1 md:max-w-xs">
@@ -156,10 +153,7 @@ export function FilterBar() {
           Showing <span className="tabular font-medium text-ink-50">{filtered.length.toLocaleString("en-US")}</span> of {allProjects.length.toLocaleString("en-US")} projects
         </p>
         <div aria-hidden className="order-4 h-0 basis-full" />
-        <div className="order-5 flex min-w-0 max-w-full flex-wrap items-center gap-x-4 gap-y-2">
-          <DateRangeControl value={range} onChange={(r: Range) => void setState({ range: r })} />
-          <span className="hidden xl:inline">{legacySwitch}</span>
-        </div>
+        <div className="order-5 hidden min-w-0 max-w-full items-center xl:flex">{legacySwitch}</div>
         <div className="order-7 ml-auto hidden items-center gap-1.5 lg:flex" data-testid="filter-actions">
           <Button variant="ghost" size="sm" className="h-8" onClick={reset} disabled={activeCount === 0} title="Clear search and filters">
             <RotateCcw className="size-3.5" /> Reset
