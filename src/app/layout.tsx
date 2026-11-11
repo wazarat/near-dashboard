@@ -6,6 +6,9 @@ import { Providers } from "./providers";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { AtlasShell } from "@/components/layout/atlas-shell";
+import { ClerkProvider } from "@clerk/nextjs";
+import { AUTH_ENABLED, CLERK_PUBLISHABLE_KEY, warnIfAuthOff } from "@/lib/auth-config";
+import { clerkAppearance } from "@/lib/clerk-appearance";
 import { meta } from "@/lib/data";
 import { SITE_URL } from "@/lib/env";
 import { OG_BASE, SITE } from "@/lib/site";
@@ -28,16 +31,27 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  warnIfAuthOff();
+  const page = (
+    <Providers>
+      <SiteHeader />
+      <Suspense fallback={<div className="flex-1" aria-busy="true" />}>
+        <AtlasShell>{children}</AtlasShell>
+      </Suspense>
+      <SiteFooter />
+    </Providers>
+  );
   return (
     <html lang="en" suppressHydrationWarning className={`${sans.variable} ${display.variable} ${mono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-background text-foreground">
-        <Providers>
-          <SiteHeader />
-          <Suspense fallback={<div className="flex-1" aria-busy="true" />}>
-            <AtlasShell>{children}</AtlasShell>
-          </Suspense>
-          <SiteFooter />
-        </Providers>
+        {/* One Clerk application serves canhav.com and the atlases. Without its key the provider is left out and the login wall is off. */}
+        {AUTH_ENABLED ? (
+          <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY} appearance={clerkAppearance} afterSignOutUrl="/">
+            {page}
+          </ClerkProvider>
+        ) : (
+          page
+        )}
       </body>
     </html>
   );
