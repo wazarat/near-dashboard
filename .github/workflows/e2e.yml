@@ -1,0 +1,72 @@
+name: E2E
+
+# Browser runs for the login wall against a production build. The logged-out run needs no secret
+# (it treats every reader as logged out). The Clerk run needs the development keys as repository
+# secrets and is skipped while they are absent; its test user is created by e2e/clerk.setup.ts.
+on:
+  push:
+    branches: [main]
+    # Only changes that can alter what a visitor sees: app code, tests, static files, dependencies and
+    # config. Daily data commits and docs skip it. Run it by hand from the Actions tab when in doubt.
+    paths:
+      - "src/**"
+      - "e2e/**"
+      - "public/**"
+      - "package.json"
+      - "package-lock.json"
+      - "next.config.ts"
+      - "tsconfig.json"
+      - ".github/workflows/e2e.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A newer push cancels the run still in progress, so a burst of pushes is tested once, on its last commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  wall:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CLERK_PUBLISHABLE: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+      CLERK_SECRET: ${{ secrets.CLERK_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Playwright version
+        id: pw
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Cache Playwright browsers
+        id: pw-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}-chromium
+      # Only the browser: the runner image already has the libraries Chromium needs.
+      - name: Playwright Chromium
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: npx playwright install chromium
+      - name: Logged-out wall
+        run: npm run e2e:wall
+      - name: Clerk logged-out and signed-in runs
+        if: env.CLERK_PUBLISHABLE != '' && env.CLERK_SECRET != ''
+        env:
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+        run: npm run e2e:auth
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-wall-results
+          path: |
+            e2e/test-results-wall
+            e2e/test-results-auth
+          retention-days: 7

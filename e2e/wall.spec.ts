@@ -7,6 +7,12 @@ const GATED = ["/sectors/", "/traction/", "/intents/", "/funding/", "/investors/
 const SHOTS = path.join(__dirname, "screenshots");
 fs.mkdirSync(SHOTS, { recursive: true });
 
+// Under the Clerk config (`npm run e2e:auth`) the wall is only on when the build saw the development keys.
+test.beforeEach(({}, info) => {
+  const clerkRun = info.project.name.startsWith("clerk-");
+  test.skip(clerkRun && !(process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY), "No Clerk keys in the environment, so the Clerk run of the logged-out checks is skipped.");
+});
+
 async function guard(page: Page) {
   const errors: string[] = [];
   page.on("console", (m) => {
