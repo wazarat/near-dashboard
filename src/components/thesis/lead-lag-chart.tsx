@@ -77,7 +77,7 @@ export function LeadLagChart({ data }: { data: ThesisJson }) {
   };
 
   return (
-    <ChartCard
+    <ChartCard takeawayPlacement="inline"
       scope="whole-chain"
       id="thesis-lead-lag"
       title="Test 2 · Lead and lag"

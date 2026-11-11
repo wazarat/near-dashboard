@@ -50,7 +50,7 @@ export function CoverageStrip({ data }: { data: ThesisJson }) {
   };
 
   return (
-    <ChartCard
+    <ChartCard takeawayPlacement="inline"
       scope="whole-chain"
       id="thesis-coverage"
       title="Explorer coverage · 1Click swaps only"

@@ -81,7 +81,7 @@ export function RatesChart({ data, range }: { data: IntentsSummary; range: Range
   const partialDays = rows.filter((r) => r.partial).length;
 
   return (
-    <ChartCard
+    <ChartCard takeawayPlacement="inline"
       id="intents-rates"
       scope="whole-chain"
       title="Outcome rates"

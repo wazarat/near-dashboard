@@ -30,7 +30,7 @@ export function ReferralsCards({ data }: { data: IntentsSummary }) {
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <ChartCard
+      <ChartCard takeawayPlacement="inline"
       scope="whole-chain"
         id="intents-referrals"
         title="Share by referral"
@@ -42,7 +42,7 @@ export function ReferralsCards({ data }: { data: IntentsSummary }) {
       >
         <BucketBars rows={referrals} color={EXPLORER_COLOR} hatchId="hatch-intents-referrals" keyLabel="Referral" ariaLabel="Share of 1Click volume by referral tag" emptyMessage="No complete Explorer days yet." />
       </ChartCard>
-      <ChartCard
+      <ChartCard takeawayPlacement="inline"
       scope="whole-chain"
         id="intents-app-fees"
         title="Share by app-fee recipient"

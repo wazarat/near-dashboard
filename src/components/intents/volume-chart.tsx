@@ -109,7 +109,7 @@ export function VolumeChart({ data, range, scale, onScaleChange }: { data: Data;
   const patternId = useSvgId("intents-partial-day");
 
   return (
-    <ChartCard
+    <ChartCard takeawayPlacement="inline"
       id="intents-volume"
       scope="whole-chain"
       title="Daily volume"

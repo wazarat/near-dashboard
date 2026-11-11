@@ -27,7 +27,7 @@ export function AssetsCards({ data }: { data: IntentsSummary }) {
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <ChartCard
+      <ChartCard takeawayPlacement="inline"
       scope="whole-chain"
         id="intents-origin-assets"
         title="Origin assets"
@@ -38,7 +38,7 @@ export function AssetsCards({ data }: { data: IntentsSummary }) {
       >
         <BucketBars rows={origin} color="var(--cat-6)" hatchId="hatch-intents-origin-assets" keyLabel="Origin asset" ariaLabel="1Click volume by origin asset" emptyMessage="No complete Explorer days yet." />
       </ChartCard>
-      <ChartCard
+      <ChartCard takeawayPlacement="inline"
       scope="whole-chain"
         id="intents-dest-assets"
         title="Destination assets"

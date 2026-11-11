@@ -62,7 +62,7 @@ export function RobustnessTable({ data }: { data: ThesisJson }) {
   };
 
   return (
-    <ChartCard
+    <ChartCard takeawayPlacement="inline"
       scope="whole-chain"
       id="thesis-robustness"
       title="Test 4 · Robustness"

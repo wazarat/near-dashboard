@@ -31,7 +31,7 @@ export function RoutesChart({ data }: { data: IntentsSummary }) {
   }, [rows, window]);
 
   return (
-    <ChartCard
+    <ChartCard takeawayPlacement="inline"
       scope="whole-chain"
       id="intents-routes"
       title="Top routes"
@@ -61,7 +61,7 @@ export function ChainsCards({ data }: { data: IntentsSummary }) {
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <ChartCard
+      <ChartCard takeawayPlacement="inline"
       scope="whole-chain"
         id="intents-origin-chains"
         title="Origin chains"
@@ -72,7 +72,7 @@ export function ChainsCards({ data }: { data: IntentsSummary }) {
       >
         <BucketBars rows={origin} color="var(--cat-6)" hatchId="hatch-intents-origin-chains" keyLabel="Origin chain" ariaLabel="1Click volume by origin chain" emptyMessage="No complete Explorer days yet." />
       </ChartCard>
-      <ChartCard
+      <ChartCard takeawayPlacement="inline"
       scope="whole-chain"
         id="intents-dest-chains"
         title="Destination chains"

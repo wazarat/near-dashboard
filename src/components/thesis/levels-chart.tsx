@@ -113,7 +113,7 @@ export function LevelsChart({ data, scale, onScaleChange }: Props) {
   };
 
   return (
-    <ChartCard
+    <ChartCard takeawayPlacement="inline"
       scope="whole-chain"
       id="thesis-levels"
       title="Test 1 · Levels, indexed to 100"

@@ -92,7 +92,7 @@ export function OosChart({ data }: { data: ThesisJson }) {
   };
 
   return (
-    <ChartCard
+    <ChartCard takeawayPlacement="inline"
       scope="whole-chain"
       id="thesis-oos"
       title="Test 3 · Out of sample"

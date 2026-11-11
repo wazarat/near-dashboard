@@ -12,9 +12,11 @@ import { Segmented } from "@/components/ui/segmented";
 import { useAccess } from "@/lib/access";
 import { meta } from "@/lib/data";
 import { useActiveFilterCount, type Scale } from "@/lib/filters";
+import { points } from "@/lib/takeaways";
 import { cn } from "@/lib/utils";
 import { ChartFrameProvider, type ChartFrame } from "./chart-frame";
 import { ChartTable, ChartTableToggle, type ChartTableSpec, type ChartView } from "./chart-table";
+import { TakeawayList } from "./takeaway-list";
 
 export interface QuerySpec {
   /** "sql" for BigQuery, "http" for an API call, "transform" for a pure function. */
@@ -27,8 +29,14 @@ export type ChartScope = "filtered" | "whole-chain" | "selection";
 
 interface ChartCardProps {
   title: string;
-  /** One-line takeaway shown above the chart. */
+  /** The card's computed summary sentence. */
   takeaway: string;
+  /**
+   * Where the summary shows (standard section 6). "expanded", the default, keeps the card face to the chart
+   * and lists the summary as points in the expanded view. "inline" keeps it on the card as well, for pages
+   * whose summaries are the argument (Thesis, NEAR Intents). A card that cannot expand always shows it inline.
+   */
+  takeawayPlacement?: "expanded" | "inline";
   /** Explains the metric and the source. */
   info: string;
   /** The chart, or a function of the chart frame so the same chart can render larger, with a brush, inside the expand dialog. */
@@ -82,7 +90,7 @@ export function ScopeNote({ scope = "filtered", className }: { scope?: ChartScop
   );
 }
 
-export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries, scope, expandable = true, level = false, subtitle, source }: ChartCardProps) {
+export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries, scope, expandable = true, level = false, subtitle, source, takeawayPlacement = "expanded" }: ChartCardProps) {
   const [view, setView] = useState<ChartView>("chart");
   const [dialogView, setDialogView] = useState<ChartView>("chart");
   const [axis, setAxis] = useState<"fitted" | "zero">("fitted");
@@ -93,6 +101,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
   const walled = !useAccess().can({ path: usePathname() });
   const open = canExpand && expand === id && !walled;
   const hasQuery = Boolean(queries && queries.length);
+  const inline = takeawayPlacement === "inline" || !canExpand;
   const startAtZero = !level || axis === "zero";
 
   const inlineFrame = useMemo<ChartFrame>(() => ({ expanded: false, brush: false, startAtZero, brushRange: null, setBrushRange: noop }), [startAtZero]);
@@ -135,7 +144,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
               </span>
               <ScopeNote scope={scope} />
             </div>
-            <p className="mt-1 text-sm text-ink-300">{takeaway}</p>
+            {inline && <p className="mt-1 text-sm text-ink-300">{takeaway}</p>}
             {subtitle && <p className="mt-1 text-label text-ink-300">{subtitle}</p>}
           </div>
           <div className="flex max-w-full flex-wrap items-center gap-2">
@@ -159,14 +168,15 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
                 <DialogTitle className="text-title">{title}</DialogTitle>
                 <ScopeNote scope={scope} />
               </div>
-              <DialogDescription className="text-sm text-ink-300">{takeaway}</DialogDescription>
+              <DialogDescription className={inline ? "text-sm text-ink-300" : "sr-only"}>{takeaway}</DialogDescription>
               {subtitle && <p className="text-label text-ink-300">{subtitle}</p>}
             </DialogHeader>
             <div className="flex flex-wrap items-center gap-2">{controls(dialogView, setDialogView)}</div>
             <div className="min-h-0 flex-1">{open && body(dialogView, dialogFrame)}</div>
+            {!inline && <TakeawayList takeaway={points(takeaway)} className="border-t border-ink-700/40 pt-3" />}
             {footer && <div className="text-xs text-ink-300">{footer}</div>}
             <p className="text-label text-ink-300">
-              {source ? `Source. ${source}` : info}
+              {source ? `Source. ${/[.!?]$/.test(source) ? source : `${source}.`}` : info}
               {" Press Escape to close."}
             </p>
           </DialogContent>

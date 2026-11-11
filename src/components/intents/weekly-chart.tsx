@@ -66,7 +66,7 @@ export function WeeklyChart({ data }: { data: IntentsSummary }) {
   }, [rows]);
 
   return (
-    <ChartCard
+    <ChartCard takeawayPlacement="inline"
       id="intents-weekly"
       scope="whole-chain"
       title="Weekly volume and swaps"

@@ -361,3 +361,20 @@ test("analytics events carry closed-set properties only", async ({ page }, info)
   const all = JSON.stringify(await queued(page));
   expect(all).not.toMatch(/meta pool|rhea|dragonfly|near-intents|https?:/i);
 });
+
+test("card summaries show as points in the expanded view, and stay on the card for Thesis and Intents", async ({ page }) => {
+  await page.goto("/");
+  const card = page.locator('[data-chart-card="Native vs imported"]');
+  await expect(card).toBeVisible({ timeout: 15_000 });
+  await expect(card.getByTestId("takeaway")).toHaveCount(0);
+  await page.goto("/?expand=native-vs-imported");
+  const dialog = page.locator('[data-expanded-chart="native-vs-imported"]');
+  await expect(dialog.getByTestId("takeaway")).toBeVisible({ timeout: 15_000 });
+  await expect(dialog.getByTestId("takeaway").locator("li").first()).toContainText(/NEAR-native/);
+  // The pages whose summaries are the argument keep them on the card.
+  await page.goto("/thesis/");
+  const thesis = page.locator("[data-chart-card]").first();
+  await expect(thesis.locator("p").first()).not.toBeEmpty();
+  await page.goto("/intents/");
+  await expect(page.locator('[data-chart-card]').first().locator("p").first()).not.toBeEmpty();
+});
