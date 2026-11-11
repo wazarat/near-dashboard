@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { ScopeNote, TvlNote } from "@/components/atlas/chart-card";
 import { MetricSegmented } from "@/components/atlas/chart-metric";
+import { RangeControl } from "@/components/atlas/range-control";
 import { DataTable, type ProjectColumnDef } from "@/components/explorer/data-table";
 import {
   calls30Column,
@@ -37,14 +38,16 @@ interface Props {
   projects: Project[];
   metric: MetricKey;
   onMetricChange: (m: MetricKey) => void;
+  /** The window of the Trend column, which only the Traction and Momentum column sets have. */
   range: Range;
+  onRangeChange: (r: Range) => void;
   cols: ColSet;
   onColsChange: (cols: ColSet) => void;
   onOpen: (id: string) => void;
 }
 
 /** Sortable table of every project with a value for the chart's own metric, with four swappable column sets. */
-export function Leaderboard({ projects, metric, onMetricChange, range, cols, onColsChange, onOpen }: Props) {
+export function Leaderboard({ projects, metric, onMetricChange, range, onRangeChange, cols, onColsChange, onOpen }: Props) {
   const rows = useMemo(() => (metric === "count" ? projects.filter((p) => p.hasTraction) : projects.filter((p) => p[metric] !== null)), [projects, metric]);
   const m = numeric(metric);
 
@@ -84,6 +87,7 @@ export function Leaderboard({ projects, metric, onMetricChange, range, cols, onC
             <ScopeNote />
           </span>
           <div className="flex flex-wrap items-center gap-2">
+            {(cols === "traction" || cols === "momentum") && <RangeControl value={range} onChange={onRangeChange} ariaLabel="Leaderboard trend range" />}
             <MetricSegmented value={metric} onChange={onMetricChange} ariaLabel="Leaderboard metric" />
             <Segmented value={cols} onChange={onColsChange} options={COL_SETS.map((c) => ({ value: c, label: COL_SET_LABEL[c] }))} ariaLabel="Column set" />
           </div>
@@ -110,7 +114,7 @@ export function Leaderboard({ projects, metric, onMetricChange, range, cols, onC
                   Function calls and signers come from BigQuery receipt actions to each project&apos;s tracked contracts (data/contracts.csv). {withActivity} of {rows.length} rows have activity figures; the rest have no tracked contract yet.
                 </p>
               )}
-              {cols === "momentum" && <p>Change columns compare the latest complete day with the value 7, 30 and 90 days earlier. Trend sparklines follow the global range.</p>}
+              {cols === "momentum" && <p>Change columns compare the latest complete day with the value 7, 30 and 90 days earlier. Trend sparklines follow the range control above.</p>}
               <p>
                 <TvlNote />
               </p>

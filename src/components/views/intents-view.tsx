@@ -12,14 +12,14 @@ import { intentsData } from "@/lib/data";
 import { useFilters } from "@/lib/filters";
 
 export function IntentsView() {
-  const { range, scale, setState } = useFilters();
+  const { rangeOf, setRange, scale, setState } = useFilters();
 
   return (
     <div className="space-y-4">
       <IntentsKpis data={intentsData} />
-      <VolumeChart data={intentsData} range={range} scale={scale} onScaleChange={(s) => void setState({ scale: s })} />
+      <VolumeChart data={intentsData} range={rangeOf("ir")} onRangeChange={(r) => setRange("ir", r)} scale={scale} onScaleChange={(s) => void setState({ scale: s })} />
       <WeeklyChart data={intentsData} />
-      <RatesChart data={intentsData} range={range} />
+      <RatesChart data={intentsData} range={rangeOf("rr")} onRangeChange={(r) => setRange("rr", r)} />
       <RoutesChart data={intentsData} />
       <ChainsCards data={intentsData} />
       <AssetsCards data={intentsData} />

@@ -115,7 +115,7 @@ Per commit: `npm run check:copy`, `npm run lint`, `npm run typecheck`, `npm test
 
 # Third pass, 2026-11-11: the rest of the amended standard
 
-The second pass listed six parts of the amended standard as not adopted. This pass adopts four of them: the funding-type pop-up, the Explorer map view, tables-of-records counts and the timeline's table-first view with an event pop-up. The per-card time range and the five-column leaderboard are still open and wait on the owner (see "Per-card time range, blast radius" below). Nothing under `data/`, `queries/` or `THESIS.md` changed. The visible text of Thesis, Intents, Security, Sectors, Traction and Compare is identical before and after; Explorer, Funding and Investors differ only by the lines named in the table below; Overview differs only inside the Timeline card.
+The second pass listed six parts of the amended standard as not adopted. This pass adopts five of them: the funding-type pop-up, the Explorer map view, tables-of-records counts, the timeline's table-first view with an event pop-up and, on the owner's go-ahead the same day, the per-card time range. The five-column leaderboard stays open. Nothing under `data/`, `queries/` or `THESIS.md` changed and no figure moved. After the first four changes the visible text of Thesis, Intents, Security, Sectors, Traction and Compare was identical to the build before the pass; Explorer, Funding and Investors differed only by the lines named in the table below, and Overview only inside the Timeline card. The time range change then moved the four labels "7d, 30d, 90d, All" from the filter bar of every page onto the eight cards that have a time window, and changed one phrase under Chain over time ("flows follow the range control"); nothing else in the text of any page changed.
 
 ## What changed
 
@@ -125,6 +125,7 @@ The second pass listed six parts of the amended standard as not adopted. This pa
 | Explorer | A Map and Table switch under `?view=` (`table` is the default, `map` is the sector treemap of the same selection with its zoom, sharing the `tm` and `tmSector` keys with the Overview chart). A wide search box that writes the same `q` as the filter bar, with `/` to focus and a project count beside it. |
 | Tables of records | "Funding rounds", "Investors" and "Newly detected" carry no count in the title. Each has its own line, "Showing 42 of 42 rounds", which follows the table's own filter (`ShowingLine` in `src/components/explorer/data-table.tsx`). The funding type pop-up's tables use the same line. |
 | Timeline | The card opens on its table (Date, Type, Event, Projects, Amount). A row or a chart marker opens the event pop-up (`?event=<id>`, `src/components/drawer/event-modal.tsx`) with the amount, what it measures, the detail and the source. The same pop-up opens from an Ecosystem capital card's title and from a project's Events list. The CSV carries every field, the detail included. |
+| Time range | No global range control. Each of the eight cards with a time window has its own 7d, 30d, 90d, All control in its actions and its own URL key, and opens at 30d (`RangeControl` in `src/components/atlas/range-control.tsx`, `RANGE_KEYS` in `src/lib/filters.ts`). The filter bar holds search, facets, the result count, Reset, Copy link and the legacy switch. |
 | Access | `funding-detail` joins the gated actions in `src/lib/gate.ts`. Logged out, a shared funding type link shows the title and the summary line, then one login panel. The event pop-up is open to everyone, because the timeline is on the public Overview. |
 | Analytics | No new event. `funding` joins the login triggers, so a sign-up that starts at the funding type panel is attributed. |
 
@@ -136,6 +137,10 @@ The second pass listed six parts of the amended standard as not adopted. This pa
 - **The timeline table keeps its Amount column.** The standard asks for four columns with the amount one click away. The amount was on the page before, so it stays as a fifth column; what the amount measures, the detail and the source moved to the pop-up and the CSV.
 - **Every recorded source link is still offered.** The direct-sources rule is not applied (next section).
 - **A project's Events keep their source link** next to the title, which now opens the event pop-up over the project pop-up. Closing it returns to the project.
+- **Level series keep their 90-day floor** (owner, 2026-11-11). The standard has every panel follow its card's range. Here TVL shows at least 90 days at 7d and 30d, so the "Low, high, change over 90 days" line under it reads as it did before.
+- **Risers and fallers keeps All** (owner, 2026-11-11). The standard drops All from a card that is a fixed 7, 30 or 90 day comparison. Here All stays and ranks by the 90-day change, as before.
+- **The old `range` key is still read** (owner, 2026-11-11). Nothing writes it, but a card with no key of its own falls back to it, so a link shared before the change opens every card on the range it carried. It is still carried from page to page for the same reason.
+- **Three range keys are NEAR's own**, `lr`, `ir` and `rr`, for cards the Robinhood atlas does not have.
 - **Pop-up section headings keep their counts** ("Portfolio (n)", "Rounds (n)", "All other projects (n)"). They head short lists inside a pop-up, not tables of records.
 
 ## The direct-sources rule, not applied
@@ -152,39 +157,28 @@ Robinhood's `isDirectSource` (a link must have a path; on X only a single post c
 
 The one event and the one round are the same link, `coinchapter.com/?p=140167`, which is an article; the rule fails it only because the address has no path. The five discovery sources are project home pages. Of the sixteen funding source cells, one is that same article link and fifteen are not links at all (fourteen read "N/A", one has a note after the address); all but two of the fifteen belong to projects whose funding is Not disclosed. The project pop-up still renders those cells as links today; the new funding type pop-up shows "none" for them. Applying the rule, and cleaning the "N/A" cells, is the owner's call.
 
+## Per-card time range, as built
+
+| Card | Page | Key | The range drives |
+|---|---|---|---|
+| Chain over time | Overview | `cr` | The window of the flow panels (TVL keeps its 90-day floor), the change in the summary, the CSV name |
+| Chain activity | Overview | `ar` | The window, the change in the summary, the CSV name |
+| Risers and fallers | Overview | `mr` | Which change (7, 30 or 90 days) ranks the lists, and the spark window |
+| Leaderboard | Traction | `lr` | The Trend column of the Traction and Momentum column sets; the control hides on Activity and Financials, which have no Trend column |
+| History | Project pop-up | `hr` | The window of the history chart |
+| Trend, indexed | Compare | `xr` | The window of the indexed overlay |
+| Daily volume | Intents | `ir` | The window, the summary, the CSV name |
+| Outcome rates | Intents | `rr` | The window, the CSV name |
+
+A card's range is its own key, else the old `range` key, else 30d (`cardRange`). Picking the value a card would show anyway clears its key, so a default view has a clean URL (`cardRangeWrite`). Range keys are chart keys and stay on their page.
+
 ## Parts of the amended standard still not adopted
 
-- **Per-card time range** and, with it, the level series' 90-day floor. Not started; the blast radius is below.
 - **The five-column leaderboard.** The Traction leaderboard keeps its four column sets, because Activity is NEAR BigQuery data with no other home.
 - **Record-table toolbars** (search, facets with counts and Reset under their own URL keys, as Robinhood's backers table has). The rounds table has 42 rows and one checkbox, the investors table 67 rows.
 - **The direct-sources rule**, as above.
 
-## Per-card time range, blast radius
-
-Today `range` is one URL key (default `30d`), set in the filter bar and carried from page to page with `compare`, `scale` and `legacy`. Moving it onto each card touches these places.
-
-| Card | Page | Reads `range` for | Standard key |
-|---|---|---|---|
-| Chain over time | Overview | The window of four panels, the change in the summary, the stats line, the CSV name | `cr` |
-| Chain activity | Overview | The window, the change in the summary, the CSV name | `ar` |
-| Risers and fallers | Overview | Which change (7, 30 or 90 days) ranks the lists, and the spark window | `mr` |
-| Leaderboard | Traction | The Trend column in the Traction and Momentum column sets | none, needs one (`lr`) |
-| History | Project pop-up | The window of the history chart | `hr` |
-| Trend overlay | Compare | The window of the indexed overlay; the compare tray link also carries `range` | `xr` |
-| Daily volume | Intents | The window, the summary, the CSV name | none, needs one |
-| Status rates | Intents | The window, the CSV name | none, needs one |
-
-Also touched: the filter bar (the range control leaves it), `CARRIED_PARAMS` and the nav links, `compareHref`, `src/lib/filters.ts`, the chart card (a range slot in its actions), one page check that loads `?range=30d`, the README and the screenshots. About twenty source files and eight new URL keys, three of them NEAR-only.
-
-Three decisions are the owner's, because each can move a figure or break a link.
-
-1. **The 90-day floor.** The standard has every panel follow its card's range, so TVL at 30d would show 30 days. Today NEAR shows at least 90 days for a level series, and the line under the chart ("Low, high, change over 90 days") is computed over that window. Dropping the floor changes that line on Overview and in every project pop-up. Keeping it is a deliberate difference and moves nothing.
-2. **"All" on comparison cards.** The standard drops All from a card that is a fixed 7, 30 or 90 day comparison. Risers and fallers at All shows the 90-day change today; the option would go.
-3. **Old links.** A shared link with `?range=90d` would open every card at 30d unless each card falls back to the old key when its own is absent.
-
-With the floor kept, All kept where it exists and the fallback in place, no figure changes at the default view and the work is mechanical. The Activity column set does not read `range` and is not affected either way.
-
 ## Verification
 
-Per commit: `npm run check:copy`, `npm run lint`, `npm run typecheck`, `npm test` (147 tests), `npm run e2e` (188 checks at desktop and phone widths, dark and light, wall off; 185 run and 3 are the analytics check skipping its repeat on three of the four projects) and `npm run e2e:wall` (38 checks). `git diff --stat origin/main -- data queries THESIS.md` is empty. The visible text of thirteen pages and pop-ups was saved from a build of the branch before this pass and again after it and compared line by line. `npm run e2e:auth` still needs the Clerk development keys and was not run.
+Per commit: `npm run check:copy`, `npm run lint`, `npm run typecheck`, `npm test` (152 tests at the end of the pass), `npm run e2e` (200 checks at desktop and phone widths, dark and light, wall off; 197 run and 3 are the analytics check skipping its repeat on three of the four projects) and `npm run e2e:wall` (38 checks). `git diff --stat origin/main -- data queries THESIS.md` is empty. The visible text of thirteen pages and pop-ups was saved from a build of the branch before this pass, again after the first four changes and again after the time range change, and compared line by line each time. `npm run e2e:auth` still needs the Clerk development keys and was not run.
 

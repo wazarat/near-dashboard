@@ -47,7 +47,7 @@ npm start            # open http://localhost:3000
 | `/explorer` | Every column with a column chooser and CSV download of the filtered view, a Map and Table switch (`?view=map` is the sector treemap of the same selection) and its own search box, plus the "Newly detected" review list |
 | `/compare` | Up to four projects: metric matrix with sector ranks, ratios, indexed overlay, side-by-side profiles |
 
-Every chart has an info icon naming its source, an empty state, a table view and an Expand button that opens it larger with a range brush and its computed summary as points (Thesis and Intents keep the summary on the card); the thesis and chain-activity charts also have a Query tab. Filters, the date range, each chart's own metric, the compare selection, the open project, sector, investor, funding type (`?fundingType=`) or event (`?event=`) pop-up and the expanded chart (`?expand=<id>`) live in the URL, so any view can be shared.
+Every chart has an info icon naming its source, an empty state, a table view and an Expand button that opens it larger with a range brush and its computed summary as points (Thesis and Intents keep the summary on the card); the thesis and chain-activity charts also have a Query tab. Filters, each chart's own metric and each card's own time range (7d, 30d, 90d or All, under its own key such as `cr` or `hr`), the compare selection, the open project, sector, investor, funding type (`?fundingType=`) or event (`?event=`) pop-up and the expanded chart (`?expand=<id>`) live in the URL, so any view can be shared.
 
 ## Data
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CARRIED_PARAMS, FACETS, activeFilterCount, applyFilters, filterParsers } from "../src/lib/filters";
+import { CARRIED_PARAMS, FACETS, RANGE_KEYS, activeFilterCount, applyFilters, cardRange, cardRangeWrite, filterParsers } from "../src/lib/filters";
 import { generateInsights } from "../src/lib/insights";
 import { concentration, nativeShare, topNShare } from "../src/lib/metrics";
 import { toProject } from "../src/lib/parse";
@@ -62,5 +62,41 @@ describe("metrics and insights", () => {
     expect(out.length).toBeGreaterThanOrEqual(3);
     expect(out.find((i) => i.id === "native")?.text).toContain("NEAR-native projects are 33%");
     expect(generateInsights([], "count")[0].id).toBe("empty");
+  });
+});
+
+describe("per-card time range", () => {
+  const none = { range: "30d" as const, cr: null, ar: null, mr: null, lr: null, hr: null, xr: null, ir: null, rr: null };
+
+  it("gives every card its own key, none of them carried from page to page", () => {
+    expect(RANGE_KEYS).toEqual(["cr", "ar", "mr", "lr", "hr", "xr", "ir", "rr"]);
+    for (const k of RANGE_KEYS) {
+      expect(filterParsers).toHaveProperty(k);
+      expect(CARRIED_PARAMS as readonly string[]).not.toContain(k);
+    }
+  });
+
+  it("opens every card at 30d", () => {
+    for (const k of RANGE_KEYS) expect(cardRange(none, k)).toBe("30d");
+  });
+
+  it("drives only the card whose key is set", () => {
+    const state = { ...none, cr: "7d" as const };
+    expect(cardRange(state, "cr")).toBe("7d");
+    for (const k of RANGE_KEYS.filter((k) => k !== "cr")) expect(cardRange(state, k)).toBe("30d");
+  });
+
+  it("falls back to the old global key, so a link shared before the change opens as it did", () => {
+    const old = { ...none, range: "90d" as const };
+    for (const k of RANGE_KEYS) expect(cardRange(old, k)).toBe("90d");
+    expect(cardRange({ ...old, mr: "all" }, "mr")).toBe("all");
+    expect(cardRange({ ...old, mr: "all" }, "cr")).toBe("90d");
+  });
+
+  it("writes the card's key, and clears it when the pick is what the card shows without one", () => {
+    expect(cardRangeWrite(none, "ar", "90d")).toEqual({ ar: "90d" });
+    expect(cardRangeWrite(none, "ar", "30d")).toEqual({ ar: null });
+    expect(cardRangeWrite({ range: "90d" }, "ar", "30d")).toEqual({ ar: "30d" });
+    expect(cardRangeWrite({ range: "90d" }, "ar", "90d")).toEqual({ ar: null });
   });
 });

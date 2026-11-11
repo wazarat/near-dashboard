@@ -1,5 +1,6 @@
 "use client";
 
+import { RangeControl } from "@/components/atlas/range-control";
 import { NOT_TRACKED } from "@/lib/coverage";
 import { useMemo } from "react";
 import { CartesianGrid, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -57,12 +58,13 @@ interface Props {
   projects: Project[];
   metric: MetricKey;
   range: Range;
+  onRangeChange: (r: Range) => void;
   align: Align;
   onAlignChange: (a: Align) => void;
 }
 
 /** Up to four indexed lines (100 = shared start) so growth can be compared regardless of size. */
-export function CompareOverlay({ projects, metric, range, align, onAlignChange }: Props) {
+export function CompareOverlay({ projects, metric, range, onRangeChange, align, onAlignChange }: Props) {
   const file = useSeries();
   const m = numericMetric(metric);
   const label = METRIC_LABEL[m];
@@ -95,15 +97,18 @@ export function CompareOverlay({ projects, metric, range, align, onAlignChange }
       takeaway={takeaway}
       info="DefiLlama daily history (TVL as a level; volume, fees and revenue as daily flows). Every line is divided by its value on the start date and multiplied by 100, which removes size so growth rates line up. In the days view each project is re-based on its own first day with data so launches of different ages can be read together."
       actions={
-        <Segmented<Align>
-          value={align}
-          onChange={onAlignChange}
-          options={[
-            { value: "date", label: "By date" },
-            { value: "days", label: "Days since first data" },
-          ]}
-          ariaLabel="Align series"
-        />
+        <>
+          <RangeControl value={range} onChange={onRangeChange} ariaLabel="Trend range" />
+          <Segmented<Align>
+            value={align}
+            onChange={onAlignChange}
+            options={[
+              { value: "date", label: "By date" },
+              { value: "days", label: "Days since first data" },
+            ]}
+            ariaLabel="Align series"
+          />
+        </>
       }
       table={{
         caption: `${label} indexed to 100`,

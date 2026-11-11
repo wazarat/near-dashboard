@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Bar, Brush, CartesianGrid, ComposedChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
+import { RangeControl } from "@/components/atlas/range-control";
 import { frameHeight, useSvgId, type ChartFrame } from "@/components/atlas/chart-frame";
 import type { ChartTableSpec } from "@/components/atlas/chart-table";
 import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/chart-tooltip";
@@ -33,7 +34,7 @@ type PlotRow = VolumeRow & { explorerComplete: number | null; explorerPartial: n
 
 type Data = IntentsSummary & { llamaDaily: Series };
 
-/** One row per UTC day across the union of both sources, cut to the global range. */
+/** One row per UTC day across the union of both sources, cut to the card's range. */
 export function volumeRows(data: Data, range: Range): VolumeRow[] {
   const byDay = new Map(data.days.map((d) => [d.date, d]));
   const llama = new Map(data.llamaDaily);
@@ -75,7 +76,7 @@ export function volumeTable(rows: VolumeRow[], range: Range): ChartTableSpec {
   };
 }
 
-export function VolumeChart({ data, range, scale, onScaleChange }: { data: Data; range: Range; scale: Scale; onScaleChange: (s: Scale) => void }) {
+export function VolumeChart({ data, range, onRangeChange, scale, onScaleChange }: { data: Data; range: Range; onRangeChange: (r: Range) => void; scale: Scale; onScaleChange: (s: Scale) => void }) {
   const rows = useMemo(() => volumeRows(data, range), [data, range]);
   const useLog = scale === "log";
 
@@ -114,8 +115,9 @@ export function VolumeChart({ data, range, scale, onScaleChange }: { data: Data;
       scope="whole-chain"
       title="Daily volume"
       takeaway={takeaway}
-      info={`Bars show ${EXPLORER_LABEL}, the sum of amountInUsd for SUCCESS swaps per UTC day of createdAt. The line shows ${LLAMA_LABEL}, DefiLlama's "NEAR Intents" entry in the NEAR DEX overview. The Explorer covers 1Click swaps only and its backfill is still filling in older days; DefiLlama covers every channel from ${data.llamaDaily[0]?.[0] ? fmtDate(data.llamaDaily[0][0]) : "its first day"}. Window follows the date range control.`}
+      info={`Bars show ${EXPLORER_LABEL}, the sum of amountInUsd for SUCCESS swaps per UTC day of createdAt. The line shows ${LLAMA_LABEL}, DefiLlama's "NEAR Intents" entry in the NEAR DEX overview. The Explorer covers 1Click swaps only and its backfill is still filling in older days; DefiLlama covers every channel from ${data.llamaDaily[0]?.[0] ? fmtDate(data.llamaDaily[0][0]) : "its first day"}. Window follows this card's range control.`}
       source={`${EXPLORER_LABEL} and ${LLAMA_LABEL}`}
+      actions={<RangeControl value={range} onChange={onRangeChange} ariaLabel="Daily volume range" />}
       scale={scale}
       onScaleChange={onScaleChange}
       table={volumeTable(rows, range)}

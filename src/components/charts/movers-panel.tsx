@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { ChangeCell } from "@/components/atlas/change-cell";
 import { ChartCard, EmptyState } from "@/components/atlas/chart-card";
 import { NumericMetricSegmented } from "@/components/atlas/chart-metric";
+import { RangeControl } from "@/components/atlas/range-control";
 import { SparkLine } from "@/components/atlas/spark-line";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { fmtUsd, METRIC_LABEL, METRIC_SHORT } from "@/lib/format";
@@ -17,13 +18,14 @@ interface Props {
   metric: NumericMetricKey;
   onMetricChange: (m: NumericMetricKey) => void;
   range: Range;
+  onRangeChange: (r: Range) => void;
   minSize: MinSize;
   onMinSizeChange: (s: MinSize) => void;
   onOpen: (id: string) => void;
 }
 
-/** Biggest risers and fallers on the chart's own metric over the current window, after a size filter. */
-export function MoversPanel({ projects, metric, onMetricChange, range, minSize, onMinSizeChange, onOpen }: Props) {
+/** Biggest risers and fallers on the chart's own metric over the card's own window, after a size filter. All ranks by the 90-day change. */
+export function MoversPanel({ projects, metric, onMetricChange, range, onRangeChange, minSize, onMinSizeChange, onOpen }: Props) {
   const m = useMemo(() => movers(projects, metric, range, minSize, 6), [projects, metric, range, minSize]);
   const series = useSeries();
   const label = changeLabel(range);
@@ -61,6 +63,7 @@ export function MoversPanel({ projects, metric, onMetricChange, range, minSize, 
       info={`Projects with daily DefiLlama history ranked by percentage change of ${METRIC_LABEL[m.metric].toLowerCase()} over the last ${label} against the window before it (TVL compares end values). The size filter hides tiny bases that would otherwise dominate.`}
       actions={
         <>
+          <RangeControl value={range} onChange={onRangeChange} ariaLabel="Movers range" />
           <NumericMetricSegmented value={metric} onChange={onMetricChange} ariaLabel="Movers metric" />
           <Select value={minSize} onValueChange={(v) => onMinSizeChange(v as MinSize)}>
             <SelectTrigger size="sm" className="h-7 text-xs" aria-label="Minimum size">

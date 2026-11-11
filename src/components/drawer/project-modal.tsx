@@ -19,7 +19,6 @@ import { TIER_SHORT } from "@/lib/colors";
 import { similarProjects } from "@/lib/metrics";
 import { tierLabel } from "@/lib/tier";
 import { trackCorrectionClick } from "@/lib/track";
-import type { Range } from "@/lib/ranges";
 import type { MetricKey, MetricSource, NumericMetricKey, Project } from "@/lib/types";
 import { CompareButton } from "@/components/compare/compare-button";
 import { TALLY_CORRECT_URL, tallyCorrectUrl } from "@/lib/env";
@@ -81,16 +80,16 @@ function Src({ p, k }: { p: Project; k: NumericMetricKey }) {
  * A project with no daily history puts Funding and Security on the right instead, so the column is never empty.
  */
 export function ProjectModal() {
-  const { state, openProject, all, range } = useFilters();
+  const { state, openProject, all } = useFilters();
   const p = projectById(state.project);
   return (
     <AtlasModal open={Boolean(p)} onOpenChange={(o) => !o && openProject(null)} testId="project-modal">
-      {p && <ProjectBody p={p} all={all} metric="tvl" range={range} onOpen={openProject} />}
+      {p && <ProjectBody p={p} all={all} metric="tvl" onOpen={openProject} />}
     </AtlasModal>
   );
 }
 
-function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Project[]; metric: MetricKey; range: Range; onOpen: (id: string) => void }) {
+function ProjectBody({ p, all, metric, onOpen }: { p: Project; all: Project[]; metric: MetricKey; onOpen: (id: string) => void }) {
   const similar = similarProjects(all, p, metric, 5);
   const related = eventsByProject.get(p.id) ?? [];
   const rounds = roundsByProject.get(p.id) ?? [];
@@ -104,8 +103,8 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
   // Logged out, a reader sees the header, Overview and Traction (gate.ts, PUBLIC_PROJECT_SECTIONS); the rest sits behind one login panel.
   const full = useAccess().can({ action: "project-detail" });
   const pathname = usePathname();
-  // An event opens in its own pop-up over this one, so closing it returns here.
-  const { openEvent } = useFilters();
+  // An event opens in its own pop-up over this one, so closing it returns here. The history chart keeps its range under `hr`.
+  const { openEvent, rangeOf, setRange } = useFilters();
 
   const overview = (
     <Section title="Overview">
@@ -208,7 +207,7 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
 
   const history = p.live && (
     <Section title="History">
-      <HistoryChart projectId={p.id} range={range} metric={metric} height={300} />
+      <HistoryChart projectId={p.id} range={rangeOf("hr")} onRangeChange={(r) => setRange("hr", r)} metric={metric} height={300} />
     </Section>
   );
 

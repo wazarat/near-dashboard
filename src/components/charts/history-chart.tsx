@@ -1,5 +1,6 @@
 "use client";
 
+import { RangeControl } from "@/components/atlas/range-control";
 import { useMemo, useState } from "react";
 import { ChartTable, ChartTableToggle, type ChartView } from "@/components/atlas/chart-table";
 import { Segmented } from "@/components/ui/segmented";
@@ -20,8 +21,8 @@ const AXIS_OPTIONS = [
   { value: "zero" as const, label: "From zero" },
 ];
 
-/** Per-project daily history for every metric the project has. TVL is a level series with a fitted axis and a 90-day floor; the rest are flows on the global range. */
-export function HistoryChart({ projectId, range, metric, height = 180 }: { projectId: string; range: Range; metric: MetricKey; height?: number }) {
+/** Per-project daily history for every metric the project has. TVL is a level series with a fitted axis and a 90-day floor; the rest are flows on the chart's own range. */
+export function HistoryChart({ projectId, range, onRangeChange, metric, height = 180 }: { projectId: string; range: Range; onRangeChange: (r: Range) => void; metric: MetricKey; height?: number }) {
   const series = useSeries();
   const [view, setView] = useState<ChartView>("chart");
   const [axis, setAxis] = useState<"fitted" | "zero">("fitted");
@@ -59,7 +60,8 @@ export function HistoryChart({ projectId, range, metric, height = 180 }: { proje
             ))}
           </TabsList>
         </Tabs>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <RangeControl value={range} onChange={onRangeChange} ariaLabel="History range" />
           {level && view === "chart" && <Segmented value={axis} onChange={setAxis} options={AXIS_OPTIONS} ariaLabel="Y axis" />}
           <ChartTableToggle view={view} onChange={setView} />
         </div>
