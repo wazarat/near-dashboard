@@ -68,9 +68,20 @@ interface Props<T extends RowData> {
   emptyMessage?: string;
   dense?: boolean;
   footer?: React.ReactNode;
+  /** The table's own count line, "Showing X of N rounds" (standard section 9). X is the rows in the table, N the rows before the table's own filters. */
+  showing?: { total: number; noun: string };
 }
 
-export function DataTable<T extends RowData>({ data, columns, initialSorting = [], initialVisibility = {}, pageSize = 25, chooser = false, onRowClick, rowClassName, getRowId, toolbar, emptyMessage, dense, footer }: Props<T>) {
+/** The count of a table of records. It sits with the table, never in its title, and follows the table's filters. */
+export function ShowingLine({ shown, total, noun, className }: { shown: number; total: number; noun: string; className?: string }) {
+  return (
+    <p className={cn("text-xs text-ink-300", className)} aria-live="polite" data-testid="showing-line">
+      Showing <span className="tabular font-medium text-ink-50">{shown.toLocaleString("en-US")}</span> of {total.toLocaleString("en-US")} {noun}
+    </p>
+  );
+}
+
+export function DataTable<T extends RowData>({ data, columns, initialSorting = [], initialVisibility = {}, pageSize = 25, chooser = false, onRowClick, rowClassName, getRowId, toolbar, emptyMessage, dense, footer, showing }: Props<T>) {
   const [sorting, setSorting] = useState<SortingState>(initialSorting);
   const [columnVisibility, setColumnVisibility] = useState<ColumnVisibilityState>(initialVisibility);
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize });
@@ -96,9 +107,12 @@ export function DataTable<T extends RowData>({ data, columns, initialSorting = [
 
   return (
     <div className="space-y-2">
-      {(chooser || toolbar) && (
+      {(chooser || toolbar || showing) && (
         <div className="flex flex-wrap items-center justify-between gap-2 px-4">
-          <div className="flex flex-wrap items-center gap-2">{toolbar}</div>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            {toolbar}
+            {showing && <ShowingLine shown={data.length} total={showing.total} noun={showing.noun} />}
+          </div>
           {chooser && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

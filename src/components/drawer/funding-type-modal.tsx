@@ -3,7 +3,6 @@
 import { ExternalLink, Filter } from "lucide-react";
 import { useMemo } from "react";
 import { AtlasModal } from "@/components/atlas/atlas-modal";
-import { ChainChip } from "@/components/atlas/badges";
 import { ScopeNote } from "@/components/atlas/chart-card";
 import { LoginPanel } from "@/components/auth/login-dialog";
 import { roundColumns } from "@/components/charts/rounds-table";
@@ -52,7 +51,6 @@ function projectColumns(onOpenProject: (id: string) => void): AnyColumnDef<Row>[
       ),
     }),
     h.accessor("sector", { header: "Sector", cell: ({ getValue }) => <span className="whitespace-nowrap">{getValue()}</span>, meta: { hideBelow: "sm" } }),
-    h.accessor("chain", { header: "Native chain", cell: ({ getValue }) => <ChainChip chain={getValue()} />, meta: { hideBelow: "lg" } }),
     h.accessor("fundingType", { header: "Funding type", cell: ({ getValue }) => <span className="block max-w-[11rem] whitespace-normal">{getValue()}</span>, meta: { hideBelow: "md" } }),
     h.accessor((p) => p.investors ?? undefined, {
       id: "investors",
@@ -113,7 +111,14 @@ export function FundingTypeModal() {
   const { state, setState, openFundingType, openInvestor, filtered } = useFilters();
   // Logged out, a shared link shows the title and the summary line; the lists sit behind one login panel.
   const full = useAccess().can({ action: "funding-detail" });
-  const bucket = isFundingBucket(state.fundingType) && projectsInBucket(allProjects, state.fundingType).length > 0 ? state.fundingType : null;
+  const everyMember = useMemo(() => (isFundingBucket(state.fundingType) ? projectsInBucket(allProjects, state.fundingType) : []), [state.fundingType]);
+  const bucket = everyMember.length > 0 ? state.fundingType : null;
+  const inBucket = everyMember.length;
+  // The same rounds count before the page filters, for the table's "Showing X of N" line.
+  const allBucketRounds = useMemo(() => {
+    const ids = new Set(everyMember.map((p) => p.id));
+    return allRounds.filter((r) => r.projectId !== null && ids.has(r.projectId)).length;
+  }, [everyMember]);
   const members = useMemo(() => (bucket ? projectsInBucket(filtered, bucket) : []), [bucket, filtered]);
   const rounds = useMemo(() => {
     const ids = new Set(members.map((p) => p.id));
@@ -188,6 +193,7 @@ export function FundingTypeModal() {
                     pageSize={15}
                     dense
                     getRowId={(p) => p.id}
+                    showing={{ total: inBucket, noun: "projects of this type" }}
                     onRowClick={(p) => openProject(p.id)}
                     emptyMessage="No project of this type matches the current filters."
                   />
@@ -199,7 +205,7 @@ export function FundingTypeModal() {
                   <p className="text-sm text-ink-300">No rounds recorded for these projects.</p>
                 ) : (
                   <div className="-mx-4 sm:-mx-6">
-                    <DataTable data={rounds} columns={roundCols} initialSorting={[{ id: "date", desc: true }]} pageSize={10} dense getRowId={(r) => r.id} rowClassName={(r) => (r.sourced ? undefined : "text-ink-300")} />
+                    <DataTable data={rounds} columns={roundCols} initialSorting={[{ id: "date", desc: true }]} pageSize={10} dense getRowId={(r) => r.id} showing={{ total: allBucketRounds, noun: "rounds for this type" }} rowClassName={(r) => (r.sourced ? undefined : "text-ink-300")} />
                   </div>
                 )}
                 <p className="text-xs text-ink-300">Amounts are the whole round. Rounds without a linked primary source are muted and carry a re-verify tag.</p>

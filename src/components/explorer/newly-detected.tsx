@@ -3,6 +3,7 @@
 import { ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ShowingLine } from "@/components/explorer/data-table";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PlainState } from "@/components/ui/plain-state";
 import { newlyDetected } from "@/lib/data";
@@ -23,7 +24,7 @@ export function NewlyDetectedCard() {
   return (
     <Card className="gap-3 py-4">
       <CardHeader className="px-4">
-        <h3 className="text-sm font-semibold">Newly detected ({items.length})</h3>
+        <h3 className="text-sm font-semibold">Newly detected</h3>
         <p className="text-sm text-ink-300">Protocols seen on DefiLlama or NEAR Catalog that are not in the research CSVs. Review candidates only; nothing is added automatically.</p>
       </CardHeader>
       <CardContent className="px-4">
@@ -46,11 +47,14 @@ export function NewlyDetectedCard() {
             </li>
           ))}
         </ul>
-        {items.length > SHOW && (
-          <Button variant="ghost" size="sm" className="mt-2 h-7 text-xs" onClick={() => setShowAll((v) => !v)}>
-            {showAll ? "Show fewer" : `Show all ${items.length}`}
-          </Button>
-        )}
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+          <ShowingLine shown={shown.length} total={items.length} noun="protocols" />
+          {items.length > SHOW && (
+            <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => setShowAll((v) => !v)}>
+              {showAll ? "Show fewer" : `Show all ${items.length}`}
+            </Button>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
