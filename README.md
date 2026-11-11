@@ -36,18 +36,18 @@ npm start            # open http://localhost:3000
 
 | Page | What it shows |
 |---|---|
-| `/` Overview | KPI tiles, chain over time (NEAR and Aurora), chain activity, risers and fallers, sector treemap, native vs imported, concentration curve, live insights and analyst notes, events timeline |
+| `/` Overview | KPI tiles, chain over time (NEAR and Aurora), chain activity, risers and fallers, sector treemap, native vs imported, concentration curve, live insights and analyst notes, events timeline (table first, each event in a pop-up with its source) |
 | `/sectors` | Sector bars, tier by sector, sector cards with ranked leaders |
 | `/traction` | Leaderboard with traction, momentum, activity and financials column sets, business-model scatter, activity without TVL, listed vs live by discovery source |
 | `/intents` | 1Click swap volume, weekly series, success and refund rates, routes, assets, referrals, coverage against DefiLlama |
 | `/thesis` | The claim, verdict and four tests with Chart, Table and Query tabs, confounders, evidence for and against, what would change the conclusion |
-| `/funding` | Funding type breakdown, ecosystem money cards, rounds table, rounds over time, financials |
+| `/funding` | Funding type breakdown (a type opens its projects and rounds in a pop-up), ecosystem money cards, rounds table, rounds over time, financials |
 | `/investors` | Investors by deals, portfolios, investor pop-up |
 | `/security` | Chain-level checklist for NEAR L1, NEAR Intents and Aurora, security facts by type and by sector (no per-project ratings), incidents as a sortable table |
-| `/explorer` | Every column with a column chooser and CSV download of the filtered view, plus the "Newly detected" review list |
+| `/explorer` | Every column with a column chooser and CSV download of the filtered view, a Map and Table switch (`?view=map` is the sector treemap of the same selection) and its own search box, plus the "Newly detected" review list |
 | `/compare` | Up to four projects: metric matrix with sector ranks, ratios, indexed overlay, side-by-side profiles |
 
-Every chart has an info icon naming its source, an empty state, a table view and an Expand button that opens it larger with a range brush and its computed summary as points (Thesis and Intents keep the summary on the card); the thesis and chain-activity charts also have a Query tab. Filters, the date range, each chart's own metric, the compare selection, the open project, sector or investor pop-up and the expanded chart (`?expand=<id>`) live in the URL, so any view can be shared.
+Every chart has an info icon naming its source, an empty state, a table view and an Expand button that opens it larger with a range brush and its computed summary as points (Thesis and Intents keep the summary on the card); the thesis and chain-activity charts also have a Query tab. Filters, the date range, each chart's own metric, the compare selection, the open project, sector, investor, funding type (`?fundingType=`) or event (`?event=`) pop-up and the expanded chart (`?expand=<id>`) live in the URL, so any view can be shared.
 
 ## Data
 
