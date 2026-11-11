@@ -44,7 +44,7 @@ describe("analytics events", () => {
         "tab_view",
       ].sort(),
     );
-    expect(LOGIN_TRIGGERS).toEqual(["tab", "compare", "project", "header", "sector", "investor"]);
+    expect(LOGIN_TRIGGERS).toEqual(["tab", "compare", "project", "header", "sector", "investor", "funding"]);
   });
 
   it("keep at most two properties, each from its closed set", () => {

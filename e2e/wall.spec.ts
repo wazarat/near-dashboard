@@ -139,7 +139,14 @@ test("a shared project link shows the header, Overview and Traction, the rest be
   expect(errors, errors.join("\n")).toEqual([]);
 });
 
-test("shared sector and investor links show a summary and one login panel", async ({ page }) => {
+test("shared sector, investor and funding type links show a summary and one login panel", async ({ page }) => {
+  await page.goto("/?fundingType=VC-backed");
+  const funding = page.getByTestId("funding-type-modal");
+  await expect(funding.getByRole("heading", { name: "VC-backed", exact: true })).toBeVisible({ timeout: 15_000 });
+  await expect(funding.getByTestId("funding-type-summary")).toContainText(/^\d+ projects/);
+  await expect(funding.getByTestId("login-panel")).toHaveCount(1);
+  await expect(funding.getByRole("button", { name: "Filter the atlas to this type" })).toHaveCount(0);
+  await expect(funding.locator("table")).toHaveCount(0);
   await page.goto("/?sectorDrawer=Lending+%26+Credit");
   const sector = page.getByTestId("sector-modal");
   await expect(sector.getByRole("heading", { name: "Lending & Credit" })).toBeVisible({ timeout: 15_000 });

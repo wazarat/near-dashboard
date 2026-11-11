@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fundingBreakdown } from "../src/lib/funding";
+import { fundingBreakdown, isFundingBucket, projectsInBucket, typesInBucket } from "../src/lib/funding";
 import { toProject } from "../src/lib/parse";
 import { countByType, splitTimeline } from "../src/lib/timeline";
 import type { EcosystemEvent } from "../src/lib/types";
@@ -50,6 +50,29 @@ describe("fundingBreakdown", () => {
     expect(b.disclosed + b.notDisclosed + b.notResearched).toBe(b.total);
     expect(b.sentence).toBe("6 researched, 4 with disclosed funding, 2 not disclosed, 2 not researched");
     expect(fundingBreakdown([]).sentence).toBe("0 researched, 0 with disclosed funding, 0 not disclosed, 0 not researched");
+  });
+});
+
+describe("funding type pop-up", () => {
+  const projects = [mk("A", "VC-backed"), mk("B", "VC-backed; Token-funded"), mk("C", "Grant/Program"), mk("D", "Not disclosed"), mk("F", "Not researched"), mk("H", "Something rare"), mk("I", "Another rare one")];
+
+  it("lists exactly the projects each bar counts, a project with two types under both", () => {
+    for (const row of fundingBreakdown(projects).rows) expect(projectsInBucket(projects, row.bucket)).toHaveLength(row.count);
+    expect(projectsInBucket(projects, "VC-backed").map((p) => p.name)).toEqual(["A", "B"]);
+    expect(projectsInBucket(projects, "Token-funded").map((p) => p.name)).toEqual(["B"]);
+    expect(projectsInBucket(projects, "Other").map((p) => p.name)).toEqual(["H", "I"]);
+  });
+
+  it("filters to the raw types inside a bucket, so Other can be filtered too", () => {
+    expect(typesInBucket(projects, "VC-backed")).toEqual(["VC-backed"]);
+    expect(typesInBucket(projects, "Other")).toEqual(["Another rare one", "Something rare"]);
+  });
+
+  it("opens only for a bar's name", () => {
+    expect(isFundingBucket("VC-backed")).toBe(true);
+    expect(isFundingBucket("Not disclosed")).toBe(false);
+    expect(isFundingBucket("anything else")).toBe(false);
+    expect(isFundingBucket(null)).toBe(false);
   });
 });
 

@@ -35,7 +35,7 @@ describe("login wall rules", () => {
     expect(allowed({ path: "/thesis/" }, false, true)).toBe(true);
     expect(allowed({ path: "/compare/" }, false, true)).toBe(true);
     expect(allowed({ path: "/intents/" }, false, true)).toBe(false);
-    for (const action of ["compare-add", "project-detail", "sector-detail", "investor-detail"] as const) expect(allowed({ action }, false, true)).toBe(false);
+    for (const action of ["compare-add", "project-detail", "sector-detail", "investor-detail", "funding-detail"] as const) expect(allowed({ action }, false, true)).toBe(false);
     expect(PUBLIC_PROJECT_SECTIONS).toEqual(["header", "overview", "traction"]);
   });
 });

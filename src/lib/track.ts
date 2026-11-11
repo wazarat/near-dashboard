@@ -29,7 +29,7 @@ export type EventName = (typeof EVENTS)[keyof typeof EVENTS];
 /** `off` is a build with no login wall, so its readers are neither logged in nor logged out. */
 export type Auth = "off" | "in" | "out";
 /** Where a login prompt came from. */
-export const LOGIN_TRIGGERS = ["tab", "compare", "project", "header", "sector", "investor"] as const;
+export const LOGIN_TRIGGERS = ["tab", "compare", "project", "header", "sector", "investor", "funding"] as const;
 export type LoginTrigger = (typeof LOGIN_TRIGGERS)[number];
 
 /** URL keys that are filters a reader sets (the seven facets, search and the legacy switch). Chart metric, range and scale keys are controls, not filters. */
