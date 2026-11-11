@@ -21,8 +21,10 @@ async function main() {
   const meta = JSON.parse(fs.readFileSync(metaPath, "utf8")) as { counts: { projects: number; sectors: number }; asOfLabel: string };
   const fontDir = path.join(root, "src/app/fonts");
   const font = (file: string) => `data:font/woff2;base64,${fs.readFileSync(path.join(fontDir, file)).toString("base64")}`;
+  const mark = `data:image/svg+xml;base64,${fs.readFileSync(path.join(root, "public/mark.svg")).toString("base64")}`;
   const html = fs
     .readFileSync(templatePath, "utf8")
+    .replaceAll("{{mark}}", mark)
     .replaceAll("{{projects}}", meta.counts.projects.toLocaleString("en-US"))
     .replaceAll("{{sectors}}", String(meta.counts.sectors))
     .replaceAll("{{asOf}}", meta.asOfLabel)

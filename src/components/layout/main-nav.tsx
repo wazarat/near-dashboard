@@ -33,8 +33,8 @@ export function carriedQuery(params: URLSearchParams | null): string {
 function NavLinks({ query, compareCount }: { query: string; compareCount: number }) {
   const pathname = usePathname();
   return (
-    <nav aria-label="Primary" className="overflow-x-auto">
-      <ul className="flex h-10 items-stretch gap-1 text-sm xl:h-16">
+    <nav aria-label="Primary" className="-mx-2.5 overflow-x-auto">
+      <ul className="flex h-10 items-stretch gap-1 text-sm">
         {NAV.map((item) => {
           const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href.replace(/\/$/, ""));
           return (
