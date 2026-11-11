@@ -73,7 +73,7 @@ export function SectorsView() {
         id="tier-by-sector"
         title="Traction tier by sector"
         takeaway={tierTakeaway}
-        info="Project counts per traction tier within each sector. Tiers come from the research CSVs. Tier 1 to 3 rank projects with measurable DefiLlama traction, Tracked negligible means a DefiLlama listing with every figure at zero, Not tracked means no listing. Click a bar to open the sector drawer."
+        info="Project counts per traction tier within each sector. Tiers come from the research CSVs. Tier 1 to 3 rank projects with measurable DefiLlama traction, Tracked negligible means a DefiLlama listing with every figure at zero, TBD means no listing yet so the tier is to be determined. Click a bar to open the sector drawer."
         table={tierTable(tiers)}
       >
         <TierBySector projects={filtered} onSelect={openSector} />

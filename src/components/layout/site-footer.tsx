@@ -30,7 +30,7 @@ export function SiteFooter() {
                   ? `${meta.counts.liveProjects} projects refresh daily from DefiLlama's history (window ending ${meta.asOfLabel}); the rest keep the ${meta.snapshotAsOfLabel} research snapshot.`
                   : `Pulled ${meta.asOfLabel}.`}{" "}
                 Tiers follow the snapshot thresholds. Tier 1 means TVL at or above $50M, 30-day volume at or above $500M, or 30-day fees at or above $1M; Tier 2 means $5M, $50M or
-                $100K; Tier 3 any measurable activity; &ldquo;Tracked, negligible&rdquo; means a DefiLlama listing exists but every figure is zero.
+                $100K; Tier 3 any measurable activity; &ldquo;Tracked, negligible&rdquo; means a DefiLlama listing exists but every figure is zero; a project DefiLlama does not track yet reads &ldquo;TBD&rdquo;.
               </p>
               <p>
                 <strong className="font-medium text-ink-50">Coverage terms.</strong> <em>Not tracked</em> means DefiLlama does not report that metric for the project. It is a coverage

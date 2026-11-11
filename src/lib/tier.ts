@@ -6,6 +6,25 @@ export const TIER_THRESHOLDS = {
   tier2: { tvl: 5_000_000, volume: 50_000_000, fees: 100_000 },
 } as const;
 
+/**
+ * Display label for a tier. The data keeps "Not tracked"; readers see "TBD" (standard section 3,
+ * Tier labels). The one place this mapping lives. Metric cells keep "Not tracked" for a blank value.
+ */
+export const TIER_LABEL: Record<Tier, string> = {
+  "Tier 1 - Leader": "Tier 1 - Leader",
+  "Tier 2 - Strong": "Tier 2 - Strong",
+  "Tier 3 - Emerging": "Tier 3 - Emerging",
+  "Tracked, negligible": "Tracked, negligible",
+  "Not tracked": "TBD",
+};
+
+export function tierLabel(tier: Tier): string {
+  return TIER_LABEL[tier];
+}
+
+/** What TBD means, in one sentence, for titles and hints. */
+export const TBD_LINE = "DefiLlama does not track this project yet, so its tier is to be determined";
+
 export interface TierInput {
   tvl: number | null;
   volume: number | null;

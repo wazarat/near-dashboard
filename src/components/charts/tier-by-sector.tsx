@@ -60,7 +60,7 @@ export function TierBySector({ projects, onSelect }: { projects: Project[]; onSe
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <p className="mt-1 text-xs text-ink-300">&ldquo;Negligible&rdquo; means listed on DefiLlama with every figure at zero; &ldquo;Not tracked&rdquo; means no DefiLlama listing at all.</p>
+      <p className="mt-1 text-xs text-ink-300">&ldquo;Negligible&rdquo; means listed on DefiLlama with every figure at zero; &ldquo;TBD&rdquo; means no DefiLlama listing yet, so the tier is to be determined.</p>
     </div>
   );
 }

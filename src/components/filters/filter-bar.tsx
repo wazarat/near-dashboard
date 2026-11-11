@@ -10,7 +10,8 @@ import { CHAIN_COLOR, STATUS_COLOR, STATUS_GROUP_LABEL, TIER_COLOR } from "@/lib
 import { meta, projects as allProjects } from "@/lib/data";
 import { FACETS, LEGACY_GROUP, applyFilters, facetValue, useFilters, type FacetKey } from "@/lib/filters";
 import type { Range } from "@/lib/ranges";
-import { CHAIN_PRESENCE, NATIVE_CHAINS, STATUS_GROUPS, TIERS } from "@/lib/types";
+import { TBD_LINE, tierLabel } from "@/lib/tier";
+import { CHAIN_PRESENCE, NATIVE_CHAINS, STATUS_GROUPS, TIERS, type Tier } from "@/lib/types";
 import { DateRangeControl } from "./date-range-control";
 import { MultiSelect, type Option } from "./multi-select";
 
@@ -21,6 +22,7 @@ const FACET_HINTS: Partial<Record<string, string>> = {
   [LEGACY_GROUP]: "Listed only in the 2021 to 2023 AwesomeNEAR directory, which marks everything active, so the current status is unverified",
   Defunct: "DefiLlama page no longer resolves",
   "Tracked, negligible": "Listed on DefiLlama but every figure is zero",
+  "Not tracked": TBD_LINE,
 };
 
 function orderedValues(key: FacetKey): string[] {
@@ -51,6 +53,7 @@ function colorFor(key: FacetKey, value: string): string | undefined {
 
 function labelFor(key: FacetKey, value: string): string | undefined {
   if (key === "status") return STATUS_GROUP_LABEL[value as keyof typeof STATUS_GROUP_LABEL];
+  if (key === "tier") return tierLabel(value as Tier);
   return undefined;
 }
 

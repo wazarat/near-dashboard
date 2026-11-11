@@ -44,7 +44,7 @@ export const TIER_SHORT: Record<Tier, string> = {
   "Tier 2 - Strong": "Tier 2",
   "Tier 3 - Emerging": "Tier 3",
   "Tracked, negligible": "Negligible",
-  "Not tracked": "Not tracked",
+  "Not tracked": "TBD",
 };
 
 /** Display labels where the group name alone would mislead. The CSV value and the group key are unchanged. */

@@ -5,13 +5,16 @@ import type { ReactNode } from "react";
 import { ChainChip, StatusBadge, TierBadge } from "@/components/atlas/badges";
 import { ChangeCell } from "@/components/atlas/change-cell";
 import { EstimateLabel } from "@/components/atlas/estimate-label";
+import { TierInfoTip } from "@/components/atlas/tier-info";
 import { HistoryChart } from "@/components/charts/history-chart";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { eventsByProject, projectById, roundsByProject } from "@/lib/data";
 import { useFilters } from "@/lib/filters";
 import { displayUrl, fmtDate, fmtEventDate, fmtInt, fmtMetric, fmtPct, fmtUsd, fmtUsdFull, METRIC_SHORT, xUrl } from "@/lib/format";
+import { TIER_SHORT } from "@/lib/colors";
 import { similarProjects } from "@/lib/metrics";
+import { tierLabel } from "@/lib/tier";
 import type { Range } from "@/lib/ranges";
 import type { MetricKey, MetricSource, NumericMetricKey, Project } from "@/lib/types";
 import { CompareButton } from "@/components/compare/compare-button";
@@ -144,8 +147,8 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
 
         <Section title="Traction">
           <Field label="Tier">
-            {p.tier}
-            {p.live && p.snapshot.tier !== p.tier && <span className="text-ink-300"> · was {p.snapshot.tier.replace(/ - .*/, "")} in the {fmtDate(p.snapshot.asOf)} snapshot</span>}
+            {tierLabel(p.tier)} <TierInfoTip />
+            {p.live && p.snapshot.tier !== p.tier && <span className="text-ink-300"> · was {TIER_SHORT[p.snapshot.tier]} in the {fmtDate(p.snapshot.asOf)} snapshot</span>}
           </Field>
           <Field label="TVL">
             <Money v={p.tvl} />
@@ -313,7 +316,7 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
                         <span className="truncate font-medium">{s.name}</span>
                         <ChainChip chain={s.chain} />
                       </span>
-                      <span className="tabular text-ink-300">{metric === "count" ? s.tier.replace(/ - .*/, "") : fmtMetric(metric, s[metric])}</span>
+                      <span className="tabular text-ink-300">{metric === "count" ? TIER_SHORT[s.tier] : fmtMetric(metric, s[metric])}</span>
                     </button>
                   </li>
                 ))}

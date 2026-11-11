@@ -1,5 +1,6 @@
 import { PlainState } from "@/components/ui/plain-state";
 import { CHAIN_SHORT, TIER_SHORT, statusGroupLabel } from "@/lib/colors";
+import { TBD_LINE } from "@/lib/tier";
 import type { NativeChain, StatusGroup, Tier } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +21,7 @@ export function ChainChip({ chain, className, short = true }: { chain: NativeCha
 export function TierBadge({ tier, className }: { tier: Tier; className?: string }) {
   const quiet = tier === "Not tracked" || tier === "Tracked, negligible";
   return (
-    <PlainState tone={quiet ? "neutral" : "strong"} className={className} title={tier === "Tracked, negligible" ? "Listed on DefiLlama but every figure is zero" : tier}>
+    <PlainState tone={quiet ? "neutral" : "strong"} className={className} title={tier === "Tracked, negligible" ? "Listed on DefiLlama but every figure is zero" : tier === "Not tracked" ? TBD_LINE : tier}>
       {TIER_SHORT[tier]}
     </PlainState>
   );
