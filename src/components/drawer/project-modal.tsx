@@ -1,6 +1,7 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { AtlasModal } from "@/components/atlas/atlas-modal";
 import { LoginPanel } from "@/components/auth/login-dialog";
@@ -17,6 +18,7 @@ import { displayUrl, fmtDate, fmtEventDate, fmtInt, fmtMetric, fmtPct, fmtUsd, f
 import { TIER_SHORT } from "@/lib/colors";
 import { similarProjects } from "@/lib/metrics";
 import { tierLabel } from "@/lib/tier";
+import { trackCorrectionClick } from "@/lib/track";
 import type { Range } from "@/lib/ranges";
 import type { MetricKey, MetricSource, NumericMetricKey, Project } from "@/lib/types";
 import { CompareButton } from "@/components/compare/compare-button";
@@ -101,6 +103,7 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
   const hasActivity = p.live && (p.live.calls7d !== null || p.live.signers7d !== null);
   // Logged out, a reader sees the header, Overview and Traction (gate.ts, PUBLIC_PROJECT_SECTIONS); the rest sits behind one login panel.
   const full = useAccess().can({ action: "project-detail" });
+  const pathname = usePathname();
 
   const overview = (
     <Section title="Overview">
@@ -291,7 +294,7 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
               <CompareButton id={p.id} />
               {TALLY_CORRECT_URL && (
                 <Button asChild variant="ghost" size="sm" className="h-7 gap-1 text-xs text-ink-300">
-                  <a href={tallyCorrectUrl(TALLY_CORRECT_URL, p.name, typeof window === "undefined" ? "" : window.location.href)} target="_blank" rel="noopener noreferrer" data-testid="suggest-correction">
+                  <a href={tallyCorrectUrl(TALLY_CORRECT_URL, p.name, typeof window === "undefined" ? "" : window.location.href)} target="_blank" rel="noopener noreferrer" data-testid="suggest-correction" onClick={() => trackCorrectionClick(pathname)}>
                     <Flag className="size-3.5" /> Suggest a correction
                   </a>
                 </Button>

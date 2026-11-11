@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { AtlasShell } from "@/components/layout/atlas-shell";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from "@vercel/analytics/next";
 import { AccessProvider } from "@/lib/access";
 import { AUTH_ENABLED, CLERK_PUBLISHABLE_KEY, warnIfAuthOff } from "@/lib/auth-config";
 import { clerkAppearance } from "@/lib/clerk-appearance";
@@ -54,6 +55,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </ClerkProvider>
         ) : (
           page
+        )}
+        {/* Vercel Web Analytics: page views plus the custom events in src/lib/track.ts. Cookieless. Only on Vercel
+            (VERCEL=1 at build): elsewhere its script path does not exist and the 404 breaks local and CI checks.
+            It reads the search params to name the route, so it has its own Suspense boundary for static pages. */}
+        {process.env.VERCEL && (
+          <Suspense fallback={null}>
+            <Analytics />
+          </Suspense>
         )}
       </body>
     </html>

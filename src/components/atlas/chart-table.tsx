@@ -1,7 +1,10 @@
 "use client";
 
-import { NOT_TRACKED } from "@/lib/coverage";
 import { Download } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useAccess } from "@/lib/access";
+import { NOT_TRACKED } from "@/lib/coverage";
+import { authOf, trackChartView, trackCsvDownload } from "@/lib/track";
 import { Button } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -43,7 +46,9 @@ export function ChartTable({ spec }: { spec: ChartTableSpec }) {
   const max = spec.maxRows ?? 50;
   const rows = spec.rows.slice(0, max);
   const more = spec.rows.length - rows.length;
+  const access = useAccess();
   const download = () => {
+    trackCsvDownload("chart", authOf(access));
     const blob = new Blob([chartTableToCsv(spec)], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -98,5 +103,11 @@ export function ChartTableToggle({ view, onChange, hasQuery }: { view: ChartView
     { value: "table", label: "Table" },
   ];
   if (hasQuery) options.push({ value: "query", label: "Query" });
-  return <Segmented value={view} onChange={onChange} options={options} ariaLabel="View as" role="tablist" />;
+  const pathname = usePathname();
+  const pick = (v: ChartView) => {
+    // Counts a reader opening a card's table or its evidence query, never the chart they return to.
+    if (v !== "chart" && v !== view) trackChartView(v, pathname);
+    onChange(v);
+  };
+  return <Segmented value={view} onChange={pick} options={options} ariaLabel="View as" role="tablist" />;
 }

@@ -2,7 +2,9 @@
 
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAccess } from "@/lib/access";
 import { meta } from "@/lib/data";
+import { authOf, trackCsvDownload } from "@/lib/track";
 import type { Project } from "@/lib/types";
 
 const COLUMNS: Array<[string, (p: Project) => string | number | null]> = [
@@ -54,7 +56,9 @@ export function toCsv(rows: Project[]): string {
 }
 
 export function DownloadCsv({ rows }: { rows: Project[] }) {
+  const access = useAccess();
   const download = () => {
+    trackCsvDownload(rows.length === meta.counts.projects ? "explorer_all" : "explorer_filtered", authOf(access));
     const blob = new Blob(["﻿" + toCsv(rows)], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

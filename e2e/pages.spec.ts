@@ -298,3 +298,43 @@ test("the sector modal follows the active filters and says so", async ({ page })
   await expect(sector).toContainText("1 filter active", { timeout: 15_000 });
   await expect(sector).toContainText(/(\d+) projects, \1 NEAR-native/);
 });
+
+/** What the page queued for Vercel Web Analytics (src/lib/track.ts sets up the queue; no script runs off Vercel). */
+async function queued(page: Page): Promise<Array<{ name: string; data: Record<string, string | number> }>> {
+  return page.evaluate(() => {
+    const q = (window as unknown as { vaq?: unknown[][] }).vaq ?? [];
+    return q.filter((e) => e[0] === "event").map((e) => e[1] as { name: string; data: Record<string, string | number> });
+  });
+}
+
+test("analytics events carry closed-set properties only", async ({ page }, info) => {
+  test.skip(info.project.name !== "desktop", "one run is enough, the events do not depend on the viewport or theme");
+  await page.goto("/?q=rhea");
+  await expect.poll(async () => (await queued(page)).map((e) => e.name)).toContain("tab_view");
+  // A value the link arrived with is not a filter use.
+  expect((await queued(page)).filter((e) => e.name === "filter_use")).toEqual([]);
+
+  await page.getByPlaceholder(/Search name/).fill("meta pool");
+  await expect.poll(async () => (await queued(page)).find((e) => e.name === "filter_use")?.data).toEqual({ filter: "q", page: "overview" });
+
+  await page.getByRole("button", { name: "Expand Chain over time" }).click();
+  await expect.poll(async () => (await queued(page)).find((e) => e.name === "chart_expand")?.data).toEqual({ chart: "chain-over-time", auth: "off" });
+  await page.keyboard.press("Escape");
+
+  await page.goto("/traction/");
+  await page.getByRole("button", { name: "NEAR Intents" }).first().click();
+  await expect.poll(async () => (await queued(page)).find((e) => e.name === "project_open")?.data).toEqual({ sector: "Bridges & Interoperability", auth: "off" });
+  await page.getByTestId("project-modal").getByTestId("compare-button").click();
+  await expect.poll(async () => (await queued(page)).find((e) => e.name === "compare_add")?.data).toEqual({ count: 1, auth: "off" });
+
+  await page.goto("/investors/?investor=dragonfly-capital");
+  await expect.poll(async () => (await queued(page)).find((e) => e.name === "investor_open")?.data).toEqual({ page: "investors", auth: "off" });
+
+  await page.goto("/thesis/");
+  await page.getByRole("tab", { name: "Query" }).first().click();
+  await expect.poll(async () => (await queued(page)).find((e) => e.name === "chart_view")?.data).toEqual({ view: "query", page: "thesis" });
+
+  // Nothing typed, no project id, no investor and no URL ever appears in what is queued.
+  const all = JSON.stringify(await queued(page));
+  expect(all).not.toMatch(/meta pool|rhea|dragonfly|near-intents|https?:/i);
+});

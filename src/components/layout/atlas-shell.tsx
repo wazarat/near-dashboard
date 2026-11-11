@@ -9,6 +9,7 @@ import { InvestorModal } from "@/components/drawer/investor-modal";
 import { ProjectModal } from "@/components/drawer/project-modal";
 import { SectorModal } from "@/components/drawer/sector-modal";
 import { useAccess } from "@/lib/access";
+import { AnalyticsEvents } from "./analytics-events";
 import { useCompare } from "@/lib/compare";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +34,7 @@ export function AtlasShell({ children }: { children: React.ReactNode }) {
       )}
       <LoginDialog />
       <PendingActionReplay />
+      <AnalyticsEvents />
     </>
   );
 }
