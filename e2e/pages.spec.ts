@@ -19,6 +19,7 @@ const PAGES: Array<{ name: string; url: string; expect: string }> = [
   { name: "security", url: "/security/", expect: "NEAR Intents" },
   { name: "explorer", url: "/explorer/", expect: "Download filtered CSV" },
   { name: "explorer-empty", url: "/explorer/?q=zzzzqqq", expect: "No projects match" },
+  { name: "explorer-map", url: "/explorer/?view=map", expect: "Box size is" },
   { name: "intents", url: "/intents/", expect: "Daily volume" },
   { name: "thesis", url: "/thesis/", expect: "Cross-chain volume through NEAR Intents" },
   { name: "investors", url: "/investors/?investor=dragonfly-capital", expect: "Portfolio (" },
@@ -146,6 +147,52 @@ test("the treemap drills into a sector, opens a project from a tile and filters 
   await projectTile.click();
   await expect(page).toHaveURL(/project=/);
   await expect(page.getByRole("dialog")).toContainText("Sources");
+});
+
+test("the explorer opens on its table and offers the sector map of the same selection", async ({ page }) => {
+  const errors = await collectErrors(page);
+  await page.goto("/explorer/");
+  const card = page.getByTestId("explorer-card");
+  const tabs = card.getByRole("tablist", { name: "Explorer view" });
+  await expect(tabs.getByRole("tab", { name: "Table" })).toHaveAttribute("aria-selected", "true", { timeout: 15_000 });
+  await expect(card.locator("table")).toBeVisible();
+  await expect(page.getByTestId("explorer-map")).toHaveCount(0);
+  await tabs.getByRole("tab", { name: "Map" }).click();
+  await expect(page).toHaveURL(/view=map/);
+  const map = page.getByTestId("explorer-map");
+  await expect(map.locator('[data-tile-kind="sector"]').first()).toBeVisible();
+  await expect(card.locator("table")).toHaveCount(0);
+  // The map keeps the treemap's zoom, and filters only on request.
+  const total = page.getByText(/Showing [\d,]+ of [\d,]+ projects/);
+  const before = await total.textContent();
+  await map.locator('[data-tile-kind="sector"]').first().click();
+  await expect(page).toHaveURL(/tmSector=/);
+  await expect(map.getByRole("navigation", { name: "Treemap level" }).locator("[aria-current=location]")).toBeVisible();
+  await expect(total).toHaveText(before ?? "");
+  await map.getByRole("button", { name: "Back to all sectors" }).click();
+  await expect(page).not.toHaveURL(/tmSector=/);
+  await card.getByRole("radiogroup", { name: "Map metric" }).getByRole("radio", { name: "TVL" }).click();
+  await expect(page).toHaveURL(/tm=tvl/);
+  await tabs.getByRole("tab", { name: "Table" }).click();
+  await expect(page).not.toHaveURL(/view=/);
+  await expect(card.locator("table")).toBeVisible();
+  expect(errors, errors.join("\n")).toEqual([]);
+});
+
+test("the explorer search writes the same q as the filter bar and its count follows", async ({ page }) => {
+  await page.goto("/explorer/");
+  const box = page.getByTestId("explorer-search");
+  await expect(box).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId("explorer-count")).toHaveText("1,088 projects");
+  await box.fill("rhea");
+  await expect(page).toHaveURL(/q=rhea/);
+  await expect(page.getByPlaceholder(/Search name/)).toHaveValue("rhea");
+  const shown = Number((await page.getByText(/Showing [\d,]+ of 1,088 projects/).textContent())?.match(/Showing ([\d,]+)/)?.[1].replace(/,/g, ""));
+  expect(shown).toBeGreaterThan(0);
+  await expect(page.getByTestId("explorer-count")).toHaveText(`${shown} ${shown === 1 ? "project" : "projects"}`);
+  // An edit in the filter bar shows in the explorer box too.
+  await page.getByPlaceholder(/Search name/).fill("aurora");
+  await expect(box).toHaveValue("aurora");
 });
 
 test("the timeline opens on 2024 and keeps earlier events one click away", async ({ page }) => {

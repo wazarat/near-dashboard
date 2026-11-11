@@ -13,6 +13,10 @@ export type Scale = (typeof SCALES)[number];
 export const COL_SETS = ["traction", "momentum", "activity", "financials"] as const;
 export type ColSet = (typeof COL_SETS)[number];
 
+/** The Explorer opens on its table; the map of the same selection is ?view=map. */
+export const EXPLORER_VIEWS = ["table", "map"] as const;
+export type ExplorerViewMode = (typeof EXPLORER_VIEWS)[number];
+
 export const ALIGNS = ["date", "days"] as const;
 export type Align = (typeof ALIGNS)[number];
 
@@ -70,6 +74,8 @@ export const filterParsers = {
   cm: numericMetricParser("tvl"),
   /** Sector pop-up ordering. */
   sm: metricParser("count"),
+  /** Explorer, table or map. The map shares the treemap keys (tm, tmSector) with the Overview chart it reuses. */
+  view: parseAsStringLiteral(EXPLORER_VIEWS).withDefault("table"),
 };
 
 export type FilterState = inferParserType<typeof filterParsers>;
