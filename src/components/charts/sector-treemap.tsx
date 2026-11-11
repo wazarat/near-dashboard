@@ -53,6 +53,8 @@ interface Props {
   onSectorChange: (sector: string | null) => void;
   onOpenProject: (id: string) => void;
   onFilterSector: (sector: string) => void;
+  /** Height on the card, in pixels. The expanded view scales from it. */
+  height?: number;
 }
 
 /**
@@ -61,11 +63,11 @@ interface Props {
  * least three, otherwise they show as tiles with the untracked ones folded
  * into one "Not tracked" tile. Filtering is its own action, never the click.
  */
-export function SectorTreemap({ projects, metric, sector, onSectorChange, onOpenProject, onFilterSector }: Props) {
+export function SectorTreemap({ projects, metric, sector, onSectorChange, onOpenProject, onFilterSector, height = 320 }: Props) {
   const theme = useResolvedTheme();
   const palette = SEQ_HEX[theme];
   const level = useMemo(() => treemapLevel(projects, metric, sector, palette), [projects, metric, sector, palette]);
-  const frame = useChartFrame(320, 560);
+  const frame = useChartFrame(height, Math.max(560, height));
 
   if (projects.length === 0) return <EmptyState />;
 
