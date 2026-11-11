@@ -23,7 +23,7 @@ export function CompareTray() {
   const { state } = useFilters();
   if (ids.length === 0) return null;
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-700/60 bg-ink-900" role="region" aria-label="Compare tray" data-testid="compare-tray">
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-700/60 bg-ink-950/80 backdrop-blur-xl" role="region" aria-label="Compare tray" data-testid="compare-tray">
       <div className="mx-auto flex w-full max-w-atlas items-center gap-2 px-5 py-2 sm:px-6 lg:px-8">
         <span className="hidden text-label text-ink-300 sm:inline">Compare</span>
         <ul className="flex min-w-0 flex-1 gap-3 overflow-x-auto" aria-label="Projects in compare">

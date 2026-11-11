@@ -85,7 +85,7 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
       <ScopeNote />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
       {tiles.map((t) => (
-        <div key={t.label} className={cn("rounded-xl border border-ink-700/60 bg-ink-900 px-4 py-3.5", t.empty && "border-ink-700/40")}>
+        <div key={t.label} className={cn("card-lit rounded-xl border border-ink-700/60 bg-ink-900 px-4 py-3.5", t.empty && "border-ink-700/40")}>
           <div className="flex items-center justify-between gap-2">
             <span className="text-label uppercase tracking-wider text-ink-300">{t.label}</span>
             <InfoTip label={`About ${t.label}`}>{t.info}</InfoTip>

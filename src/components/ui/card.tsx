@@ -2,8 +2,9 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * The flat card from the CanHav design system: an ink-900 surface with a
- * hairline ink-700 border at 60% and radius-xl. No blur, glow or gradient.
+ * The card from the CanHav design system: an ink-900 surface with a hairline
+ * ink-700 border at 60% and radius-xl, lit from the top edge like the Studio
+ * cards on canhav.com (`card-lit` in globals.css).
  * `CardSection` stacks blocks inside one card with a 40% divider between them.
  */
 function Card({ className, size = "default", ...props }: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
@@ -12,7 +13,7 @@ function Card({ className, size = "default", ...props }: React.ComponentProps<"d
       data-slot="card"
       data-size={size}
       className={cn(
-        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl border border-ink-700/60 bg-card py-(--card-spacing) text-sm text-card-foreground [--card-spacing:--spacing(4)] has-data-[slot=card-footer]:pb-0 data-[size=sm]:[--card-spacing:--spacing(3)]",
+        "group/card card-lit flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl border border-ink-700/60 bg-card py-(--card-spacing) text-sm text-card-foreground [--card-spacing:--spacing(4)] has-data-[slot=card-footer]:pb-0 data-[size=sm]:[--card-spacing:--spacing(3)]",
         className,
       )}
       {...props}

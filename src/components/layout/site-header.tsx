@@ -14,7 +14,7 @@ import { ThemeToggle } from "./theme-toggle";
  */
 export function SiteHeader() {
   return (
-    <header className="border-b border-ink-700/40 bg-ink-950">
+    <header className="border-b border-ink-700/40 bg-ink-950/80 backdrop-blur-xl">
       <div className="mx-auto flex w-full max-w-atlas flex-col px-5 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center gap-4">
           <Link

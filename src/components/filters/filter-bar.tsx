@@ -101,7 +101,7 @@ export function FilterBar() {
   );
 
   return (
-    <div className="sticky top-0 z-30 border-b border-ink-700/40 bg-ink-950">
+    <div className="sticky top-0 z-30 border-b border-ink-700/40 bg-ink-950/80 backdrop-blur-xl">
       <div className="mx-auto flex w-full max-w-atlas flex-col gap-2 px-5 py-2.5 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
           <div className="relative min-w-0 flex-1 md:max-w-xs">
