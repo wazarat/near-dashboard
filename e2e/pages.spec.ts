@@ -257,6 +257,40 @@ test("a funding type opens its projects and rounds in the modal and filters only
   expect(errors, errors.join("\n")).toEqual([]);
 });
 
+test("tables of records keep the count out of the title and in their own Showing line", async ({ page }) => {
+  const nums = (t: string | null) => (t?.match(/Showing ([\d,]+) of ([\d,]+)/) ?? []).slice(1).map((v) => Number(v.replace(/,/g, "")));
+  await page.goto("/funding/?sector=Lending+%26+Credit");
+  const roundsCard = page.locator('[data-chart-card="Funding rounds"]');
+  await expect(roundsCard.getByRole("heading", { name: "Funding rounds", exact: true })).toBeVisible({ timeout: 15_000 });
+  const roundsLine = roundsCard.getByTestId("showing-line");
+  await expect(roundsLine).toHaveText(/^Showing \d+ of \d+ rounds$/);
+  const [allShown, allTotal] = nums(await roundsLine.textContent());
+  expect(allShown).toBe(allTotal);
+  // The line follows the table's own filter.
+  await roundsCard.getByRole("checkbox").click();
+  await expect.poll(async () => nums(await roundsLine.textContent())[0]).toBeLessThan(allTotal);
+  expect(nums(await roundsLine.textContent())[1]).toBe(allTotal);
+
+  await page.goto("/investors/");
+  const investorsCard = page.locator('[data-chart-card="Investors"]');
+  await expect(investorsCard.getByRole("heading", { name: "Investors", exact: true })).toBeVisible({ timeout: 15_000 });
+  const [invShown, invTotal] = nums(await investorsCard.getByTestId("showing-line").textContent());
+  expect(invShown).toBeGreaterThan(0);
+  expect(invShown).toBe(invTotal);
+
+  await page.goto("/explorer/");
+  const newly = page.getByRole("heading", { name: "Newly detected", exact: true });
+  if ((await newly.count()) > 0) {
+    const line = page.getByText(/^Showing \d+ of \d+ protocols$/);
+    const [shown, total] = nums(await line.textContent());
+    expect(shown).toBeLessThanOrEqual(total);
+    if (shown < total) {
+      await page.getByRole("button", { name: `Show all ${total}` }).click();
+      await expect(line).toHaveText(`Showing ${total} of ${total} protocols`);
+    }
+  }
+});
+
 test("security publishes facts, not ratings, and lists incidents as a sortable table", async ({ page }) => {
   await page.goto("/security/");
   await expect(page.locator('[data-chart-card="Security facts"]')).toContainText("No published audit found");

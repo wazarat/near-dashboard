@@ -135,7 +135,7 @@ export function InvestorsView() {
 
       <Card className="gap-3 py-4" data-chart-card="Investors">
         <CardHeader className="px-4">
-          <h3 className="text-sm font-semibold">Investors ({t.investors})</h3>
+          <h3 className="text-sm font-semibold">Investors</h3>
           <p className="text-sm text-ink-300">
             {t.investors} investors across {t.rounds} rounds
             {t.topLead && (
@@ -153,7 +153,7 @@ export function InvestorsView() {
           </p>
         </CardHeader>
         <CardContent className="px-0">
-          <DataTable data={investors} columns={columns} initialSorting={[{ id: "deals", desc: true }]} pageSize={25} dense getRowId={(i) => i.id} onRowClick={(i) => openInvestor(i.id)} emptyMessage="No investors recorded in the funding rounds file." />
+          <DataTable data={investors} columns={columns} initialSorting={[{ id: "deals", desc: true }]} pageSize={25} dense getRowId={(i) => i.id} showing={{ total: investors.length, noun: "investors" }} onRowClick={(i) => openInvestor(i.id)} emptyMessage="No investors recorded in the funding rounds file." />
         </CardContent>
       </Card>
     </div>

@@ -185,10 +185,7 @@ export function RoundsTable({ rounds, visible, onlySelection, onOnlySelectionCha
     <Card className="gap-3 py-4" data-chart-card="Funding rounds">
       <CardHeader className="px-4">
         <div className="flex flex-wrap items-start justify-between gap-2">
-          <h3 className="text-sm font-semibold">
-            Funding rounds ({visible.length}
-            {onlySelection && visible.length !== rounds.length ? ` of ${rounds.length}` : ""})
-          </h3>
+          <h3 className="text-sm font-semibold">Funding rounds</h3>
           <label htmlFor={checkboxId} className="inline-flex cursor-pointer items-center gap-2 text-xs text-ink-300">
             <Checkbox id={checkboxId} checked={onlySelection} onCheckedChange={(v) => onOnlySelectionChange(v === true)} />
             Only projects in the current selection
@@ -212,6 +209,7 @@ export function RoundsTable({ rounds, visible, onlySelection, onOnlySelectionCha
           pageSize={25}
           dense
           getRowId={(r) => r.id}
+          showing={{ total: rounds.length, noun: "rounds" }}
           rowClassName={(r) => (r.sourced ? undefined : "text-ink-300")}
           emptyMessage={onlySelection ? "No rounds for projects in the current selection." : "No funding rounds recorded."}
         />
