@@ -9,7 +9,7 @@
  * | Compare                                     | Full view of a comparison in the URL  | Full      |
  * | Add to compare, presets (anywhere)          | Opens the login pop-up, then finishes | Works     |
  * | Project pop-up                              | Header, Overview and Traction         | Full      |
- * | Sector and investor pop-ups                 | Title and summary line                | Full      |
+ * | Sector, investor and funding type pop-ups   | Title and summary line                | Full      |
  * | Submit a project, Suggest a correction      | Open                                  | Open      |
  */
 import { NAV } from "./nav";
@@ -17,7 +17,7 @@ import { NAV } from "./nav";
 export const PUBLIC_PATHS = ["/", "/thesis/", "/compare/"] as const;
 export const GATED_PATHS = ["/sectors/", "/traction/", "/intents/", "/funding/", "/investors/", "/security/", "/explorer/"] as const;
 
-export type GatedAction = "compare-add" | "project-detail" | "sector-detail" | "investor-detail";
+export type GatedAction = "compare-add" | "project-detail" | "sector-detail" | "investor-detail" | "funding-detail";
 
 function normalize(path: string): string {
   const p = path.split(/[?#]/)[0] || "/";

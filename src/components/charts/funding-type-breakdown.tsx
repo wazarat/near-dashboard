@@ -17,7 +17,10 @@ function takeawayFor(projects: Project[], b: ReturnType<typeof fundingBreakdown>
   return `${b.disclosed} of ${projects.length} projects have a disclosed funding type; ${top.bucket} is the most common with ${top.count} (${fmtPct(top.share)} of those disclosed).`;
 }
 
-/** Projects per disclosed funding type. The two "no information" states are a sentence under the chart, not bars (standard section 9). */
+/**
+ * Projects per disclosed funding type. The two "no information" states are a sentence under the chart, not bars
+ * (standard section 9). A bar or a legend entry opens that type's pop-up; filtering is a separate action inside it.
+ */
 export function FundingTypeBreakdown({ projects, onSelect, className }: { projects: Project[]; onSelect: (bucket: string) => void; className?: string }) {
   const b = useMemo(() => fundingBreakdown(projects), [projects]);
   const multi = useMemo(() => projects.filter((p) => p.fundingTypes.length > 1).length, [projects]);
@@ -28,7 +31,7 @@ export function FundingTypeBreakdown({ projects, onSelect, className }: { projec
       id="funding-type"
       title="Funding type"
       takeaway={takeawayFor(projects, b)}
-      info={`Projects per funding type from the Funding Type column of the research sheet, counting only projects with a disclosed type. A project with two types (for example "VC-backed; Token-funded") counts once in each bar${multi ? `; ${multi} projects do` : ""}. Rare types fold into Other. Projects never checked (Not researched) and projects checked with nothing found (Not disclosed) are counted in the line under the chart. Click a bar to filter.`}
+      info={`Projects per funding type from the Funding Type column of the research sheet, counting only projects with a disclosed type. A project with two types (for example "VC-backed; Token-funded") counts once in each bar${multi ? `; ${multi} projects do` : ""}. Rare types fold into Other. Projects never checked (Not researched) and projects checked with nothing found (Not disclosed) are counted in the line under the chart. Click a bar or a legend entry to open that type's projects and rounds.`}
       source="Research CSV, Funding Type column"
       table={{
         columns: [
@@ -58,7 +61,7 @@ export function FundingTypeBreakdown({ projects, onSelect, className }: { projec
                   onClick={(s) => {
                     const i = s?.activeIndex;
                     const r = i === null || i === undefined ? undefined : b.rows[Number(i)];
-                    if (r && r.bucket !== "Other") onSelect(r.bucket);
+                    if (r) onSelect(r.bucket);
                   }}
                   style={{ cursor: "pointer" }}
                 >
@@ -82,9 +85,8 @@ export function FundingTypeBreakdown({ projects, onSelect, className }: { projec
                   <button
                     type="button"
                     onClick={() => onSelect(r.bucket)}
-                    disabled={r.bucket === "Other"}
-                    title={`Filter to ${r.bucket}`}
-                    className="inline-flex items-center gap-1.5 rounded underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60 disabled:no-underline"
+                    title={`Open ${r.bucket}`}
+                    className="inline-flex items-center gap-1.5 rounded underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60"
                   >
                     <span aria-hidden="true" className="inline-block size-2.5 rounded-[2px]" style={{ backgroundColor: r.color }} />
                     {r.bucket} <span className="tabular">{r.count}</span>
@@ -105,7 +107,7 @@ function FundingTip({ active, payload }: TipProps<FundingRow>) {
   return (
     <TooltipFrame title={d.bucket}>
       <TooltipRow label="Projects" value={`${d.count} (${fmtPct(d.share)} of disclosed)`} color={d.color} />
-      {d.bucket !== "Other" && <div className="pt-1 text-ink-300">Click to filter</div>}
+      <div className="pt-1 text-ink-300">Click to open its projects and rounds</div>
     </TooltipFrame>
   );
 }

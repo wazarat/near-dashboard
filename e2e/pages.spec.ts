@@ -15,6 +15,7 @@ const PAGES: Array<{ name: string; url: string; expect: string }> = [
   { name: "traction", url: "/traction/", expect: "Leaderboard" },
   { name: "traction-fees-momentum", url: "/traction/?lb=fees&cols=momentum", expect: "Leaderboard" },
   { name: "funding", url: "/funding/", expect: "Rounds" },
+  { name: "funding-type-modal", url: "/funding/?fundingType=VC-backed", expect: "Filter the atlas to this type" },
   { name: "security", url: "/security/", expect: "NEAR Intents" },
   { name: "explorer", url: "/explorer/", expect: "Download filtered CSV" },
   { name: "explorer-empty", url: "/explorer/?q=zzzzqqq", expect: "No projects match" },
@@ -174,6 +175,39 @@ test("the funding chart shows disclosed funding only and sums the rest in one li
   expect(researched + notResearched).toBe(shown);
   await expect(card.locator(".recharts-yAxis")).not.toContainText("Not disclosed");
   await expect(card.locator(".recharts-cartesian-axis-tick-value", { hasText: "Not researched" })).toHaveCount(0);
+});
+
+test("a funding type opens its projects and rounds in the modal and filters only on request", async ({ page }) => {
+  const errors = await collectErrors(page);
+  await page.goto("/funding/");
+  const card = page.locator('[data-chart-card="Funding type"]');
+  const entry = card.getByRole("button", { name: /^VC-backed \d+$/ });
+  await expect(entry).toBeVisible({ timeout: 15_000 });
+  const count = Number((await entry.textContent())?.match(/(\d+)$/)?.[1]);
+  await entry.click();
+  await expect(page).toHaveURL(/fundingType=VC-backed/);
+  await expect(page).not.toHaveURL(/[?&]funding=/);
+  const modal = page.getByTestId("funding-type-modal");
+  await expect(modal.getByRole("heading", { name: "VC-backed", exact: true })).toBeVisible();
+  await expect(modal.getByTestId("funding-type-summary")).toContainText(new RegExp(`^${count} projects`));
+  await expect(modal.getByRole("heading", { name: "Projects", exact: true })).toBeVisible();
+  await expect(modal.getByRole("heading", { name: "Rounds", exact: true })).toBeVisible();
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow, "no horizontal overflow").toBeLessThanOrEqual(1);
+  // The separate action applies the facet and closes the modal.
+  await modal.getByRole("button", { name: "Filter the atlas to this type" }).click();
+  await expect(page).toHaveURL(/[?&]funding=VC-backed/);
+  await expect(page).not.toHaveURL(/fundingType=/);
+  await expect(page.getByText(new RegExp(`Showing ${count} of 1,088 projects`))).toBeVisible();
+  // A project opened from the modal replaces it.
+  await page.goto("/funding/?fundingType=Token-funded");
+  await expect(modal.getByRole("heading", { name: "Token-funded", exact: true })).toBeVisible({ timeout: 15_000 });
+  await modal.locator("tbody tr").first().getByRole("button").first().click();
+  await expect(page).toHaveURL(/project=/);
+  await expect(page).not.toHaveURL(/fundingType=/);
+  await expect(page.getByTestId("project-modal")).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(1);
+  expect(errors, errors.join("\n")).toEqual([]);
 });
 
 test("security publishes facts, not ratings, and lists incidents as a sortable table", async ({ page }) => {

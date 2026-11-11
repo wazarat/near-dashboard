@@ -5,6 +5,7 @@ import { LoginDialog, PendingActionReplay } from "@/components/auth/login-dialog
 import { LoginWall } from "@/components/auth/login-wall";
 import { FilterBar } from "@/components/filters/filter-bar";
 import { CompareTray } from "@/components/compare/compare-tray";
+import { FundingTypeModal } from "@/components/drawer/funding-type-modal";
 import { InvestorModal } from "@/components/drawer/investor-modal";
 import { ProjectModal } from "@/components/drawer/project-modal";
 import { SectorModal } from "@/components/drawer/sector-modal";
@@ -27,6 +28,7 @@ export function AtlasShell({ children }: { children: React.ReactNode }) {
       <CompareTray />
       {!walled && (
         <>
+          <FundingTypeModal />
           <InvestorModal />
           <ProjectModal />
           <SectorModal />

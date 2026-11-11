@@ -11,7 +11,7 @@ import { useFilters } from "@/lib/filters";
 
 /** Funding page: how projects are funded, the headline capital events, and every recorded round. */
 export function FundingView() {
-  const { filtered, setFacet, openProject, openInvestor } = useFilters();
+  const { filtered, openFundingType, openProject, openInvestor } = useFilters();
   const [onlySelection, setOnlySelection] = useState(false);
 
   const visibleRounds = useMemo(() => {
@@ -23,7 +23,7 @@ export function FundingView() {
   return (
     <div className="space-y-4">
       <div className="grid gap-4 xl:grid-cols-5">
-        <FundingTypeBreakdown className="xl:col-span-2" projects={filtered} onSelect={(bucket) => setFacet("funding", [bucket])} />
+        <FundingTypeBreakdown className="xl:col-span-2" projects={filtered} onSelect={openFundingType} />
         <MoneyCards className="xl:col-span-3" onOpenProject={openProject} />
       </div>
       <RoundsOverTime rounds={visibleRounds} />

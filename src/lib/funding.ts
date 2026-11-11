@@ -51,3 +51,20 @@ export function fundingBreakdown(projects: Project[]): FundingBreakdown {
   const sentence = `${n(researched)} researched, ${n(disclosed)} with disclosed funding, ${n(notDisclosed)} not disclosed, ${n(notResearched)} not researched`;
   return { rows, total: projects.length, researched, disclosed, notDisclosed, notResearched, sentence };
 }
+
+/** Whether a value names one of the chart's bars (a shared link can carry anything). */
+export function isFundingBucket(v: string | null | undefined): v is string {
+  return typeof v === "string" && (FUNDING_ORDER as readonly string[]).includes(v);
+}
+
+/** The projects one bar counts: every project with a funding type in that bucket, so a project with two types sits in both. */
+export function projectsInBucket(projects: Project[], bucket: string): Project[] {
+  return projects.filter((p) => p.fundingTypes.some((t) => fundingBucket(t) === bucket));
+}
+
+/** The Funding Type values inside a bucket, for the "Filter the atlas to this type" action. Only Other holds more than one. */
+export function typesInBucket(projects: Project[], bucket: string): string[] {
+  const out = new Set<string>();
+  for (const p of projects) for (const t of p.fundingTypes) if (fundingBucket(t) === bucket) out.add(t);
+  return [...out].sort();
+}
