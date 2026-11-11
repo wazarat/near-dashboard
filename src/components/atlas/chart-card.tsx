@@ -117,8 +117,9 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
   return (
     <Card id={id} className={cn("gap-3 py-4", className)} data-chart-card={title}>
       <CardHeader className="gap-1 px-4">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
-          <div className="min-w-0 flex-1">
+        {/* The controls wrap under the title when both do not fit on one row, so a narrow card never squeezes its title. */}
+        <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
+          <div className="min-w-[min(15rem,100%)] flex-1">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
               <span className="flex items-center gap-1">
                 <h3 className="text-sm font-semibold leading-tight">{title}</h3>
@@ -129,7 +130,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
             <p className="mt-1 text-sm text-ink-300">{takeaway}</p>
             {subtitle && <p className="mt-1 text-label text-ink-300">{subtitle}</p>}
           </div>
-          <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
+          <div className="flex max-w-full flex-wrap items-center gap-2">
             {controls(view, setView)}
             {canExpand && (
               <Button variant="ghost" size="icon-sm" aria-label={`Expand ${title}`} title="Expand" onClick={() => void setExpand(id ?? null)}>
