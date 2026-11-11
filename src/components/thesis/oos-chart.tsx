@@ -1,5 +1,6 @@
 "use client";
 
+import { OneLineAxis } from "@/components/atlas/one-line-axis";
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
@@ -113,19 +114,21 @@ export function OosChart({ data }: { data: ThesisJson }) {
               { label: "0 = training-mean forecast", color: CHART.axis, shape: "line" },
             ]}
           />
-          <div className="w-full" style={{ height: 48 + rows.length * (frame.expanded ? 72 : 48) }}>
+          <OneLineAxis labels={rows.map((r) => r.label)} className="w-full" style={{ height: 48 + rows.length * (frame.expanded ? 72 : 48) }}>
+            {(axis) => (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={rows} layout="vertical" margin={{ top: 4, right: 12, bottom: 0, left: 0 }} barGap={2} barCategoryGap="28%">
                 <CartesianGrid horizontal={false} stroke={CHART.grid} />
                 <XAxis type="number" domain={[domainMin, domainMax]} allowDataOverflow tickFormatter={(v: number) => fmtR(v)} tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
-                <YAxis type="category" dataKey="label" width={104} tick={{ fontSize: 11 }} tickLine={false} axisLine={false} />
+                <YAxis type="category" dataKey="label" width={axis.width} tick={axis.tick} tickLine={false} axisLine={false} />
                 <ReferenceLine x={0} stroke={CHART.axis} strokeWidth={1.5} label={{ value: "training-mean forecast", position: "top", fontSize: 10, fill: CHART.muted }} />
                 <Tooltip cursor={{ fill: "var(--accent)", opacity: 0.4 }} content={<OosTip />} />
                 <Bar dataKey="intents" name={INTENTS_LABEL} fill={CHART.intents} isAnimationActive={false} maxBarSize={14} />
                 <Bar dataKey="price" name={PRICE_LABEL} fill={CHART.price} isAnimationActive={false} maxBarSize={14} />
               </BarChart>
             </ResponsiveContainer>
-          </div>
+            )}
+          </OneLineAxis>
           <OosTable rows={rows} />
           <p className="text-label text-ink-300">
             The headline counts wins. A predictor wins a series when its out-of-sample R² is above zero and at least 0.01 higher than the other predictor&apos;s; the table shows every score, including the series where neither wins.

@@ -1,5 +1,6 @@
 "use client";
 
+import { OneLineAxis } from "@/components/atlas/one-line-axis";
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState } from "@/components/atlas/chart-card";
@@ -46,7 +47,8 @@ export function FundingTypeBreakdown({ projects, onSelect, className }: { projec
           <EmptyState message={projects.length ? "No project in the selection has a disclosed funding type." : undefined} />
         ) : (
           <div>
-            <div className="w-full" style={{ height: frameHeight(frame, Math.max(160, b.rows.length * 32 + 16), Math.max(320, b.rows.length * 48 + 16)) }}>
+            <OneLineAxis labels={b.rows.map((r) => r.bucket)} className="w-full" style={{ height: frameHeight(frame, Math.max(160, b.rows.length * 32 + 16), Math.max(320, b.rows.length * 48 + 16)) }}>
+              {(axis) => (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={b.rows}
@@ -62,7 +64,7 @@ export function FundingTypeBreakdown({ projects, onSelect, className }: { projec
                 >
                   <CartesianGrid horizontal={false} stroke="var(--grid)" />
                   <XAxis type="number" allowDecimals={false} tickLine={false} axisLine={false} fontSize={10} />
-                  <YAxis type="category" dataKey="bucket" width={150} tickLine={false} axisLine={false} interval={0} tick={{ fontSize: 11 }} />
+                  <YAxis type="category" dataKey="bucket" width={axis.width} tickLine={false} axisLine={false} interval={0} tick={axis.tick} />
                   <Tooltip cursor={{ fill: "var(--accent)", opacity: 0.4 }} content={<FundingTip />} wrapperStyle={{ zIndex: 10 }} allowEscapeViewBox={{ x: false, y: false }} />
                   <Bar dataKey="count" name="Projects" radius={[0, 3, 3, 0]} isAnimationActive={false} maxBarSize={18}>
                     {b.rows.map((r) => (
@@ -72,7 +74,8 @@ export function FundingTypeBreakdown({ projects, onSelect, className }: { projec
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
-            </div>
+              )}
+            </OneLineAxis>
             <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink-300">
               {b.rows.map((r) => (
                 <li key={r.bucket}>

@@ -1,5 +1,6 @@
 "use client";
 
+import { OneLineAxis } from "@/components/atlas/one-line-axis";
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
@@ -71,7 +72,8 @@ export function ListedVsLive({ projects, onSelect }: { projects: Project[]; onSe
               { label: "With any onchain metric", color: LIVE, shape: "square" },
             ]}
           />
-          <div className="w-full" style={{ height: Math.max(180, rows.length * 44 + 24) }}>
+          <OneLineAxis labels={rows.map((r) => r.via)} className="w-full" style={{ height: Math.max(180, rows.length * 44 + 24) }}>
+            {(axis) => (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={rows}
@@ -88,7 +90,7 @@ export function ListedVsLive({ projects, onSelect }: { projects: Project[]; onSe
               >
                 <CartesianGrid horizontal={false} stroke="var(--grid)" />
                 <XAxis type="number" allowDecimals={false} tickLine={false} axisLine={false} fontSize={10} />
-                <YAxis type="category" dataKey="via" width={150} tickLine={false} axisLine={false} interval={0} tick={{ fontSize: 11 }} />
+                <YAxis type="category" dataKey="via" width={axis.width} tickLine={false} axisLine={false} interval={0} tick={axis.tick} />
                 <Tooltip cursor={{ fill: "var(--accent)", opacity: 0.4 }} content={<LiveTip />} />
                 <Bar dataKey="listed" name="Listed" fill={LISTED} radius={[0, 3, 3, 0]} isAnimationActive={false} maxBarSize={12}>
                   <LabelList dataKey="listed" position="right" fontSize={10} fill="var(--ink-secondary)" />
@@ -98,7 +100,8 @@ export function ListedVsLive({ projects, onSelect }: { projects: Project[]; onSe
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </div>
+            )}
+          </OneLineAxis>
           <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink-300">
             {rows.map((r) => (
               <li key={r.via}>

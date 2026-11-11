@@ -1,5 +1,6 @@
 "use client";
 
+import { OneLineAxis } from "@/components/atlas/one-line-axis";
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { EmptyState, Legend } from "@/components/atlas/chart-card";
@@ -55,12 +56,13 @@ export function NativeStackedBar({ projects }: { projects: Project[] }) {
   return (
     <div>
       <Legend items={NATIVE_CHAINS.map((c) => ({ label: CHAIN_SHORT[c], color: CHAIN_COLOR[c], shape: "square" as const }))} className="mb-2" />
-      <div className="h-[240px] w-full">
+      <OneLineAxis labels={rows.map((r) => r.label)} className="h-[240px] w-full">
+        {(axis) => (
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={rows} layout="vertical" margin={{ top: 4, right: 12, bottom: 4, left: 0 }} barCategoryGap={6}>
             <CartesianGrid horizontal={false} stroke="var(--grid)" />
             <XAxis type="number" domain={[0, 1]} ticks={[0, 0.25, 0.5, 0.75, 1]} tickFormatter={(v) => `${Math.round(v * 100)}%`} tickLine={false} axisLine={false} tick={{ fontSize: 11 }} />
-            <YAxis type="category" dataKey="label" width={96} tickLine={false} axisLine={false} tick={{ fontSize: 11 }} interval={0} />
+            <YAxis type="category" dataKey="label" width={axis.width} tickLine={false} axisLine={false} tick={axis.tick} interval={0} />
             <Tooltip cursor={{ fill: "var(--accent)", opacity: 0.4 }} content={<StackTip />} />
             {NATIVE_CHAINS.map((c) => (
               <Bar key={c} dataKey={c} stackId="share" fill={CHAIN_COLOR[c]} stroke="var(--background)" strokeWidth={2} isAnimationActive={false} maxBarSize={28}>
@@ -69,7 +71,8 @@ export function NativeStackedBar({ projects }: { projects: Project[] }) {
             ))}
           </BarChart>
         </ResponsiveContainer>
-      </div>
+        )}
+      </OneLineAxis>
       <p className="mt-1 text-xs text-ink-300">Rows with no reported figure in the selection are drawn empty.</p>
     </div>
   );

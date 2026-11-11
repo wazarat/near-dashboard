@@ -5,7 +5,6 @@ import { ArrowRight } from "lucide-react";
 import { useMemo } from "react";
 import { EmptyState } from "@/components/atlas/chart-card";
 import type { ChartTableSpec } from "@/components/atlas/chart-table";
-import { Button } from "@/components/ui/button";
 import { leadersBySector } from "@/lib/data";
 import { fmtMetric, fmtMetricFull, fmtPct, METRIC_SHORT } from "@/lib/format";
 import { sumMetric } from "@/lib/metrics";
@@ -73,37 +72,52 @@ export function SectorGrid({ projects, metric, onSelect, onOpen }: Props) {
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {cards.map((c) => (
-        <div key={c.sector} className="flex flex-col rounded-lg border bg-card p-3 text-sm">
-          <h4 className="font-semibold leading-tight">{c.sector}</h4>
-          <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-            <dt className="text-ink-300">Projects</dt>
-            <dd className="tabular text-right">{c.count}</dd>
-            <dt className="text-ink-300">NEAR-native</dt>
-            <dd className="tabular text-right">
-              {c.native} <span className="text-ink-300">({fmtPct(c.nativeShare)})</span>
-            </dd>
-            <dt className="text-ink-300">With traction</dt>
-            <dd className="tabular text-right">
-              {c.live} <span className="text-ink-300">({fmtPct(c.count ? c.live / c.count : null)})</span>
-            </dd>
-            {metric !== "count" && (
-              <>
-                <dt className="text-ink-300">{METRIC_SHORT[metric]}</dt>
-                <dd className="tabular text-right" title={fmtMetricFull(metric, c.total)}>
-                  {fmtMetric(metric, c.total)}
-                </dd>
-              </>
-            )}
+        <div key={c.sector} className="card-lit flex flex-col rounded-xl border border-ink-700/60 bg-ink-900 p-4 text-sm" data-testid="sector-card">
+          {/* The sector name is the way into the sector pop-up; the leaders below open their own projects. */}
+          <h4 className="leading-tight">
+            <button
+              type="button"
+              onClick={() => onSelect(c.sector)}
+              aria-label={`Open sector ${c.sector}`}
+              className="group inline-flex items-start gap-1.5 text-left font-display text-sm font-semibold text-ink-50 underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60"
+            >
+              {c.sector}
+              <ArrowRight className="mt-0.5 size-3.5 shrink-0 text-ink-300 group-hover:text-ink-50" aria-hidden="true" />
+            </button>
+          </h4>
+          <dl className="mt-3 grid grid-cols-3 gap-x-3">
+            <div className="min-w-0">
+              <dt className="text-label text-ink-300">Projects</dt>
+              <dd className="tabular font-display text-stat tracking-tight text-ink-50">{c.count}</dd>
+            </div>
+            <div className="min-w-0">
+              <dt className="text-label text-ink-300">NEAR-native</dt>
+              <dd className="tabular font-display text-stat tracking-tight text-ink-50">{c.native}</dd>
+              <dd className="tabular text-label text-ink-300">{fmtPct(c.nativeShare)}</dd>
+            </div>
+            <div className="min-w-0">
+              <dt className="text-label text-ink-300">With traction</dt>
+              <dd className="tabular font-display text-stat tracking-tight text-ink-50">{c.live}</dd>
+              <dd className="tabular text-label text-ink-300">{fmtPct(c.count ? c.live / c.count : null)}</dd>
+            </div>
           </dl>
-          <div className="mt-2 flex-1 border-t pt-2 text-xs">
-            <div className="mb-1 text-ink-300">Ranked leaders</div>
+          {metric !== "count" && (
+            <p className="mt-2 flex items-baseline justify-between gap-3 text-label text-ink-300">
+              {METRIC_SHORT[metric]}
+              <span className="tabular text-sm text-ink-50" title={fmtMetricFull(metric, c.total)}>
+                {fmtMetric(metric, c.total)}
+              </span>
+            </p>
+          )}
+          <div className="mt-3 flex-1 border-t border-ink-700/40 pt-3 text-xs">
+            <div className="mb-1 text-label text-ink-300">Ranked leaders</div>
             {c.leaders.length === 0 && <div className="text-ink-300">No leaders ranked for this sector.</div>}
             <ol className="space-y-0.5">
               {c.leaders.map((l) => (
                 <li key={`${l.rank}-${l.name}`} className="flex items-center gap-1.5">
                   <span className="tabular w-4 shrink-0 text-ink-300">{l.rank}.</span>
                   {l.projectId ? (
-                    <button type="button" onClick={() => onOpen(l.projectId as string)} className="truncate text-left underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" title={l.why}>
+                    <button type="button" onClick={() => onOpen(l.projectId as string)} className="truncate text-left underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60" title={l.why}>
                       {l.name}
                     </button>
                   ) : (
@@ -115,9 +129,6 @@ export function SectorGrid({ projects, metric, onSelect, onOpen }: Props) {
               ))}
             </ol>
           </div>
-          <Button variant="outline" size="sm" className="mt-3 h-7 w-full justify-between text-xs" onClick={() => onSelect(c.sector)} aria-label={`Open sector ${c.sector}`}>
-            Open sector <ArrowRight className="size-3.5" aria-hidden="true" />
-          </Button>
         </div>
       ))}
     </div>
