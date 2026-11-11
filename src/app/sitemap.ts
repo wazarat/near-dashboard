@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
 import { meta } from "@/lib/data";
 import { SITE_URL } from "@/lib/env";
+import { NAV } from "@/lib/nav";
 
 export const dynamic = "force-static";
 
-const ROUTES = ["/", "/sectors/", "/traction/", "/intents/", "/thesis/", "/funding/", "/investors/", "/security/", "/explorer/", "/compare/"];
+/** Every tab is listed; the tab list is shared with the header (src/lib/nav.ts). */
+const ROUTES = NAV.map((n) => n.href);
 
 /** Static sitemap for the export; URLs come from NEXT_PUBLIC_SITE_URL (standard section 12). */
 export default function sitemap(): MetadataRoute.Sitemap {

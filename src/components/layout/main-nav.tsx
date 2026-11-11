@@ -3,20 +3,8 @@
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { CARRIED_PARAMS } from "@/lib/filters";
+import { NAV } from "@/lib/nav";
 import { cn } from "@/lib/utils";
-
-export const NAV = [
-  { href: "/", label: "Overview" },
-  { href: "/sectors/", label: "Sectors" },
-  { href: "/traction/", label: "Traction" },
-  { href: "/intents/", label: "Intents" },
-  { href: "/thesis/", label: "Thesis" },
-  { href: "/funding/", label: "Funding" },
-  { href: "/investors/", label: "Investors" },
-  { href: "/security/", label: "Security" },
-  { href: "/explorer/", label: "Explorer" },
-  { href: "/compare/", label: "Compare" },
-] as const;
 
 /** Keeps the shareable state (range, scale, compare selection) when moving between pages. */
 export function carriedQuery(params: URLSearchParams | null): string {
