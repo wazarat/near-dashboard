@@ -2,7 +2,7 @@
 
 import { ScopeNote } from "@/components/atlas/chart-card";
 import { InfoTip } from "@/components/ui/info-tip";
-import { NOT_TRACKED_HELP, coverageLabel } from "@/lib/coverage";
+import { NOT_TRACKED_HELP, coverageShort } from "@/lib/coverage";
 import { meta } from "@/lib/data";
 import { fmtInt, fmtPct, fmtUsd, fmtUsdFull } from "@/lib/format";
 import { countWith, nativeShare, sumMetric } from "@/lib/metrics";
@@ -13,6 +13,8 @@ interface Tile {
   label: string;
   value: string;
   sub: string;
+  /** A second line under the first, for a figure that would not fit beside it. */
+  sub2?: string;
   info: string;
   full?: string;
   /** True when no project in the selection reports the metric; the tile goes quiet. */
@@ -30,7 +32,7 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
   const natCount = projects.filter((p) => p.chain === "NEAR native").length;
   const chainTvl = meta.chainTvl.near;
   const tracked = (key: "tvl" | "volume" | "fees" | "revenue") => countWith(projects, key);
-  const coverage = (key: "tvl" | "volume" | "fees" | "revenue") => coverageLabel(tracked(key), n);
+  const coverage = (key: "tvl" | "volume" | "fees" | "revenue") => coverageShort(tracked(key), n);
 
   const tiles: Tile[] = [
     {
@@ -42,7 +44,8 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
     {
       label: "Summed TVL",
       value: fmtUsd(tvl),
-      sub: `${coverage("tvl")}${chainTvl !== null ? `, chain TVL ${fmtUsd(chainTvl)}` : ""}`,
+      sub: coverage("tvl"),
+      sub2: chainTvl !== null ? `Chain TVL ${fmtUsd(chainTvl)}` : undefined,
       full: fmtUsdFull(tvl),
       empty: tracked("tvl") === 0,
       info: `Sum of each protocol's TVL on NEAR and Aurora per DefiLlama. Double counts liquid staking and bridges; DefiLlama's default chain TVL excludes them (NEAR $174.9M, Aurora $3.8M on Nov 8, 2026). CEX reserves are excluded. ${NOT_TRACKED_HELP}`,
@@ -74,7 +77,7 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
     {
       label: "NEAR-native TVL share",
       value: fmtPct(natTvl),
-      sub: natTvl === null ? "No project in the selection reports TVL" : `natives earn ${fmtPct(natFees)} of fees`,
+      sub: natTvl === null ? "No project in the selection reports TVL" : `NEAR-native fee share ${fmtPct(natFees)}`,
       empty: natTvl === null,
       info: "Share of summed TVL held by projects classified as NEAR native, against their share of 30-day fees. The reverse of most imported-liquidity chains.",
     },
@@ -93,9 +96,10 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
           <div className={cn("tabular mt-1.5 font-display text-stat tracking-tight", t.empty ? "text-ink-300" : "text-ink-50")} title={t.full}>
             {t.value}
           </div>
-          <div className="mt-1 truncate text-label text-ink-300" title={t.sub}>
+          <div className="mt-1 text-label leading-snug text-ink-300" data-testid="kpi-sub">
             {t.sub}
           </div>
+          {t.sub2 && <div className="text-label leading-snug text-ink-300">{t.sub2}</div>}
         </div>
       ))}
       </div>

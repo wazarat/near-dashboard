@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { NOT_TRACKED, coverageLabel } from "../src/lib/coverage";
+import { NOT_TRACKED, coverageLabel, coverageShort } from "../src/lib/coverage";
 import { fmtCompact, fmtInt, fmtNum, fmtPct, fmtPctSigned, fmtRatio, fmtUsd, fmtUsdFull } from "../src/lib/format";
 
 describe("coverage language", () => {
@@ -7,6 +7,9 @@ describe("coverage language", () => {
     expect(coverageLabel(2, 13)).toBe("Tracked for 2 of 13 projects");
     expect(coverageLabel(0, 1088)).toBe("Tracked for 0 of 1,088 projects");
     expect(coverageLabel(3, 4, "sectors")).toBe("Tracked for 3 of 4 sectors");
+    // The short form a KPI tile has room for carries the same two numbers.
+    expect(coverageShort(62, 1088)).toBe("Tracked for 62/1,088 projects");
+    expect(coverageShort(0, 13)).toBe("Tracked for 0/13 projects");
   });
 
   it("renders every blank metric as Not tracked, never as a dash or a zero", () => {

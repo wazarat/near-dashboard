@@ -77,11 +77,6 @@ export function ChainOverTime({ range }: { range: Range }) {
                       <span className={chain === "near" ? "font-medium" : "sr-only"}>{p.label}</span>
                       <span className="ml-auto text-ink-300">{CHAIN_LABEL[chain]}</span>
                     </div>
-                    {stats && (
-                      <p className="mb-1 font-mono text-label text-ink-300">
-                        min {fmtUsd(stats.min)} max {fmtUsd(stats.max)} {fmtPctSigned(stats.change)}
-                      </p>
-                    )}
                     <MiniSeries
                       dates={dates}
                       values={values}
@@ -92,6 +87,11 @@ export function ChainOverTime({ range }: { range: Range }) {
                       format={fmtUsd}
                       yDomain={level && !frame.startAtZero ? fittedDomain(values) : undefined}
                     />
+                    {stats && (
+                      <p className="mt-1 text-label text-ink-300" data-testid="range-stats">
+                        Low {fmtUsd(stats.min)}, high {fmtUsd(stats.max)}, {fmtPctSigned(stats.change)} over {dates.length} days
+                      </p>
+                    )}
                   </div>
                 );
               })}

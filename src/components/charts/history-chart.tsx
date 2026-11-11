@@ -64,11 +64,6 @@ export function HistoryChart({ projectId, range, metric, height = 180 }: { proje
           <ChartTableToggle view={view} onChange={setView} />
         </div>
       </div>
-      {stats && view === "chart" && (
-        <p className="font-mono text-label text-ink-300">
-          min {fmtUsd(stats.min)} max {fmtUsd(stats.max)} {fmtPctSigned(stats.change)} over {dates.length} days
-        </p>
-      )}
       {view === "table" ? (
         <ChartTable
           spec={{
@@ -83,6 +78,11 @@ export function HistoryChart({ projectId, range, metric, height = 180 }: { proje
         />
       ) : (
         <MiniSeries dates={dates} values={values} kind={kind} primaryLabel={label} height={height} format={money ? fmtUsd : fmtCompact} yDomain={level && axis === "fitted" ? fittedDomain(values) : undefined} />
+      )}
+      {stats && view === "chart" && (
+        <p className="text-label text-ink-300" data-testid="range-stats">
+          Low {fmtUsd(stats.min)}, high {fmtUsd(stats.max)}, {fmtPctSigned(stats.change)} over {dates.length} days
+        </p>
       )}
       <p className="text-xs text-ink-300">
         {dates.length} days shown{level && n !== rangeDays(range, series.dates.length) ? " (TVL keeps at least 90 days in view)" : ""}. {active === "calls" ? "BigQuery function calls to tracked contracts" : `DefiLlama daily history${level ? "" : ", current partial day excluded"}`}.

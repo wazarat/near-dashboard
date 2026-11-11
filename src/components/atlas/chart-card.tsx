@@ -66,10 +66,14 @@ const AXIS_OPTIONS = [
 ];
 const noop = () => {};
 
-/** One line of plain text under a title that says whether the filters apply. */
+/**
+ * Honest filter scope (standard section 4). A filtered card shows the active filter count next to
+ * its title. A card that ignores the filters (whole-chain history, a compare selection) simply stays
+ * the same when filters change and carries no note.
+ */
 export function ScopeNote({ scope = "filtered", className }: { scope?: ChartScope; className?: string }) {
   const active = useActiveFilterCount();
-  const text = scope === "whole-chain" ? "Whole chain, not filtered" : scope === "selection" ? "Selected projects only, not filtered" : active > 0 ? `${active} filter${active === 1 ? "" : "s"} active` : null;
+  const text = scope === "filtered" && active > 0 ? `${active} filter${active === 1 ? "" : "s"} active` : null;
   if (!text) return null;
   return (
     <span className={cn("text-label text-ink-300", className)} data-scope={scope}>

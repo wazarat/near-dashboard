@@ -105,74 +105,77 @@ export function FilterBar() {
 
   return (
     <div className="sticky top-0 z-30 border-b border-ink-700/40 bg-ink-950/80 backdrop-blur-xl">
-      <div className="mx-auto flex w-full max-w-atlas flex-col gap-2 px-5 py-2.5 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-2">
-          <div className="relative min-w-0 flex-1 md:max-w-xs">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-ink-300" />
-            <Input
-              type="search"
-              value={state.q}
-              onChange={(e) => void setState({ q: e.target.value })}
-              placeholder="Search name, description, token, X handle"
-              aria-label="Search projects"
-              className="h-8 rounded-lg border-ink-700/60 bg-ink-900 pl-8 text-xs"
-            />
-          </div>
-          <div className="hidden flex-wrap items-center gap-1.5 xl:flex">{facetControls(false)}</div>
-          <div className="xl:hidden">
-            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="sm" className="h-8">
-                  <SlidersHorizontal className="size-3.5" />
-                  Filters
-                  {activeCount > 0 && <span className="font-mono text-ink-300">({activeCount})</span>}
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle>Filters</SheetTitle>
-                </SheetHeader>
-                <div className="flex flex-col gap-2 px-4 pb-6">
-                  {facetControls(true)}
-                  <div className="pt-1">{legacySwitch}</div>
-                  <div className="mt-2 flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1" onClick={reset} disabled={activeCount === 0}>
-                      Reset
-                    </Button>
-                    <Button variant="secondary" size="sm" className="flex-1" onClick={() => setSheetOpen(false)}>
-                      Show {filtered.length}
-                    </Button>
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-          <div className="ml-auto hidden items-center gap-1.5 lg:flex">
-            <Button variant="ghost" size="sm" className="h-8" onClick={reset} disabled={activeCount === 0} title="Clear search and filters">
-              <RotateCcw className="size-3.5" /> Reset
-            </Button>
-            <Button variant="outline" size="sm" className="h-8" onClick={copyLink}>
-              {copied ? <Check className="size-3.5" /> : <Link2 className="size-3.5" />}
-              {copied ? "Copied" : "Copy link to this view"}
-            </Button>
-          </div>
+      {/*
+        One wrapping row with a forced break, so each control exists once and only its place changes with the width.
+        Wide screens: search, facets and the result count, then the range, the legacy switch and, under the count,
+        Reset and Copy link (standard section 4). Narrow screens: search and Filters, then the range, the count and
+        the two icon buttons.
+      */}
+      <div className="mx-auto flex w-full max-w-atlas flex-wrap items-center gap-x-2 gap-y-2 px-5 py-2.5 sm:px-6 lg:px-8">
+        <div className="relative order-1 min-w-0 flex-1 md:max-w-xs">
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-ink-300" />
+          <Input
+            type="search"
+            value={state.q}
+            onChange={(e) => void setState({ q: e.target.value })}
+            placeholder="Search name, description, token, X handle"
+            aria-label="Search projects"
+            className="h-8 rounded-lg border-ink-700/60 bg-ink-900 pl-8 text-xs"
+          />
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <div className="flex min-w-0 max-w-full flex-wrap items-center gap-x-4 gap-y-2">
-            <DateRangeControl value={range} onChange={(r: Range) => void setState({ range: r })} />
-            <span className="hidden xl:inline">{legacySwitch}</span>
-          </div>
-          <p className="text-label text-ink-300" aria-live="polite">
-            Showing <span className="tabular font-medium text-ink-50">{filtered.length.toLocaleString("en-US")}</span> of {allProjects.length.toLocaleString("en-US")} projects
-          </p>
-          <div className="flex items-center gap-1 lg:hidden">
-            <Button variant="ghost" size="icon-sm" onClick={reset} disabled={activeCount === 0} aria-label="Reset filters">
-              <RotateCcw className="size-3.5" />
-            </Button>
-            <Button variant="ghost" size="icon-sm" onClick={copyLink} aria-label="Copy link to this view">
-              {copied ? <Check className="size-3.5" /> : <Link2 className="size-3.5" />}
-            </Button>
-          </div>
+        <div className="order-2 hidden flex-wrap items-center gap-1.5 xl:flex">{facetControls(false)}</div>
+        <div className="order-2 xl:hidden">
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8">
+                <SlidersHorizontal className="size-3.5" />
+                Filters
+                {activeCount > 0 && <span className="font-mono text-ink-300">({activeCount})</span>}
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">
+              <SheetHeader>
+                <SheetTitle>Filters</SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-2 px-4 pb-6">
+                {facetControls(true)}
+                <div className="pt-1">{legacySwitch}</div>
+                <div className="mt-2 flex gap-2">
+                  <Button variant="outline" size="sm" className="flex-1" onClick={reset} disabled={activeCount === 0}>
+                    Reset
+                  </Button>
+                  <Button variant="secondary" size="sm" className="flex-1" onClick={() => setSheetOpen(false)}>
+                    Show {filtered.length}
+                  </Button>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+        <p className="order-6 shrink-0 text-label text-ink-300 lg:order-3 lg:ml-auto" aria-live="polite" data-testid="result-count">
+          Showing <span className="tabular font-medium text-ink-50">{filtered.length.toLocaleString("en-US")}</span> of {allProjects.length.toLocaleString("en-US")} projects
+        </p>
+        <div aria-hidden className="order-4 h-0 basis-full" />
+        <div className="order-5 flex min-w-0 max-w-full flex-wrap items-center gap-x-4 gap-y-2">
+          <DateRangeControl value={range} onChange={(r: Range) => void setState({ range: r })} />
+          <span className="hidden xl:inline">{legacySwitch}</span>
+        </div>
+        <div className="order-7 ml-auto hidden items-center gap-1.5 lg:flex" data-testid="filter-actions">
+          <Button variant="ghost" size="sm" className="h-8" onClick={reset} disabled={activeCount === 0} title="Clear search and filters">
+            <RotateCcw className="size-3.5" /> Reset
+          </Button>
+          <Button variant="outline" size="sm" className="h-8" onClick={copyLink}>
+            {copied ? <Check className="size-3.5" /> : <Link2 className="size-3.5" />}
+            {copied ? "Copied" : "Copy link to this view"}
+          </Button>
+        </div>
+        <div className="order-7 ml-auto flex items-center gap-1 lg:hidden">
+          <Button variant="ghost" size="icon-sm" onClick={reset} disabled={activeCount === 0} aria-label="Reset filters">
+            <RotateCcw className="size-3.5" />
+          </Button>
+          <Button variant="ghost" size="icon-sm" onClick={copyLink} aria-label="Copy link to this view">
+            {copied ? <Check className="size-3.5" /> : <Link2 className="size-3.5" />}
+          </Button>
         </div>
       </div>
     </div>

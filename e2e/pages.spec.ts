@@ -196,14 +196,37 @@ test("security publishes facts, not ratings, and lists incidents as a sortable t
   await expect(page.getByRole("menuitemcheckbox", { name: "Security risk" })).toHaveCount(0);
 });
 
-test("whole-chain cards say so and do not change when a filter is applied", async ({ page }) => {
+test("whole-chain cards carry no scope note and do not change when a filter is applied", async ({ page }) => {
   await page.goto("/");
   const card = page.locator('[data-chart-card="Chain over time"]');
-  await expect(card.getByText("Whole chain, not filtered")).toBeVisible();
-  const before = await card.locator("p").first().textContent();
+  const stats = card.getByTestId("range-stats").first();
+  await expect(stats).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("Whole chain, not filtered")).toHaveCount(0);
+  await expect(card.locator("[data-scope]")).toHaveCount(0);
+  const before = await stats.textContent();
+  expect(before).toMatch(/^Low \$[\d.]+[KMB]?, high \$[\d.]+[KMB]?, [+-][\d.]+% over \d+ days$/);
   await page.goto("/?sector=Lending+%26+Credit");
-  await expect(page.locator('[data-chart-card="Chain over time"]').locator("p").first()).toHaveText(before ?? "");
+  const after = page.locator('[data-chart-card="Chain over time"]');
+  await expect(after.getByTestId("range-stats").first()).toHaveText(before ?? "");
+  await expect(after.locator("[data-scope]")).toHaveCount(0);
   await expect(page.locator('[data-chart-card="Native vs imported"]').getByText("1 filter active")).toBeVisible();
+});
+
+test("KPI tiles use the short coverage text and the range line sits under its chart", async ({ page }, info) => {
+  await page.goto("/");
+  const subs = page.getByTestId("kpi-sub");
+  await expect(subs.nth(1)).toHaveText(/^Tracked for [\d,]+\/1,088 projects$/, { timeout: 15_000 });
+  const card = page.locator('[data-chart-card="Chain over time"]');
+  const stats = card.getByTestId("range-stats").first();
+  await expect(stats).toBeVisible({ timeout: 15_000 });
+  const chartBox = await card.locator(".recharts-wrapper").first().boundingBox();
+  const statsBox = await stats.boundingBox();
+  expect((statsBox?.y ?? 0) >= (chartBox?.y ?? 0) + (chartBox?.height ?? 0) - 1, "the low, high and change line is below its chart").toBe(true);
+  if (info.project.name.startsWith("desktop")) {
+    const count = await page.getByTestId("result-count").boundingBox();
+    const actions = await page.getByTestId("filter-actions").boundingBox();
+    expect((actions?.y ?? 0) > (count?.y ?? 0), "Reset and Copy link sit under the result count").toBe(true);
+  }
 });
 
 test("chart cards offer a table view", async ({ page }) => {

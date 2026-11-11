@@ -6,5 +6,5 @@ export const CLASSES = "md:flex lg:hidden";
 export const SKIPPED = "Label: value"; // copy-ok
 
 export function Clean() {
-  return <p title={`Rows ${LABEL}`}>Whole chain, not filtered</p>;
+  return <p title={`Rows ${LABEL}`}>Showing every project, none filtered</p>;
 }
