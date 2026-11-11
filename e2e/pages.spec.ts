@@ -208,6 +208,8 @@ test("whole-chain cards say so and do not change when a filter is applied", asyn
 test("chart cards offer a table view", async ({ page }) => {
   await page.goto("/");
   const toggles = page.getByRole("tab", { name: "Table" });
+  // count() does not wait, so let the client shell render its cards first.
+  await expect(toggles.nth(2)).toBeAttached();
   expect(await toggles.count()).toBeGreaterThan(2);
   await toggles.first().click();
   await expect(page.locator("table").first()).toBeVisible();
@@ -230,6 +232,7 @@ test("project drawer opens from a shared URL with history tabs", async ({ page }
 test("thesis charts expose a Query tab with SQL", async ({ page }) => {
   await page.goto("/thesis/");
   const query = page.getByRole("tab", { name: "Query" });
+  await expect(query.nth(2)).toBeAttached();
   expect(await query.count()).toBeGreaterThan(2);
   await query.first().click();
   await expect(page.locator("pre").first()).toBeVisible();
