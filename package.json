@@ -18,6 +18,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test -c e2e/playwright.config.ts",
+    "e2e:wall": "playwright test -c e2e/playwright.wall.config.ts",
     "refresh": "tsx scripts/refresh.ts",
     "review": "tsx scripts/review.ts",
     "seed:map": "tsx scripts/seed-defillama-map.ts",

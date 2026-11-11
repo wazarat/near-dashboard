@@ -63,3 +63,5 @@ gcp-key.json
 
 # community submissions (Tally exports can contain contact details)
 /data/submissions/
+/e2e/test-results-wall/
+/e2e/test-results-auth/

@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { AtlasShell } from "@/components/layout/atlas-shell";
 import { ClerkProvider } from "@clerk/nextjs";
+import { AccessProvider } from "@/lib/access";
 import { AUTH_ENABLED, CLERK_PUBLISHABLE_KEY, warnIfAuthOff } from "@/lib/auth-config";
 import { clerkAppearance } from "@/lib/clerk-appearance";
 import { meta } from "@/lib/data";
@@ -34,11 +35,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   warnIfAuthOff();
   const page = (
     <Providers>
-      <SiteHeader />
-      <Suspense fallback={<div className="flex-1" aria-busy="true" />}>
-        <AtlasShell>{children}</AtlasShell>
-      </Suspense>
-      <SiteFooter />
+      <AccessProvider>
+        <SiteHeader />
+        <Suspense fallback={<div className="flex-1" aria-busy="true" />}>
+          <AtlasShell>{children}</AtlasShell>
+        </Suspense>
+        <SiteFooter />
+      </AccessProvider>
     </Providers>
   );
   return (

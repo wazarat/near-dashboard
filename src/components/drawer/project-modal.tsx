@@ -3,12 +3,14 @@
 import { ExternalLink } from "lucide-react";
 import type { ReactNode } from "react";
 import { AtlasModal } from "@/components/atlas/atlas-modal";
+import { LoginPanel } from "@/components/auth/login-dialog";
 import { ChainChip } from "@/components/atlas/badges";
 import { ChangeCell } from "@/components/atlas/change-cell";
 import { EstimateLabel } from "@/components/atlas/estimate-label";
 import { TierInfoTip } from "@/components/atlas/tier-info";
 import { HistoryChart } from "@/components/charts/history-chart";
 import { DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { useAccess } from "@/lib/access";
 import { eventsByProject, projectById, roundsByProject } from "@/lib/data";
 import { useFilters } from "@/lib/filters";
 import { displayUrl, fmtDate, fmtEventDate, fmtInt, fmtMetric, fmtPct, fmtUsd, fmtUsdFull, METRIC_SHORT, xUrl } from "@/lib/format";
@@ -97,6 +99,8 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
     { label: "Security source", url: p.securitySourceUrl },
   ].filter((s): s is { label: string; url: string } => Boolean(s.url));
   const hasActivity = p.live && (p.live.calls7d !== null || p.live.signers7d !== null);
+  // Logged out, a reader sees the header, Overview and Traction (gate.ts, PUBLIC_PROJECT_SECTIONS); the rest sits behind one login panel.
+  const full = useAccess().can({ action: "project-detail" });
 
   const overview = (
     <Section title="Overview">
@@ -298,7 +302,9 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
           {traction}
         </div>
         <div className="min-w-0 space-y-5 border-t border-ink-700/40 pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
-          {history ? (
+          {!full ? (
+            <LoginPanel trigger="project" />
+          ) : history ? (
             history
           ) : (
             <>
@@ -309,6 +315,7 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
         </div>
       </div>
 
+      {full && (
       <div className="grid gap-x-8 gap-y-6 border-t border-ink-700/40 pt-6 lg:grid-cols-2">
         {activity}
         {history && funding}
@@ -337,6 +344,7 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
           </section>
         )}
       </div>
+      )}
     </div>
   );
 }

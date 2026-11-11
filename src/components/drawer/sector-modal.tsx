@@ -2,10 +2,12 @@
 
 import { ExternalLink } from "lucide-react";
 import { AtlasModal } from "@/components/atlas/atlas-modal";
+import { LoginPanel } from "@/components/auth/login-dialog";
 import { ChainChip, TierBadge } from "@/components/atlas/badges";
 import { ScopeNote } from "@/components/atlas/chart-card";
 import { MetricSegmented } from "@/components/atlas/chart-metric";
 import { DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { useAccess } from "@/lib/access";
 import { leadersBySector, projects as allProjects } from "@/lib/data";
 import { useFilters } from "@/lib/filters";
 import { displayUrl, fmtMetric, METRIC_SHORT } from "@/lib/format";
@@ -19,6 +21,8 @@ import { metricValue, sumMetric } from "@/lib/metrics";
 export function SectorModal() {
   const { state, setState, openSector, filtered, activeCount } = useFilters();
   const metric = state.sm;
+  // Logged out, a shared sector link shows the title and the summary line; the lists sit behind one login panel.
+  const full = useAccess().can({ action: "sector-detail" });
   const sector = state.sectorDrawer;
   const open = Boolean(sector);
   const scope = activeCount > 0 ? filtered : allProjects;
@@ -52,6 +56,9 @@ export function SectorModal() {
               <MetricSegmented value={metric} onChange={(sm) => void setState({ sm })} ariaLabel="Sector pop-up metric" />
             </div>
           </header>
+          {!full && <LoginPanel trigger="sector" />}
+          {full && (
+          <>
           <section className="space-y-2">
             <h4 className="text-xs font-semibold uppercase tracking-wide text-ink-300">Ranked leaders</h4>
             {leaders.length === 0 && <p className="text-sm text-ink-300">No ranked leaders recorded for this sector.</p>}
@@ -103,6 +110,8 @@ export function SectorModal() {
               ))}
             </ul>
           </section>
+          </>
+          )}
         </div>
       )}
     </AtlasModal>

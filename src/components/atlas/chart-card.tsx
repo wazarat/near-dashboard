@@ -1,6 +1,7 @@
 "use client";
 
 import { Maximize2 } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { parseAsString, useQueryState } from "nuqs";
 import { useMemo, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { InfoTip } from "@/components/ui/info-tip";
 import { Segmented } from "@/components/ui/segmented";
+import { useAccess } from "@/lib/access";
 import { meta } from "@/lib/data";
 import { useActiveFilterCount, type Scale } from "@/lib/filters";
 import { cn } from "@/lib/utils";
@@ -83,7 +85,9 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
   const [brushRange, setBrushRange] = useState<[number, number] | null>(null);
   const [expand, setExpand] = useQueryState("expand", parseAsString.withOptions({ history: "replace" }));
   const canExpand = expandable && Boolean(id);
-  const open = canExpand && expand === id;
+  // The expand dialog renders above the page, so on a walled page it stays closed until the reader logs in.
+  const walled = !useAccess().can({ path: usePathname() });
+  const open = canExpand && expand === id && !walled;
   const hasQuery = Boolean(queries && queries.length);
   const startAtZero = !level || axis === "zero";
 

@@ -3,11 +3,14 @@
  * ids). Everything here is a pure function over Project rows and the 90-day
  * series file, except useCompare() at the bottom, which wraps the URL state.
  */
+import { useAccess } from "./access";
 import { NOT_TRACKED } from "./coverage";
 import { useCallback, useMemo } from "react";
 import { projectById } from "./data";
 import { useFilters } from "./filters";
 import { fmtInt, fmtPctSigned, fmtUsd, METRIC_LABEL, METRIC_SHORT } from "./format";
+import { compareChange } from "./gate";
+import { authOf, trackCompareAdd } from "./track";
 import type { MetricKey, NumericMetricKey, Project, SeriesFile, SeriesKey } from "./types";
 
 export const COMPARE_MAX = 4;
@@ -315,11 +318,30 @@ export function useCompare() {
   const known = useMemo(() => new Set(all.map((p) => p.id)), [all]);
   const ids = useMemo(() => normalizeSelection(state.compare, known), [state.compare, known]);
   const projects = useMemo(() => ids.map((id) => projectById(id)).filter((p): p is Project => p !== undefined), [ids]);
-  const set = useCallback((next: readonly string[]) => void setState({ compare: normalizeSelection(next, known) }), [setState, known]);
+  const access = useAccess();
+  const write = useCallback((next: readonly string[]) => void setState({ compare: normalizeSelection(next, known) }), [setState, known]);
+  /** Writes a selection without asking, and counts it when it grew. Used directly to finish a selection saved before login. */
+  const setUngated = useCallback(
+    (next: readonly string[]) => {
+      const clean = normalizeSelection(next, known);
+      if (clean.some((id) => !ids.includes(id))) trackCompareAdd(clean.length, authOf(access));
+      write(clean);
+    },
+    [ids, known, access, write],
+  );
+  // Adding to compare is gated (login wall); reading a comparison and removing from it are not.
+  const set = useCallback(
+    (next: readonly string[]) => {
+      const r = compareChange(ids, normalizeSelection(next, known), access.can({ action: "compare-add" }));
+      if ("login" in r) access.openLogin("compare", r.login);
+      else setUngated(r.write);
+    },
+    [ids, known, access, setUngated],
+  );
   const add = useCallback((id: string) => set([...ids, id]), [ids, set]);
-  const remove = useCallback((id: string) => set(ids.filter((x) => x !== id)), [ids, set]);
+  const remove = useCallback((id: string) => write(ids.filter((x) => x !== id)), [ids, write]);
   const toggle = useCallback((id: string) => (ids.includes(id) ? remove(id) : add(id)), [ids, add, remove]);
-  const clear = useCallback(() => set([]), [set]);
+  const clear = useCallback(() => write([]), [write]);
   const has = useCallback((id: string) => ids.includes(id), [ids]);
-  return { ids, projects, set, add, remove, toggle, clear, has, isFull: ids.length >= COMPARE_MAX };
+  return { ids, projects, set, setUngated, add, remove, toggle, clear, has, isFull: ids.length >= COMPARE_MAX };
 }

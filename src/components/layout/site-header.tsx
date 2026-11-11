@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
+import { AuthControls } from "@/components/auth/auth-controls";
 import { SITE } from "@/lib/site";
 import { MainNav, MainNavFallback } from "./main-nav";
 import { SubmitProjectButton } from "./submit-project-button";
@@ -33,6 +34,7 @@ export function SiteHeader() {
           </Link>
           <div className="ml-auto flex shrink-0 items-center gap-2">
             <SubmitProjectButton iconOnlyBelowSm />
+            <AuthControls />
             <ThemeToggle />
           </div>
         </div>

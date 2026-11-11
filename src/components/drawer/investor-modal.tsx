@@ -3,8 +3,10 @@
 import { ExternalLink } from "lucide-react";
 import { useMemo } from "react";
 import { AtlasModal } from "@/components/atlas/atlas-modal";
+import { LoginPanel } from "@/components/auth/login-dialog";
 import { ConfidenceTag, investorIdFor } from "@/components/charts/rounds-table";
 import { DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { useAccess } from "@/lib/access";
 import { investorByIdFn, projectById, rounds } from "@/lib/data";
 import { useFilters } from "@/lib/filters";
 import { fmtEventDate, fmtUsd, fmtUsdFull } from "@/lib/format";
@@ -28,6 +30,8 @@ export function isLead(inv: Investor, r: Round): boolean {
 export function InvestorModal() {
   const { state, setState, openInvestor } = useFilters();
   const openProject = (id: string) => void setState({ investor: null, project: id });
+  // Logged out, a shared investor link shows the name and the summary line; portfolio and rounds sit behind one login panel.
+  const full = useAccess().can({ action: "investor-detail" });
   const inv = investorByIdFn(state.investor);
   const mine = useMemo(() => (inv ? roundsForInvestor(inv, rounds) : []), [inv]);
   const leadCount = inv ? mine.filter((r) => isLead(inv, r)).length : 0;
@@ -42,7 +46,9 @@ export function InvestorModal() {
               {inv.deals} {inv.deals === 1 ? "deal" : "deals"} · led {leadCount} · {inv.disclosedDeals > 0 ? <span title={fmtUsdFull(inv.totalDisclosed)}>{fmtUsd(inv.totalDisclosed)} disclosed across {inv.disclosedDeals === inv.deals ? "all of them" : `${inv.disclosedDeals} of them`}</span> : "no disclosed amounts"} · {inv.nearRelatedDeals} of {inv.deals} NEAR related
             </DialogDescription>
           </header>
-
+          {!full && <LoginPanel trigger="investor" />}
+          {full && (
+          <>
           <section className="space-y-2">
             <h4 className="text-xs font-semibold uppercase tracking-wide text-ink-300">Portfolio ({inv.projects.length})</h4>
             <ul className="flex flex-wrap gap-1.5">
@@ -108,6 +114,8 @@ export function InvestorModal() {
             )}
             <p className="text-xs text-ink-300">Amounts are the whole round, not this investor&apos;s share. Rounds without a linked primary source are muted and carry a re-verify tag.</p>
           </section>
+          </>
+          )}
         </div>
       )}
     </AtlasModal>
