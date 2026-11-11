@@ -11,6 +11,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { EVENT_COLOR, EVENT_ORDER } from "@/lib/colors";
 import { NONE } from "@/lib/coverage";
 import { meta } from "@/lib/data";
+import { useFilters } from "@/lib/filters";
 import { displayUrl, fmtEventDate, fmtInt, fmtMonth, fmtMonthYear, fmtUsd, fmtUsdFull } from "@/lib/format";
 import { countByType, splitTimeline } from "@/lib/timeline";
 import type { EcosystemEvent, EventType } from "@/lib/types";
@@ -29,29 +30,42 @@ const MAX_SIZE = 420;
 /** Area for events that carry no USD amount. */
 const NO_AMOUNT_SIZE = MIN_SIZE;
 
+/** The four columns the standard asks for, plus the USD amount this atlas keeps on the page. */
+const EVENT_COLUMNS: ChartTableSpec["columns"] = [
+  { key: "date", label: "Date" },
+  { key: "type", label: "Type" },
+  { key: "title", label: "Event", primary: true },
+  { key: "projects", label: "Projects", format: (v) => (v ? String(v) : NONE) },
+  { key: "amount", label: "Amount (USD)", align: "right", format: (v) => (v === null ? NONE : fmtUsdFull(v as number)) },
+];
+
+/**
+ * The timeline as a table, newest first (standard section 8). What the amount measures, the detail
+ * and the source are one click away in the event pop-up and travel in the CSV with every other field.
+ */
 export function eventTable(events: EcosystemEvent[]): ChartTableSpec {
   const rows = [...events]
     .sort((a, b) => b.date.localeCompare(a.date))
     .map((e) => ({
+      id: e.id,
       date: fmtEventDate(e.date, e.monthOnly),
       type: e.type,
       title: e.title,
       projects: e.projects.join(", "),
       amount: e.amount,
       amountNote: e.amountNote,
+      detail: e.detail,
       source: e.sourceUrl,
     }));
   return {
     caption: "Ecosystem events",
     filename: "events.csv",
     maxRows: 200,
-    columns: [
-      { key: "date", label: "Date" },
-      { key: "type", label: "Type" },
-      { key: "title", label: "Title" },
-      { key: "projects", label: "Projects", format: (v) => (v ? String(v) : NONE) },
-      { key: "amount", label: "Amount (USD)", align: "right", format: (v) => (v === null ? NONE : fmtUsdFull(v as number)) },
+    columns: EVENT_COLUMNS,
+    exportColumns: [
+      ...EVENT_COLUMNS,
       { key: "amountNote", label: "Amount note", format: (v) => (v ? String(v) : NONE) },
+      { key: "detail", label: "Detail", format: (v) => (v ? String(v) : NONE) },
       { key: "source", label: "Source", format: (v) => (v ? displayUrl(String(v)) : NONE) },
     ],
     rows,
@@ -81,14 +95,18 @@ interface Props {
 }
 
 /**
- * The shared CanHav Atlas timeline (standard section 8): summary line with
- * counts, legend chips that toggle types and show counts, Chart and Table
- * views, log-scaled marker area, a note about month-only dates and click to
- * open the source. Events before `defaultStart` stay one click away.
+ * The shared CanHav Atlas timeline (standard section 8). The card opens on its
+ * table; the chart (one lane per type, legend buttons that toggle types and show
+ * counts, log-scaled marker area, a note about month-only dates) is its second
+ * view. A table row or a chart marker opens the event pop-up (?event=<id>) with
+ * the amount, the detail and the source. In the chart, events before
+ * `defaultStart` stay one click away.
  */
 export function Timeline({ events, defaultStart, title = "Timeline", id = "timeline", initialTypes, height = 320, info }: Props) {
   const [on, setOn] = useState<Set<EventType>>(() => new Set(initialTypes ?? EVENT_ORDER));
   const [showEarlier, setShowEarlier] = useState(false);
+  const { openEvent } = useFilters();
+  const table = useMemo<ChartTableSpec>(() => ({ ...eventTable(events), onRowClick: (row) => openEvent(String(row.id)) }), [events, openEvent]);
   const lanes = EVENT_ORDER;
   const split = useMemo(() => splitTimeline(events, defaultStart), [events, defaultStart]);
   const inView = showEarlier ? events : split.shown;
@@ -136,9 +154,10 @@ export function Timeline({ events, defaultStart, title = "Timeline", id = "timel
       title={title}
       takeaway={timelineTakeaway(events)}
       scope="whole-chain"
-      info={`Every dated event from the research events CSV, one lane per type. Marker area follows the recorded Amount (USD); events without an amount use a fixed minimum size. Dates known only to the month sit on the first of that month and are labelled as month only. The chart opens on ${fmtMonthYear(defaultStart)}; earlier events are one click away and always listed in the table.${info ? ` ${info}` : ""}`}
+      info={`Every dated event from the research events CSV. The card opens on its table, newest first; click a row for the amount, the detail and the source. The chart has one lane per type. Marker area follows the recorded Amount (USD); events without an amount use a fixed minimum size. Dates known only to the month sit on the first of that month and are labelled as month only. The chart opens on ${fmtMonthYear(defaultStart)}; earlier events are one click away and always listed in the table.${info ? ` ${info}` : ""}`}
       source="Research events CSV (data/near-events-*.csv), every row with its source link"
-      table={eventTable(events)}
+      table={table}
+      defaultView="table"
     >
       {(frame: ChartFrame) => (
         <div>
@@ -219,7 +238,7 @@ export function Timeline({ events, defaultStart, title = "Timeline", id = "timel
                       isAnimationActive={false}
                       onClick={(item) => {
                         const ev = (item as { payload?: Point }).payload?.ev;
-                        if (ev?.sourceUrl) window.open(ev.sourceUrl, "_blank", "noopener,noreferrer");
+                        if (ev) openEvent(ev.id);
                       }}
                       style={{ cursor: "pointer" }}
                     />
@@ -229,8 +248,7 @@ export function Timeline({ events, defaultStart, title = "Timeline", id = "timel
             </div>
           )}
           <p className="mt-1 text-xs text-ink-300">
-            Marker area grows with the recorded Amount (USD) on a log scale; events without an amount use the smallest marker. Month-only dates sit on the first of the month. Click a marker to open its source; the table view
-            lists every source link.
+            Marker area grows with the recorded Amount (USD) on a log scale; events without an amount use the smallest marker. Month-only dates sit on the first of the month. Click a marker for its amount, detail and source.
           </p>
         </div>
       )}
@@ -248,7 +266,7 @@ function EventTip({ active, payload }: TipProps<Point>) {
       {ev.amount === null && ev.amountNote && <TooltipRow label="Amount" value={ev.amountNote} />}
       {ev.projects.length > 0 && <div className="text-ink-300">{ev.projects.join(", ")}</div>}
       {ev.detail && <p className="pt-1 leading-snug">{ev.detail}</p>}
-      {ev.sourceUrl && <div className="pt-1 text-ink-300">Click to open {displayUrl(ev.sourceUrl).split("/")[0]}</div>}
+      <div className="pt-1 text-ink-300">Click for the detail and source</div>
     </TooltipFrame>
   );
 }

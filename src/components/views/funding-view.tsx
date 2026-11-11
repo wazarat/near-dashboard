@@ -11,7 +11,7 @@ import { useFilters } from "@/lib/filters";
 
 /** Funding page: how projects are funded, the headline capital events, and every recorded round. */
 export function FundingView() {
-  const { filtered, openFundingType, openProject, openInvestor } = useFilters();
+  const { filtered, openFundingType, openProject, openInvestor, openEvent } = useFilters();
   const [onlySelection, setOnlySelection] = useState(false);
 
   const visibleRounds = useMemo(() => {
@@ -24,7 +24,7 @@ export function FundingView() {
     <div className="space-y-4">
       <div className="grid gap-4 xl:grid-cols-5">
         <FundingTypeBreakdown className="xl:col-span-2" projects={filtered} onSelect={openFundingType} />
-        <MoneyCards className="xl:col-span-3" onOpenProject={openProject} />
+        <MoneyCards className="xl:col-span-3" onOpenProject={openProject} onOpenEvent={openEvent} />
       </div>
       <RoundsOverTime rounds={visibleRounds} />
       <RoundsTable rounds={rounds} visible={visibleRounds} onlySelection={onlySelection} onOnlySelectionChange={setOnlySelection} onOpenProject={openProject} onOpenInvestor={openInvestor} />

@@ -62,6 +62,8 @@ interface ChartCardProps {
   subtitle?: ReactNode;
   /** Short source line, shown in the expand dialog. */
   source?: string;
+  /** The view the card and its expanded copy open on. A card of records (the timeline) opens on its table. */
+  defaultView?: ChartView;
 }
 
 const SCALE_OPTIONS = [
@@ -90,9 +92,10 @@ export function ScopeNote({ scope = "filtered", className }: { scope?: ChartScop
   );
 }
 
-export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries, scope, expandable = true, level = false, subtitle, source, takeawayPlacement = "expanded" }: ChartCardProps) {
-  const [view, setView] = useState<ChartView>("chart");
-  const [dialogView, setDialogView] = useState<ChartView>("chart");
+export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries, scope, expandable = true, level = false, subtitle, source, takeawayPlacement = "expanded", defaultView = "chart" }: ChartCardProps) {
+  const firstView: ChartView = defaultView === "table" && !table ? "chart" : defaultView;
+  const [view, setView] = useState<ChartView>(firstView);
+  const [dialogView, setDialogView] = useState<ChartView>(firstView);
   const [axis, setAxis] = useState<"fitted" | "zero">("fitted");
   const [brushRange, setBrushRange] = useState<[number, number] | null>(null);
   const [expand, setExpand] = useQueryState("expand", parseAsString.withOptions({ history: "replace" }));
@@ -109,7 +112,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
 
   const close = () => {
     setBrushRange(null);
-    setDialogView("chart");
+    setDialogView(firstView);
     void setExpand(null);
   };
 

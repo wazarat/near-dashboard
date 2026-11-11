@@ -15,6 +15,8 @@ export interface ChartTableColumn {
   label: string;
   align?: "left" | "right";
   format?: (v: unknown) => string;
+  /** With `onRowClick`, this column's cell is the button that opens the row, so the row is reachable by keyboard. */
+  primary?: boolean;
 }
 
 export interface ChartTableSpec {
@@ -24,6 +26,10 @@ export interface ChartTableSpec {
   /** When set, a small CSV download button appears. */
   filename?: string;
   maxRows?: number;
+  /** Columns for the CSV when it should carry more than the table shows. Defaults to `columns`. */
+  exportColumns?: ChartTableColumn[];
+  /** Makes each row open a detail view. Give one column `primary` so the row has a real button. */
+  onRowClick?: (row: Record<string, unknown>) => void;
 }
 
 export type ChartView = "chart" | "table" | "query";
@@ -37,8 +43,9 @@ function cellText(col: ChartTableColumn, v: unknown): string {
 
 export function chartTableToCsv(spec: ChartTableSpec): string {
   const esc = (s: string) => (/[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s);
-  const head = spec.columns.map((c) => esc(c.label)).join(",");
-  const body = spec.rows.map((r) => spec.columns.map((c) => esc(cellText(c, r[c.key]))).join(",")).join("\n");
+  const columns = spec.exportColumns ?? spec.columns;
+  const head = columns.map((c) => esc(c.label)).join(",");
+  const body = spec.rows.map((r) => columns.map((c) => esc(cellText(c, r[c.key]))).join(",")).join("\n");
   return `﻿${head}\n${body}\n`;
 }
 
@@ -47,6 +54,7 @@ export function ChartTable({ spec }: { spec: ChartTableSpec }) {
   const rows = spec.rows.slice(0, max);
   const more = spec.rows.length - rows.length;
   const access = useAccess();
+  const onRowClick = spec.onRowClick;
   const download = () => {
     trackCsvDownload("chart", authOf(access));
     const blob = new Blob([chartTableToCsv(spec)], { type: "text/csv;charset=utf-8" });
@@ -74,10 +82,23 @@ export function ChartTable({ spec }: { spec: ChartTableSpec }) {
           </TableHeader>
           <TableBody>
             {rows.map((r, i) => (
-              <TableRow key={i}>
+              <TableRow key={i} onClick={onRowClick ? () => onRowClick(r) : undefined} className={cn(onRowClick && "cursor-pointer")}>
                 {spec.columns.map((c) => (
                   <TableCell key={c.key} className={cn(c.align === "right" ? "tabular whitespace-nowrap text-right" : "max-w-md whitespace-normal break-words")}>
-                    {cellText(c, r[c.key])}
+                    {onRowClick && c.primary ? (
+                      <button
+                        type="button"
+                        className="text-left font-medium text-ink-50 underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRowClick(r);
+                        }}
+                      >
+                        {cellText(c, r[c.key])}
+                      </button>
+                    ) : (
+                      cellText(c, r[c.key])
+                    )}
                   </TableCell>
                 ))}
               </TableRow>

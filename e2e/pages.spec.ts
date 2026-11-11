@@ -195,11 +195,16 @@ test("the explorer search writes the same q as the filter bar and its count foll
   await expect(box).toHaveValue("aurora");
 });
 
-test("the timeline opens on 2024 and keeps earlier events one click away", async ({ page }) => {
+test("the timeline opens on its table, and its chart opens on 2024 with earlier events one click away", async ({ page }) => {
   await page.goto("/");
   const card = page.locator('[data-chart-card="Timeline"]');
+  const views = card.getByRole("tablist", { name: "View as" });
+  await expect(views.getByRole("tab", { name: "Table" })).toHaveAttribute("aria-selected", "true", { timeout: 15_000 });
+  await expect(card.locator("thead th")).toHaveText(["Date", "Type", "Event", "Projects", "Amount (USD)"]);
+  await expect(card.locator(".recharts-scatter-symbol")).toHaveCount(0);
+  await views.getByRole("tab", { name: "Chart" }).click();
   const toggle = card.getByRole("button", { name: /Show earlier events \(\d+\)/ });
-  await expect(toggle).toBeVisible({ timeout: 15_000 });
+  await expect(toggle).toBeVisible();
   const label = await toggle.textContent();
   const earlier = Number(label?.match(/\((\d+)\)/)?.[1]);
   expect(earlier).toBeGreaterThan(0);
@@ -207,6 +212,50 @@ test("the timeline opens on 2024 and keeps earlier events one click away", async
   await toggle.click();
   await expect(card.getByRole("button", { name: /Hide events before/ })).toBeVisible();
   await expect.poll(() => card.locator(".recharts-scatter-symbol").count()).toBe(markersBefore + earlier);
+});
+
+test("a timeline row opens the event pop-up with its source, kept in the URL", async ({ page }, info) => {
+  const errors = await collectErrors(page);
+  await page.goto("/");
+  const card = page.locator('[data-chart-card="Timeline"]');
+  const first = card.locator("tbody tr").first();
+  await expect(first).toBeVisible({ timeout: 15_000 });
+  const title = (await first.getByRole("button").textContent()) ?? "";
+  await first.getByRole("button").click();
+  await expect(page).toHaveURL(/[?&]event=/);
+  const modal = page.getByTestId("event-modal");
+  await expect(modal.getByRole("heading", { name: title, exact: true })).toBeVisible();
+  for (const label of ["Projects", "Amount", "Source"]) await expect(modal.locator("dt", { hasText: new RegExp(`^${label}$`) })).toBeVisible();
+  // Every recorded source link is offered as it is.
+  await expect(modal.locator("dd a[href^='http']")).toHaveCount(1);
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  expect(overflow, "no horizontal overflow").toBeLessThanOrEqual(1);
+  await page.screenshot({ path: path.join(SHOTS, `event-modal-${info.project.name}.png`) });
+  await page.keyboard.press("Escape");
+  await expect(modal).toBeHidden();
+  await expect(page).not.toHaveURL(/[?&]event=/);
+  // A chart marker opens the same pop-up.
+  await card.getByRole("tablist", { name: "View as" }).getByRole("tab", { name: "Chart" }).click();
+  await card.locator(".recharts-scatter-symbol").last().click({ force: true });
+  await expect(page).toHaveURL(/[?&]event=/);
+  await expect(modal).toBeVisible();
+  expect(errors, errors.join("\n")).toEqual([]);
+});
+
+test("an event opened from a project's Events list sits over the project and closes back to it", async ({ page }) => {
+  await page.goto("/?project=near-intents");
+  const project = page.getByTestId("project-modal");
+  const events = project.locator("section", { has: page.getByRole("heading", { name: "Events", exact: true }) });
+  await expect(events).toBeVisible({ timeout: 15_000 });
+  await events.getByRole("button").first().click();
+  await expect(page).toHaveURL(/[?&]event=/);
+  await expect(page).toHaveURL(/project=near-intents/);
+  const modal = page.getByTestId("event-modal");
+  await expect(modal).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(modal).toBeHidden();
+  await expect(project).toBeVisible();
+  await expect(page).toHaveURL(/project=near-intents/);
 });
 
 test("the funding chart shows disclosed funding only and sums the rest in one line", async ({ page }) => {
