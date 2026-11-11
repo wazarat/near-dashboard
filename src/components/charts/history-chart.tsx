@@ -21,7 +21,7 @@ const AXIS_OPTIONS = [
 ];
 
 /** Per-project daily history for every metric the project has. TVL is a level series with a fitted axis and a 90-day floor; the rest are flows on the global range. */
-export function HistoryChart({ projectId, range, metric }: { projectId: string; range: Range; metric: MetricKey }) {
+export function HistoryChart({ projectId, range, metric, height = 180 }: { projectId: string; range: Range; metric: MetricKey; height?: number }) {
   const series = useSeries();
   const [view, setView] = useState<ChartView>("chart");
   const [axis, setAxis] = useState<"fitted" | "zero">("fitted");
@@ -34,7 +34,7 @@ export function HistoryChart({ projectId, range, metric }: { projectId: string; 
   const [picked, setPicked] = useState<SeriesKey | null>(null);
   const active = picked && available.includes(picked) ? picked : available.includes(preferred) ? preferred : available[0];
 
-  if (!series) return <Skeleton className="h-[200px] w-full" />;
+  if (!series) return <Skeleton className="w-full" style={{ height: height + 20 }} />;
   if (!available.length || !active) {
     return <p className="text-xs text-ink-300">No daily history for this project. The figures above are from the research snapshot.</p>;
   }
@@ -82,7 +82,7 @@ export function HistoryChart({ projectId, range, metric }: { projectId: string; 
           }}
         />
       ) : (
-        <MiniSeries dates={dates} values={values} kind={kind} primaryLabel={label} height={180} format={money ? fmtUsd : fmtCompact} yDomain={level && axis === "fitted" ? fittedDomain(values) : undefined} />
+        <MiniSeries dates={dates} values={values} kind={kind} primaryLabel={label} height={height} format={money ? fmtUsd : fmtCompact} yDomain={level && axis === "fitted" ? fittedDomain(values) : undefined} />
       )}
       <p className="text-xs text-ink-300">
         {dates.length} days shown{level && n !== rangeDays(range, series.dates.length) ? " (TVL keeps at least 90 days in view)" : ""}. {active === "calls" ? "BigQuery function calls to tracked contracts" : `DefiLlama daily history${level ? "" : ", current partial day excluded"}`}.

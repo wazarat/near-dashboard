@@ -22,7 +22,7 @@ interface Props {
 
 type Row = { date: string; v: number | null; s?: number | null };
 
-/** Small single-series daily chart used in drawers and small multiples. */
+/** Small single-series daily chart used in pop-ups and small multiples. */
 export function MiniSeries({ dates, values, kind, primaryLabel, height = 160, color = "var(--cat-1)", format, secondary, yDomain, brush = false }: Props) {
   const rows: Row[] = dates.map((d, i) => ({ date: d, v: values[i] ?? null, s: secondary?.values[i] ?? null }));
   const tickEvery = Math.max(1, Math.floor(rows.length / 5));

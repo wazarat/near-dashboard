@@ -137,7 +137,7 @@ export function SecurityView() {
                 </TableRow>
               </TableBody>
             </Table>
-            <p className="mt-2 text-xs text-ink-300">Counts from the Audits, Incidents, Red Flags and Status columns of the research CSV. A project can carry more than one fact. No rating is published; the drawer quotes each fact with its source.</p>
+            <p className="mt-2 text-xs text-ink-300">Counts from the Audits, Incidents, Red Flags and Status columns of the research CSV. A project can carry more than one fact. No rating is published; the project pop-up quotes each fact with its source.</p>
           </CardContent>
         </Card>
 
@@ -216,7 +216,7 @@ export function SecurityView() {
           <p>
             The security pass covered {fmtInt(factsAll.checked)} rows of the full list{chainRows > 0 ? `, including the ${chainRows === 1 ? "base-chain entry" : "base-chain entries"} for NEAR and Aurora` : ""}. The remaining {fmtInt(factsAll.notChecked)} rows were never checked and read as Not researched everywhere.
           </p>
-          <p>This page publishes facts, not ratings. Audits, dated incidents and noted red flags are quoted from the research CSV with their source links in each project drawer. The chain-level checklist is independent of the project filters; the two facts cards follow them.</p>
+          <p>This page publishes facts, not ratings. Audits, dated incidents and noted red flags are quoted from the research CSV with their source links in each project pop-up. The chain-level checklist is independent of the project filters; the two facts cards follow them.</p>
         </CardContent>
       </Card>
     </div>

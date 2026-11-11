@@ -44,7 +44,7 @@ interface ChartCardProps {
   queries?: QuerySpec[];
   /** What the card responds to (standard section 4). */
   scope?: ChartScope;
-  /** False for charts that live inside a drawer; the expand dialog needs an id. */
+  /** False for charts that live inside a pop-up; the expand dialog needs an id. */
   expandable?: boolean;
   /** Level series (TVL, price, a ratio) get a fitted y axis and a "From zero" toggle (standard section 6). */
   level?: boolean;

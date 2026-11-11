@@ -9,7 +9,8 @@ fs.mkdirSync(SHOTS, { recursive: true });
 const PAGES: Array<{ name: string; url: string; expect: string }> = [
   { name: "overview", url: "/", expect: "Sectors by" },
   { name: "overview-tvl-log", url: "/?tm=tvl&cc=fees&scale=log", expect: "Concentration curve" },
-  { name: "overview-drawer", url: "/?project=near-intents", expect: "Similar projects" },
+  { name: "overview-modal", url: "/?project=near-intents", expect: "Similar projects" },
+  { name: "sectors-modal", url: "/sectors/?sectorDrawer=Lending+%26+Credit", expect: "Ranked leaders" },
   { name: "sectors", url: "/sectors/", expect: "Sectors by" },
   { name: "traction", url: "/traction/", expect: "Leaderboard" },
   { name: "traction-fees-momentum", url: "/traction/?lb=fees&cols=momentum", expect: "Leaderboard" },
@@ -137,7 +138,7 @@ test("the treemap drills into a sector, opens a project from a tile and filters 
   await expect(page.getByRole("button", { name: "Filter to this sector" })).toBeVisible();
   await page.getByRole("button", { name: "Back to all sectors" }).click();
   await expect(page).not.toHaveURL(/tmSector=/);
-  // A sector with fewer than three subcategories shows project tiles that open the drawer.
+  // A sector with fewer than three subcategories shows project tiles that open the project modal.
   await page.goto("/?tmSector=Lending+%26+Credit");
   const projectTile = page.locator('[data-chart-card^="Lending"] [data-tile-kind="project"]').first();
   await expect(projectTile).toBeVisible({ timeout: 15_000 });
@@ -185,7 +186,7 @@ test("security publishes facts, not ratings, and lists incidents as a sortable t
   const first = await table.locator("tbody tr").first().locator("td").first().textContent();
   await table.getByRole("button", { name: /Date/ }).click();
   await expect.poll(async () => table.locator("tbody tr").first().locator("td").first().textContent()).not.toBe(first);
-  // The explorer and the drawer carry no risk column or label either.
+  // The explorer and the project modal carry no risk column or label either.
   await page.goto("/explorer/?project=near-intents");
   await expect(page.getByRole("dialog")).toContainText("Security");
   await expect(page.getByRole("dialog").getByText(/^(High|Medium|Low|Unknown)$/)).toHaveCount(0);
@@ -215,14 +216,14 @@ test("chart cards offer a table view", async ({ page }) => {
   await expect(page.locator("table").first()).toBeVisible();
 });
 
-test("project drawer opens from the leaderboard and shows sources", async ({ page }) => {
+test("project modal opens from the leaderboard and shows sources", async ({ page }) => {
   await page.goto("/traction/");
   await page.getByRole("button", { name: "NEAR Intents" }).first().click();
   await expect(page).toHaveURL(/project=near-intents/);
   await expect(page.getByRole("dialog")).toContainText("Sources");
 });
 
-test("project drawer opens from a shared URL with history tabs", async ({ page }) => {
+test("project modal opens from a shared URL with history tabs", async ({ page }) => {
   await page.goto("/traction/?project=meta-pool&range=30d");
   const dialog = page.getByRole("dialog");
   await expect(dialog).toContainText("Meta Pool", { timeout: 15_000 });
@@ -246,9 +247,54 @@ test("compare tray and presets drive the URL", async ({ page }) => {
   await expect(page.getByText(/Compare 3/).first()).toBeVisible();
 });
 
-test("investor drawer opens from the investors table", async ({ page }) => {
+test("investor modal opens from the investors table", async ({ page }) => {
   await page.goto("/investors/");
   await page.locator("table").getByRole("button", { name: "Pantera Capital", exact: true }).first().click();
   await expect(page).toHaveURL(/investor=pantera-capital/);
   await expect(page.getByRole("dialog")).toContainText("Pantera Capital");
+});
+
+test("project detail is a centred modal on desktop and a full sheet on a phone, and Escape clears the URL", async ({ page }, info) => {
+  await page.goto("/?project=near-intents");
+  const modal = page.getByTestId("project-modal");
+  await expect(modal).toContainText("NEAR Intents", { timeout: 15_000 });
+  // Sector and native chain are one line of plain text, not badges.
+  await expect(modal).toContainText("Bridges & Interoperability, NEAR native");
+  const box = await modal.boundingBox();
+  const vw = page.viewportSize()?.width ?? 0;
+  expect(box).not.toBeNull();
+  if (info.project.name.startsWith("phone")) expect(box?.width ?? 0).toBeGreaterThanOrEqual(vw - 1);
+  else expect(Math.abs((box?.x ?? 0) + (box?.width ?? 0) / 2 - vw / 2)).toBeLessThanOrEqual(2);
+  await page.keyboard.press("Escape");
+  await expect(modal).toBeHidden();
+  await expect(page).not.toHaveURL(/project=/);
+});
+
+test("a project opened from the sector modal replaces it instead of stacking", async ({ page }) => {
+  await page.goto("/sectors/?sectorDrawer=Lending+%26+Credit");
+  const sector = page.getByTestId("sector-modal");
+  await expect(sector).toContainText("Ranked leaders", { timeout: 15_000 });
+  await sector.locator("ul button").first().click();
+  await expect(page).toHaveURL(/project=/);
+  await expect(page).not.toHaveURL(/sectorDrawer=/);
+  await expect(page.getByTestId("project-modal")).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(1);
+});
+
+test("a project opened from the investor modal replaces it instead of stacking", async ({ page }) => {
+  await page.goto("/investors/?investor=dragonfly-capital");
+  const investor = page.getByTestId("investor-modal");
+  await expect(investor).toContainText("Portfolio (", { timeout: 15_000 });
+  await investor.locator("ul button").first().click();
+  await expect(page).toHaveURL(/project=/);
+  await expect(page).not.toHaveURL(/investor=/);
+  await expect(page.getByTestId("project-modal")).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(1);
+});
+
+test("the sector modal follows the active filters and says so", async ({ page }) => {
+  await page.goto("/sectors/?chain=NEAR+native&sectorDrawer=Lending+%26+Credit");
+  const sector = page.getByTestId("sector-modal");
+  await expect(sector).toContainText("1 filter active", { timeout: 15_000 });
+  await expect(sector).toContainText(/(\d+) projects, \1 NEAR-native/);
 });

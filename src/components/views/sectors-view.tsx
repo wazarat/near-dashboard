@@ -59,7 +59,7 @@ export function SectorsView() {
         id="sector-bars"
         title={`Sectors by ${label}`}
         takeaway={barTakeaway}
-        info={`All sectors in the current selection ranked by ${label}. Money metrics are summed from DefiLlama (blank rows excluded); project counts come from the research CSVs. Sectors with no data are hidden on the log scale. Click a bar or a sector name to open the sector drawer.`}
+        info={`All sectors in the current selection ranked by ${label}. Money metrics are summed from DefiLlama (blank rows excluded); project counts come from the research CSVs. Sectors with no data are hidden on the log scale. Click a bar or a sector name to open the sector pop-up.`}
         actions={<MetricSegmented value={sb} onChange={(m) => void setState({ sb: m })} ariaLabel="Sector bars metric" />}
         scale={sb === "count" ? undefined : scale}
         onScaleChange={(s) => void setState({ scale: s })}
@@ -73,7 +73,7 @@ export function SectorsView() {
         id="tier-by-sector"
         title="Traction tier by sector"
         takeaway={tierTakeaway}
-        info="Project counts per traction tier within each sector. Tiers come from the research CSVs. Tier 1 to 3 rank projects with measurable DefiLlama traction, Tracked negligible means a DefiLlama listing with every figure at zero, TBD means no listing yet so the tier is to be determined. Click a bar to open the sector drawer."
+        info="Project counts per traction tier within each sector. Tiers come from the research CSVs. Tier 1 to 3 rank projects with measurable DefiLlama traction, Tracked negligible means a DefiLlama listing with every figure at zero, TBD means no listing yet so the tier is to be determined. Click a bar to open the sector pop-up."
         table={tierTable(tiers)}
       >
         <TierBySector projects={filtered} onSelect={openSector} />

@@ -66,7 +66,7 @@ export const filterParsers = {
   lb: metricParser("count"),
   /** Compare page (matrix ratios, overlay, top-project buttons). */
   cm: numericMetricParser("tvl"),
-  /** Sector drawer ordering. */
+  /** Sector pop-up ordering. */
   sm: metricParser("count"),
 };
 

@@ -117,7 +117,7 @@ export function SectorTreemap({ projects, metric, sector, onSectorChange, onOpen
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-300">
         <span>
           Box size is {METRIC_SHORT[metric].toLowerCase()}. Colour is the share of a box&apos;s projects that are NEAR-native.
-          {level.mode === "sectors" ? " Click a sector to open it." : level.mode === "projects" ? " Click a project to open its drawer." : ""}
+          {level.mode === "sectors" ? " Click a sector to open it." : level.mode === "projects" ? " Click a project to open its pop-up." : ""}
         </span>
         <span className="inline-flex items-center gap-1">
           0%

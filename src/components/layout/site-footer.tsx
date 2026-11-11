@@ -60,7 +60,7 @@ export function SiteFooter() {
               </p>
               <p>
                 <strong className="font-medium text-ink-50">Confidence.</strong> Native-chain classification for directory-only rows is heuristic and carries its own confidence flag.
-                Funding rounds whose confidence is not &ldquo;Sourced&rdquo; are muted and labelled. Every project drawer lists its sources.
+                Funding rounds whose confidence is not &ldquo;Sourced&rdquo; are muted and labelled. Every project pop-up lists its sources.
               </p>
               <p>
                 <strong className="font-medium text-ink-50">Totals in this build.</strong> Summed TVL {fmtUsdFull(meta.totals.tvl)} (NEAR {fmtUsdFull(meta.totals.tvlNear)}, Aurora{" "}

@@ -13,7 +13,7 @@ export const FACT_HELP: Record<FactType, string> = {
   "No published audit found": "Security was checked and no published audit was found in the sources consulted. Not the same as unaudited.",
   "Past incident": "The Incidents column records at least one dated incident.",
   "Paused or shut down": "Status is Inactive or Defunct.",
-  "Noted red flag": "The researcher noted a red flag in the Red Flags column, quoted in the project drawer.",
+  "Noted red flag": "The researcher noted a red flag in the Red Flags column, quoted in the project pop-up.",
 };
 
 export function securityChecked(p: Project): boolean {

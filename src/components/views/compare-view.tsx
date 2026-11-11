@@ -34,7 +34,7 @@ export function CompareView() {
         <CardHeader className="px-4">
           <h3 className="text-sm font-semibold">Compare projects</h3>
           <p className="text-sm text-ink-300">
-            Put up to {COMPARE_MAX} projects side by side. Each metric with its rank and share inside the project&apos;s own sector, ratios that remove size, indexed trends from DefiLlama daily history, and the funding, token, chain and security profile. Add projects here, from any project drawer, or with a preset. The selection
+            Put up to {COMPARE_MAX} projects side by side. Each metric with its rank and share inside the project&apos;s own sector, ratios that remove size, indexed trends from DefiLlama daily history, and the funding, token, chain and security profile. Add projects here, from any project pop-up, or with a preset. The selection
             sits in the URL, so the comparison can be shared as a link.
           </p>
         </CardHeader>

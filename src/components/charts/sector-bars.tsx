@@ -59,7 +59,7 @@ interface TickProps {
   onSelect: (sector: string) => void;
 }
 
-/** Category tick rendered as a keyboard-reachable button that opens the sector drawer. */
+/** Category tick rendered as a keyboard-reachable button that opens the sector pop-up. */
 export function SectorTick({ x = 0, y = 0, payload, onSelect }: TickProps) {
   const name = typeof payload?.value === "string" ? payload.value : "";
   return (
@@ -133,7 +133,7 @@ export function SectorBars({ projects, metric, scale, onSelect }: Props) {
         </ResponsiveContainer>
       </div>
       <p className="mt-1 text-xs text-ink-300">
-        Click a bar or a sector name to open the sector drawer.
+        Click a bar or a sector name to open the sector pop-up.
         {hidden > 0 && ` ${hidden} sector${hidden === 1 ? "" : "s"} with no ${METRIC_SHORT[metric].toLowerCase()} data hidden on the log scale.`}
       </p>
     </div>
