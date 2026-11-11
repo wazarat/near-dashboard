@@ -29,7 +29,7 @@ export function pickMoneyEvents(all: EcosystemEvent[]): EcosystemEvent[] {
   return out.sort((a, b) => a.date.localeCompare(b.date));
 }
 
-export function MoneyCards({ className, onOpenProject }: { className?: string; onOpenProject?: (id: string) => void }) {
+export function MoneyCards({ className, onOpenProject, onOpenEvent }: { className?: string; onOpenProject?: (id: string) => void; /** Opens the event pop-up from a card's title. */ onOpenEvent?: (id: string) => void }) {
   const picked = useMemo(() => pickMoneyEvents(events), []);
   const stated = picked.filter((e) => e.amount !== null);
   const total = stated.reduce((a, e) => a + (e.amount as number), 0);
@@ -63,7 +63,15 @@ export function MoneyCards({ className, onOpenProject }: { className?: string; o
                     {e.amount !== null ? fmtUsd(e.amount) : (e.amountNote ?? "no USD figure")}
                   </span>
                 </div>
-                <div className="mt-1 font-medium leading-snug">{e.title}</div>
+                <div className="mt-1 font-medium leading-snug">
+                  {onOpenEvent ? (
+                    <button type="button" onClick={() => onOpenEvent(e.id)} className="rounded text-left underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                      {e.title}
+                    </button>
+                  ) : (
+                    e.title
+                  )}
+                </div>
                 {e.detail && <p className="mt-1 text-xs text-ink-300">{e.detail}</p>}
                 {e.amount !== null && e.amountNote && <p className="mt-1 text-xs text-ink-300">{e.amountNote}</p>}
                 {(e.projectIds.length > 0 || e.sourceUrl) && (

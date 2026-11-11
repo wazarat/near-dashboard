@@ -10,6 +10,7 @@
  * | Add to compare, presets (anywhere)          | Opens the login pop-up, then finishes | Works     |
  * | Project pop-up                              | Header, Overview and Traction         | Full      |
  * | Sector, investor and funding type pop-ups   | Title and summary line                | Full      |
+ * | Timeline event pop-up (Overview is public)  | Full                                  | Full      |
  * | Submit a project, Suggest a correction      | Open                                  | Open      |
  */
 import { NAV } from "./nav";

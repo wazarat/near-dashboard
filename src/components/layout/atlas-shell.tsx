@@ -5,6 +5,7 @@ import { LoginDialog, PendingActionReplay } from "@/components/auth/login-dialog
 import { LoginWall } from "@/components/auth/login-wall";
 import { FilterBar } from "@/components/filters/filter-bar";
 import { CompareTray } from "@/components/compare/compare-tray";
+import { EventModal } from "@/components/drawer/event-modal";
 import { FundingTypeModal } from "@/components/drawer/funding-type-modal";
 import { InvestorModal } from "@/components/drawer/investor-modal";
 import { ProjectModal } from "@/components/drawer/project-modal";
@@ -32,6 +33,8 @@ export function AtlasShell({ children }: { children: React.ReactNode }) {
           <InvestorModal />
           <ProjectModal />
           <SectorModal />
+          {/* Last, so it sits over the project pop-up when an event is opened from a project's Events list. */}
+          <EventModal />
         </>
       )}
       <LoginDialog />

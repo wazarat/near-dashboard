@@ -104,6 +104,8 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
   // Logged out, a reader sees the header, Overview and Traction (gate.ts, PUBLIC_PROJECT_SECTIONS); the rest sits behind one login panel.
   const full = useAccess().can({ action: "project-detail" });
   const pathname = usePathname();
+  // An event opens in its own pop-up over this one, so closing it returns here.
+  const { openEvent } = useFilters();
 
   const overview = (
     <Section title="Overview">
@@ -259,7 +261,16 @@ function ProjectBody({ p, all, metric, range, onOpen }: { p: Project; all: Proje
     <Section title="Events">
       {related.map((e) => (
         <div key={e.id} className="text-sm">
-          <span className="text-ink-300">{fmtEventDate(e.date, e.monthOnly)}</span> · {e.type} · {e.sourceUrl ? <Ext href={e.sourceUrl}>{e.title}</Ext> : e.title}
+          <span className="text-ink-300">{fmtEventDate(e.date, e.monthOnly)}</span> · {e.type} ·{" "}
+          <button type="button" onClick={() => openEvent(e.id)} className="text-left underline decoration-muted-foreground/50 underline-offset-2 hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60">
+            {e.title}
+          </button>
+          {e.sourceUrl && (
+            <>
+              {" "}
+              <Ext href={e.sourceUrl}>source</Ext>
+            </>
+          )}
         </div>
       ))}
     </Section>

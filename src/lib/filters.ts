@@ -56,6 +56,8 @@ export const filterParsers = {
   investor: parseAsString,
   /** Funding type pop-up. */
   fundingType: parseAsString,
+  /** Timeline event pop-up. */
+  event: parseAsString,
   /** Sector treemap metric and drill-down sector. */
   tm: metricParser("count"),
   tmSector: parseAsString,
@@ -168,6 +170,7 @@ export function useFilters() {
   const openSector = useCallback((sector: string | null) => void setState({ sectorDrawer: sector }), [setState]);
   const openInvestor = useCallback((id: string | null) => void setState({ investor: id }), [setState]);
   const openFundingType = useCallback((bucket: string | null) => void setState({ fundingType: bucket }), [setState]);
+  const openEvent = useCallback((id: string | null) => void setState({ event: id }), [setState]);
 
   return {
     state,
@@ -183,6 +186,7 @@ export function useFilters() {
     openSector,
     openInvestor,
     openFundingType,
+    openEvent,
     activeCount: activeFilterCount(state),
   };
 }
