@@ -29,7 +29,7 @@ npm start            # open http://localhost:3000
 - Open `/`: see the KPI tiles, chain over time and chain activity (NearBlocks with the BigQuery overlay), the sector treemap, native vs imported shares, concentration curve, analyst notes and the events timeline.
 - Open `/thesis`: see the verdict badge, then one card per test. Click **Query** on any card: see the exact SQL or API call and the transform behind it. The same numbers are in `THESIS.md`.
 - Open `/intents`: see 1Click swap volume from the Explorer API next to DefiLlama's all-channel series with the share, plus routes, assets and referrals.
-- Run `npm test`: see the unit tests (fixtures only, no live calls). Run `npm run e2e` (it builds for itself): see the Playwright checks at 1440 and 390 px with zero console errors.
+- Run `npm test`: see the unit tests (fixtures only, no live calls). Run `npm run e2e` (it builds for itself): see the Playwright checks at 1440 and 390 px with zero console errors. Run `npm run e2e:wall`: see the login wall as a logged-out reader meets it.
 - Run `npm run rebuild` twice: see no diff in `src/data/generated/` or `THESIS.md`.
 
 ## Pages
@@ -42,12 +42,12 @@ npm start            # open http://localhost:3000
 | `/intents` | 1Click swap volume, weekly series, success and refund rates, routes, assets, referrals, coverage against DefiLlama |
 | `/thesis` | The claim, verdict and four tests with Chart, Table and Query tabs, confounders, evidence for and against, what would change the conclusion |
 | `/funding` | Funding type breakdown, ecosystem money cards, rounds table, rounds over time, financials |
-| `/investors` | Investors by deals, portfolios, investor drawer |
+| `/investors` | Investors by deals, portfolios, investor pop-up |
 | `/security` | Chain-level checklist for NEAR L1, NEAR Intents and Aurora, security facts by type and by sector (no per-project ratings), incidents as a sortable table |
 | `/explorer` | Every column with a column chooser and CSV download of the filtered view, plus the "Newly detected" review list |
 | `/compare` | Up to four projects: metric matrix with sector ranks, ratios, indexed overlay, side-by-side profiles |
 
-Every chart has a one-line takeaway, an info icon naming its source, an empty state, a table view and an Expand button that opens it larger with a range brush; the thesis and chain-activity charts also have a Query tab. Filters, the date range, each chart's own metric, the compare selection, the open drawer and the expanded chart (`?expand=<id>`) live in the URL, so any view can be shared.
+Every chart has an info icon naming its source, an empty state, a table view and an Expand button that opens it larger with a range brush and its computed summary as points (Thesis and Intents keep the summary on the card); the thesis and chain-activity charts also have a Query tab. Filters, the date range, each chart's own metric, the compare selection, the open project, sector or investor pop-up and the expanded chart (`?expand=<id>`) live in the URL, so any view can be shared.
 
 ## Data
 
@@ -111,23 +111,30 @@ Weekly ISO-week series of Intents volume (DefiLlama, all channels, since 2024-12
 
 ## Disclosure
 
-The architecture (store raw data by source key and join at build time, static export, daily GitHub Action, idempotent history store, fixtures-based tests, generic data table, chart cards with a table view, URL state) follows my earlier Robinhood Chain Ecosystem Atlas. This repository was written fresh for NEAR Hackathon 2026 and shares no code at runtime. All code in this repository was written during the hackathon window.
+The architecture (store raw data by source key and join at build time, prerendered pages, daily GitHub Action, idempotent history store, fixtures-based tests, generic data table, chart cards with a table view, URL state) follows my earlier Robinhood Chain Ecosystem Atlas. This repository was written fresh for NEAR Hackathon 2026. On Nov 11, 2026 the header lockup, the login wall, the analytics event rules, the shared detail modal and the one-line chart axis were ported from that atlas, where I wrote them between Nov 9 and Nov 11; the two sites hold their own copies and share nothing at runtime except the login. All code in this repository was written during the hackathon window.
+
+## Login and analytics
+
+One Clerk application serves canhav.com and the atlases, so a login on one is a login on all. With `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` set, Overview, Thesis, the footer methodology and a comparison already in the URL stay open; Sectors, Traction, Intents, Funding, Investors, Security and Explorer ask for a free login over a blurred preview, and a shared project link shows its header, Overview and Traction. The rules are one table in `src/lib/gate.ts`. Without the keys the wall is off, which is how local runs and CI work. The wall gates in the browser only; this repository and its data are public.
+
+Vercel Web Analytics counts page views and thirteen custom events (`src/lib/track.ts`), such as a tab view, a project opened by sector, a chart expanded, a filter used and a login prompt shown. Every property comes from a closed set, so no name, account, investor, URL or typed text is sent, and the script loads only on Vercel.
 
 ## Design system and domain
 
 The site follows the shared CanHav Atlas UI standard in [`docs/ATLAS-UI.md`](docs/ATLAS-UI.md), the same contract the Robinhood Chain atlas uses, with the tokens from the canhav.dev design system. Fonts (Inter, Space Grotesk, JetBrains Mono) are self-hosted latin variable cuts under the SIL Open Font License (`src/app/fonts/LICENSE.txt`), so a build needs no network. `npm run check:copy` fails CI when a user-facing string carries an em dash or a colon. The chart palette is built from the brand hues; `docs/UI-PASS.md` records the pass and the differences kept on purpose.
 
-Planned domain: `near.canhav.com` (the Robinhood atlas moves to `robinhood.canhav.com`). To point it at this project once DNS is ready:
+Planned domain: `near.canhav.com` (the Robinhood atlas is at `robinhood.canhav.com`). To move this project there:
 
-1. In Vercel, Project, Settings, Domains, add `near.canhav.com` and create the CNAME it shows at the DNS provider.
-2. Set `NEXT_PUBLIC_SITE_URL=https://near.canhav.com` and `NEXT_PUBLIC_SIBLING_ATLAS_URL=https://robinhood.canhav.com` in the project's environment variables and redeploy, so canonical URLs, the Open Graph card, `sitemap.xml` and the footer link follow.
-3. Update the live URL at the top of this file and in `docs/SUBMISSION.md`.
+1. In Vercel, Project, Settings, Domains, add `near.canhav.com` (its CNAME already points at Vercel).
+2. In the project's Production environment set `NEXT_PUBLIC_SITE_URL=https://near.canhav.com` and `NEXT_PUBLIC_SIBLING_ATLAS_URL=https://robinhood.canhav.com`, so canonical URLs, the Open Graph card, `sitemap.xml` and the footer link follow.
+3. To turn the login wall on, add the two Clerk keys to the same environment and redeploy. Clerk's production keys only work on canhav.com, so from that deploy on every `vercel.app` host redirects to `near.canhav.com` (`next.config.ts`).
+4. Update the live URL at the top of this file and in `docs/SUBMISSION.md`.
 
 Until then the public origin is the Vercel URL above, set through the same two variables. `public/og.png` is rendered once by `npx tsx scripts/og-image.ts` (Playwright) from the committed data and committed.
 
 ## Libraries
 
-Next.js, React, Tailwind CSS, shadcn/ui, Recharts, TanStack Table, nuqs, Papa Parse, @google-cloud/bigquery (scripts only), Vitest, Playwright, tsx.
+Next.js, React, Tailwind CSS, shadcn/ui, Recharts, TanStack Table, nuqs, Papa Parse, Clerk, Vercel Web Analytics, @google-cloud/bigquery (scripts only), Vitest, Playwright, tsx.
 
 ## License
 

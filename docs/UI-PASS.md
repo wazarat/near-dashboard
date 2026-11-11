@@ -53,3 +53,62 @@ Before screenshots (every page at 1440 and 390 px, dark and light) were taken on
 ## Verification per milestone
 
 `npm run check:copy`, `npm run lint`, `npm run typecheck`, `npm test` (110 tests, including treemap drill-down, coverage labels, chart frame, copy lint, funding grouping, timeline split and security facts), `npm run build` and `npm run e2e` (four projects: desktop and phone, dark and light; 124 checks with zero console errors and no horizontal overflow), then a browser check at 1440 and 390 px in both themes. Every commit is authored as Wazarat Hussain with no attribution trailers, pulled with rebase before each push.
+
+# Second pass, 2026-11-11: lockup, login wall, analytics and the amended standard
+
+The Robinhood Chain atlas amended the shared standard after the first pass and added a login wall and analytics. This pass brings the NEAR atlas level with it. [`ATLAS-UI.md`](ATLAS-UI.md) is again byte-identical with the Robinhood copy. Nothing under `data/`, `queries/` or `THESIS.md` changed and no number on the site moved; the only changes a reader sees in figures are the wording "Tracked for 84/1,088 projects" (was "84 of 1,088") and an untracked tier reading "TBD".
+
+## What changed
+
+| Area | Change |
+|---|---|
+| Brand | Two-line lockup: the CanHav mark at 44px, "CanHav Research", then "NEAR Atlas" with the Beta tag. The name lives in `src/lib/site.ts` and feeds page titles, Open Graph and the share card. The `ch.` favicon set (`src/app/icon.png`, `apple-icon.png`, `favicon.ico`). Every page carries its own canonical URL. |
+| Platform | Served by Next instead of a static export; pages still prerender as static HTML. `src/proxy.ts` runs Clerk when its keys are set. |
+| Access | One Clerk application serves canhav.com and the atlases. The rules are in `src/lib/gate.ts`. Without Clerk keys the wall is off. |
+| Analytics | Vercel Web Analytics with thirteen custom events (`src/lib/track.ts`), each with at most two properties from closed sets. |
+| Surfaces | Cards lit from the top edge, the three ambient lights on the dark page, translucent header, filter bar and compare tray. |
+| Text | Two tones, `ink-50` and `ink-300`, enforced by `npm run check:copy` as a "tone" hit. |
+| Tiers | An untracked tier reads "TBD" (`tierLabel` in `src/lib/tier.ts`); one shared explainer built from the thresholds. Metric cells and the CSV export keep "Not tracked". |
+| Detail | Project, sector and investor details open in one centred modal (`src/components/atlas/atlas-modal.tsx`), a full-screen sheet on a phone. Opening a project from the sector or investor modal replaces it. The sector modal follows the active filters and says so. URL keys are unchanged (`project`, `sectorDrawer`, `investor`). |
+| Controls | Result count on the first row of the filter bar with Reset and Copy link under it. KPI text shortened and no longer cut off. The low, high and change line sits under its chart. No "Whole chain, not filtered" note. |
+| Charts | Card summaries show as points in the expanded view. Chart card controls wrap under the title when both do not fit. Bar labels stay on one line. Sector cards show their stats at display size. |
+
+## Who sees what
+
+| Area | Logged out | Logged in |
+|---|---|---|
+| Overview, Thesis, the footer methodology | Full | Full |
+| Sectors, Traction, Intents, Funding, Investors, Security, Explorer | Login pop-up over a blurred, inert page; the URL is kept | Full |
+| Compare | A comparison already in the URL renders; removing works | Full |
+| Add to compare, presets, top-project buttons | Login pop-up; the intended selection is written after sign-in | Works |
+| Project pop-up | Header, Overview and Traction, then one login panel | Full |
+| Sector and investor pop-ups from a shared link | Title and summary line, then one login panel | Full |
+| An expanded chart link on a gated tab | Stays closed | Opens |
+| Submit a project, Suggest a correction | Open | Open |
+
+This is phase 1 of the wall: it gates in the browser. The page's data is still in the bundle, and this repository and its data are public, so the wall is a sign-up prompt, not a secret.
+
+## Analytics events
+
+`tab_view`, `project_open`, `sector_open`, `investor_open`, `chart_expand`, `chart_view`, `csv_download`, `filter_use`, `compare_add`, `login_prompt_shown`, `signup_complete`, `correction_click`, `submit_project_click`. A property value outside its closed set is dropped, so no name, account, investor, URL or typed text can be sent; `tests/track.test.ts` checks that. `auth` is `off` (no wall in this build), `in` or `out`.
+
+## Differences from the Robinhood atlas kept on purpose
+
+- **Every tab is shown.** The standard's Access paragraph names Overview and Methodology as the public pages and mentions hidden tabs. Here no tab is hidden, and Thesis is public as well, because it is the argument this atlas makes. Agreeing the two documents needs one clause in the shared file.
+- **Thesis and NEAR Intents keep their card summaries on the card**, not only in the expanded view.
+- **Analyst notes and the TVL double-count note stay public.** The standard sends hand-written notes to an admin-only build; here they carry real information for readers.
+- **The treemap still zooms into a sector.** The Robinhood code opens the sector pop-up from a tile; the written standard asks for the zoom.
+- **Sector cards keep "With traction".** With 1,088 mostly unmeasured projects it is the figure that says how much of a sector is live.
+- **The funding-type chart stays a bar chart**, as before.
+
+## Parts of the amended standard not adopted yet
+
+Per-card time range (the date range is still the one global control, and level series keep their 90-day floor), the five-column leaderboard (the Activity column set is NEAR BigQuery data), the timeline's table-first view with an event pop-up and the direct-sources rule, tables-of-records toolbars, the funding-type modal, and the Explorer map view.
+
+## Parts that do not apply to NEAR
+
+Hidden tabs, the stocks page and its keys (`pr`, `wr`, `dr`), share-of-chain bars on DefiLlama chain totals (the concentration curve stays), onchain columns from Blockscout and GeckoTerminal, the sector metric registry, and the gated data API of the wall's phase 2.
+
+## Verification
+
+Per commit: `npm run check:copy`, `npm run lint`, `npm run typecheck`, `npm test` (144 tests), and `npm run e2e` (153 checks at desktop and phone widths, dark and light, wall off, zero console errors and no horizontal overflow). `npm run e2e:wall` (38 checks) covers the logged-out wall on a build that treats every reader as logged out. `npm run e2e:auth` repeats those against a Clerk development instance and adds the signed-in checks; it needs the development keys and skips without them.
