@@ -100,7 +100,7 @@ export function BusinessModelScatter({ projects, scale, onScaleChange, onOpen }:
         <EmptyState message="No projects with both fees and revenue in this selection." />
       ) : (
         <div>
-          <ul className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground" aria-label="Legend">
+          <ul className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-300" aria-label="Legend">
             {chainsPresent.map((c) => (
               <li key={c} className="inline-flex items-center gap-1.5">
                 <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
@@ -175,7 +175,7 @@ export function BusinessModelScatter({ projects, scale, onScaleChange, onOpen }:
               </ScatterChart>
             </ResponsiveContainer>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-xs text-ink-300">
             {pts.length} project{pts.length === 1 ? "" : "s"} with both fees and revenue{feesOnly > 0 && `; ${feesOnly} more report fees but no revenue and are not plotted`}. Click a mark to open the project; the table view lists the same rows.
           </p>
         </div>
@@ -242,7 +242,7 @@ function ScatterTip({ active, payload }: TipProps<Point>) {
       <TooltipRow label="30d revenue" value={fmtUsdFull(p.revenue)} />
       <TooltipRow label="Revenue capture" value={fmtPct(p.revenueCapture)} />
       <TooltipRow label="TVL" value={fmtUsd(p.tvl)} />
-      <div className="pt-1 text-muted-foreground">Click to open</div>
+      <div className="pt-1 text-ink-300">Click to open</div>
     </TooltipFrame>
   );
 }

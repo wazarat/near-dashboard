@@ -47,7 +47,7 @@ export function MoversPanel({ projects, metric, onMetricChange, range, minSize, 
         <span className="h-2 rounded" style={{ width: `${Math.max(4, (Math.abs(r.change) / maxAbs) * 72)}px`, backgroundColor: r.change > 0 ? "var(--status-good)" : "var(--status-critical)" }} aria-hidden="true" />
         <span className="flex items-center gap-2">
           <ChangeCell value={r.change} digits={0} />
-          <span className="tabular w-16 text-right text-muted-foreground">{fmtUsd(r.value)}</span>
+          <span className="tabular w-16 text-right text-ink-300">{fmtUsd(r.value)}</span>
         </span>
       </li>
     );
@@ -92,12 +92,12 @@ export function MoversPanel({ projects, metric, onMetricChange, range, minSize, 
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           <div>
-            <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Risers</h4>
-            {m.risers.length ? <ul className="divide-y">{m.risers.map(row)}</ul> : <p className="text-xs text-muted-foreground">None</p>}
+            <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-300">Risers</h4>
+            {m.risers.length ? <ul className="divide-y">{m.risers.map(row)}</ul> : <p className="text-xs text-ink-300">None</p>}
           </div>
           <div>
-            <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Fallers</h4>
-            {m.fallers.length ? <ul className="divide-y">{m.fallers.map(row)}</ul> : <p className="text-xs text-muted-foreground">None</p>}
+            <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-300">Fallers</h4>
+            {m.fallers.length ? <ul className="divide-y">{m.fallers.map(row)}</ul> : <p className="text-xs text-ink-300">None</p>}
           </div>
         </div>
       )}

@@ -80,7 +80,7 @@ export function RatiosTable({ projects, metric }: Props) {
                   {r.values.map((v, i) => (
                     <TableCell key={projects[i].id} className={cn("tabular text-right", r.best[i] && "bg-accent font-semibold")}>
                       {v === null ? <NotTracked /> : r.format(v)}
-                      {r.best[i] && <span className="ml-1 font-mono text-label text-ink-500">best</span>}
+                      {r.best[i] && <span className="ml-1 font-mono text-label text-ink-300">best</span>}
                     </TableCell>
                   ))}
                 </TableRow>

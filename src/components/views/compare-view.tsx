@@ -33,7 +33,7 @@ export function CompareView() {
       <Card className="gap-3 py-4" data-chart-card="Compare">
         <CardHeader className="px-4">
           <h3 className="text-sm font-semibold">Compare projects</h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-ink-300">
             Put up to {COMPARE_MAX} projects side by side. Each metric with its rank and share inside the project&apos;s own sector, ratios that remove size, indexed trends from DefiLlama daily history, and the funding, token, chain and security profile. Add projects here, from any project drawer, or with a preset. The selection
             sits in the URL, so the comparison can be shared as a link.
           </p>
@@ -42,7 +42,7 @@ export function CompareView() {
           <PresetChips all={all} onApply={set} />
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
-              <p className="text-xs text-muted-foreground">Or start from the largest by {METRIC_LABEL[m].toLowerCase()}</p>
+              <p className="text-xs text-ink-300">Or start from the largest by {METRIC_LABEL[m].toLowerCase()}</p>
               {metricControl}
             </div>
             <TopProjectButtons projects={top} metric={m} onAdd={add} />
@@ -65,7 +65,7 @@ export function CompareView() {
                   {p.name}
                 </button>
                 <TierBadge tier={p.tier} className="hidden sm:inline-flex" />
-                <button type="button" onClick={() => remove(p.id)} aria-label={`Remove ${p.name} from compare`} className="rounded text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <button type="button" onClick={() => remove(p.id)} aria-label={`Remove ${p.name} from compare`} className="rounded text-ink-300 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <X className="size-3.5" />
                 </button>
               </span>
@@ -84,7 +84,7 @@ export function CompareView() {
               {metricControl}
             </label>
           </div>
-          {projects.length === 1 && <p className="text-sm text-muted-foreground">Add at least one more project to see ranks, ratios and sentences.</p>}
+          {projects.length === 1 && <p className="text-sm text-ink-300">Add at least one more project to see ranks, ratios and sentences.</p>}
           {sectors.length > 1 && (
             <p className="flex items-start gap-2 rounded-md border px-3 py-2 text-xs" style={{ borderColor: "var(--status-warning)" }} role="note">
               <AlertTriangle className="mt-0.5 size-3.5 shrink-0" style={{ color: "var(--status-warning)" }} aria-hidden="true" />

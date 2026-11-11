@@ -132,7 +132,7 @@ export function SectorBars({ projects, metric, scale, onSelect }: Props) {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <p className="mt-1 text-xs text-muted-foreground">
+      <p className="mt-1 text-xs text-ink-300">
         Click a bar or a sector name to open the sector drawer.
         {hidden > 0 && ` ${hidden} sector${hidden === 1 ? "" : "s"} with no ${METRIC_SHORT[metric].toLowerCase()} data hidden on the log scale.`}
       </p>
@@ -149,7 +149,7 @@ function SectorTip({ active, payload, metric }: TipProps<SectorBarRow> & { metri
       <TooltipRow label="Projects" value={d.count} />
       {metric !== "count" && <TooltipRow label="With data" value={`${d.withData} of ${d.count}`} />}
       <TooltipRow label="NEAR-native" value={`${d.nativeCount} (${fmtPct(d.nativeShare)})`} />
-      <div className="pt-1 text-muted-foreground">Click to open sector</div>
+      <div className="pt-1 text-ink-300">Click to open sector</div>
     </TooltipFrame>
   );
 }

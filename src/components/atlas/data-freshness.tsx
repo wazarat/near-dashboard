@@ -35,7 +35,7 @@ export function DataFreshness({ className }: { className?: string }) {
               {sources.map(([id, s]) => (
                 <li key={id} className="flex justify-between gap-3">
                   <span>{SOURCE_LABEL[id] ?? id}</span>
-                  <span className={cn("font-mono", s.ok || s.skipped ? "text-ink-500" : "text-rose-400")}>
+                  <span className={cn("font-mono", s.ok || s.skipped ? "text-ink-300" : "text-rose-400")}>
                     {s.skipped ? "skipped" : s.ok ? (s.lastSuccess ? `ok ${s.lastSuccess.slice(0, 10)}` : "not run yet") : "failed"}
                   </span>
                 </li>

@@ -33,7 +33,7 @@ export function investorTakeaway(list: Investor[], all: Round[]): InvestorTakeaw
 }
 
 function PortfolioChips({ inv, onOpen }: { inv: Investor; onOpen: (id: string) => void }) {
-  if (inv.projects.length === 0) return <span className="text-ink-400">{NONE}</span>;
+  if (inv.projects.length === 0) return <span className="text-ink-300">{NONE}</span>;
   return (
     <span className="flex max-w-md flex-wrap gap-1">
       {inv.projects.map((name, i) => {
@@ -47,12 +47,12 @@ function PortfolioChips({ inv, onOpen }: { inv: Investor; onOpen: (id: string) =
               e.stopPropagation();
               onOpen(known.id);
             }}
-            className="text-xs text-ink-100 underline-offset-2 hover:text-ink-50 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60"
+            className="text-xs text-ink-50 underline-offset-2 hover:text-ink-50 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60"
           >
             {name}
           </button>
         ) : (
-          <span key={`${name}-${i}`} className="text-xs text-ink-400" title="No project row in the Atlas">
+          <span key={`${name}-${i}`} className="text-xs text-ink-300" title="No project row in the Atlas">
             {name}
           </span>
         );
@@ -90,7 +90,7 @@ export function investorColumns(onOpenInvestor: (id: string) => void, onOpenProj
             {fmtUsd(row.original.totalDisclosed)}
           </span>
         ) : (
-          <span className="text-muted-foreground" title="None of this investor's rounds disclose an amount">
+          <span className="text-ink-300" title="None of this investor's rounds disclose an amount">
             n/a
           </span>
         ),
@@ -105,7 +105,7 @@ export function investorColumns(onOpenInvestor: (id: string) => void, onOpenProj
           <span className="tabular whitespace-nowrap" title={all ? "Every deal is NEAR related" : `${row.original.nearRelatedDeals} of ${row.original.deals} deals are NEAR related`}>
             {all && <span aria-hidden="true">◆ </span>}
             {fmtInt(row.original.nearRelatedDeals)}
-            <span className="text-muted-foreground"> / {fmtInt(row.original.deals)}</span>
+            <span className="text-ink-300"> / {fmtInt(row.original.deals)}</span>
             {all && <span className="sr-only"> (all deals NEAR related)</span>}
           </span>
         );
@@ -136,7 +136,7 @@ export function InvestorsView() {
       <Card className="gap-3 py-4" data-chart-card="Investors">
         <CardHeader className="px-4">
           <h3 className="text-sm font-semibold">Investors ({t.investors})</h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-ink-300">
             {t.investors} investors across {t.rounds} rounds
             {t.topLead && (
               <>

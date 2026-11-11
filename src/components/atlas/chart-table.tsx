@@ -52,7 +52,7 @@ export function ChartTable({ spec }: { spec: ChartTableSpec }) {
     a.click();
     URL.revokeObjectURL(url);
   };
-  if (spec.rows.length === 0) return <p className="text-sm text-muted-foreground">No rows.</p>;
+  if (spec.rows.length === 0) return <p className="text-sm text-ink-300">No rows.</p>;
   return (
     <div className="space-y-2">
       <div className="max-h-[420px] overflow-auto rounded-md border">
@@ -80,7 +80,7 @@ export function ChartTable({ spec }: { spec: ChartTableSpec }) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
+      <div className="flex items-center justify-between text-xs text-ink-300">
         <span>{more > 0 ? `Showing ${rows.length} of ${spec.rows.length} rows` : `${rows.length} rows`}</span>
         {spec.filename && (
           <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs" onClick={download}>

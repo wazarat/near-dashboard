@@ -80,19 +80,19 @@ export function CoverageStrip({ data }: { data: ThesisJson }) {
           <MiniSeries dates={dates} values={explorer} kind="bar" primaryLabel="Explorer (1Click swaps only)" height={180} color={EXPLORER_COLOR} format={(v) => fmtUsd(v)} secondary={{ values: llama, label: "DefiLlama (all channels)", color: CHART.intents }} />
           <dl className="mt-3 grid grid-cols-2 gap-3 text-xs sm:grid-cols-4">
             <div>
-              <dt className="text-muted-foreground">Explorer days</dt>
+              <dt className="text-ink-300">Explorer days</dt>
               <dd className="tabular text-sm font-medium">{coverage.explorerDays}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground">First complete day</dt>
+              <dt className="text-ink-300">First complete day</dt>
               <dd className="text-sm font-medium">{coverage.explorerFirstDay ? fmtDate(coverage.explorerFirstDay) : "none yet"}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground">Median Explorer / DefiLlama</dt>
+              <dt className="text-ink-300">Median Explorer / DefiLlama</dt>
               <dd className="tabular text-sm font-medium">{fmtPct(coverage.ratioMedian)}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground">Backfill</dt>
+              <dt className="text-ink-300">Backfill</dt>
               <dd className="text-sm font-medium">{coverage.explorerBackfillDone ? "complete" : "still running"}</dd>
             </div>
           </dl>

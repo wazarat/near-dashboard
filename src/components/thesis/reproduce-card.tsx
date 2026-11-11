@@ -12,7 +12,7 @@ export function ReproduceCard() {
     <Card className="gap-3 py-4">
       <CardHeader className="gap-1 px-4">
         <h3 className="text-sm font-semibold leading-tight">Reproduce</h3>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-ink-300">
           THESIS.md and this page are generated from the same <code className="rounded bg-muted px-1 font-mono text-[11px]">thesis.json</code>; every chart above carries its SQL, API call and transform under the Query tab.
         </p>
       </CardHeader>
@@ -23,11 +23,11 @@ export function ReproduceCard() {
               <pre className="overflow-x-auto rounded-md border bg-muted/40 px-3 py-2 font-mono text-xs">
                 <code>{s.cmd}</code>
               </pre>
-              <p className="text-xs text-muted-foreground">{s.note}</p>
+              <p className="text-xs text-ink-300">{s.note}</p>
             </li>
           ))}
         </ol>
-        <p className="mt-3 text-xs text-muted-foreground">
+        <p className="mt-3 text-xs text-ink-300">
           <a
             href={THESIS_MD_URL}
             target="_blank"

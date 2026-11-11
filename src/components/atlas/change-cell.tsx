@@ -10,7 +10,7 @@ export function ChangeCell({ value, digits = 1, className, label }: { value: num
   const up = pct > 0;
   return (
     <span
-      className={cn("tabular inline-flex items-center gap-0.5 whitespace-nowrap", flat && "text-muted-foreground", className)}
+      className={cn("tabular inline-flex items-center gap-0.5 whitespace-nowrap", flat && "text-ink-300", className)}
       style={flat ? undefined : { color: up ? "var(--status-good)" : "var(--status-critical)" }}
       aria-label={`${label ? `${label} ` : ""}${flat ? "flat" : up ? "up" : "down"} ${Math.abs(pct).toFixed(digits)} percent`}
     >

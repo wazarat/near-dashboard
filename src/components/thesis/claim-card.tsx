@@ -11,7 +11,7 @@ function Fact({ label, children }: { label: string; children: React.ReactNode })
   return (
     <div className="min-w-0">
       <dt className="text-label uppercase tracking-wider text-ink-300">{label}</dt>
-      <dd className="mt-1 text-sm text-ink-100">{children}</dd>
+      <dd className="mt-1 text-sm text-ink-50">{children}</dd>
     </div>
   );
 }
@@ -28,7 +28,7 @@ export function ClaimCard({ data }: { data: ThesisJson }) {
           <span className="text-label text-ink-300">as of {fmtDate(asOf)}</span>
         </div>
         <h2 className="text-title leading-snug sm:text-title-lg">{CLAIM}</h2>
-        <p className="text-sm leading-relaxed text-ink-200">
+        <p className="text-sm leading-relaxed text-ink-50">
           <span className="font-medium text-ink-50">Result. </span>
           {verdict.headline}
         </p>

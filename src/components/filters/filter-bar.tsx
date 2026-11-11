@@ -95,7 +95,7 @@ export function FilterBar() {
     <label className="inline-flex cursor-pointer items-center gap-2 text-label text-ink-300">
       <Switch checked={state.legacy === "hide"} onCheckedChange={(on) => void setState({ legacy: on ? "hide" : "show" })} aria-label="Hide legacy listings" />
       <span>
-        Hide legacy listings <span className="font-mono text-ink-500">({legacyCount.toLocaleString("en-US")})</span>
+        Hide legacy listings <span className="font-mono text-ink-300">({legacyCount.toLocaleString("en-US")})</span>
       </span>
     </label>
   );
@@ -105,7 +105,7 @@ export function FilterBar() {
       <div className="mx-auto flex w-full max-w-atlas flex-col gap-2 px-5 py-2.5 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
           <div className="relative min-w-0 flex-1 md:max-w-xs">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-ink-400" />
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-ink-300" />
             <Input
               type="search"
               value={state.q}
@@ -122,7 +122,7 @@ export function FilterBar() {
                 <Button variant="outline" size="sm" className="h-8">
                   <SlidersHorizontal className="size-3.5" />
                   Filters
-                  {activeCount > 0 && <span className="font-mono text-ink-500">({activeCount})</span>}
+                  {activeCount > 0 && <span className="font-mono text-ink-300">({activeCount})</span>}
                 </Button>
               </SheetTrigger>
               <SheetContent side="bottom" className="max-h-[85vh] overflow-y-auto">

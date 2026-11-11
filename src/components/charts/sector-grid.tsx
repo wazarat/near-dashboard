@@ -76,19 +76,19 @@ export function SectorGrid({ projects, metric, onSelect, onOpen }: Props) {
         <div key={c.sector} className="flex flex-col rounded-lg border bg-card p-3 text-sm">
           <h4 className="font-semibold leading-tight">{c.sector}</h4>
           <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-            <dt className="text-muted-foreground">Projects</dt>
+            <dt className="text-ink-300">Projects</dt>
             <dd className="tabular text-right">{c.count}</dd>
-            <dt className="text-muted-foreground">NEAR-native</dt>
+            <dt className="text-ink-300">NEAR-native</dt>
             <dd className="tabular text-right">
-              {c.native} <span className="text-muted-foreground">({fmtPct(c.nativeShare)})</span>
+              {c.native} <span className="text-ink-300">({fmtPct(c.nativeShare)})</span>
             </dd>
-            <dt className="text-muted-foreground">With traction</dt>
+            <dt className="text-ink-300">With traction</dt>
             <dd className="tabular text-right">
-              {c.live} <span className="text-muted-foreground">({fmtPct(c.count ? c.live / c.count : null)})</span>
+              {c.live} <span className="text-ink-300">({fmtPct(c.count ? c.live / c.count : null)})</span>
             </dd>
             {metric !== "count" && (
               <>
-                <dt className="text-muted-foreground">{METRIC_SHORT[metric]}</dt>
+                <dt className="text-ink-300">{METRIC_SHORT[metric]}</dt>
                 <dd className="tabular text-right" title={fmtMetricFull(metric, c.total)}>
                   {fmtMetric(metric, c.total)}
                 </dd>
@@ -96,12 +96,12 @@ export function SectorGrid({ projects, metric, onSelect, onOpen }: Props) {
             )}
           </dl>
           <div className="mt-2 flex-1 border-t pt-2 text-xs">
-            <div className="mb-1 text-muted-foreground">Ranked leaders</div>
-            {c.leaders.length === 0 && <div className="text-muted-foreground">No leaders ranked for this sector.</div>}
+            <div className="mb-1 text-ink-300">Ranked leaders</div>
+            {c.leaders.length === 0 && <div className="text-ink-300">No leaders ranked for this sector.</div>}
             <ol className="space-y-0.5">
               {c.leaders.map((l) => (
                 <li key={`${l.rank}-${l.name}`} className="flex items-center gap-1.5">
-                  <span className="tabular w-4 shrink-0 text-muted-foreground">{l.rank}.</span>
+                  <span className="tabular w-4 shrink-0 text-ink-300">{l.rank}.</span>
                   {l.projectId ? (
                     <button type="button" onClick={() => onOpen(l.projectId as string)} className="truncate text-left underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" title={l.why}>
                       {l.name}

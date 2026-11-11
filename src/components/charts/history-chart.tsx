@@ -65,7 +65,7 @@ export function HistoryChart({ projectId, range, metric }: { projectId: string; 
         </div>
       </div>
       {stats && view === "chart" && (
-        <p className="font-mono text-label text-ink-400">
+        <p className="font-mono text-label text-ink-300">
           min {fmtUsd(stats.min)} max {fmtUsd(stats.max)} {fmtPctSigned(stats.change)} over {dates.length} days
         </p>
       )}

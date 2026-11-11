@@ -23,7 +23,7 @@ const ITEM =
   "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-transparent font-medium transition-colors " +
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60 disabled:cursor-not-allowed disabled:opacity-50";
 const ITEM_ON = "border-ink-700/60 bg-ink-900 text-ink-50 shadow-segment";
-const ITEM_OFF = "text-ink-400 hover:text-ink-200";
+const ITEM_OFF = "text-ink-300 hover:text-ink-50";
 const SIZES = { xs: "h-6 px-2 text-label", sm: "h-7 px-2.5 text-label", md: "h-8 px-3.5 text-control" } as const;
 
 export function Segmented<V extends string>({

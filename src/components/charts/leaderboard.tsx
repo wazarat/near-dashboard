@@ -88,7 +88,7 @@ export function Leaderboard({ projects, metric, onMetricChange, range, cols, onC
             <Segmented value={cols} onChange={onColsChange} options={COL_SETS.map((c) => ({ value: c, label: COL_SET_LABEL[c] }))} ariaLabel="Column set" />
           </div>
         </div>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-ink-300">
           {description}
           {history} Sort any column; revenue capture is revenue divided by fees. Click a project to open it.
         </p>

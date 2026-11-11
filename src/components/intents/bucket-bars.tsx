@@ -121,8 +121,8 @@ function BucketTip({ active, payload, keyLabel }: TipProps<BucketRow> & { keyLab
       <TooltipRow label="Volume (SUCCESS swaps)" value={fmtUsdFull(r.usd)} />
       <TooltipRow label="Swaps" value={fmtInt(r.count)} />
       <TooltipRow label="Share of window volume" value={fmtPct(r.share, 1)} />
-      {r.kind === "other" && <div className="pt-1 text-muted-foreground">Long tail beyond the listed keys, plus keys the per-day files already folded into (other).</div>}
-      {r.kind === "none" && <div className="pt-1 text-muted-foreground">Rows where the field was empty.</div>}
+      {r.kind === "other" && <div className="pt-1 text-ink-300">Long tail beyond the listed keys, plus keys the per-day files already folded into (other).</div>}
+      {r.kind === "none" && <div className="pt-1 text-ink-300">Rows where the field was empty.</div>}
     </TooltipFrame>
   );
 }

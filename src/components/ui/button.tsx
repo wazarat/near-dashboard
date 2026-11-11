@@ -16,7 +16,7 @@ const buttonVariants = cva(
         default: "bg-electric-500 text-on-electric hover:bg-electric-400",
         secondary: "border-ink-700/60 bg-ink-900 text-ink-50 hover:bg-ink-800/60",
         outline: "border-ink-700/60 text-ink-50 hover:border-ink-500 hover:bg-ink-800/40 aria-expanded:bg-ink-800/40",
-        ghost: "text-ink-200 hover:bg-ink-800/60 hover:text-ink-50 aria-expanded:bg-ink-800/60 aria-expanded:text-ink-50",
+        ghost: "text-ink-300 hover:bg-ink-800/60 hover:text-ink-50 aria-expanded:bg-ink-800/60 aria-expanded:text-ink-50",
         destructive: "border-ink-700/60 text-rose-400 hover:bg-ink-800/60",
         link: "text-electric-400 underline-offset-4 hover:text-electric-200 hover:underline",
       },

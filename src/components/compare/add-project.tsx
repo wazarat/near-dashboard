@@ -53,7 +53,7 @@ export function AddProjectPopover({ all, exclude, onAdd, disabled, className }: 
                   className="text-xs"
                 >
                   <span className="truncate font-medium">{p.name}</span>
-                  <span className="ml-auto truncate pl-2 text-muted-foreground">{p.sector}</span>
+                  <span className="ml-auto truncate pl-2 text-ink-300">{p.sector}</span>
                 </CommandItem>
               ))}
             </CommandGroup>
@@ -70,10 +70,10 @@ export function PresetChips({ all, onApply, className }: { all: Project[]; onApp
   if (presets.length === 0) return null;
   return (
     <div className={cn("flex flex-wrap items-center gap-1.5", className)}>
-      <span className="text-xs text-muted-foreground">Presets</span>
+      <span className="text-xs text-ink-300">Presets</span>
       {presets.map((p) => (
         <button key={p.name} type="button" onClick={() => onApply(p.ids)} className="rounded-md border px-2 py-0.5 text-xs hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" title={p.names.join(", ")}>
-          {p.name} <span className="text-muted-foreground">({p.ids.length})</span>
+          {p.name} <span className="text-ink-300">({p.ids.length})</span>
         </button>
       ))}
     </div>
@@ -88,9 +88,9 @@ export function TopProjectButtons({ projects, metric, onAdd }: { projects: Proje
       {projects.map((p) => (
         <li key={p.id}>
           <button type="button" onClick={() => onAdd(p.id)} className="inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Add ${p.name} to compare`}>
-            <Plus className="size-3 text-muted-foreground" aria-hidden="true" />
+            <Plus className="size-3 text-ink-300" aria-hidden="true" />
             <span className="font-medium">{p.name}</span>
-            {metric !== "count" && <span className="tabular text-muted-foreground">{fmtMetric(metric, p[metric])}</span>}
+            {metric !== "count" && <span className="tabular text-ink-300">{fmtMetric(metric, p[metric])}</span>}
           </button>
         </li>
       ))}

@@ -36,7 +36,7 @@ export function RangeBrush({ dates, preview, color = "var(--cat-1)", label = "Zo
           </LineChart>
         </ResponsiveContainer>
       </div>
-      <p className="mt-1 text-label text-ink-400">Drag the handles to zoom every panel into a period.</p>
+      <p className="mt-1 text-label text-ink-300">Drag the handles to zoom every panel into a period.</p>
     </div>
   );
 }

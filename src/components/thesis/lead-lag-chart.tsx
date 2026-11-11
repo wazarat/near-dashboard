@@ -119,11 +119,11 @@ function LagPanel({ panel, yMax }: { panel: Panel; yMax: number }) {
     <figure className="rounded-md border p-2" aria-label={`${meta.label}, correlation by lag`}>
       <figcaption className="mb-1 flex flex-wrap items-baseline justify-between gap-x-2 text-xs">
         <span className="font-medium">{meta.label}</span>
-        <span className="text-muted-foreground">
+        <span className="text-ink-300">
           {meta.source} · {intents.n} weeks
         </span>
       </figcaption>
-      <p className="mb-1 text-[11px] text-muted-foreground">
+      <p className="mb-1 text-[11px] text-ink-300">
         Intents {bestI ? `${fmtLag(bestI.lag)}, r ${fmtR(bestI.r)}` : "no positive lead"} · price {bestP ? `${fmtLag(bestP.lag)}, r ${fmtR(bestP.r)}` : "no positive lead"} · same week {fmtR(intents.r0)} / {fmtR(price.r0)}
       </p>
       <div style={{ height: frame.height }} className="w-full">
@@ -163,7 +163,7 @@ function LagTip({ active, payload, band }: TipProps<LagRow> & { band: number | n
 function SummaryTable({ panels }: { panels: Panel[] }) {
   const cell = (s: LeadLagSummary) => {
     const b = s.bestPositiveLead;
-    if (!b) return <span className="text-muted-foreground">none</span>;
+    if (!b) return <span className="text-ink-300">none</span>;
     return (
       <span className="tabular">
         {fmtLag(b.lag)} · r {fmtR(b.r)}
@@ -189,7 +189,7 @@ function SummaryTable({ panels }: { panels: Panel[] }) {
           {panels.map((p) => (
             <TableRow key={p.meta.key}>
               <TableCell className="whitespace-nowrap font-medium">{p.meta.label}</TableCell>
-              <TableCell className="whitespace-nowrap text-muted-foreground">{p.meta.source}</TableCell>
+              <TableCell className="whitespace-nowrap text-ink-300">{p.meta.source}</TableCell>
               <TableCell className="whitespace-nowrap">
                 <span className="inline-flex items-center gap-1.5">
                   <span aria-hidden="true" className="inline-block size-2 rounded-full" style={{ backgroundColor: CHART.intents }} />

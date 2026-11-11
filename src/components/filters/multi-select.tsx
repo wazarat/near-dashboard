@@ -40,9 +40,9 @@ export function MultiSelect({ label, options, selected, onChange, className, sea
         >
           <span className="truncate">
             {label}
-            {n > 0 && <span className="ml-1 font-mono text-ink-500">({n})</span>}
+            {n > 0 && <span className="ml-1 font-mono text-ink-300">({n})</span>}
           </span>
-          <ChevronsUpDown className="size-3.5 shrink-0 text-ink-400" />
+          <ChevronsUpDown className="size-3.5 shrink-0 text-ink-300" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-72 border border-ink-700/60 bg-ink-900 p-0 shadow-popover ring-0" align="start">
@@ -66,7 +66,7 @@ export function MultiSelect({ label, options, selected, onChange, className, sea
                     </span>
                     {o.color && <span aria-hidden="true" className="size-2 rounded-full" style={{ backgroundColor: o.color }} />}
                     <span className="flex-1 truncate">{o.label ?? o.value}</span>
-                    {o.count !== undefined && <span className="tabular text-ink-400">{o.count}</span>}
+                    {o.count !== undefined && <span className="tabular text-ink-300">{o.count}</span>}
                   </CommandItem>
                 );
               })}

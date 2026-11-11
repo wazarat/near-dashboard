@@ -24,7 +24,7 @@ export function NewlyDetectedCard() {
     <Card className="gap-3 py-4">
       <CardHeader className="px-4">
         <h3 className="text-sm font-semibold">Newly detected ({items.length})</h3>
-        <p className="text-sm text-muted-foreground">Protocols seen on DefiLlama or NEAR Catalog that are not in the research CSVs. Review candidates only; nothing is added automatically.</p>
+        <p className="text-sm text-ink-300">Protocols seen on DefiLlama or NEAR Catalog that are not in the research CSVs. Review candidates only; nothing is added automatically.</p>
       </CardHeader>
       <CardContent className="px-4">
         <ul className="divide-y text-sm">
@@ -33,13 +33,13 @@ export function NewlyDetectedCard() {
               <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
                 <a href={i.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-w-0 items-center gap-1 font-medium underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <span className="truncate">{i.name}</span>
-                  <ExternalLink className="size-3 shrink-0 text-muted-foreground" />
+                  <ExternalLink className="size-3 shrink-0 text-ink-300" />
                 </a>
                 <PlainState proof={SOURCE_LABEL[i.source]}>from</PlainState>
-                <span className="text-xs text-muted-foreground">{i.category}</span>
-                <span className="text-xs text-muted-foreground">{i.chain}</span>
+                <span className="text-xs text-ink-300">{i.category}</span>
+                <span className="text-xs text-ink-300">{i.chain}</span>
               </span>
-              <span className="flex shrink-0 items-center gap-3 text-xs text-muted-foreground">
+              <span className="flex shrink-0 items-center gap-3 text-xs text-ink-300">
                 <span className="tabular">{i.tvl === null ? "no TVL" : fmtUsd(i.tvl)}</span>
                 <span className="whitespace-nowrap">first seen {fmtDate(i.firstSeen)}</span>
               </span>

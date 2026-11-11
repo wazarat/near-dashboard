@@ -159,11 +159,11 @@ export function Timeline({ events, defaultStart, title = "Timeline", id = "timel
                       return next;
                     })
                   }
-                  className={cn("h-7 gap-1.5 rounded-md px-2 text-xs", !active && "opacity-60")}
+                  className={cn("h-7 gap-1.5 rounded-md px-2 text-xs", active ? "text-ink-50" : "text-ink-300")}
                   aria-label={`${active ? "Hide" : "Show"} ${type} events`}
                 >
                   <span aria-hidden="true" className="inline-block size-2 rounded-full" style={{ backgroundColor: EVENT_COLOR[type] }} />
-                  {type} <span className="tabular text-ink-400">{count}</span>
+                  {type} <span className="tabular text-ink-300">{count}</span>
                 </Toggle>
               );
             })}

@@ -76,10 +76,10 @@ export function MetricMatrix({ projects, all }: Props) {
                     <TableCell key={projects[i].id} className={cn("tabular text-right align-top", c.best && "bg-accent")}>
                       <div className={cn(c.best && "font-semibold")}>
                         {c.value === null ? <NotTracked /> : row.format(c.value)}
-                        {c.best && <span className="ml-1 font-mono text-label text-ink-500">best</span>}
+                        {c.best && <span className="ml-1 font-mono text-label text-ink-300">best</span>}
                       </div>
                       {c.value !== null && c.rank !== null && (
-                        <div className="text-[11px] font-normal text-muted-foreground">
+                        <div className="text-[11px] font-normal text-ink-300">
                           #{c.rank} of {c.of} in {shortSector(projects[i].sector)}
                           {c.share !== null && ` · ${fmtPct(c.share, 1)} of sector`}
                         </div>

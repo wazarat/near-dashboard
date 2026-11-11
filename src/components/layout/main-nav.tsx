@@ -49,7 +49,7 @@ function NavLinks({ query, compareCount }: { query: string; compareCount: number
                 )}
               >
                 {item.label}
-                {item.href === "/compare/" && compareCount > 0 && <span className="ml-1 font-mono text-label text-ink-500">({compareCount})</span>}
+                {item.href === "/compare/" && compareCount > 0 && <span className="ml-1 font-mono text-label text-ink-300">({compareCount})</span>}
               </Link>
             </li>
           );

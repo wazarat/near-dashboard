@@ -12,7 +12,7 @@ export function TooltipFrame({ title, children }: { title?: ReactNode; children:
 export function TooltipRow({ label, value, color }: { label: ReactNode; value: ReactNode; color?: string }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <span className="inline-flex items-center gap-1.5 text-muted-foreground">
+      <span className="inline-flex items-center gap-1.5 text-ink-300">
         {color && <span aria-hidden="true" className="inline-block size-2 rounded-full" style={{ backgroundColor: color }} />}
         {label}
       </span>

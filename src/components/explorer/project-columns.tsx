@@ -48,7 +48,7 @@ export const sectorColumn = h.accessor("sector", { header: "Sector", cell: ({ ge
 export const subcategoryColumn = h.accessor((p) => p.subcategory ?? undefined, { id: "subcategory", header: "Subcategory", sortUndefined: "last" });
 export const chainColumn = h.accessor("chain", { header: "Native chain", cell: ({ getValue }) => <ChainChip chain={getValue()} /> });
 export const chainDetailColumn = h.accessor((p) => p.chainDetail ?? undefined, { id: "chainDetail", header: "Chain detail", sortUndefined: "last" });
-export const presenceColumn = h.accessor((p) => (p.presence.length ? p.presence.join(", ") : undefined), { id: "presence", header: "Chain presence", sortUndefined: "last", cell: ({ getValue }) => getValue() ?? <span className="text-muted-foreground">Unknown</span> });
+export const presenceColumn = h.accessor((p) => (p.presence.length ? p.presence.join(", ") : undefined), { id: "presence", header: "Chain presence", sortUndefined: "last", cell: ({ getValue }) => getValue() ?? <span className="text-ink-300">Unknown</span> });
 export const tierColumn = h.accessor("tier", { header: "Tier", cell: ({ getValue }) => <TierBadge tier={getValue()} /> });
 export const statusColumn = h.accessor("statusGroup", { header: "Status", cell: ({ row }) => <StatusBadge group={row.original.statusGroup} status={row.original.status} /> });
 export const tvlColumn = h.accessor((p) => num(p.tvl), { id: "tvl", header: "TVL", cell: ({ getValue }) => <Usd v={getValue()} />, sortUndefined: "last", ...right });
@@ -68,10 +68,10 @@ export const captureColumn = h.accessor((p) => num(p.revenueCapture), {
   ...right,
 });
 export const otherTractionColumn = h.accessor((p) => p.otherTraction ?? undefined, { id: "otherTraction", header: "Other traction signal", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });
-export const fundingColumn = h.accessor("fundingType", { header: "Funding type", cell: ({ getValue }) => <span className={getValue() === "Not researched" ? "text-muted-foreground" : undefined}>{getValue()}</span> });
+export const fundingColumn = h.accessor("fundingType", { header: "Funding type", cell: ({ getValue }) => <span className={getValue() === "Not researched" ? "text-ink-300" : undefined}>{getValue()}</span> });
 export const investorsColumn = h.accessor((p) => p.investors ?? undefined, { id: "investors", header: "Investors / backers", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });
 export const amountColumn = h.accessor((p) => p.amountRaised ?? undefined, { id: "amountRaised", header: "Amount raised", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });
-export const tokenColumn = h.accessor((p) => p.tokenRaw ?? undefined, { id: "token", header: "Token", sortUndefined: "last", cell: ({ getValue }) => getValue() ?? <span className="text-ink-400">{NONE}</span> });
+export const tokenColumn = h.accessor((p) => p.tokenRaw ?? undefined, { id: "token", header: "Token", sortUndefined: "last", cell: ({ getValue }) => getValue() ?? <span className="text-ink-300">{NONE}</span> });
 export const auditsColumn = h.accessor((p) => p.audits ?? undefined, { id: "audits", header: "Audits", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });
 export const incidentsColumn = h.accessor((p) => p.incidents ?? undefined, { id: "incidents", header: "Incidents", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });
 export const redFlagsColumn = h.accessor((p) => p.redFlags ?? undefined, { id: "redFlags", header: "Red flags", sortUndefined: "last", cell: ({ getValue }) => <Truncated v={getValue()} /> });
@@ -85,10 +85,10 @@ export const websiteColumn = h.accessor((p) => p.website ?? undefined, {
     const v = getValue();
     return v ? (
       <a href={v} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="inline-flex max-w-[12rem] items-center gap-1 underline-offset-2 hover:underline">
-        <span className="truncate">{displayUrl(v)}</span> <ExternalLink className="size-3 shrink-0 text-muted-foreground" />
+        <span className="truncate">{displayUrl(v)}</span> <ExternalLink className="size-3 shrink-0 text-ink-300" />
       </a>
     ) : (
-      <span className="text-ink-400">{NONE}</span>
+      <span className="text-ink-300">{NONE}</span>
     );
   },
 });
@@ -100,10 +100,10 @@ export const xColumn = h.accessor((p) => p.xHandle ?? undefined, {
     const v = getValue();
     return v ? (
       <a href={xUrl(v)} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="inline-flex items-center gap-1 whitespace-nowrap underline-offset-2 hover:underline">
-        {v} <ExternalLink className="size-3 text-muted-foreground" />
+        {v} <ExternalLink className="size-3 text-ink-300" />
       </a>
     ) : (
-      <span className="text-ink-400">{NONE}</span>
+      <span className="text-ink-300">{NONE}</span>
     );
   },
 });

@@ -131,7 +131,7 @@ export function LevelsChart({ data, scale, onScaleChange }: Props) {
         <div>
           <ToggleGroup type="multiple" variant="outline" size="sm" value={visible} onValueChange={(v) => setVisible(v)} aria-label="Series shown" className="mb-2 flex flex-wrap justify-start gap-1">
             {series.map((s) => (
-              <ToggleGroupItem key={s.key} value={s.key} className="h-7 gap-1.5 px-2 text-xs data-[state=off]:text-muted-foreground data-[state=off]:line-through" aria-label={`${s.label}, ${visible.includes(s.key) ? "shown" : "hidden"}`}>
+              <ToggleGroupItem key={s.key} value={s.key} className="h-7 gap-1.5 px-2 text-xs data-[state=off]:text-ink-300 data-[state=off]:line-through" aria-label={`${s.label}, ${visible.includes(s.key) ? "shown" : "hidden"}`}>
                 <span aria-hidden="true" className="inline-block size-2.5 rounded-full" style={{ backgroundColor: s.color, opacity: visible.includes(s.key) ? 1 : 0.35 }} />
                 {s.label}
               </ToggleGroupItem>

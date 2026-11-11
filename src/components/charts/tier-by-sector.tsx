@@ -60,7 +60,7 @@ export function TierBySector({ projects, onSelect }: { projects: Project[]; onSe
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <p className="mt-1 text-xs text-muted-foreground">&ldquo;Negligible&rdquo; means listed on DefiLlama with every figure at zero; &ldquo;Not tracked&rdquo; means no DefiLlama listing at all.</p>
+      <p className="mt-1 text-xs text-ink-300">&ldquo;Negligible&rdquo; means listed on DefiLlama with every figure at zero; &ldquo;Not tracked&rdquo; means no DefiLlama listing at all.</p>
     </div>
   );
 }
@@ -74,7 +74,7 @@ function TierTip({ active, payload }: TipProps<TierRow>) {
         <TooltipRow key={t} label={TIER_SHORT[t]} color={TIER_COLOR[t]} value={d[t]} />
       ))}
       <TooltipRow label="Total" value={d.total} />
-      <div className="pt-1 text-muted-foreground">Click to open sector</div>
+      <div className="pt-1 text-ink-300">Click to open sector</div>
     </TooltipFrame>
   );
 }

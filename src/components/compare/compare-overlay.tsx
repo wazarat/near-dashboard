@@ -136,7 +136,7 @@ export function CompareOverlay({ projects, metric, range, align, onAlignChange }
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-xs text-ink-300">
             {label} indexed to 100{align === "days" ? " on each project's first day with data" : anchor ? ` on ${fmtDateShort(anchor)}` : ""}; colours follow the order of the selection.
             {skipped.length > 0 && ` No daily ${label.toLowerCase()} history for ${skipped.map((k) => projects[k].name).join(", ")}.`}
           </p>

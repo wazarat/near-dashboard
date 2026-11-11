@@ -132,7 +132,7 @@ export function InvestorsBars({ investors, totalRounds, onOpen, className }: Pro
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">Bars count rounds. Click a bar or an investor name to see their rounds and portfolio.</p>
+          <p className="mt-1 text-xs text-ink-300">Bars count rounds. Click a bar or an investor name to see their rounds and portfolio.</p>
         </div>
       )}
     </ChartCard>
@@ -148,7 +148,7 @@ function InvestorTip({ active, payload }: TipProps<InvestorBarRow>) {
       <TooltipRow label="Led" value={d.leads} />
       <TooltipRow label="Disclosed round total" value={d.disclosedDeals > 0 ? fmtUsd(d.disclosed) : "n/a"} />
       <TooltipRow label="NEAR-related" value={`${d.nearRelatedDeals} of ${d.deals}`} />
-      <div className="pt-1 text-muted-foreground">Click to open</div>
+      <div className="pt-1 text-ink-300">Click to open</div>
     </TooltipFrame>
   );
 }

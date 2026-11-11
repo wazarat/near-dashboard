@@ -70,7 +70,7 @@ export function ScopeNote({ scope = "filtered", className }: { scope?: ChartScop
   const text = scope === "whole-chain" ? "Whole chain, not filtered" : scope === "selection" ? "Selected projects only, not filtered" : active > 0 ? `${active} filter${active === 1 ? "" : "s"} active` : null;
   if (!text) return null;
   return (
-    <span className={cn("text-label text-ink-400", className)} data-scope={scope}>
+    <span className={cn("text-label text-ink-300", className)} data-scope={scope}>
       {text}
     </span>
   );
@@ -127,7 +127,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
               <ScopeNote scope={scope} />
             </div>
             <p className="mt-1 text-sm text-ink-300">{takeaway}</p>
-            {subtitle && <p className="mt-1 text-label text-ink-400">{subtitle}</p>}
+            {subtitle && <p className="mt-1 text-label text-ink-300">{subtitle}</p>}
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
             {controls(view, setView)}
@@ -151,12 +151,12 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
                 <ScopeNote scope={scope} />
               </div>
               <DialogDescription className="text-sm text-ink-300">{takeaway}</DialogDescription>
-              {subtitle && <p className="text-label text-ink-400">{subtitle}</p>}
+              {subtitle && <p className="text-label text-ink-300">{subtitle}</p>}
             </DialogHeader>
             <div className="flex flex-wrap items-center gap-2">{controls(dialogView, setDialogView)}</div>
             <div className="min-h-0 flex-1">{open && body(dialogView, dialogFrame)}</div>
             {footer && <div className="text-xs text-ink-300">{footer}</div>}
-            <p className="text-label text-ink-400">
+            <p className="text-label text-ink-300">
               {source ? `Source. ${source}` : info}
               {" Press Escape to close."}
             </p>
@@ -173,10 +173,10 @@ function QueryView({ queries }: { queries: QuerySpec[] }) {
       {queries.map((q, i) => (
         <div key={i}>
           <div className="mb-1 flex items-center gap-2 text-xs text-ink-300">
-            <span className="font-mono text-label uppercase text-ink-500">{q.kind}</span>
+            <span className="font-mono text-label uppercase text-ink-300">{q.kind}</span>
             <span>{q.title}</span>
           </div>
-          <pre className="max-h-80 overflow-auto rounded-lg border border-ink-700/40 bg-ink-950/60 p-3 font-mono text-[11px] leading-relaxed text-ink-100">
+          <pre className="max-h-80 overflow-auto rounded-lg border border-ink-700/40 bg-ink-950/60 p-3 font-mono text-[11px] leading-relaxed text-ink-50">
             <code>{q.code}</code>
           </pre>
         </div>

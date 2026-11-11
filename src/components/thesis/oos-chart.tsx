@@ -127,7 +127,7 @@ export function OosChart({ data }: { data: ThesisJson }) {
             </ResponsiveContainer>
           </div>
           <OosTable rows={rows} />
-          <p className="text-label text-ink-400">
+          <p className="text-label text-ink-300">
             The headline counts wins. A predictor wins a series when its out-of-sample R² is above zero and at least 0.01 higher than the other predictor&apos;s; the table shows every score, including the series where neither wins.
           </p>
         </div>

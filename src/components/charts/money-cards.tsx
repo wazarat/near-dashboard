@@ -38,7 +38,7 @@ export function MoneyCards({ className, onOpenProject }: { className?: string; o
     <Card className={cn("gap-3 py-4", className)} data-chart-card="Ecosystem capital">
       <CardHeader className="px-4">
         <h3 className="text-sm font-semibold">Ecosystem capital</h3>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-ink-300">
           Headline funds, grant programmes, treasuries and listings from the events file; not affected by the project filters.{" "}
           {picked.length > 0 && (
             <>
@@ -49,23 +49,23 @@ export function MoneyCards({ className, onOpenProject }: { className?: string; o
       </CardHeader>
       <CardContent className="px-4">
         {picked.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No matching events in the file.</p>
+          <p className="text-sm text-ink-300">No matching events in the file.</p>
         ) : (
           <ul className="grid gap-2 sm:grid-cols-2">
             {picked.map((e) => (
               <li key={e.id} className="flex flex-col rounded-md border p-3 text-sm">
-                <div className="flex items-start justify-between gap-2 text-xs text-muted-foreground">
+                <div className="flex items-start justify-between gap-2 text-xs text-ink-300">
                   <span className="inline-flex items-center gap-1.5">
                     <span aria-hidden="true" className="size-2 shrink-0 rounded-full" style={{ backgroundColor: EVENT_COLOR[e.type] }} />
                     {e.type} · {fmtEventDate(e.date, e.monthOnly)}
                   </span>
-                  <span className={cn("tabular shrink-0 text-right font-semibold", e.amount === null ? "text-muted-foreground" : "text-foreground")} title={e.amount !== null ? fmtUsdFull(e.amount) : undefined}>
+                  <span className={cn("tabular shrink-0 text-right font-semibold", e.amount === null ? "text-ink-300" : "text-foreground")} title={e.amount !== null ? fmtUsdFull(e.amount) : undefined}>
                     {e.amount !== null ? fmtUsd(e.amount) : (e.amountNote ?? "no USD figure")}
                   </span>
                 </div>
                 <div className="mt-1 font-medium leading-snug">{e.title}</div>
-                {e.detail && <p className="mt-1 text-xs text-muted-foreground">{e.detail}</p>}
-                {e.amount !== null && e.amountNote && <p className="mt-1 text-xs text-muted-foreground">{e.amountNote}</p>}
+                {e.detail && <p className="mt-1 text-xs text-ink-300">{e.detail}</p>}
+                {e.amount !== null && e.amountNote && <p className="mt-1 text-xs text-ink-300">{e.amountNote}</p>}
                 {(e.projectIds.length > 0 || e.sourceUrl) && (
                   <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
                     {onOpenProject &&
@@ -78,7 +78,7 @@ export function MoneyCards({ className, onOpenProject }: { className?: string; o
                         ) : null;
                       })}
                     {e.sourceUrl && (
-                      <a href={e.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-muted-foreground underline-offset-2 hover:underline" aria-label={`Source for ${e.title}`}>
+                      <a href={e.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-ink-300 underline-offset-2 hover:underline" aria-label={`Source for ${e.title}`}>
                         {displayUrl(e.sourceUrl).split("/")[0]} <ExternalLink className="size-3" />
                       </a>
                     )}

@@ -41,7 +41,7 @@ export function InsightsPanel({ projects, metric, onMetricChange, total }: { pro
               Live insights
             </TabsTrigger>
             <TabsTrigger value="memo" className="h-6 px-2 text-xs">
-              Analyst notes <span className="tabular text-ink-400">{memoInsights.length}</span>
+              Analyst notes <span className="tabular text-ink-300">{memoInsights.length}</span>
             </TabsTrigger>
           </TabsList>
           <TabsContent value="live">
@@ -59,7 +59,7 @@ export function InsightsPanel({ projects, metric, onMetricChange, total }: { pro
             <ol className="max-h-[420px] space-y-2 overflow-y-auto pr-1 text-sm" aria-label="Analyst notes">
               {memoInsights.map((m) => (
                 <li key={m.n} className="flex gap-2">
-                  <span className="tabular w-5 shrink-0 text-ink-400">{m.n}.</span>
+                  <span className="tabular w-5 shrink-0 text-ink-300">{m.n}.</span>
                   <span>
                     <span className="font-medium">{m.title}.</span> {memoBody(m)}
                   </span>

@@ -22,11 +22,11 @@ export function TextListCard({ title, note, items, icon: Icon, iconColor, emptyM
           {Icon && <Icon aria-hidden="true" className="size-4 shrink-0" style={{ color: iconColor }} />}
           <h3 className="text-sm font-semibold leading-tight">{title}</h3>
         </div>
-        {note && <p className="text-xs text-muted-foreground">{note}</p>}
+        {note && <p className="text-xs text-ink-300">{note}</p>}
       </CardHeader>
       <CardContent className="px-4">
         {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{emptyMessage}</p>
+          <p className="text-sm text-ink-300">{emptyMessage}</p>
         ) : (
           <ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed">
             {items.map((it, i) => (

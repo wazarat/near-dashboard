@@ -13,6 +13,12 @@
  * ("md:flex"), times ("12:30") and URLs ("https://") never put whitespace
  * after a colon, so they need no allowlist. A line containing "copy-ok"
  * is skipped, for strings that are not copy (SQL, regular expressions).
+ *
+ * Tone rule (docs/ATLAS-UI.md, section 1, Text): text uses two tones only,
+ * text-ink-50 for names, headings, values and body copy and text-ink-300 for
+ * labels and meta. Any other text-ink-* step, text-muted-foreground, or an
+ * opacity utility on a class string that sets a text tone is a "tone" hit.
+ * Disabled controls use disabled:opacity-* and are exempt.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -25,6 +31,10 @@ const SKIP = new Map([["src/data/generated", "built data, never hand written"]])
 const SCHEME_RE = /^(https?|mailto|data|ipfs|tel):$/;
 const ESCAPE = "copy-ok";
 const EM_DASH = "—";
+/** Text colour classes other than the two allowed tones (variant prefixes like hover: included). */
+const OFF_TONE = /(?:^|[\s"'`])(?:[\w-]+:)*text-(?:ink-(?!50\b|300\b)\d+|muted-foreground)\b/;
+/** Dimming text with opacity, other than for disabled states. */
+const DIM_TEXT = /(?:^|\s)(?:[\w-]+:)*text-ink-(?:50|300)\/\d+\b|(?:^|\s)(?!disabled:)(?:[\w-]+:)*opacity-\d+\b(?=.*\btext-ink-)/;
 
 const K = ts.SyntaxKind;
 const FINAL = new Set([K.StringLiteral, K.NoSubstitutionTemplateLiteral, K.TemplateTail, K.JsxText]);
@@ -49,33 +59,37 @@ export function listFiles(roots = ROOTS) {
   return out;
 }
 
+/** Scan one source text. Returns every hit with its 1-based line and column. */
+export function scanSource(text, file) {
+  const hits = [];
+  const kind = file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
+  const src = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, kind);
+  const lines = text.split("\n");
+  const check = (node) => {
+    const raw = node.text;
+    const { line, character } = src.getLineAndCharacterOfPosition(node.getStart(src));
+    if (lines[line].includes(ESCAPE)) return;
+    if (node.kind === K.JsxText && !raw.trim()) return;
+    if (SCHEME_RE.test(raw)) return;
+    const problems = [];
+    if (raw.includes(EM_DASH)) problems.push("em");
+    if (/:\s/.test(raw) || (FINAL.has(node.kind) && /:$/.test(raw.trimEnd()))) problems.push("colon");
+    if (OFF_TONE.test(raw) || DIM_TEXT.test(raw)) problems.push("tone");
+    if (problems.length === 0) return;
+    const snippet = raw.replace(/\s+/g, " ").trim().slice(0, 90);
+    hits.push({ file, line: line + 1, col: character + 1, tag: problems.join("+"), snippet });
+  };
+  const visit = (node) => {
+    if (CHUNK.has(node.kind)) check(node);
+    ts.forEachChild(node, visit);
+  };
+  visit(src);
+  return hits;
+}
+
 /** Scan the given files and return every hit, sorted by file, line and column. */
 export function scan(files) {
-  const hits = [];
-  for (const file of files) {
-    const text = fs.readFileSync(file, "utf8");
-    const kind = file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
-    const src = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, kind);
-    const lines = text.split("\n");
-    const check = (node) => {
-      const raw = node.text;
-      const { line, character } = src.getLineAndCharacterOfPosition(node.getStart(src));
-      if (lines[line].includes(ESCAPE)) return;
-      if (node.kind === K.JsxText && !raw.trim()) return;
-      if (SCHEME_RE.test(raw)) return;
-      const problems = [];
-      if (raw.includes(EM_DASH)) problems.push("em");
-      if (/:\s/.test(raw) || (FINAL.has(node.kind) && /:$/.test(raw.trimEnd()))) problems.push("colon");
-      if (problems.length === 0) return;
-      const snippet = raw.replace(/\s+/g, " ").trim().slice(0, 90);
-      hits.push({ file, line: line + 1, col: character + 1, tag: problems.join("+"), snippet });
-    };
-    const visit = (node) => {
-      if (CHUNK.has(node.kind)) check(node);
-      ts.forEachChild(node, visit);
-    };
-    visit(src);
-  }
+  const hits = files.flatMap((file) => scanSource(fs.readFileSync(file, "utf8"), file));
   hits.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line || a.col - b.col);
   return hits;
 }

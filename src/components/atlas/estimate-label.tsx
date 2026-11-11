@@ -5,7 +5,7 @@ export function EstimateLabel({ children, note }: { children: React.ReactNode; n
   return (
     <span className="inline-flex items-center gap-1">
       {children}
-      <span className="font-mono text-label text-ink-500">est.</span>
+      <span className="font-mono text-label text-ink-300">est.</span>
       <InfoTip label="Why this is an estimate">{note}</InfoTip>
     </span>
   );

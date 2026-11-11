@@ -71,7 +71,7 @@ export function ConcentrationCurve({ projects, metric, scale, onOpen }: Props) {
             <span className="font-semibold">Top 10</span> hold <span className="tabular font-semibold">{fmtPct(top10)}</span>
           </span>
         )}
-        <span className="text-muted-foreground">
+        <span className="text-ink-300">
           {n} project{n === 1 ? "" : "s"} with {METRIC_LABEL[focus]}
           {metric === "count" && " (TVL is shown while Projects is the metric)"}
         </span>
@@ -110,7 +110,7 @@ export function ConcentrationCurve({ projects, metric, scale, onOpen }: Props) {
           </LineChart>
         </ResponsiveContainer>
       </div>
-      <p className="mt-1 text-xs text-muted-foreground">Click a point to open the project. The log toggle stretches the first ranks so the top of the curve is readable.</p>
+      <p className="mt-1 text-xs text-ink-300">Click a point to open the project. The log toggle stretches the first ranks so the top of the curve is readable.</p>
     </div>
   );
 }
@@ -122,7 +122,7 @@ function CurveTip({ active, payload, metric }: TipProps<ConcentrationPoint> & { 
     <TooltipFrame title={`#${d.rank} ${d.name}`}>
       <TooltipRow label={METRIC_LABEL[metric]} value={fmtMetricFull(metric, d.value)} />
       <TooltipRow label="Cumulative share" value={fmtPct(d.share, 1)} />
-      <div className="pt-1 text-muted-foreground">Click to open</div>
+      <div className="pt-1 text-ink-300">Click to open</div>
     </TooltipFrame>
   );
 }

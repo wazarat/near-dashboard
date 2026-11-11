@@ -174,9 +174,9 @@ export function DataTable<T extends RowData>({ data, columns, initialSorting = [
           </Table>
         </div>
       )}
-      {footer && <div className="px-4 text-xs text-muted-foreground">{footer}</div>}
+      {footer && <div className="px-4 text-xs text-ink-300">{footer}</div>}
       {data.length > 0 && pageCount > 1 && (
-        <div className="flex items-center justify-between gap-2 px-4 text-xs text-muted-foreground">
+        <div className="flex items-center justify-between gap-2 px-4 text-xs text-ink-300">
           <span>
             {from}–{to} of {data.length}
           </span>

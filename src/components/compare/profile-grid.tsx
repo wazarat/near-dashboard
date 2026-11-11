@@ -23,13 +23,13 @@ export function profileTakeaway(projects: Project[]): string {
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <dt className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</dt>
+      <dt className="text-[10px] font-semibold uppercase tracking-wide text-ink-300">{label}</dt>
       <dd className="break-words">{children}</dd>
     </div>
   );
 }
 
-const Muted = ({ children }: { children: ReactNode }) => <span className="text-muted-foreground">{children}</span>;
+const Muted = ({ children }: { children: ReactNode }) => <span className="text-ink-300">{children}</span>;
 
 interface Props {
   projects: Project[];
@@ -70,7 +70,7 @@ export function ProfileGrid({ projects, onOpen }: Props) {
                     {p.statusGroup === "Legacy listing" && <Muted> · status unknown (legacy directory)</Muted>}
                   </Row>
                   <Row label="Funding type">
-                    <span className={p.fundingType === "Not researched" ? "text-muted-foreground" : undefined}>{p.fundingType}</span>
+                    <span className={p.fundingType === "Not researched" ? "text-ink-300" : undefined}>{p.fundingType}</span>
                     {rounds.length > 0 && (
                       <Muted>
                         {" "}

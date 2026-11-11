@@ -132,7 +132,7 @@ function WeekTip({ active, payload }: TipProps<WeekRow>) {
       <TooltipRow label="Recipients (hash, est.)" value={fmtInt(r.uniqueRecipients)} />
       <TooltipRow label={`${LLAMA_LABEL}, same days`} value={r.llamaVolume === null ? "DefiLlama incomplete" : fmtUsdFull(r.llamaVolume)} color={LLAMA_COLOR} />
       {r.ratio !== null && <TooltipRow label="1Click share" value={fmtPct(r.ratio, 1)} />}
-      {!r.full && <div className="pt-1 text-muted-foreground">Fewer than 7 complete Explorer days in this week.</div>}
+      {!r.full && <div className="pt-1 text-ink-300">Fewer than 7 complete Explorer days in this week.</div>}
     </TooltipFrame>
   );
 }

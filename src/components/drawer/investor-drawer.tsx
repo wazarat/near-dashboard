@@ -45,18 +45,18 @@ export function InvestorDrawer() {
 
             <div className="space-y-5 px-4 pb-8">
               <section className="space-y-2">
-                <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Portfolio ({inv.projects.length})</h4>
+                <h4 className="text-xs font-semibold uppercase tracking-wide text-ink-300">Portfolio ({inv.projects.length})</h4>
                 <ul className="flex flex-wrap gap-1.5">
                   {inv.projects.map((name, i) => {
                     const known = projectById(inv.projectIds[i]);
                     return (
                       <li key={`${name}-${i}`}>
                         {known ? (
-                          <button type="button" onClick={() => openProject(known.id)} className="text-xs text-ink-100 underline-offset-2 hover:text-ink-50 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60">
+                          <button type="button" onClick={() => openProject(known.id)} className="text-xs text-ink-50 underline-offset-2 hover:text-ink-50 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60">
                             {name}
                           </button>
                         ) : (
-                          <span className="text-xs text-ink-400" title="No project row in the Atlas">
+                          <span className="text-xs text-ink-300" title="No project row in the Atlas">
                             {name}
                           </span>
                         )}
@@ -69,15 +69,15 @@ export function InvestorDrawer() {
               <Separator />
 
               <section className="space-y-2">
-                <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Rounds ({mine.length})</h4>
+                <h4 className="text-xs font-semibold uppercase tracking-wide text-ink-300">Rounds ({mine.length})</h4>
                 {mine.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No rounds found for this investor.</p>
+                  <p className="text-sm text-ink-300">No rounds found for this investor.</p>
                 ) : (
                   <ul className="divide-y rounded-md border text-sm">
                     {mine.map((r) => {
                       const lead = isLead(inv, r);
                       return (
-                        <li key={r.id} className={`space-y-0.5 px-3 py-2 ${r.sourced ? "" : "text-muted-foreground"}`}>
+                        <li key={r.id} className={`space-y-0.5 px-3 py-2 ${r.sourced ? "" : "text-ink-300"}`}>
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <span className="min-w-0 font-medium">
                               {r.projectId && projectById(r.projectId) ? (
@@ -87,15 +87,15 @@ export function InvestorDrawer() {
                               ) : (
                                 <span title="No project row in the Atlas">{r.project}</span>
                               )}
-                              <span className="text-muted-foreground"> · {r.roundType}</span>
+                              <span className="text-ink-300"> · {r.roundType}</span>
                             </span>
-                            <span className="tabular shrink-0 text-muted-foreground" title={r.amount !== null ? `${fmtUsdFull(r.amount)}${r.amountNote ? ` · ${r.amountNote}` : ""}` : (r.amountNote ?? "No amount in the source")}>
+                            <span className="tabular shrink-0 text-ink-300" title={r.amount !== null ? `${fmtUsdFull(r.amount)}${r.amountNote ? ` · ${r.amountNote}` : ""}` : (r.amountNote ?? "No amount in the source")}>
                               {r.amount !== null ? fmtUsd(r.amount) : "undisclosed"}
                             </span>
                           </div>
-                          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-ink-300">
                             <span>{r.date ? fmtEventDate(r.date, r.monthOnly) : "undated"}</span>
-                            <span className={`font-mono text-label ${lead ? "text-ink-200" : "text-ink-500"}`}>{lead ? "lead" : "other"}</span>
+                            <span className="font-mono text-label text-ink-300">{lead ? "lead" : "other"}</span>
                             {r.nearRelated.startsWith("Yes") ? <span title={r.nearRelated}>◆ NEAR</span> : <span title={r.nearRelated}>partial</span>}
                             {r.confidence !== "Sourced" && <ConfidenceTag confidence={r.confidence} />}
                             {r.sourceUrl && (
@@ -109,7 +109,7 @@ export function InvestorDrawer() {
                     })}
                   </ul>
                 )}
-                <p className="text-xs text-muted-foreground">Amounts are the whole round, not this investor&apos;s share. Rounds without a linked primary source are muted and carry a re-verify tag.</p>
+                <p className="text-xs text-ink-300">Amounts are the whole round, not this investor&apos;s share. Rounds without a linked primary source are muted and carry a re-verify tag.</p>
               </section>
             </div>
           </>

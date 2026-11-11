@@ -171,7 +171,7 @@ export function VolumeChart({ data, range, scale, onScaleChange }: { data: Data;
               </ComposedChart>
             </ResponsiveContainer>
           </div>
-          {useLog && <p className="mt-1 text-xs text-muted-foreground">Log axis, days with zero volume are not drawn.</p>}
+          {useLog && <p className="mt-1 text-xs text-ink-300">Log axis, days with zero volume are not drawn.</p>}
         </div>
       );
       }}
@@ -189,7 +189,7 @@ function VolumeTip({ active, payload }: TipProps<VolumeRow>) {
       {r.recipients !== null && <TooltipRow label="Recipients (hash, est.)" value={fmtInt(r.recipients)} />}
       <TooltipRow label={LLAMA_LABEL} value={r.llama === null ? "no DefiLlama point" : fmtUsdFull(r.llama)} color={LLAMA_COLOR} />
       {r.ratio !== null && <TooltipRow label="1Click share" value={fmtPct(r.ratio, 1)} />}
-      {r.explorer !== null && r.partial && <div className="pt-1 text-muted-foreground">Partial Explorer day, more rows may still arrive.</div>}
+      {r.explorer !== null && r.partial && <div className="pt-1 text-ink-300">Partial Explorer day, more rows may still arrive.</div>}
     </TooltipFrame>
   );
 }

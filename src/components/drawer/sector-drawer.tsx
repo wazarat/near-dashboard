@@ -45,13 +45,13 @@ export function SectorDrawer() {
             </SheetHeader>
             <div className="space-y-5 px-4 pb-8">
               <section className="space-y-2">
-                <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Ranked leaders</h4>
-                {leaders.length === 0 && <p className="text-sm text-muted-foreground">No ranked leaders recorded for this sector.</p>}
+                <h4 className="text-xs font-semibold uppercase tracking-wide text-ink-300">Ranked leaders</h4>
+                {leaders.length === 0 && <p className="text-sm text-ink-300">No ranked leaders recorded for this sector.</p>}
                 <ol className="space-y-2">
                   {leaders.map((l) => (
                     <li key={`${l.sector}-${l.rank}`} className="rounded-md border p-3 text-sm">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="tabular text-xs font-semibold text-muted-foreground">#{l.rank}</span>
+                        <span className="tabular text-xs font-semibold text-ink-300">#{l.rank}</span>
                         {l.projectId ? (
                           <button type="button" className="font-medium underline-offset-2 hover:underline" onClick={() => openProject(l.projectId)}>
                             {l.name}
@@ -59,17 +59,17 @@ export function SectorDrawer() {
                         ) : (
                           <span className="font-medium">{l.name}</span>
                         )}
-                        <span className="text-xs text-muted-foreground">{l.status}</span>
+                        <span className="text-xs text-ink-300">{l.status}</span>
                       </div>
-                      <p className="mt-1 text-muted-foreground">{l.why}</p>
+                      <p className="mt-1 text-ink-300">{l.why}</p>
                       <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
                         {l.website && (
                           <a href={l.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 underline-offset-2 hover:underline">
-                            {displayUrl(l.website)} <ExternalLink className="size-3 text-muted-foreground" />
+                            {displayUrl(l.website)} <ExternalLink className="size-3 text-ink-300" />
                           </a>
                         )}
                         {l.evidenceUrl && (
-                          <a href={l.evidenceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-muted-foreground underline-offset-2 hover:underline">
+                          <a href={l.evidenceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-ink-300 underline-offset-2 hover:underline">
                             Evidence <ExternalLink className="size-3" />
                           </a>
                         )}
@@ -80,7 +80,7 @@ export function SectorDrawer() {
               </section>
               <Separator />
               <section className="space-y-2">
-                <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">All other projects ({rest.length})</h4>
+                <h4 className="text-xs font-semibold uppercase tracking-wide text-ink-300">All other projects ({rest.length})</h4>
                 <ul className="divide-y rounded-md border">
                   {rest.map((p) => (
                     <li key={p.id}>
@@ -90,7 +90,7 @@ export function SectorDrawer() {
                           <ChainChip chain={p.chain} />
                           <TierBadge tier={p.tier} className="hidden sm:inline-flex" />
                         </span>
-                        <span className="tabular shrink-0 text-xs text-muted-foreground">{metric === "count" ? p.statusGroup : fmtMetric(metric, p[metric])}</span>
+                        <span className="tabular shrink-0 text-xs text-ink-300">{metric === "count" ? p.statusGroup : fmtMetric(metric, p[metric])}</span>
                       </button>
                     </li>
                   ))}

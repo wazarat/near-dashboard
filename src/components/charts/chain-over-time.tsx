@@ -78,7 +78,7 @@ export function ChainOverTime({ range }: { range: Range }) {
                       <span className="ml-auto text-ink-300">{CHAIN_LABEL[chain]}</span>
                     </div>
                     {stats && (
-                      <p className="mb-1 font-mono text-label text-ink-400">
+                      <p className="mb-1 font-mono text-label text-ink-300">
                         min {fmtUsd(stats.min)} max {fmtUsd(stats.max)} {fmtPctSigned(stats.change)}
                       </p>
                     )}

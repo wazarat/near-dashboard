@@ -56,7 +56,7 @@ const columns: AnyColumnDef<IncidentRow>[] = [
     sortUndefined: "last",
     cell: ({ getValue }) => {
       const v = getValue();
-      return v ? <ClampedText text={v} maxWidth="max-w-md" /> : <span className="text-ink-400">{NONE}</span>;
+      return v ? <ClampedText text={v} maxWidth="max-w-md" /> : <span className="text-ink-300">{NONE}</span>;
     },
   }),
   h.accessor("amount", {
@@ -65,15 +65,15 @@ const columns: AnyColumnDef<IncidentRow>[] = [
     cell: ({ row }) => {
       const r = row.original;
       return r.amount === undefined ? (
-        <span className="text-ink-400">not stated</span>
+        <span className="text-ink-300">not stated</span>
       ) : (
         <span title={`${fmtUsdFull(r.amount)}${r.amountNote ? `, ${r.amountNote}` : ""}`}>{fmtUsd(r.amount)}</span>
       );
     },
     meta: { align: "right" },
   }),
-  h.accessor((r) => r.amountNote ?? undefined, { id: "amountNote", header: "Amount note", sortUndefined: "last", cell: ({ getValue }) => (getValue() ? <ClampedText text={getValue() as string} maxWidth="max-w-[14rem]" threshold={70} /> : <span className="text-ink-400">{NONE}</span>), meta: { hideBelow: "lg" } }),
-  h.accessor("projects", { header: "Projects", cell: ({ getValue }) => (getValue() ? <ClampedText text={getValue()} maxWidth="max-w-[12rem]" threshold={60} /> : <span className="text-ink-400">{NONE}</span>), meta: { hideBelow: "md" } }),
+  h.accessor((r) => r.amountNote ?? undefined, { id: "amountNote", header: "Amount note", sortUndefined: "last", cell: ({ getValue }) => (getValue() ? <ClampedText text={getValue() as string} maxWidth="max-w-[14rem]" threshold={70} /> : <span className="text-ink-300">{NONE}</span>), meta: { hideBelow: "lg" } }),
+  h.accessor("projects", { header: "Projects", cell: ({ getValue }) => (getValue() ? <ClampedText text={getValue()} maxWidth="max-w-[12rem]" threshold={60} /> : <span className="text-ink-300">{NONE}</span>), meta: { hideBelow: "md" } }),
   h.accessor((r) => r.sourceUrl ?? undefined, {
     id: "source",
     header: "Source",
@@ -82,10 +82,10 @@ const columns: AnyColumnDef<IncidentRow>[] = [
       const v = getValue();
       return v ? (
         <a href={v} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 whitespace-nowrap underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60" title={displayUrl(v)}>
-          source <ExternalLink className="size-3 text-ink-400" />
+          source <ExternalLink className="size-3 text-ink-300" />
         </a>
       ) : (
-        <span className="text-ink-400">{NONE}</span>
+        <span className="text-ink-300">{NONE}</span>
       );
     },
   }),

@@ -23,7 +23,7 @@ export function ConfidenceTag({ confidence }: { confidence: string }) {
   const sourced = confidence === "Sourced";
   return (
     <span
-      className={cn("whitespace-nowrap font-mono text-label", sourced ? "text-ink-300" : "text-ink-500")}
+      className={cn("whitespace-nowrap font-mono text-label", sourced ? "text-ink-300" : "text-ink-300")}
       title={sourced ? "Backed by the linked source" : "Not fully verified against a primary source; re-verify before quoting"}
     >
       {confidence}
@@ -32,7 +32,7 @@ export function ConfidenceTag({ confidence }: { confidence: string }) {
 }
 
 function InvestorList({ names, onOpen }: { names: string[]; onOpen?: (id: string) => void }) {
-  if (names.length === 0) return <span className="text-ink-400">{NONE}</span>;
+  if (names.length === 0) return <span className="text-ink-300">{NONE}</span>;
   return (
     <span className="flex max-w-xs flex-wrap gap-x-1">
       {names.map((n, i) => {
@@ -67,7 +67,7 @@ export function roundColumns(onOpenProject: (id: string) => void, onOpenInvestor
     h.accessor((r) => r.date ?? undefined, {
       id: "date",
       header: "Date",
-      cell: ({ row }) => (row.original.date ? <span className="whitespace-nowrap">{fmtEventDate(row.original.date, row.original.monthOnly)}</span> : <span className="text-muted-foreground">undated</span>),
+      cell: ({ row }) => (row.original.date ? <span className="whitespace-nowrap">{fmtEventDate(row.original.date, row.original.monthOnly)}</span> : <span className="text-ink-300">undated</span>),
       sortUndefined: "last",
     }),
     h.accessor("project", {
@@ -97,7 +97,7 @@ export function roundColumns(onOpenProject: (id: string) => void, onOpenInvestor
       header: "Amount",
       cell: ({ row }) =>
         row.original.amount === null ? (
-          <span className="text-muted-foreground" title={row.original.amountNote ?? "No amount in the source"}>
+          <span className="text-ink-300" title={row.original.amountNote ?? "No amount in the source"}>
             undisclosed
           </span>
         ) : (
@@ -123,7 +123,7 @@ export function roundColumns(onOpenProject: (id: string) => void, onOpenInvestor
             {v}
           </span>
         ) : (
-          <span className="text-ink-400">{NONE}</span>
+          <span className="text-ink-300">{NONE}</span>
         );
       },
       sortUndefined: "last",
@@ -136,7 +136,7 @@ export function roundColumns(onOpenProject: (id: string) => void, onOpenInvestor
         return v.startsWith("Yes") ? (
           <span className="whitespace-nowrap">◆ {v}</span>
         ) : (
-          <span className="block max-w-[10rem] truncate text-muted-foreground" title={v}>
+          <span className="block max-w-[10rem] truncate text-ink-300" title={v}>
             {v}
           </span>
         );
@@ -151,10 +151,10 @@ export function roundColumns(onOpenProject: (id: string) => void, onOpenInvestor
         const v = getValue();
         return v ? (
           <a href={v} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="inline-flex items-center gap-1 whitespace-nowrap underline-offset-2 hover:underline" aria-label={`Source for ${row.original.project} ${row.original.roundType}`}>
-            link <ExternalLink className="size-3 text-muted-foreground" />
+            link <ExternalLink className="size-3 text-ink-300" />
           </a>
         ) : (
-          <span className="text-ink-400">{NONE}</span>
+          <span className="text-ink-300">{NONE}</span>
         );
       },
       sortUndefined: "last",
@@ -189,12 +189,12 @@ export function RoundsTable({ rounds, visible, onlySelection, onOnlySelectionCha
             Funding rounds ({visible.length}
             {onlySelection && visible.length !== rounds.length ? ` of ${rounds.length}` : ""})
           </h3>
-          <label htmlFor={checkboxId} className="inline-flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
+          <label htmlFor={checkboxId} className="inline-flex cursor-pointer items-center gap-2 text-xs text-ink-300">
             <Checkbox id={checkboxId} checked={onlySelection} onCheckedChange={(v) => onOnlySelectionChange(v === true)} />
             Only projects in the current selection
           </label>
         </div>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-ink-300">
           Individual rounds, grants, token sales and strategic cheques from the rounds file. {sourced} of {visible.length} are backed by a linked primary source; the rest are tagged for re-verification and shown muted.{" "}
           {disclosed.length > 0 && (
             <>
@@ -212,7 +212,7 @@ export function RoundsTable({ rounds, visible, onlySelection, onOnlySelectionCha
           pageSize={25}
           dense
           getRowId={(r) => r.id}
-          rowClassName={(r) => (r.sourced ? undefined : "text-muted-foreground")}
+          rowClassName={(r) => (r.sourced ? undefined : "text-ink-300")}
           emptyMessage={onlySelection ? "No rounds for projects in the current selection." : "No funding rounds recorded."}
         />
       </CardContent>

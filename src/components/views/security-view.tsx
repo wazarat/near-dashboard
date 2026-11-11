@@ -14,7 +14,7 @@ import { FACT_HELP, FACT_TYPES, securityAggregates } from "@/lib/security";
 import { cn } from "@/lib/utils";
 
 /** Status as a plain word; colour sits on the word only when a condition is met or material (standard section 10). */
-const STATUS_WORD: Record<ChainRiskStatus, string> = { good: "text-signal-400", watch: "text-ink-100", serious: "text-rose-400", unknown: "text-ink-400" };
+const STATUS_WORD: Record<ChainRiskStatus, string> = { good: "text-signal-400", watch: "text-ink-50", serious: "text-rose-400", unknown: "text-ink-300" };
 
 function StatusWord({ status }: { status: ChainRiskStatus }) {
   const meta = CHAIN_RISK_STATUS_META[status];
@@ -33,7 +33,7 @@ function ChecklistItem({ item }: { item: ChainRiskItem }) {
         <StatusWord status={item.status} />
       </div>
       <p className="text-xs leading-snug text-ink-300">{item.detail}</p>
-      {item.source && <p className="mt-0.5 text-label text-ink-400">Source {item.source}</p>}
+      {item.source && <p className="mt-0.5 text-label text-ink-300">Source {item.source}</p>}
     </li>
   );
 }
@@ -85,7 +85,7 @@ export function SecurityView() {
                     {entity.name}
                   </h3>
                   <p className="mt-0.5 text-xs text-ink-300">{entity.summary}</p>
-                  <p className="mt-1.5 text-label text-ink-400">{tally.map((t) => `${t.n} ${CHAIN_RISK_STATUS_META[t.s].label.toLowerCase()}`).join(", ")}</p>
+                  <p className="mt-1.5 text-label text-ink-300">{tally.map((t) => `${t.n} ${CHAIN_RISK_STATUS_META[t.s].label.toLowerCase()}`).join(", ")}</p>
                   <ul className="mt-1 divide-y divide-ink-700/40">
                     {entity.items.map((item) => (
                       <ChecklistItem key={item.id} item={item} />
@@ -178,7 +178,7 @@ export function SecurityView() {
                       <TableCell className="tabular text-right">{fmtInt(s.projects)}</TableCell>
                       <TableCell className="tabular text-right">{fmtInt(s.checked)}</TableCell>
                       {FACT_TYPES.map((f) => (
-                        <TableCell key={f} className={cn("tabular text-right", s.counts[f] === 0 && "text-ink-400")}>
+                        <TableCell key={f} className={cn("tabular text-right", s.counts[f] === 0 && "text-ink-300")}>
                           {fmtInt(s.counts[f])}
                         </TableCell>
                       ))}
@@ -198,7 +198,7 @@ export function SecurityView() {
             <ScopeNote scope="whole-chain" />
           </div>
           <p className="mt-1 text-sm text-ink-300">{incidentTakeaway}</p>
-          <p className="text-label text-ink-400">Events of type Incident from the research events file, in its own wording. Amounts can be a loss, a bounty paid or value at risk, as the note says. Sort any column.</p>
+          <p className="text-label text-ink-300">Events of type Incident from the research events file, in its own wording. Amounts can be a loss, a bounty paid or value at risk, as the note says. Sort any column.</p>
         </CardHeader>
         <CardContent className="px-0">
           <IncidentsTable events={incidents} />
@@ -211,7 +211,7 @@ export function SecurityView() {
         </CardHeader>
         <CardContent className="space-y-1.5 px-4 text-sm text-ink-300">
           <p>
-            <strong className="font-medium text-ink-100">Not researched</strong> means security was never checked for that project. <strong className="font-medium text-ink-100">No published audit found</strong> means it was checked and no audit turned up in the sources consulted, which is not the same as unaudited.
+            <strong className="font-medium text-ink-50">Not researched</strong> means security was never checked for that project. <strong className="font-medium text-ink-50">No published audit found</strong> means it was checked and no audit turned up in the sources consulted, which is not the same as unaudited.
           </p>
           <p>
             The security pass covered {fmtInt(factsAll.checked)} rows of the full list{chainRows > 0 ? `, including the ${chainRows === 1 ? "base-chain entry" : "base-chain entries"} for NEAR and Aurora` : ""}. The remaining {fmtInt(factsAll.notChecked)} rows were never checked and read as Not researched everywhere.

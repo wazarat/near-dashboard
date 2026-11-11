@@ -35,7 +35,7 @@ export function InfoTip({
           aria-label={label}
           onClick={(e) => e.stopPropagation()}
           className={cn(
-            "inline-flex size-5 shrink-0 items-center justify-center rounded-md align-middle text-ink-400 transition-colors hover:bg-ink-800/60 hover:text-ink-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60 data-[state=open]:text-ink-50",
+            "inline-flex size-5 shrink-0 items-center justify-center rounded-md align-middle text-ink-300 transition-colors hover:bg-ink-800/60 hover:text-ink-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60 data-[state=open]:text-ink-50",
             className,
           )}
         >
@@ -47,7 +47,7 @@ export function InfoTip({
         align={align}
         sideOffset={6}
         onClick={(e) => e.stopPropagation()}
-        className="w-72 max-w-[calc(100vw-2rem)] rounded-lg border border-ink-700/60 bg-ink-900 p-3 text-left text-xs font-normal leading-relaxed text-ink-200 shadow-popover"
+        className="w-72 max-w-[calc(100vw-2rem)] rounded-lg border border-ink-700/60 bg-ink-900 p-3 text-left text-xs font-normal leading-relaxed text-ink-300 shadow-popover"
       >
         {title && <p className="mb-1 font-medium text-ink-50">{title}</p>}
         {children}

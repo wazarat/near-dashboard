@@ -4,8 +4,9 @@ import { cn } from "@/lib/utils";
 /**
  * A state written as plain text, the design system's replacement for
  * badges, chips and pills. Label size in ink-300, with any proof in mono
- * ink-500 after it. Colour appears only for a change in value or an error,
- * through `tone`.
+ * after it in the same tone (the standard allows two text tones, ink-50 and
+ * ink-300). Colour appears only for a change in value or an error, through
+ * `tone`.
  */
 export function PlainState({
   children,
@@ -27,14 +28,14 @@ export function PlainState({
       className={cn(
         "inline-flex items-baseline gap-1.5 whitespace-nowrap text-label",
         tone === "neutral" && "text-ink-300",
-        tone === "strong" && "text-ink-100",
+        tone === "strong" && "text-ink-50",
         tone === "up" && "text-signal-400",
         tone === "down" && "text-rose-400",
         className,
       )}
     >
       {children}
-      {proof !== undefined && proof !== null && <span className="font-mono text-ink-500">{proof}</span>}
+      {proof !== undefined && proof !== null && <span className="font-mono text-ink-300">{proof}</span>}
     </span>
   );
 }

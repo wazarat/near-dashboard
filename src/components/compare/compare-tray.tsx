@@ -28,10 +28,10 @@ export function CompareTray() {
         <span className="hidden text-label text-ink-300 sm:inline">Compare</span>
         <ul className="flex min-w-0 flex-1 gap-3 overflow-x-auto" aria-label="Projects in compare">
           {projects.map((p, i) => (
-            <li key={p.id} className="inline-flex shrink-0 items-center gap-1.5 text-xs text-ink-100">
+            <li key={p.id} className="inline-flex shrink-0 items-center gap-1.5 text-xs text-ink-50">
               <span aria-hidden="true" className="size-2 rounded-full" style={{ backgroundColor: CAT[i] }} />
               <span className="max-w-[9rem] truncate">{p.name}</span>
-              <button type="button" onClick={() => remove(p.id)} aria-label={`Remove ${p.name} from compare`} className="rounded text-ink-400 hover:text-ink-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60">
+              <button type="button" onClick={() => remove(p.id)} aria-label={`Remove ${p.name} from compare`} className="rounded text-ink-300 hover:text-ink-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60">
                 <X className="size-3" />
               </button>
             </li>

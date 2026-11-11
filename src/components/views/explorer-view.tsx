@@ -100,7 +100,7 @@ export function ExplorerView() {
             <h2 className="text-sm font-semibold">Explorer</h2>
             <ScopeNote />
           </div>
-          <p className="text-sm text-muted-foreground">Every project in the current selection with every research column. Click a name or row for the full record and its sources; use Columns to show more fields.</p>
+          <p className="text-sm text-ink-300">Every project in the current selection with every research column. Click a name or row for the full record and its sources; use Columns to show more fields.</p>
         </CardHeader>
         <CardContent className="px-0">
           <DataTable

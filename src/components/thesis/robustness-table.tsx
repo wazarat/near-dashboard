@@ -94,13 +94,13 @@ export function RobustnessTable({ data }: { data: ThesisJson }) {
                 <TableRow key={v.id} className={v.id === "base" ? "bg-muted/30" : undefined}>
                   <TableCell className="min-w-[180px] max-w-[260px] whitespace-normal align-top">
                     <div className="font-medium">{v.label}</div>
-                    <div className="mt-0.5 text-[11px] leading-snug text-muted-foreground">{v.description}</div>
+                    <div className="mt-0.5 text-[11px] leading-snug text-ink-300">{v.description}</div>
                   </TableCell>
                   {usage.map((u) => {
                     const cell = v.results[u.key];
                     if (!cell) {
                       return (
-                        <TableCell key={u.key} className="align-top text-muted-foreground">
+                        <TableCell key={u.key} className="align-top text-ink-300">
                           n/a
                         </TableCell>
                       );
@@ -113,12 +113,12 @@ export function RobustnessTable({ data }: { data: ThesisJson }) {
                             <span className="sr-only">Intents volume </span>
                             {cell.intents ? `${fmtR(cell.intents.r)} @${fmtLag(cell.intents.lag, unit(v))}` : "no positive lead"}
                           </span>
-                          <span className="inline-flex items-center gap-1.5 tabular text-muted-foreground">
+                          <span className="inline-flex items-center gap-1.5 tabular text-ink-300">
                             <span aria-hidden="true" className="inline-block size-2 rounded-full" style={{ backgroundColor: CHART.price }} />
                             <span className="sr-only">Price </span>
                             vs {cell.price ? `${fmtR(cell.price.r)} @${fmtLag(cell.price.lag, unit(v))}` : "no positive lead"}
                           </span>
-                          <span className="text-[10px] text-muted-foreground">n = {cell.n}</span>
+                          <span className="text-[10px] text-ink-300">n = {cell.n}</span>
                         </div>
                       </TableCell>
                     );

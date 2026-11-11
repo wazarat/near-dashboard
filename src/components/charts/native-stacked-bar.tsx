@@ -70,7 +70,7 @@ export function NativeStackedBar({ projects }: { projects: Project[] }) {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <p className="mt-1 text-xs text-muted-foreground">Rows with no reported figure in the selection are drawn empty.</p>
+      <p className="mt-1 text-xs text-ink-300">Rows with no reported figure in the selection are drawn empty.</p>
     </div>
   );
 }
@@ -83,7 +83,7 @@ function StackTip({ active, payload }: TipProps<NativeStackRow>) {
       {NATIVE_CHAINS.map((c) => (
         <TooltipRow key={c} label={CHAIN_SHORT[c]} color={CHAIN_COLOR[c]} value={d.total === null ? "no data" : `${fmtPct(d[c])} · ${fmtMetric(d.metric, d.raw[c])}`} />
       ))}
-      <div className="pt-1 text-muted-foreground">
+      <div className="pt-1 text-ink-300">
         {METRIC_SHORT[d.metric]} total {d.total === null ? "no data" : fmtMetric(d.metric, d.total)}
       </div>
     </TooltipFrame>

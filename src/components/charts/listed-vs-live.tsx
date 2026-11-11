@@ -99,7 +99,7 @@ export function ListedVsLive({ projects, onSelect }: { projects: Project[]; onSe
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+          <ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink-300">
             {rows.map((r) => (
               <li key={r.via}>
                 <button type="button" onClick={() => onSelect(r.via)} title={`Filter to ${r.via}`} className="rounded underline-offset-2 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
@@ -121,7 +121,7 @@ function LiveTip({ active, payload }: TipProps<Row>) {
     <TooltipFrame title={d.via}>
       <TooltipRow label="Listed" value={d.listed} color={LISTED} />
       <TooltipRow label="With any onchain metric" value={`${d.live} (${fmtPct(d.share)})`} color={LIVE} />
-      <div className="pt-1 text-muted-foreground">Click to filter by this source</div>
+      <div className="pt-1 text-ink-300">Click to filter by this source</div>
     </TooltipFrame>
   );
 }
