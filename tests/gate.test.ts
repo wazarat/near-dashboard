@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { allowed, compareChange, decodePending, encodePending, GATED_PATHS, isGatedPath, PUBLIC_PATHS, PUBLIC_PROJECT_SECTIONS, replayPending, unclassifiedTabs } from "@/lib/gate";
+import { allowed, compareChange, decodePending, encodePending, GATED_PATHS, isGatedPath, PUBLIC_PAGES_OUTSIDE_NAV, PUBLIC_PATHS, PUBLIC_PROJECT_SECTIONS, replayPending, unclassifiedTabs } from "@/lib/gate";
 import { NAV } from "@/lib/nav";
 
 describe("login wall rules", () => {
@@ -10,8 +10,12 @@ describe("login wall rules", () => {
 
   it("classifies every tab as public or gated, once", () => {
     expect(unclassifiedTabs()).toEqual([]);
-    expect([...PUBLIC_PATHS, ...GATED_PATHS].sort()).toEqual(NAV.map((n) => n.href).sort());
-    expect(new Set([...PUBLIC_PATHS, ...GATED_PATHS]).size).toBe(10);
+    const tabs = [...PUBLIC_PATHS, ...GATED_PATHS].filter((p) => !(PUBLIC_PAGES_OUTSIDE_NAV as readonly string[]).includes(p));
+    expect(tabs.sort()).toEqual(NAV.map((n) => n.href).sort());
+    expect(new Set(tabs).size).toBe(10);
+    // The one public page outside the tabs is the Help us track this list.
+    expect(PUBLIC_PAGES_OUTSIDE_NAV).toEqual(["/help-track/"]);
+    expect(isGatedPath("/help-track/")).toBe(false);
   });
 
   it("leaves Overview, Thesis and Compare open and gates the other seven tabs", () => {
@@ -34,6 +38,7 @@ describe("login wall rules", () => {
     expect(allowed({ path: "/" }, false, true)).toBe(true);
     expect(allowed({ path: "/thesis/" }, false, true)).toBe(true);
     expect(allowed({ path: "/compare/" }, false, true)).toBe(true);
+    expect(allowed({ path: "/help-track/" }, false, true)).toBe(true);
     expect(allowed({ path: "/intents/" }, false, true)).toBe(false);
     for (const action of ["compare-add", "project-detail", "sector-detail", "investor-detail", "funding-detail"] as const) expect(allowed({ action }, false, true)).toBe(false);
     expect(PUBLIC_PROJECT_SECTIONS).toEqual(["header", "overview", "traction"]);

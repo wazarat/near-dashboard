@@ -24,6 +24,7 @@ const PAGES: Array<{ name: string; url: string; expect: string }> = [
   { name: "thesis", url: "/thesis/", expect: "Cross-chain volume through NEAR Intents" },
   { name: "investors", url: "/investors/?investor=dragonfly-capital", expect: "Portfolio (" },
   { name: "compare-empty", url: "/compare/", expect: "Liquid staking" },
+  { name: "help-track", url: "/help-track/", expect: "Help us track this" },
   { name: "compare-liquid-staking", url: "/compare/?compare=meta-pool,rhea-lst-rnear,linear-protocol&cm=fees", expect: "Meta Pool" },
 ];
 
@@ -69,6 +70,23 @@ test("the tabs sit in the header row from 1360px and drop to their own row below
       expect(r.tabs, `tabs on their own row at ${width}`).toBeGreaterThan(r.lockup);
     }
   }
+});
+
+test("Help us track this lists not-tracked projects by metric and is linked from the footer and from Not tracked rows", async ({ page }) => {
+  await page.goto("/?project=rhea-lend-formerly-burrow");
+  const modal = page.getByTestId("project-modal");
+  await expect(modal.getByTestId("metric-row").first()).toBeVisible({ timeout: 15_000 });
+  // Lending carries no DEX volume row; its headline is total deposited.
+  await expect(modal.getByTestId("metric-row").first()).toContainText("Total deposited");
+  await expect(modal.getByText("30d DEX volume", { exact: true })).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  await page.locator("footer").getByRole("link", { name: "Help us track this" }).click();
+  await expect(page).toHaveURL(/\/help-track\/$/);
+  const groups = page.getByTestId("help-track-group");
+  await expect(groups.first()).toBeVisible({ timeout: 15_000 });
+  expect(await groups.count()).toBeGreaterThan(1);
+  await groups.first().locator("li button").first().click();
+  await expect(page.getByTestId("project-modal")).toBeVisible();
 });
 
 test("filters round-trip through the URL and the count updates", async ({ page }) => {

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { DataFreshness } from "@/components/atlas/data-freshness";
 import { meta } from "@/lib/data";
 import { SIBLING_ATLAS_URL } from "@/lib/env";
@@ -83,6 +84,11 @@ export function SiteFooter() {
               <a href="#methodology" className={LINK}>
                 Methodology
               </a>
+            </li>
+            <li>
+              <Link href="/help-track/" prefetch={false} className={LINK}>
+                Help us track this
+              </Link>
             </li>
             {SIBLING_ATLAS_URL && (
               <li>

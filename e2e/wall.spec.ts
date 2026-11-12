@@ -160,6 +160,13 @@ test("shared sector, investor and funding type links show a summary and one logi
   await expect(investor).not.toContainText("Portfolio (");
 });
 
+test("Help us track this is open to a logged-out reader", async ({ page }) => {
+  await page.goto("/help-track/");
+  await expect(page.getByTestId("help-track-group").first()).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId("login-wall")).toHaveCount(0);
+  await expect(page.getByTestId("login-dialog")).toHaveCount(0);
+});
+
 test("the footer methodology is open on a gated tab", async ({ page }) => {
   await page.goto("/funding/");
   await expect(page.getByTestId("login-dialog")).toBeVisible({ timeout: 15_000 });
