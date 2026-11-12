@@ -67,6 +67,10 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
     return coverageWhereLabel(c.tracked, c.applies);
   };
   const borrowed = sumOf(projects, "borrowed");
+  const stable = sumOf(projects, "stablecoinSupply");
+  const chainStable = meta.stablecoins ?? null;
+  // Unfiltered, the tile is every USD stablecoin on the two chains, each coin once; under a filter, the selection's coins.
+  const stableValue = filteredView || !chainStable ? stable.total : chainStable.near + chainStable.aurora;
   const intents = projects.find((p) => p.id === INTENTS_ID);
   const volExIntents = vol === null ? null : intents && intents.volume !== null ? vol - intents.volume : vol;
 
@@ -120,6 +124,14 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
       info: `30-day protocol revenue per DefiLlama, the part of fees the protocol or its token keeps. ${WHERE_HELP}`,
     },
     {
+      label: "Stablecoin supply",
+      value: fmtUsd(stableValue),
+      sub: !filteredView && chainStable ? `NEAR ${fmtUsd(chainStable.near)}, Aurora ${fmtUsd(chainStable.aurora)}` : coverageWhereLabel(stable.tracked, stable.applies),
+      full: fmtUsdFull(stableValue),
+      empty: stableValue === null,
+      info: "USD-pegged stablecoins circulating on NEAR plus Aurora per DefiLlama's stablecoin dashboard, each coin counted once even where the dataset lists it under two names (DAI and DAI by MakerDAO). With a filter set, only the selected stablecoin projects count.",
+    },
+    {
       label: "Total borrowed",
       value: fmtUsd(borrowed.total),
       sub: coverageWhereLabel(borrowed.tracked, borrowed.applies),
@@ -142,7 +154,7 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
         <ScopeNote legacy={legacy} />
         <LegacySwitch card="kpi" label="the KPI tiles" className="ml-auto" />
       </div>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
       {tiles.map((t) => (
         <div key={t.label} data-kpi={t.label} className={cn("card-lit rounded-xl border border-ink-700/60 bg-ink-900 px-4 py-3.5", t.empty && "border-ink-700/40")}>
           <div className="flex items-center justify-between gap-2">

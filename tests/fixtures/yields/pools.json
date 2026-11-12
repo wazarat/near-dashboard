@@ -1,0 +1,92 @@
+{
+ "data": [
+  {
+   "pool": "b5b80cad-b4bc-5c49-b9c1-52e16856ce26",
+   "project": "rhea-lst",
+   "chain": "Near",
+   "symbol": "RNEAR",
+   "tvlUsd": 63435453,
+   "apy": 4.43374
+  },
+  {
+   "pool": "9f402ef0-5c94-501b-aae4-42fe2f152494",
+   "project": "rhea-lst",
+   "chain": "Near",
+   "symbol": "XRHEA",
+   "tvlUsd": 4945791,
+   "apy": 3.7522
+  },
+  {
+   "pool": "1a54c607-d829-5621-87a7-e3b7debc51a1",
+   "project": "rhea-lend",
+   "chain": "Near",
+   "symbol": "USDC",
+   "tvlUsd": 2011115,
+   "apy": 9.00533
+  },
+  {
+   "pool": "d4c96d26-5869-5771-90d5-08fd54e1455e",
+   "project": "rhea-lend",
+   "chain": "Near",
+   "symbol": "USDT",
+   "tvlUsd": 1830145,
+   "apy": 9.77293
+  },
+  {
+   "pool": "ff1954ee-3052-4d0c-8898-a28dd07c87af",
+   "project": "rhea-lend",
+   "chain": "Near",
+   "symbol": "USDT.E",
+   "tvlUsd": 225542,
+   "apy": 2.57309
+  },
+  {
+   "pool": "2fc37959-7f8b-5016-a18d-902ab72b0d4b",
+   "project": "rhea-dex",
+   "chain": "Near",
+   "symbol": "USDT-USDC-USDT.E-USDC.E",
+   "tvlUsd": 104990,
+   "apy": 3.45785
+  },
+  {
+   "pool": "b5d16051-a8e2-48e9-8313-7d4ea7e98dca",
+   "project": "rhea-lend",
+   "chain": "Near",
+   "symbol": "USDC.E",
+   "tvlUsd": 59554,
+   "apy": 9.83437
+  },
+  {
+   "pool": "8920bb82-1516-49d3-afa7-7e0fcb9217f9",
+   "project": "rhea-lend",
+   "chain": "Near",
+   "symbol": "DAI",
+   "tvlUsd": 55828,
+   "apy": 4.38602
+  },
+  {
+   "pool": "ea1e4630-9a4c-5588-acb9-927cae1d88d5",
+   "project": "rhea-lend",
+   "chain": "Near",
+   "symbol": "FRAX",
+   "tvlUsd": 29311,
+   "apy": 13.45279
+  },
+  {
+   "pool": "94a8d511-c96e-5503-a81d-3357877d9c8a",
+   "project": "rhea-dex",
+   "chain": "Near",
+   "symbol": "FRAX-USDC",
+   "tvlUsd": 11042,
+   "apy": 6.02752
+  },
+  {
+   "pool": "eth-1",
+   "project": "aave-v3",
+   "chain": "Ethereum",
+   "symbol": "USDC",
+   "tvlUsd": 1,
+   "apy": 1
+  }
+ ]
+}

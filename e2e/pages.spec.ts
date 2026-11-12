@@ -89,6 +89,31 @@ test("Help us track this lists not-tracked projects by metric and is linked from
   await expect(page.getByTestId("project-modal")).toBeVisible();
 });
 
+test("Rhea Lend's pop-up shows total deposited, borrowed, TVL, utilization and borrow APY, and no DEX volume row", async ({ page }) => {
+  await page.goto("/?project=rhea-lend-formerly-burrow");
+  const rows = page.getByTestId("project-modal").getByTestId("metric-row");
+  await expect(rows.first()).toBeVisible({ timeout: 15_000 });
+  const labels = (await rows.locator("dt").allTextContents()).map((t) => t.trim());
+  expect(labels.slice(0, 5)).toEqual(["Total deposited", "Borrowed", "TVL", "Utilization", "Borrow APY"]);
+  expect(labels).not.toContain("30d DEX volume");
+  for (const label of ["Total deposited", "Borrowed", "TVL"]) await expect(rows.filter({ hasText: label }).first().locator("dd")).toContainText(/\$[\d,]+/);
+  await expect(rows.filter({ hasText: "Utilization" }).locator("dd")).toContainText(/\d+(\.\d)?%/);
+  await expect(rows.filter({ hasText: "Borrow APY" }).locator("dd")).toContainText(/\d+(\.\d)?%/);
+  await expect(page.getByTestId("project-hacks")).toContainText("Spot Price Manipulation");
+});
+
+test("Aurora's pop-up shows gas fees, transactions and DEX volume, never a flat $0", async ({ page }) => {
+  await page.goto("/?project=aurora");
+  const facts = page.getByTestId("project-modal").getByTestId("chain-fact");
+  await expect(facts.first()).toBeVisible({ timeout: 15_000 });
+  const text = (label: string) => facts.filter({ hasText: label }).locator("dd");
+  await expect(text("30d gas fees")).toHaveText(/^\$[\d.,]+[KM]?$/);
+  await expect(text("30d gas fees")).not.toHaveText("$0");
+  await expect(text("30d transactions")).toHaveText(/^[\d,]+$/);
+  await expect(text("30d DEX volume")).toHaveText(/^\$[\d.,]+[KMB]?$/);
+  await expect(text("Lifetime transactions")).toHaveText(/^[\d,]+$/);
+});
+
 test("filters round-trip through the URL and the count updates", async ({ page }) => {
   await page.goto("/?sector=Lending+%26+Credit&chain=NEAR+native");
   await expect(page.getByText(/Showing \d+ of 1,088 projects/)).toBeVisible();

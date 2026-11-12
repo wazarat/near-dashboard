@@ -27,6 +27,17 @@ export function crossCheck(name: string, a: { label: string; series: Series }, b
 }
 
 /**
+ * Every exploit on DefiLlama's hacks list should have an Incident in the events file for the same project within
+ * 45 days. One that does not is listed for review (a missing event, or a project matched wrongly); it never fails.
+ */
+export function hacksWithoutIncident(hacks: Array<{ project: string; name: string; date: string }>, incidents: Array<{ projectIds: string[]; date: string }>, days = 45): Finding[] {
+  const ms = (d: string) => Date.parse(`${d.slice(0, 10)}T00:00:00Z`);
+  return hacks
+    .filter((h) => !incidents.some((e) => e.projectIds.includes(h.project) && Math.abs(ms(e.date) - ms(h.date)) <= days * 86_400_000))
+    .map((h) => ({ rule: "hack-without-incident", severity: "review" as const, message: `${h.name} exploit on ${h.date} (DefiLlama hacks) has no Incident event for that project within ${days} days.` }));
+}
+
+/**
  * Gas fees missing (no value, or a reported 0) on days the chain still had transactions. More than `maxDays`
  * in a row within the last `windowDays` means the fee source has stopped, not that the chain did. Older gaps
  * (NEAR's 2020 history has some) are history, not an outage.

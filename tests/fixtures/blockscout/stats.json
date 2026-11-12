@@ -1,0 +1,25 @@
+{
+ "average_block_time": 576,
+ "coin_image": null,
+ "coin_price": null,
+ "coin_price_change_percentage": null,
+ "gas_price_updated_at": "2026-11-12T16:12:33.166390Z",
+ "gas_prices": {
+  "slow": 0.5,
+  "average": 0.5,
+  "fast": 0.5
+ },
+ "gas_prices_update_in": 11095,
+ "gas_used_today": "1047145979",
+ "market_cap": "0",
+ "network_utilization_percentage": 7.922462685883148e-11,
+ "secondary_coin_image": null,
+ "secondary_coin_price": null,
+ "static_gas_price": null,
+ "total_addresses": "12608928",
+ "total_blocks": "224228799",
+ "total_gas_used": "0",
+ "total_transactions": "82121950",
+ "transactions_today": "6876",
+ "tvl": null
+}

@@ -18,6 +18,7 @@ export const SEED_COLUMNS: Array<{ column: string; id: MetricId }> = [
   { column: "Stablecoin Supply on NEAR (USD)", id: "stablecoinSupply" },
   { column: "Stablecoin Supply on Aurora (USD)", id: "stablecoinSupply" },
   { column: "Token Holders on NEAR", id: "tokenHolders" },
+  { column: "Token Holders on Aurora", id: "tokenHoldersAurora" },
   { column: "Token Supply x Price on NEAR (USD)", id: "tokenSupplyValue" },
 ];
 
@@ -49,11 +50,15 @@ export function parseSeedRow(row: Record<string, string>): SeedRow | null {
   return { name, asOf, values };
 }
 
+export type LivePart = { values: Partial<Record<MetricId, number>>; asOf: string };
+
 /**
- * Live values first, then snapshot values for metrics no live source covered, each with its own date.
- * Total deposited is recomputed from live TVL plus live borrowed when both exist, so it never mixes days.
+ * Live values first, then snapshot values for metrics no live source covered, each with its own date. Several
+ * live sources can each add metrics, each with the day it was read. Total deposited is recomputed from live
+ * TVL plus live borrowed when both exist, so it never mixes days.
  */
-export function mergeExtra(live: { values: Partial<Record<MetricId, number>>; asOf: string } | null, seed: SeedRow | null, tvl: number | null): ProjectExtra | undefined {
+export function mergeExtra(lives: LivePart | LivePart[] | null, seed: SeedRow | null, tvl: number | null): ProjectExtra | undefined {
+  const parts = lives === null ? [] : Array.isArray(lives) ? lives : [lives];
   const out: ProjectExtra = { values: {}, asOf: {}, from: {} };
   if (seed) {
     for (const [id, v] of Object.entries(seed.values) as Array<[MetricId, number]>) {
@@ -62,7 +67,7 @@ export function mergeExtra(live: { values: Partial<Record<MetricId, number>>; as
       out.from[id] = "snapshot";
     }
   }
-  if (live) {
+  for (const live of parts) {
     for (const [id, v] of Object.entries(live.values) as Array<[MetricId, number]>) {
       out.values[id] = v;
       out.asOf[id] = live.asOf;

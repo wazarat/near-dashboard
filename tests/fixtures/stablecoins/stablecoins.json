@@ -1,0 +1,120 @@
+{
+ "peggedAssets": [
+  {
+   "id": "1",
+   "name": "Tether",
+   "symbol": "USDT",
+   "pegType": "peggedUSD",
+   "chainCirculating": {
+    "Near": {
+     "current": {
+      "peggedUSD": 39635866.7069655
+     }
+    },
+    "Aurora": {
+     "current": {
+      "peggedUSD": 1375683.1667481055
+     }
+    }
+   }
+  },
+  {
+   "id": "2",
+   "name": "USD Coin",
+   "symbol": "USDC",
+   "pegType": "peggedUSD",
+   "chainCirculating": {
+    "Near": {
+     "current": {
+      "peggedUSD": 91220755.67332616
+     }
+    },
+    "Aurora": {
+     "current": {
+      "peggedUSD": 2465123.8760060812
+     }
+    }
+   }
+  },
+  {
+   "id": "5",
+   "name": "Dai",
+   "symbol": "DAI",
+   "pegType": "peggedUSD",
+   "chainCirculating": {
+    "Near": {
+     "current": {
+      "peggedUSD": 787928.5205198677
+     }
+    },
+    "Aurora": {
+     "current": {
+      "peggedUSD": 51230.27712598759
+     }
+    }
+   }
+  },
+  {
+   "id": "7",
+   "name": "TrueUSD",
+   "symbol": "TUSD",
+   "pegType": "peggedUSD",
+   "chainCirculating": {
+    "Near": {
+     "current": {
+      "peggedUSD": 508.93060369242505
+     }
+    }
+   }
+  },
+  {
+   "id": "6",
+   "name": "Frax",
+   "symbol": "FRAX",
+   "pegType": "peggedUSD",
+   "chainCirculating": {
+    "Near": {
+     "current": {
+      "peggedUSD": 207149.792665029
+     }
+    },
+    "Aurora": {
+     "current": {
+      "peggedUSD": 48172.867272642514
+     }
+    }
+   }
+  },
+  {
+   "id": "54",
+   "name": "USN",
+   "symbol": "USN",
+   "pegType": "peggedUSD",
+   "chainCirculating": {
+    "Near": {
+     "current": {
+      "peggedUSD": 70087.48853246195
+     }
+    },
+    "Aurora": {
+     "current": {
+      "peggedUSD": 52732.410963238166
+     }
+    }
+   }
+  },
+  {
+   "id": "55",
+   "name": "EURA",
+   "symbol": "EURA",
+   "pegType": "peggedEUR",
+   "chainCirculating": {
+    "Aurora": {
+     "current": {
+      "peggedEUR": 3901.758560740841
+     }
+    }
+   }
+  }
+ ]
+}

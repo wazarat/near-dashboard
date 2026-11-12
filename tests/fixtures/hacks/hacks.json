@@ -1,0 +1,79 @@
+[
+ {
+  "name": "Skyward Finance",
+  "date": 1667347200,
+  "amount": 3000000,
+  "chain": [
+   "Near"
+  ],
+  "classification": "Input Validation",
+  "technique": "Missing Input Validation",
+  "defillamaId": null
+ },
+ {
+  "name": "Rhea Lend",
+  "date": 1776297600,
+  "amount": 18400000,
+  "chain": [
+   "Near"
+  ],
+  "classification": "Oracle Manipulation",
+  "technique": "Spot Price Manipulation",
+  "defillamaId": "1546"
+ },
+ {
+  "name": "Ref Finance",
+  "date": 1628985600,
+  "amount": 3203000,
+  "chain": [
+   "NEAR"
+  ],
+  "classification": "Input Validation",
+  "technique": "Missing Input Validation",
+  "defillamaId": null
+ },
+ {
+  "name": "Sweat Foundation",
+  "date": 1777420800,
+  "amount": 3500000,
+  "chain": [
+   "Near"
+  ],
+  "classification": "Protocol Logic",
+  "technique": "Withdrawal Logic Flaw",
+  "defillamaId": null
+ },
+ {
+  "name": "ApeCoin",
+  "date": 1647475200,
+  "amount": 820000,
+  "chain": [
+   "Ethereum"
+  ],
+  "classification": "Governance",
+  "technique": "Flashloan Governance Attack",
+  "defillamaId": "2665"
+ },
+ {
+  "name": "DefiChain",
+  "date": 1641081600,
+  "amount": null,
+  "chain": [
+   "DefiChain"
+  ],
+  "classification": "Token & Share Accounting",
+  "technique": "Incorrect Fee Accounting",
+  "defillamaId": "chain#defichain"
+ },
+ {
+  "name": "Coinrail",
+  "date": 1528588800,
+  "amount": 37200000,
+  "chain": [
+   "Ethereum"
+  ],
+  "classification": "Access Control",
+  "technique": "Improper Access Control",
+  "defillamaId": null
+ }
+]

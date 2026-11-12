@@ -44,7 +44,15 @@ describe("sector metric registry", () => {
     expect(dead.statusGroup).toBe("Defunct");
     expect(valueState(dead, "volume")).toMatchObject({ state: "inactive", value: 50 });
     // Not-applicable rows never reach the project pop-up.
-    expect(projectMetrics(mk("L", "Lending & Credit")).map((m) => m.id)).toEqual(["totalDeposited", "borrowed", "tvl", "fees", "revenue"]);
+    const shown = (p: Project) => projectMetrics(p).filter((m) => m.state !== "not-applicable").map((m) => m.id);
+    expect(shown(mk("L", "Lending & Credit"))).toEqual(["totalDeposited", "borrowed", "tvl", "utilization", "borrowApy", "fees", "revenue"]);
+    // Token metrics only apply to a project with a token.
+    expect(shown(mk("T", "Lending & Credit", "Mainnet", { token: "BRRR" }))).toContain("tokenHolders");
+    // NEAR Intents' GeckoTerminal liquidity is a model, so it never shows (accuracy rule 6).
+    expect(valueState(mk("NEAR Intents", "DEXs & Liquidity", "Mainnet", { id: "near-intents" }), "dexLiquidity").state).toBe("not-applicable");
+    // A stablecoin listed under two names shows its supply on one row only (accuracy rule 9).
+    const dup = mk("DAI", "Stablecoins & Payments", "Mainnet", { extra: { values: {}, asOf: {}, from: {}, countedOn: { stablecoinSupply: "DAI by MakerDAO" } } });
+    expect(valueState(dup, "stablecoinSupply")).toMatchObject({ state: "not-applicable", reason: "Counted once, on DAI by MakerDAO." });
   });
 
   it("never shows supply times price for a stablecoin (accuracy rule 5)", () => {

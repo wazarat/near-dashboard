@@ -10,13 +10,15 @@ import fs from "node:fs";
 import path from "node:path";
 import { daysBetween, dateRange, utcToday, type DateStr } from "../src/lib/dates";
 import { emptyOverview, type ChainHistory, type HistoryMeta, type LlamaProtocolSnap, type Series, type SeriesMap } from "../src/lib/history-types";
-import { mergeExtra, parseSeedRow, type SeedRow } from "../src/lib/extra-metrics";
+import { mergeExtra, parseSeedRow, type LivePart, type SeedRow } from "../src/lib/extra-metrics";
+import { loadExtras } from "./lib/extras";
+import type { ChainStatsFile } from "../src/lib/extra-types";
 import type { MetricId } from "../src/lib/sector-metrics";
 import { gasFeeGaps, txnGaps } from "../src/lib/chain-gaps";
-import { alignSeries, applyLive, changes, computeLive, emptyLive, sparkDates, sumWindow, valueAt, windowEnd, type HistoryStore } from "../src/lib/live";
+import { alignSeries, applyLive, changes, computeLive, emptyLive, projectFlow, sparkDates, sumWindow, valueAt, windowEnd, type HistoryStore } from "../src/lib/live";
 import { parseMapRows, rowsByProject } from "../src/lib/mapping";
 import { aggregateInvestors, NameResolver, parseMemoInsights, toEvent, toLeader, toProject, toRound, uniqueSorted } from "../src/lib/parse";
-import { CHAIN_SERIES, NEARBLOCKS_SERIES, TIERS, type ChainData, type ChainLatest, type ContractInfo, type Meta, type Project, type SeriesFile, type Tier } from "../src/lib/types";
+import { CHAIN_SERIES, NEARBLOCKS_SERIES, TIERS, type ChainData, type ChainFacts, type ChainLatest, type ContractInfo, type Meta, type Project, type SeriesFile, type Tier } from "../src/lib/types";
 import { EMPTY_INTENTS, summarizeIntents } from "../src/lib/intents";
 import { validate, type Expected } from "../src/lib/validate";
 import { readDaily as readIntentsDaily } from "./fetch/intents";
@@ -68,6 +70,8 @@ function loadHistory(): History | null {
     revenue: pair("revenue"),
     holdersRevenue: pair("holders-revenue"),
     supplySideRevenue: pair("supply-side-revenue"),
+    aggregators: pair("aggregators"),
+    bridgeAggregators: pair("bridge-aggregators"),
     nameOfSlug: new Map(protocols.map((p) => [p.slug, p.name])),
     mcapOfSlug: new Map(protocols.map((p) => [p.slug, p.mcap])),
     activity: readJson(path.join(HISTORY, "bigquery", "project-activity.json"), {}),
@@ -142,6 +146,17 @@ function buildChain(chain: ChainHistory, end: DateStr): ChainData {
         price: changes(nb("price"), end, "stock"),
       },
     },
+  };
+}
+
+/** 30-day chain sums (gaps left out) plus the explorers' lifetime stats, for the NEAR Protocol and Aurora pop-ups. */
+function chainFactsOf(chain: ChainHistory | null, end: DateStr | null, stats: ChainStatsFile | null): ChainFacts {
+  const sum = (s: Series | undefined) => (chain && end && s ? sumWindow(s.filter(([, v]) => v !== 0), end, 30).value : null);
+  return {
+    windowEnd: end,
+    statsAsOf: stats?.asOf ?? null,
+    near: { gasFees30d: sum(chain?.near.gasFees), txns30d: sum(chain?.nearblocks.txns), volume30d: sum(chain?.near.volume), nodesOnline: stats?.near?.nodesOnline ?? null, totalTxns: stats?.near?.totalTxns ?? null, tps: stats?.near?.tps ?? null },
+    aurora: { gasFees30d: sum(chain?.aurora.gasFees), txns30d: sum(chain?.aurora.txns), volume30d: sum(chain?.aurora.volume), totalTxns: stats?.aurora?.totalTxns ?? null, totalAddresses: stats?.aurora?.totalAddresses ?? null, totalBlocks: stats?.aurora?.totalBlocks ?? null },
   };
 }
 
@@ -234,19 +249,35 @@ function main() {
     }
   }
   const protoBySlug = new Map((history?.protocols ?? []).map((pr) => [pr.slug, pr]));
+  const ex = loadExtras(projects, mapRowsOf, resolver);
   for (const p of projects) {
-    let live: { values: Partial<Record<MetricId, number>>; asOf: string } | null = null;
+    const lives: LivePart[] = [];
     if (history && end) {
       const values: Partial<Record<MetricId, number>> = {};
-      for (const r of mapRowsOf.get(p.name) ?? []) {
+      const rows = mapRowsOf.get(p.name) ?? [];
+      for (const r of rows) {
         const other = protoBySlug.get(r.slug)?.otherTvl;
         if (other?.borrowed !== undefined) values.borrowed = (values.borrowed ?? 0) + other.borrowed;
         if (other?.staking !== undefined) values.ownStaking = (values.ownStaking ?? 0) + other.staking;
       }
-      if (Object.keys(values).length) live = { values, asOf: end };
+      const agg = sumWindow(projectFlow(rows, history.store, history.store.aggregators), end, 30).value;
+      if (agg !== null) values.aggregatorVolume = agg;
+      const bagg = sumWindow(projectFlow(rows, history.store, history.store.bridgeAggregators), end, 30).value;
+      if (bagg !== null) values.bridgeAggregatorVolume = bagg;
+      if (Object.keys(values).length) lives.push({ values, asOf: end });
     }
-    const extra = mergeExtra(live, seedById.get(p.id) ?? null, p.tvl);
-    if (extra) p.extra = extra;
+    for (const part of ex.partsFor(p)) lives.push(part);
+    const extra = mergeExtra(lives, seedById.get(p.id) ?? null, p.tvl);
+    const countedOn = ex.countedOn.get(p.name);
+    if (extra || countedOn) {
+      p.extra = extra ?? { values: {}, asOf: {}, from: {} };
+      if (countedOn) {
+        p.extra.countedOn = { stablecoinSupply: countedOn };
+        delete p.extra.values.stablecoinSupply;
+      }
+    }
+    const hacks = ex.hacks.get(p.id);
+    if (hacks?.length) p.hacks = { asOf: ex.hacksAsOf as string, list: hacks.map((h) => ({ date: h.date, amount: h.amount, technique: h.technique, classification: h.classification })) };
   }
 
   const leaders = readCsv(leadersFile).map((r) => toLeader(r, resolver));
@@ -329,6 +360,8 @@ function main() {
     totals: totals(projects),
     snapshotTotals: totals(snapshotProjects),
     chainTvl: chain ? { near: chain.latest.near.tvl, aurora: chain.latest.aurora.tvl, asOf: end } : { near: null, aurora: null, asOf: null },
+    chainFacts: chainFactsOf(history?.chain ?? null, end, ex.chainStats),
+    stablecoins: ex.stablecoinTotals,
     cexReserves,
     tierCounts,
     sectors: uniqueSorted(projects.map((p) => p.sector)),

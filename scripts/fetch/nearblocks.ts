@@ -8,6 +8,9 @@ import { NEARBLOCKS_SERIES, type NearblocksKey } from "../../src/lib/types";
 import { RAW } from "../lib/paths";
 import { upsertSeries, writeJsonStable } from "../lib/store";
 import type { Ctx, RunResult } from "./context";
+import type { TokenSnap, TokensFile } from "../../src/lib/extra-types";
+import { HISTORY } from "../lib/paths";
+import { parseNearStats, writeChainStats } from "./chain-stats";
 import { readChain, writeChain } from "./defillama";
 import { createClient } from "./http";
 
@@ -59,8 +62,28 @@ export function parseCharts(json: { charts?: NbRow[] }): Record<NearblocksKey, S
   return out;
 }
 
+export const TOKENS_FILE = path.join(HISTORY, "extra", "nearblocks-tokens.json");
+const API = "https://api.nearblocks.io/v1";
+
+/** NearBlocks /fts rows → price and supply × price. `onchain_market_cap` is minted supply on NEAR times price, never a market cap (rule 5). */
+export function parseFts(json: { tokens?: Array<Record<string, unknown>> }): TokenSnap[] {
+  const n = (v: unknown) => {
+    const x = typeof v === "string" ? Number(v) : NaN;
+    return Number.isFinite(x) ? x : null;
+  };
+  return (json.tokens ?? [])
+    .filter((t) => typeof t.contract === "string" && t.contract)
+    .map((t) => ({ contract: String(t.contract).toLowerCase(), symbol: String(t.symbol ?? ""), price: n(t.price), supplyValue: n(t.onchain_market_cap) === null ? null : Math.round(n(t.onchain_market_cap) as number) }));
+}
+
+/** Headers for the optional NearBlocks key; without one the free tier allows about 6 calls a minute. */
+export function nearblocksHeaders(env: Record<string, string | undefined>): Record<string, string> {
+  const key = (env.NEARBLOCKS_API_KEY ?? "").trim();
+  return key ? { Authorization: `Bearer ${key}` } : {};
+}
+
 export async function run(ctx: Ctx): Promise<RunResult> {
-  const client = createClient({ name: "nearblocks", minIntervalMs: 1500, timeoutMs: 120_000 });
+  const client = createClient({ name: "nearblocks", minIntervalMs: (ctx.env.NEARBLOCKS_API_KEY ?? "").trim() ? 1500 : 10_500, timeoutMs: 120_000, headers: nearblocksHeaders(ctx.env) });
   const json = await client.getJson<{ charts?: NbRow[] }>(URL);
   const parsed = parseCharts(json);
   const chain = readChain();
@@ -79,5 +102,27 @@ export async function run(ctx: Ctx): Promise<RunResult> {
     });
   }
   const days = parsed.txns.length;
-  return { rows: days, calls: client.stats().calls, notes: [`${days} days from ${parsed.txns[0]?.[0] ?? "-"} to ${parsed.txns.at(-1)?.[0] ?? "-"}`] };
+  const notes = [`${days} days from ${parsed.txns[0]?.[0] ?? "-"} to ${parsed.txns.at(-1)?.[0] ?? "-"}`];
+  // Chain stats and the token list. Each is optional: a failure is noted and the charts above still count.
+  try {
+    const stats = parseNearStats(await client.getJson(`${API}/stats`));
+    if (!ctx.dryRun && stats) writeChainStats(ctx.today, { near: stats });
+    notes.push(`${stats?.nodesOnline ?? "-"} nodes online`);
+  } catch (e) {
+    notes.push(`stats failed: ${(e as Error).message}`);
+  }
+  try {
+    const tokens: TokenSnap[] = [];
+    for (let page = 1; page <= 4; page++) {
+      const rows = parseFts(await client.getJson(`${API}/fts?page=${page}&per_page=50&order=desc&sort=onchain_market_cap`));
+      tokens.push(...rows);
+      if (rows.length < 50) break;
+    }
+    const file: TokensFile = { asOf: ctx.today, tokens: tokens.sort((a, b) => a.contract.localeCompare(b.contract)) };
+    if (!ctx.dryRun) writeJsonStable(TOKENS_FILE, file);
+    notes.push(`${tokens.length} tokens priced`);
+  } catch (e) {
+    notes.push(`token list failed: ${(e as Error).message}`);
+  }
+  return { rows: days, calls: client.stats().calls, notes };
 }

@@ -23,7 +23,17 @@ export const METRIC_IDS = [
   "bridgeAggregatorVolume",
   "stablecoinSupply",
   "tokenHolders",
+  "tokenHoldersAurora",
   "tokenSupplyValue",
+  "utilization",
+  "borrowApy",
+  "stakingApy",
+  "bestPoolApy",
+  "poolCount",
+  "dexVolume24h",
+  "dexLiquidity",
+  "referralVolume",
+  "referralSwaps",
   "calls30d",
   "signers7d",
   "tokensLaunched",
@@ -37,7 +47,8 @@ export interface MetricDef {
   /** What the number counts and what it leaves out (accuracy rule 2). Sources are named here, never on the page. */
   info: string;
   source: string;
-  unit: "usd" | "count";
+  /** pct values are stored as fractions (0.85 is 85%). */
+  unit: "usd" | "count" | "pct";
 }
 
 export const METRIC_DEFS: Record<MetricId, MetricDef> = {
@@ -54,6 +65,16 @@ export const METRIC_DEFS: Record<MetricId, MetricDef> = {
   bridgeAggregatorVolume: { id: "bridgeAggregatorVolume", label: "30d bridge aggregator volume", unit: "usd", source: "DefiLlama", info: "Transfers routed through the bridge aggregator over the last 30 days per DefiLlama." },
   stablecoinSupply: { id: "stablecoinSupply", label: "Supply on NEAR and Aurora", unit: "usd", source: "DefiLlama stablecoins", info: "Circulating supply on NEAR plus Aurora per DefiLlama's stablecoin dashboard. A stablecoin listed under two names is counted once." },
   tokenHolders: { id: "tokenHolders", label: "Token holders on NEAR", unit: "count", source: "NearBlocks", info: "Accounts holding the project's token on NEAR per NearBlocks. An estimate, since one person can hold many accounts, and app-created accounts count. Holders never set a tier on their own." },
+  tokenHoldersAurora: { id: "tokenHoldersAurora", label: "Token holders on Aurora", unit: "count", source: "Aurora Blockscout", info: "Addresses holding the project's token on Aurora per Aurora Blockscout, matched by contract address, never by symbol. An estimate, since one person can hold many addresses." },
+  utilization: { id: "utilization", label: "Utilization", unit: "pct", source: "DefiLlama yields", info: "Borrowed divided by supplied across the lender's markets that DefiLlama's lendBorrow view lists. Those markets can be a subset of the whole protocol." },
+  borrowApy: { id: "borrowApy", label: "Borrow APY", unit: "pct", source: "DefiLlama yields", info: "Base borrow rate across the lender's markets, weighted by the amount borrowed in each, per DefiLlama's lendBorrow view. Rewards are left out." },
+  stakingApy: { id: "stakingApy", label: "Staking APY", unit: "pct", source: "DefiLlama yields", info: "APY of the protocol's largest pool on NEAR or Aurora per DefiLlama yields. Rates move daily." },
+  bestPoolApy: { id: "bestPoolApy", label: "Largest pool APY", unit: "pct", source: "DefiLlama yields", info: "APY of the protocol's largest pool by TVL on NEAR or Aurora per DefiLlama yields." },
+  poolCount: { id: "poolCount", label: "Yield pools", unit: "count", source: "DefiLlama yields", info: "Pools DefiLlama yields lists for the protocol on NEAR and Aurora." },
+  dexVolume24h: { id: "dexVolume24h", label: "24h volume, top pools", unit: "usd", source: "GeckoTerminal", info: "Trading volume over the last 24 hours across the DEX's top pools (up to 20) per GeckoTerminal. A short window, so it moves a lot day to day." },
+  dexLiquidity: { id: "dexLiquidity", label: "Liquidity, top pools", unit: "usd", source: "GeckoTerminal", info: "Liquidity in the DEX's top pools (up to 20) per GeckoTerminal. Not shown for NEAR Intents, whose pools there are a model, not DEX liquidity." },
+  referralVolume: { id: "referralVolume", label: "30d NEAR Intents volume routed", unit: "usd", source: "NEAR Intents Explorer", info: "1Click swap volume over the last 30 days that carried this app's referral tag, per the NEAR Intents Explorer API. Already counted inside NEAR Intents' own volume, so it is never added to the app's DEX volume." },
+  referralSwaps: { id: "referralSwaps", label: "30d NEAR Intents swaps routed", unit: "count", source: "NEAR Intents Explorer", info: "1Click swaps over the last 30 days that carried this app's referral tag, per the NEAR Intents Explorer API." },
   tokenSupplyValue: { id: "tokenSupplyValue", label: "Supply on NEAR × price", unit: "usd", source: "NearBlocks", info: "Token supply on NEAR multiplied by price, per NearBlocks. Not a market cap, since it counts minted supply, treasury included. Never shown for stablecoins." },
   calls30d: { id: "calls30d", label: "30d function calls", unit: "count", source: "NEAR BigQuery", info: "FUNCTION_CALL receipts to the project's tracked accounts over 30 days, from the NEAR BigQuery public dataset." },
   signers7d: { id: "signers7d", label: "7d signers", unit: "count", source: "NEAR BigQuery", info: "Distinct signer accounts calling the project's tracked accounts, summed per day over 7 days from the NEAR BigQuery public dataset. An estimate, since one person can use many accounts, and relayers or intents hide the end user." },
@@ -76,24 +97,24 @@ const U = (facts: MetricId[] = []): SectorDef => ({ measured: false, headline: n
 
 /** Section 4 of docs/LIVE-DATA.md. Keys are the sector names in the research CSV. */
 export const SECTOR_METRICS: Record<string, SectorDef> = {
-  "DEXs & Liquidity": M("volume", ["tvl", "fees", "revenue", "supplySideRevenue", "aggregatorVolume", "calls30d"]),
-  "Bridges & Interoperability": M("volume", ["tvl", "fees", "revenue", "holdersRevenue", "supplySideRevenue", "bridgeAggregatorVolume", "calls30d", "signers7d"]),
-  "Lending & Credit": M("totalDeposited", ["borrowed", "tvl", "fees", "revenue"]),
-  "Liquid Staking & Restaking": M("tvl", ["tokenHolders", "ownStaking", "fees", "revenue"]),
+  "DEXs & Liquidity": M("volume", ["tvl", "fees", "revenue", "supplySideRevenue", "dexVolume24h", "dexLiquidity", "aggregatorVolume", "bestPoolApy", "poolCount", "tokenHolders", "tokenHoldersAurora", "calls30d"]),
+  "Bridges & Interoperability": M("volume", ["tvl", "fees", "revenue", "holdersRevenue", "supplySideRevenue", "dexVolume24h", "bridgeAggregatorVolume", "calls30d", "signers7d"]),
+  "Lending & Credit": M("totalDeposited", ["borrowed", "tvl", "utilization", "borrowApy", "fees", "revenue", "tokenHolders", "tokenHoldersAurora"]),
+  "Liquid Staking & Restaking": M("tvl", ["stakingApy", "tokenHolders", "ownStaking", "fees", "revenue"]),
   Launchpads: M("tokensLaunched", ["volume", "tokenHolders", "fees", "tvl"]),
-  "Memecoins & Community": M("tokenHolders", ["tokenSupplyValue"]),
-  "AI Agents": M("tokenHolders", ["signers7d", "calls30d"]),
+  "Memecoins & Community": M("tokenHolders", ["tokenHoldersAurora", "tokenSupplyValue"]),
+  "AI Agents": M("tokenHolders", ["referralVolume", "signers7d", "calls30d"]),
   "NFTs, Gaming & Collectibles": M("tokenHolders", ["signers7d", "calls30d"]),
-  "Stablecoins & Payments": M("stablecoinSupply", ["tokenHolders", "signers7d"]),
-  "Yield & Asset Management": M("tvl", ["fees"]),
-  "RWA & Tokenized Assets": M("tvl", ["tokenHolders", "fees"]),
+  "Stablecoins & Payments": M("stablecoinSupply", ["tokenHolders", "tokenHoldersAurora", "referralVolume", "signers7d"]),
+  "Yield & Asset Management": M("tvl", ["bestPoolApy", "poolCount", "fees"]),
+  "RWA & Tokenized Assets": M("tvl", ["tokenHolders", "tokenSupplyValue", "fees"]),
   "Perps, Options & Derivatives": M("tvl", ["calls30d"]),
   "Prediction Markets": M("signers7d", ["tvl", "fees"]),
   "Trading Tools & Bots": M("volume", ["tvl", "signers7d"], "Volume routed through a trading bot is counted again by the DEX it trades on."),
   "Social & Identity": M("signers7d", ["calls30d"]),
   "DAOs, Governance & Public Goods": M("signers7d", ["calls30d"]),
   "Infrastructure & Dev Tools": U(),
-  "Wallets & Custody": U(),
+  "Wallets & Custody": U(["referralVolume", "referralSwaps", "signers7d"]),
   "Exchanges & On/Off-Ramps": U(["cexAssets"]),
   "Data & Analytics": U(),
   "Security, Risk & Compliance": U(),
@@ -156,9 +177,20 @@ export interface MetricValue {
   reason: string;
 }
 
-/** Does the metric belong on this project at all? */
-export function applies(p: Pick<Project, "sector">, id: MetricId): boolean {
-  return sectorDef(p.sector).metrics.includes(id);
+const TOKEN_METRICS = new Set<MetricId>(["tokenHolders", "tokenHoldersAurora", "tokenSupplyValue"]);
+/** Projects whose liquidity on GeckoTerminal is a model of how they work, not DEX liquidity (accuracy rule 6). */
+const NO_LIQUIDITY = new Set(["near-intents"]);
+
+/**
+ * Does the metric belong on this project at all? It must be one its sector uses; a token metric needs a
+ * token; a figure counted on another row (a stablecoin listed under two names) belongs to that row.
+ */
+export function applies(p: Pick<Project, "sector" | "token" | "id" | "extra">, id: MetricId): boolean {
+  if (!sectorDef(p.sector).metrics.includes(id)) return false;
+  if (TOKEN_METRICS.has(id) && !p.token) return false;
+  if (id === "dexLiquidity" && NO_LIQUIDITY.has(p.id)) return false;
+  if (p.extra?.countedOn?.[id]) return false;
+  return true;
 }
 
 /**
@@ -170,7 +202,10 @@ export function applies(p: Pick<Project, "sector">, id: MetricId): boolean {
  * - not-tracked: the metric applies but no source covers the project yet.
  */
 export function valueState(p: Project, id: MetricId): MetricValue {
-  if (!applies(p, id)) return { id, state: "not-applicable", value: null, reason: `${METRIC_DEFS[id].label} does not apply to ${p.sector}.` };
+  if (!applies(p, id)) {
+    const on = p.extra?.countedOn?.[id];
+    return { id, state: "not-applicable", value: null, reason: on ? `Counted once, on ${on}.` : `${METRIC_DEFS[id].label} does not apply to ${p.sector}.` };
+  }
   const value = metricOf(p, id);
   if (isInactive(p)) return { id, state: "inactive", value, reason: `The project is ${p.statusGroup.toLowerCase()}, so this is its last value, not a current one.` };
   if (value === null) return { id, state: "not-tracked", value, reason: `${METRIC_DEFS[id].label} applies to ${p.sector}, but no source covers this project yet.` };

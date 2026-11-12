@@ -1,0 +1,40 @@
+{
+ "tokens": [
+  {
+   "contract": "usdt.tether-token.near",
+   "symbol": "USDt",
+   "price": "0.99898000",
+   "onchain_market_cap": "525407657.79049941682000"
+  },
+  {
+   "contract": "zec.omft.near",
+   "symbol": "ZEC",
+   "price": "963.33000000",
+   "onchain_market_cap": "143825523.4300016277000000"
+  },
+  {
+   "contract": "wrap.near",
+   "symbol": "wNEAR",
+   "price": "3.39000000",
+   "onchain_market_cap": "118461598.0414981831181783491188000000"
+  },
+  {
+   "contract": "17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1",
+   "symbol": "USDC",
+   "price": "0.99947300",
+   "onchain_market_cap": "75341070.13107688283700"
+  },
+  {
+   "contract": "meta-pool.near",
+   "symbol": "STNEAR",
+   "price": "5.15000000",
+   "onchain_market_cap": "73522005.5904124590756299306125000000"
+  },
+  {
+   "contract": "linear-protocol.near",
+   "symbol": "LINEAR",
+   "price": "4.87000000",
+   "onchain_market_cap": "43446514.9348070007963726004672000000"
+  }
+ ]
+}

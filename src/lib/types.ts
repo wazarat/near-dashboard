@@ -166,6 +166,8 @@ export interface Project {
   contracts: ContractInfo[];
   /** Registry metrics beyond the four DefiLlama ones (src/lib/sector-metrics.ts), each with the day it was taken. */
   extra?: ProjectExtra;
+  /** Exploits on DefiLlama's hacks list, with the day that list was read. */
+  hacks?: { asOf: string; list: ProjectHack[] };
 }
 
 export interface ProjectExtra {
@@ -174,6 +176,24 @@ export interface ProjectExtra {
   asOf: Partial<Record<string, string>>;
   /** Where each value came from: "live" (this build's fetch) or "snapshot" (data/near-live-metrics-*.csv). */
   from: Partial<Record<string, "live" | "snapshot">>;
+  /** A figure this row shares with another project and that is counted there, keyed by metric (accuracy rule 9). */
+  countedOn?: Partial<Record<string, string>>;
+}
+
+/** An exploit DefiLlama records for the project (docs/LIVE-DATA.md, section 3). */
+export interface ProjectHack {
+  date: string;
+  amount: number | null;
+  technique: string | null;
+  classification: string | null;
+}
+
+export interface ChainFacts {
+  /** Last complete day of the daily series the 30-day figures sum. */
+  windowEnd: string | null;
+  statsAsOf: string | null;
+  near: { gasFees30d: number | null; txns30d: number | null; volume30d: number | null; nodesOnline: number | null; totalTxns: number | null; tps: number | null };
+  aurora: { gasFees30d: number | null; txns30d: number | null; volume30d: number | null; totalTxns: number | null; totalAddresses: number | null; totalBlocks: number | null };
 }
 
 export interface Leader {
@@ -280,6 +300,10 @@ export interface Meta {
   snapshotTotals: { tvl: number; tvlNear: number; tvlAurora: number; volume: number; fees: number; revenue: number };
   /** DefiLlama chain-level TVL (default view, excludes liquid staking and bridges) when history exists. */
   chainTvl: { near: number | null; aurora: number | null; asOf: string | null };
+  /** Facts for the NEAR Protocol and Aurora pop-ups (docs/LIVE-DATA.md, unmeasured sectors), each source dated. */
+  chainFacts?: ChainFacts;
+  /** USD-pegged stablecoin supply on each chain, every coin once (DefiLlama stablecoins). */
+  stablecoins?: { near: number; aurora: number; asOf: string } | null;
   cexReserves: number;
   tierCounts: Record<Tier, number>;
   sectors: string[];

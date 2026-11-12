@@ -14,6 +14,10 @@ import { emptyMeta, emptySourceStatus, SOURCE_IDS, type HistoryMeta, type Source
 import type { Ctx, Source } from "./fetch/context";
 import * as bigquery from "./fetch/bigquery";
 import * as blockscout from "./fetch/blockscout";
+import * as geckoterminal from "./fetch/geckoterminal";
+import * as hacks from "./fetch/hacks";
+import * as stablecoins from "./fetch/stablecoins";
+import * as yields from "./fetch/yields";
 import * as catalog from "./fetch/catalog";
 import * as defillama from "./fetch/defillama";
 import * as intents from "./fetch/intents";
@@ -27,6 +31,10 @@ const SOURCES: Source[] = [
   { id: "defillama", run: defillama.run },
   { id: "nearblocks", run: nearblocks.run },
   { id: "blockscout", run: blockscout.run },
+  { id: "stablecoins", run: stablecoins.run },
+  { id: "yields", run: yields.run },
+  { id: "hacks", run: hacks.run },
+  { id: "geckoterminal", run: geckoterminal.run },
   { id: "catalog", run: catalog.run },
   { id: "price", run: price.run },
   { id: "bigquery", run: bigquery.run },

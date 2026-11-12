@@ -1,7 +1,8 @@
 "use client";
 
 import { ExternalLink } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { InfoTip } from "@/components/ui/info-tip";
 import { projects } from "@/lib/data";
@@ -45,14 +46,29 @@ export function HelpTrackView() {
         </CardHeader>
       </Card>
       {groups.map((g) => (
-        <Card key={g.id} className="gap-3 py-4" data-testid="help-track-group">
+        <Group key={g.id} id={g.id} projects={g.projects} onOpen={openProject} />
+      ))}
+    </div>
+  );
+}
+
+/** Each metric shows its first twelve projects; the rest are one click away, so the page stays short on a phone. */
+const SHOW = 12;
+
+function Group({ id, projects: list, onOpen }: { id: MetricId; projects: Array<{ id: string; name: string; sector: string }>; onOpen: (id: string) => void }) {
+  const [all, setAll] = useState(false);
+  const shown = all ? list : list.slice(0, SHOW);
+  const g = { id, projects: shown };
+  const openProject = onOpen;
+  return (
+        <Card className="gap-3 py-4" data-testid="help-track-group">
           <CardHeader className="px-4">
             <h2 className="inline-flex items-center gap-1 text-sm font-semibold">
               {METRIC_DEFS[g.id].label}
               <InfoTip label={`About ${METRIC_DEFS[g.id].label}`}>{METRIC_DEFS[g.id].info}</InfoTip>
             </h2>
             <p className="text-label text-ink-300">
-              {g.projects.length} {g.projects.length === 1 ? "project" : "projects"}
+              {list.length} {list.length === 1 ? "project" : "projects"}
             </p>
           </CardHeader>
           <CardContent className="px-4">
@@ -72,9 +88,12 @@ export function HelpTrackView() {
                 </li>
               ))}
             </ul>
+            {list.length > SHOW && (
+              <Button variant="ghost" size="sm" className="mt-2 h-7 text-xs" onClick={() => setAll((v) => !v)}>
+                {all ? "Show fewer" : `Show all ${list.length}`}
+              </Button>
+            )}
           </CardContent>
         </Card>
-      ))}
-    </div>
   );
 }

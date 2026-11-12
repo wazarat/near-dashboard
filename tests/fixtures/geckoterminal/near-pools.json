@@ -1,0 +1,49 @@
+{
+ "data": [
+  {
+   "attributes": {
+    "name": "USDC / wNEAR",
+    "reserve_in_usd": "516051.6623",
+    "volume_usd": {
+     "h24": "4329423.50933937"
+    }
+   }
+  },
+  {
+   "attributes": {
+    "name": "ZEC / wNEAR",
+    "reserve_in_usd": "214717.2788",
+    "volume_usd": {
+     "h24": "609151.277414981"
+    }
+   }
+  },
+  {
+   "attributes": {
+    "name": "USDC / USDT",
+    "reserve_in_usd": "39910504.9041",
+    "volume_usd": {
+     "h24": "9822116.35120164"
+    }
+   }
+  },
+  {
+   "attributes": {
+    "name": "USDT / wNEAR",
+    "reserve_in_usd": "72974220.8606",
+    "volume_usd": {
+     "h24": "5113167.36776594"
+    }
+   }
+  },
+  {
+   "attributes": {
+    "name": "USDT / USDT",
+    "reserve_in_usd": "22234459.2203",
+    "volume_usd": {
+     "h24": "71638029.345495"
+    }
+   }
+  }
+ ]
+}

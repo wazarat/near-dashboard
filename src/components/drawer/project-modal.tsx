@@ -8,12 +8,14 @@ import { LoginPanel } from "@/components/auth/login-dialog";
 import { ChainChip } from "@/components/atlas/badges";
 import { EstimateLabel } from "@/components/atlas/estimate-label";
 import { TierInfoTip } from "@/components/atlas/tier-info";
+import { ChainFacts } from "@/components/drawer/chain-facts";
 import { MetricRows } from "@/components/drawer/metric-rows";
 import { isMeasured } from "@/lib/sector-metrics";
 import { HistoryChart } from "@/components/charts/history-chart";
 import { DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useAccess } from "@/lib/access";
-import { eventsByProject, projectById, roundsByProject } from "@/lib/data";
+import { eventsByProject, meta, projectById, roundsByProject } from "@/lib/data";
+import { daysBetween, type DateStr } from "@/lib/dates";
 import { useFilters } from "@/lib/filters";
 import { displayUrl, fmtDate, fmtEventDate, fmtInt, fmtMetric, fmtPct, fmtUsd, METRIC_SHORT, xUrl } from "@/lib/format";
 import { TIER_SHORT } from "@/lib/colors";
@@ -52,6 +54,29 @@ export function Ext({ href, children }: { href: string; children?: ReactNode }) 
       <span className="truncate">{children ?? displayUrl(href)}</span>
       <ExternalLink className="size-3 shrink-0 text-ink-300" />
     </a>
+  );
+}
+
+/**
+ * The research sheet's free-text traction signal, always with its as-of date (accuracy rule 1). Once it is more than
+ * 30 days older than this build's data it folds behind "Older figure", so a stale claim never reads as current.
+ */
+function OtherSignal({ text, asOf }: { text: string; asOf: string }) {
+  const old = daysBetween(asOf.slice(0, 10) as DateStr, meta.asOf.slice(0, 10) as DateStr) > 30;
+  return (
+    <Field label="Other signal">
+      {old ? (
+        <details data-testid="older-figure">
+          <summary className="cursor-pointer text-ink-300">Older figure, from the {fmtDate(asOf)} research snapshot</summary>
+          {text}
+        </details>
+      ) : (
+        <>
+          {text}
+          <span className="ml-2 text-xs text-ink-300">research snapshot {fmtDate(asOf)}</span>
+        </>
+      )}
+    </Field>
   );
 }
 
@@ -119,8 +144,9 @@ function ProjectBody({ p, all, metric, onOpen }: { p: Project; all: Project[]; m
         {p.live && p.snapshot.tier !== p.tier && <span className="text-ink-300"> · was {TIER_SHORT[p.snapshot.tier]} in the {fmtDate(p.snapshot.asOf)} snapshot</span>}
       </Field>
       <MetricRows p={p} />
+      <ChainFacts p={p} />
       {p.revenueCapture !== null && <Field label="Revenue capture">{`${fmtPct(p.revenueCapture)} of fees`}</Field>}
-      <Field label="Other signal">{p.otherTraction}</Field>
+      {p.otherTraction && <OtherSignal text={p.otherTraction} asOf={p.snapshot.asOf} />}
       {!p.hasTraction && isMeasured(p.sector) && <p className="text-xs text-ink-300">DefiLlama lists no TVL, volume, fee or revenue figure for this project. Not tracked means no source covers it yet, never zero.</p>}
       {p.live && p.live.slugs.length > 0 && (
         <p className="text-xs text-ink-300">
@@ -207,6 +233,20 @@ function ProjectBody({ p, all, metric, onOpen }: { p: Project; all: Project[]; m
           <Field label="Incidents">{p.incidents ?? <span className="text-ink-300">None recorded</span>}</Field>
           <Field label="Red flags">{p.redFlags ?? <span className="text-ink-300">None noted</span>}</Field>
         </>
+      )}
+      {p.hacks && p.hacks.list.length > 0 && (
+        <Field label="Exploits on DefiLlama">
+          <ul className="space-y-0.5" data-testid="project-hacks">
+            {p.hacks.list.map((h) => (
+              <li key={`${h.date}-${h.technique}`}>
+                {fmtDate(h.date)}
+                {h.amount !== null && <span className="tabular"> · {fmtUsd(h.amount)}</span>}
+                {h.technique && <span className="text-ink-300"> · {h.technique}</span>}
+              </li>
+            ))}
+          </ul>
+          <span className="text-xs text-ink-300">DefiLlama hacks list, read {fmtDate(p.hacks.asOf)}</span>
+        </Field>
       )}
     </Section>
   );

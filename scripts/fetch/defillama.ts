@@ -194,7 +194,7 @@ export async function fetchProtocols(client: HttpClient): Promise<LlamaProtocolS
   return parseProtocols(await client.getJson<RawProtocol[]>(`${BASE}/protocols`));
 }
 
-export async function fetchOverview(client: HttpClient, chain: LlamaChain, kind: "dexs" | "fees" | "aggregators", dataType?: string): Promise<OverviewJson> {
+export async function fetchOverview(client: HttpClient, chain: LlamaChain, kind: "dexs" | "fees" | "aggregators" | "bridge-aggregators", dataType?: string): Promise<OverviewJson> {
   const q = new URLSearchParams({ excludeTotalDataChart: "true" });
   if (dataType) q.set("dataType", dataType);
   return client.getJson<OverviewJson>(`${BASE}/overview/${kind}/${chain}?${q}`);
@@ -255,6 +255,16 @@ export async function run(ctx: Ctx): Promise<RunResult> {
       rows += Object.keys(ab).length;
     } catch (e) {
       notes.push(`${c} aggregators failed: ${(e as Error).message}`);
+    }
+    // Bridge aggregators (Stableflow, Rubic): volume routed across chains, apart from DEX volume.
+    try {
+      const bagg = await fetchOverview(client, c, "bridge-aggregators");
+      const bb = parseBreakdown(bagg);
+      if (!ctx.dryRun) writeJsonStable(path.join(DIR, `bridge-aggregators-${c}.json`), mergeMap(readSeriesFile(`bridge-aggregators-${c}`), bb, ctx.today));
+      extra.push({ list: parseOverviewProtocols(bagg), kind: "aggregators" });
+      rows += Object.keys(bb).length;
+    } catch (e) {
+      notes.push(`${c} bridge aggregators failed: ${(e as Error).message}`);
     }
     // Chain gas fees, which the protocol overview above leaves out.
     try {

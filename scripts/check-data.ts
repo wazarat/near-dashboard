@@ -5,9 +5,19 @@
  *   npm run check:data
  */
 import path from "node:path";
-import { crossCheck, gasFeeOutage, type Finding } from "../src/lib/data-checks";
+import { crossCheck, gasFeeOutage, hacksWithoutIncident, type Finding } from "../src/lib/data-checks";
+import { OUT } from "./lib/paths";
+import { readJson } from "./lib/store";
 import { readChain } from "./fetch/defillama";
 import { HISTORY } from "./lib/paths";
+
+/** Exploits from the build's projects against the build's incident events (needs `npm run rebuild` first; skipped without it). */
+function hackReview(): Finding[] {
+  const projects = readJson<Array<{ id: string; name: string; hacks?: { list: Array<{ date: string }> } }>>(path.join(OUT, "projects.json"), []);
+  const events = readJson<Array<{ type: string; projectIds: string[]; date: string }>>(path.join(OUT, "events.json"), []);
+  const hacks = projects.flatMap((p) => (p.hacks?.list ?? []).map((h) => ({ project: p.id, name: p.name, date: h.date })));
+  return hacksWithoutIncident(hacks, events.filter((e) => e.type === "Incident"));
+}
 
 function main() {
   const chain = readChain();
@@ -16,6 +26,7 @@ function main() {
     crossCheck("NEAR daily transactions", { label: "NearBlocks", series: chain.nearblocks.txns ?? [] }, { label: "BigQuery", series: chain.bigquery.transactions ?? [] }),
     gasFeeOutage("Aurora", chain.aurora.gasFees ?? [], chain.aurora.txns ?? []),
     gasFeeOutage("NEAR", chain.near.gasFees ?? [], chain.nearblocks.txns ?? []),
+    ...hackReview(),
   ];
   const list = findings.filter((f): f is Finding => f !== null);
   console.log(`\nData checks over ${path.relative(process.cwd(), HISTORY)}\n`);

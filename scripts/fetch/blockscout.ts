@@ -9,6 +9,7 @@ import type { Series } from "../../src/lib/history-types";
 import { RAW } from "../lib/paths";
 import { upsertSeries, writeJsonStable } from "../lib/store";
 import type { Ctx, RunResult } from "./context";
+import { parseAuroraStats, writeChainStats } from "./chain-stats";
 import { readChain, writeChain } from "./defillama";
 import { createClient } from "./http";
 
@@ -40,9 +41,18 @@ export async function run(ctx: Ctx): Promise<RunResult> {
   const parsed = parseTransactionsChart(json);
   const chain = readChain();
   chain.aurora.txns = upsertSeries(chain.aurora.txns ?? [], parsed, { today: ctx.today, revisionDays: 7 });
+  const notes = [`${parsed.length} days from ${parsed[0]?.[0] ?? "-"} to ${parsed.at(-1)?.[0] ?? "-"}`];
+  let stats: ReturnType<typeof parseAuroraStats> = null;
+  try {
+    stats = parseAuroraStats(await client.getJson<Record<string, unknown>>(`${BLOCKSCOUT}/stats`));
+    notes.push(`lifetime ${stats?.totalTxns ?? "-"} transactions, ${stats?.totalAddresses ?? "-"} addresses`);
+  } catch (e) {
+    notes.push(`stats failed: ${(e as Error).message}`);
+  }
   if (!ctx.dryRun) {
     writeChain(chain);
     writeJsonStable(path.join(RAW, "blockscout", "aurora-transactions.json"), { source: url, fetchedAt: ctx.today, rows: parsed });
+    if (stats) writeChainStats(ctx.today, { aurora: stats });
   }
-  return { rows: parsed.length, calls: client.stats().calls, notes: [`${parsed.length} days from ${parsed[0]?.[0] ?? "-"} to ${parsed.at(-1)?.[0] ?? "-"}`] };
+  return { rows: parsed.length, calls: client.stats().calls, notes };
 }

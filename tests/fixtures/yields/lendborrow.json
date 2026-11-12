@@ -1,0 +1,38 @@
+[
+ {
+  "pool": "ff1954ee-3052-4d0c-8898-a28dd07c87af",
+  "totalSupplyUsd": 591394,
+  "totalBorrowUsd": 365853,
+  "apyBaseBorrow": 4.6089
+ },
+ {
+  "pool": "b5d16051-a8e2-48e9-8313-7d4ea7e98dca",
+  "totalSupplyUsd": 346076,
+  "totalBorrowUsd": 286522,
+  "apyBaseBorrow": 11.26362
+ },
+ {
+  "pool": "ea1e4630-9a4c-5588-acb9-927cae1d88d5",
+  "totalSupplyUsd": 218034,
+  "totalBorrowUsd": 188723,
+  "apyBaseBorrow": 18.77911
+ },
+ {
+  "pool": "8920bb82-1516-49d3-afa7-7e0fcb9217f9",
+  "totalSupplyUsd": 248425,
+  "totalBorrowUsd": 192597,
+  "apyBaseBorrow": 5.80924
+ },
+ {
+  "pool": "1a54c607-d829-5621-87a7-e3b7debc51a1",
+  "totalSupplyUsd": 12735432,
+  "totalBorrowUsd": 10724318,
+  "apyBaseBorrow": 14.03416
+ },
+ {
+  "pool": "d4c96d26-5869-5771-90d5-08fd54e1455e",
+  "totalSupplyUsd": 12003789,
+  "totalBorrowUsd": 10173644,
+  "apyBaseBorrow": 15.11836
+ }
+]

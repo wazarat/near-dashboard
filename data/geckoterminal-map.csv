@@ -1,0 +1,10 @@
+Network,DEX ID,Project,Show liquidity,Notes
+near,rhea-finance,Rhea Finance,Yes,
+near,near-intents,NEAR Intents,No,"modelled as pools, so liquidity is not DEX liquidity (accuracy rule 6)"
+aurora,trisolaris,Trisolaris,Yes,
+aurora,wannaswap,WannaSwap,Yes,
+aurora,auroraswap,AuroraSwap,Yes,
+aurora,nearpad,Pad.fi (ex-NearPad),Yes,
+aurora,amaterasu,Amaterasu Finance,Yes,
+aurora,polaris,Polaris Finance,Yes,
+aurora,holdr,Holdr,Yes,

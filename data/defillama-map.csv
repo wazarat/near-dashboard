@@ -125,3 +125,4 @@ LI.FI,li.fi-dex-aggregator,both,tvl,parent name parent#li.fi
 Orderly Network,orderly-amm,both,tvl,parent name parent#orderly-network
 Bungee,bungee-bridge-aggregator,both,tvl,parent name parent#bungee
 Frax Finance,frax-swap,both,tvl,parent name parent#frax-finance
+StableFlow,stableflow,both,tvl,exact name (bridge aggregator)

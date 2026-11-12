@@ -103,6 +103,9 @@ export interface HistoryStore {
   revenue: ChainMaps;
   holdersRevenue: ChainMaps;
   supplySideRevenue: ChainMaps;
+  /** DEX aggregators and bridge aggregators, by display name. Optional so older stores still load. */
+  aggregators?: ChainMaps;
+  bridgeAggregators?: ChainMaps;
   nameOfSlug: Map<string, string>;
   mcapOfSlug: Map<string, number | null>;
   /** project name -> [date, calls, signers] from BigQuery, when contracts are tracked */
@@ -156,6 +159,19 @@ export function projectSeries(rows: MapRow[], store: HistoryStore): ProjectSerie
     holdersRevenue: flow(store.holdersRevenue),
     supplySideRevenue: flow(store.supplySideRevenue),
   };
+}
+
+/** One flow (an overview breakdown keyed by display name) summed over a project's mapped slugs. */
+export function projectFlow(rows: MapRow[], store: HistoryStore, maps: ChainMaps | undefined): Series {
+  if (!maps) return [];
+  return sumSeries(
+    rows
+      .filter((r) => r.role !== "ignore")
+      .flatMap((r) => {
+        const name = store.nameOfSlug.get(r.slug);
+        return name ? pickChain(maps, [name], r.chain) : [];
+      }),
+  );
 }
 
 export function emptyLive(end: DateStr, slugs: string[]): LiveMetrics {

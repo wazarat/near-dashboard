@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { ChangeCell } from "@/components/atlas/change-cell";
 import { InfoTip } from "@/components/ui/info-tip";
-import { fmtDate, fmtInt, fmtUsd, fmtUsdFull } from "@/lib/format";
+import { fmtDate, fmtInt, fmtPct, fmtUsd, fmtUsdFull } from "@/lib/format";
 import { isStale } from "@/lib/freshness";
 import { METRIC_DEFS, projectMetrics, sectorDef, type MetricValue } from "@/lib/sector-metrics";
 import type { MetricSource, NumericMetricKey, Project } from "@/lib/types";
@@ -25,7 +25,8 @@ function Row({ label, info, children }: { label: string; info: string; children:
 
 function fmt(m: MetricValue): string {
   const v = m.value as number;
-  return METRIC_DEFS[m.id].unit === "usd" ? fmtUsdFull(v) : fmtInt(v);
+  const unit = METRIC_DEFS[m.id].unit;
+  return unit === "usd" ? fmtUsdFull(v) : unit === "pct" ? fmtPct(v, 1) : fmtInt(v);
 }
 
 /** Where a value came from and how old it is: daily figures carry their 30-day change; a snapshot value older than three days shows its date (accuracy rule 4). */
@@ -68,7 +69,7 @@ function Value({ p, m }: { p: Project; m: MetricValue }) {
     case "zero-by-design":
       return (
         <span className="inline-flex items-center gap-1">
-          <span className="tabular">{METRIC_DEFS[m.id].unit === "usd" ? "$0" : "0"}</span>
+          <span className="tabular">{METRIC_DEFS[m.id].unit === "usd" ? "$0" : METRIC_DEFS[m.id].unit === "pct" ? "0%" : "0"}</span>
           <InfoTip label={`Why ${METRIC_DEFS[m.id].label} is zero`}>{m.reason}</InfoTip>
         </span>
       );

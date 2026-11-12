@@ -1,0 +1,7 @@
+Project,Stablecoin ID,Symbol,Primary,Notes
+USDT,1,USDT,Yes,DefiLlama stablecoins id 1 (Tether)
+USDC,2,USDC,Yes,DefiLlama stablecoins id 2 (USD Coin)
+DAI by MakerDAO,5,DAI,Yes,the issuer's row carries the supply
+DAI,5,DAI,No,same coin as DAI by MakerDAO; never counted twice (accuracy rule 9)
+Frax Finance,6,FRAX,Yes,DefiLlama stablecoins id 6 (Frax)
+Decentral Bank,54,USN,Yes,USN issuer; a legacy listing in the dataset
