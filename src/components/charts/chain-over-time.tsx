@@ -2,23 +2,29 @@
 
 import { ChartCard, EmptyState, TvlNote } from "@/components/atlas/chart-card";
 import { frameHeight, type ChartFrame } from "@/components/atlas/chart-frame";
+import { NotTracked } from "@/components/atlas/not-tracked";
 import { RangeBrush } from "@/components/atlas/range-brush";
 import { RangeControl } from "@/components/atlas/range-control";
 import { brushSlice, fittedDomain, levelWindow, rangeStats } from "@/lib/chart-frame";
 import { chainData, meta } from "@/lib/data";
-import { fmtDateShort, fmtPctSigned, fmtUsd } from "@/lib/format";
+import { fmtCompact, fmtDateShort, fmtPctSigned, fmtUsd } from "@/lib/format";
 import { rangeDays, RANGE_LONG, sliceTail, type Range } from "@/lib/ranges";
 import type { ChainSeriesKey } from "@/lib/types";
 import type { Project } from "@/lib/types";
 import { MiniSeries } from "./mini-series";
 import { SelectionOverTime } from "./selection-over-time";
 
-const PANELS: Array<{ key: ChainSeriesKey; label: string; kind: "line" | "bar" }> = [
+const PANELS: Array<{ key: ChainSeriesKey; label: string; kind: "line" | "bar"; count?: boolean }> = [
   { key: "tvl", label: "Chain TVL", kind: "line" },
   { key: "volume", label: "Daily DEX volume", kind: "bar" },
-  { key: "fees", label: "Daily fees", kind: "bar" },
-  { key: "revenue", label: "Daily revenue", kind: "bar" },
+  { key: "fees", label: "Protocol fees", kind: "bar" },
+  { key: "gasFees", label: "Gas fees", kind: "bar" },
+  { key: "revenue", label: "Protocol revenue", kind: "bar" },
+  { key: "txns", label: "Transactions", kind: "bar", count: true },
 ];
+
+/** Aurora publishes no daily revenue series: DefiLlama counts its revenue as burned coins and returns no daily figure. */
+const AURORA_REVENUE_NOTE = "DefiLlama counts Aurora's revenue as burned coins and publishes no daily series for it, so it is Not tracked rather than $0.";
 
 type Chain = "near" | "aurora";
 const CHAIN_LABEL: Record<Chain, string> = { near: "NEAR", aurora: "Aurora" };
@@ -72,10 +78,24 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
     };
     return (
       <>
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {PANELS.map((p) => (
             <div key={p.key} className="rounded-lg border border-ink-700/40 p-2">
               {(["near", "aurora"] as Chain[]).map((chain) => {
+                if (chain === "aurora" && p.key === "revenue") {
+                  return (
+                    <div key={chain} className="mt-2" data-testid="aurora-revenue-not-tracked">
+                      <div className="mb-1 flex items-center justify-between gap-2 text-xs">
+                        <span className="sr-only">{p.label}</span>
+                        <span className="ml-auto text-ink-300">{CHAIN_LABEL[chain]}</span>
+                      </div>
+                      <div className="flex flex-col justify-center gap-1 rounded-md border border-dashed border-ink-700/60 px-3" style={{ height: auroraHeight }}>
+                        <NotTracked />
+                        <p className="text-label text-ink-300">{AURORA_REVENUE_NOTE}</p>
+                      </div>
+                    </div>
+                  );
+                }
                 const { dates, values } = panelData(chain, p.key, p.kind);
                 const level = p.kind === "line";
                 const stats = level ? rangeStats(dates, values) : null;
@@ -92,7 +112,7 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
                       primaryLabel={`${CHAIN_LABEL[chain]} ${p.label}`}
                       height={chain === "near" ? nearHeight : auroraHeight}
                       color={CHAIN_COLOR[chain]}
-                      format={fmtUsd}
+                      format={p.count ? fmtCompact : fmtUsd}
                       yDomain={level && !frame.startAtZero ? fittedDomain(values) : undefined}
                     />
                     {stats && (
@@ -122,17 +142,20 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
       subtitle={subtitle}
       scope="whole-chain"
       level
-      info="DefiLlama chain-level series. Default chain TVL (excludes liquid staking and bridges), daily DEX volume, fees and revenue summed across every protocol on the chain. TVL keeps at least 90 days in view; flows follow this card's range control and exclude the current partial day."
+      info="DefiLlama chain-level series. Default chain TVL (excludes liquid staking and bridges), and daily DEX volume, protocol fees and protocol revenue summed across every protocol on the chain. Gas fees are the chain's own gas from DefiLlama's chain fee summary, which the protocol sum leaves out. Transactions come from NearBlocks for NEAR and Aurora Blockscout for Aurora. A day a source reports as 0 where that cannot be true (gas fees, transactions) is drawn as a gap, not a dip. TVL keeps at least 90 days in view; flows follow this card's range control and exclude the current partial day."
       actions={<RangeControl value={range} onChange={onRangeChange} ariaLabel="Chain over time range" />}
-      source="DefiLlama chain TVL and the NEAR and Aurora DEX, fees and revenue overviews, daily"
+      source="DefiLlama chain TVL, the NEAR and Aurora DEX, fees and revenue overviews and chain fee summaries, NearBlocks and Aurora Blockscout transactions, daily"
       footer={<TvlNote />}
       table={{
         columns: [
           { key: "date", label: "Date" },
-          ...PANELS.flatMap((p) => [
-            { key: `near_${p.key}`, label: `NEAR ${p.label}`, align: "right" as const, format: (v: unknown) => fmtUsd(v as number | null) },
-            { key: `aurora_${p.key}`, label: `Aurora ${p.label}`, align: "right" as const, format: (v: unknown) => fmtUsd(v as number | null) },
-          ]),
+          ...PANELS.flatMap((p) => {
+            const format = (v: unknown) => (p.count ? fmtCompact(v as number | null) : fmtUsd(v as number | null));
+            const cols = [{ key: `near_${p.key}`, label: `NEAR ${p.label}`, align: "right" as const, format }];
+            // Aurora revenue has no daily series (Not tracked), so it gets no column rather than a column of zeros.
+            if (p.key !== "revenue") cols.push({ key: `aurora_${p.key}`, label: `Aurora ${p.label}`, align: "right" as const, format });
+            return cols;
+          }),
         ],
         rows: [...rows].reverse(),
         filename: `chain-over-time-${range}.csv`,

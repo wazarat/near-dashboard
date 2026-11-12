@@ -13,6 +13,7 @@ import { isoNow, utcToday } from "../src/lib/dates";
 import { emptyMeta, emptySourceStatus, SOURCE_IDS, type HistoryMeta, type SourceId } from "../src/lib/history-types";
 import type { Ctx, Source } from "./fetch/context";
 import * as bigquery from "./fetch/bigquery";
+import * as blockscout from "./fetch/blockscout";
 import * as catalog from "./fetch/catalog";
 import * as defillama from "./fetch/defillama";
 import * as intents from "./fetch/intents";
@@ -25,6 +26,7 @@ import { readJson, writeJsonStable } from "./lib/store";
 const SOURCES: Source[] = [
   { id: "defillama", run: defillama.run },
   { id: "nearblocks", run: nearblocks.run },
+  { id: "blockscout", run: blockscout.run },
   { id: "catalog", run: catalog.run },
   { id: "price", run: price.run },
   { id: "bigquery", run: bigquery.run },

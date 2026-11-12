@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 const SOURCE_LABEL: Record<string, string> = {
   defillama: "DefiLlama",
   nearblocks: "NearBlocks charts",
+  blockscout: "Aurora Blockscout",
   catalog: "NEAR Catalog",
   price: "DefiLlama coins (price)",
   intents: "NEAR Intents Explorer",

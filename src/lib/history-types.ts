@@ -9,7 +9,7 @@ export type DailyPoint = [date: DateStr, value: number];
 export type Series = DailyPoint[];
 export type SeriesMap = Record<string, Series>;
 
-export const SOURCE_IDS = ["defillama", "nearblocks", "catalog", "price", "intents", "bigquery"] as const;
+export const SOURCE_IDS = ["defillama", "nearblocks", "catalog", "price", "intents", "bigquery", "blockscout"] as const;
 export type SourceId = (typeof SOURCE_IDS)[number];
 
 export interface SourceStatus {
@@ -91,6 +91,10 @@ export interface ChainOverview {
   revenue: Series;
   holdersRevenue: Series;
   supplySideRevenue: Series;
+  /** The chain's own gas fees (DefiLlama /summary/fees/{chain}, dataType dailyFees). */
+  gasFees: Series;
+  /** Daily transactions, where the chain's own explorer provides them (Aurora Blockscout). */
+  txns: Series;
 }
 
 export interface ChainHistory {
@@ -155,5 +159,5 @@ export function emptyMeta(): HistoryMeta {
 }
 
 export function emptyOverview(): ChainOverview {
-  return { tvl: [], volume: [], fees: [], revenue: [], holdersRevenue: [], supplySideRevenue: [] };
+  return { tvl: [], volume: [], fees: [], revenue: [], holdersRevenue: [], supplySideRevenue: [], gasFees: [], txns: [] };
 }

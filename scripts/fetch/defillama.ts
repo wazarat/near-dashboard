@@ -147,6 +147,17 @@ export function parseChainTvl(json: Array<{ date: number; tvl: number }>): Serie
   return json.filter((p) => Number.isFinite(p.tvl)).map((p) => [dateOfUnix(p.date), Math.round(p.tvl)] as [string, number]);
 }
 
+/**
+ * The chain's own gas fees from /summary/fees/{chain}?dataType=dailyFees. The /overview/fees total sums the
+ * protocols on the chain and leaves out the chain row itself, which is where gas fees live (on Aurora that row
+ * is about $2K a month while the protocol sum is about $5).
+ */
+export function parseFeeSummary(json: { totalDataChart?: Array<[number, number]> }): Series {
+  return (json.totalDataChart ?? [])
+    .filter((p) => Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1]))
+    .map(([t, v]) => [dateOfUnix(t), Math.round(v)] as [string, number]);
+}
+
 export function readProtocols(): LlamaProtocolSnap[] {
   return readJson<LlamaProtocolSnap[]>(path.join(DIR, "protocols.json"), []);
 }
@@ -229,6 +240,13 @@ export async function run(ctx: Ctx): Promise<RunResult> {
       rows += Object.keys(ab).length;
     } catch (e) {
       notes.push(`${c} aggregators failed: ${(e as Error).message}`);
+    }
+    // Chain gas fees, which the protocol overview above leaves out.
+    try {
+      const summary = await client.getJson<{ totalDataChart?: Array<[number, number]> }>(`${BASE}/summary/fees/${c}?dataType=dailyFees`);
+      chain[c].gasFees = upsertSeries(chain[c].gasFees ?? [], parseFeeSummary(summary), { today: ctx.today, revisionDays: 7 });
+    } catch (e) {
+      notes.push(`${c} gas fee summary failed: ${(e as Error).message}`);
     }
     // Chain TVL (DefiLlama default view, excludes liquid staking and bridges).
     chain[c].tvl = upsertSeries(chain[c].tvl, parseChainTvl(await client.getJson(`${BASE}/v2/historicalChainTvl/${CHAIN_KEY[c]}`)), { today: ctx.today, allowToday: true });

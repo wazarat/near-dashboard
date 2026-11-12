@@ -281,7 +281,12 @@ export interface Meta {
   discoveredVia: string[];
 }
 
-export const CHAIN_SERIES = ["tvl", "volume", "fees", "revenue", "holdersRevenue", "supplySideRevenue"] as const;
+/**
+ * Chain-level daily series. `fees` and `revenue` sum the protocols DefiLlama lists on the chain; `gasFees` is the
+ * chain's own gas (DefiLlama's chain fee summary), which that sum leaves out. `txns` is daily transactions
+ * (NearBlocks for NEAR, Aurora Blockscout for Aurora).
+ */
+export const CHAIN_SERIES = ["tvl", "volume", "fees", "revenue", "holdersRevenue", "supplySideRevenue", "gasFees", "txns"] as const;
 export type ChainSeriesKey = (typeof CHAIN_SERIES)[number];
 
 /** NearBlocks daily chart fields kept in the store. */
@@ -294,6 +299,8 @@ export interface ChainLatest {
   volume30d: number | null;
   fees30d: number | null;
   revenue30d: number | null;
+  /** Chain gas fees over the last 30 days, gap days left out. */
+  gasFees30d: number | null;
   change: Partial<Record<ChainSeriesKey, MetricChange>>;
 }
 

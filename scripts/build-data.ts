@@ -10,6 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { daysBetween, dateRange, utcToday, type DateStr } from "../src/lib/dates";
 import { emptyOverview, type ChainHistory, type HistoryMeta, type LlamaProtocolSnap, type Series, type SeriesMap } from "../src/lib/history-types";
+import { gasFeeGaps, txnGaps } from "../src/lib/chain-gaps";
 import { alignSeries, applyLive, changes, computeLive, emptyLive, sparkDates, sumWindow, valueAt, windowEnd, type HistoryStore } from "../src/lib/live";
 import { parseMapRows, rowsByProject } from "../src/lib/mapping";
 import { aggregateInvestors, NameResolver, parseMemoInsights, toEvent, toLeader, toProject, toRound, uniqueSorted } from "../src/lib/parse";
@@ -85,6 +86,7 @@ function latestOf(o: ChainHistory["near"], end: DateStr): ChainLatest {
     volume30d: sumWindow(o.volume, end, 30).value,
     fees30d: sumWindow(o.fees, end, 30).value,
     revenue30d: sumWindow(o.revenue, end, 30).value,
+    gasFees30d: sumWindow(o.gasFees ?? [], end, 30).value,
     change: {
       tvl: changes(o.tvl, end, "stock"),
       volume: changes(o.volume, end, "flow"),
@@ -99,9 +101,14 @@ function buildChain(chain: ChainHistory, end: DateStr): ChainData {
   const firsts = all.filter((s) => s.length).map((s) => s[0][0]);
   const start = firsts.length ? firsts.sort()[0] : end;
   const dates = dateRange(start, end);
-  const align = (o: ChainHistory["near"]) => {
+  const align = (o: ChainHistory["near"], txnsFallback: Series = []) => {
     const out = {} as ChainData["near"];
-    for (const k of CHAIN_SERIES) out[k] = alignSeries(o[k], dates, k === "tvl" ? "stock" : "flow");
+    for (const k of CHAIN_SERIES) out[k] = alignSeries(o[k] ?? [], dates, k === "tvl" ? "stock" : "flow");
+    // NEAR's daily transactions come from NearBlocks; Aurora's from its own Blockscout.
+    if (!(o.txns ?? []).length && txnsFallback.length) out.txns = alignSeries(txnsFallback, dates, "flow");
+    // A reported 0 that is really an indexer gap is drawn as a gap (src/lib/chain-gaps.ts).
+    out.txns = txnGaps(out.txns);
+    out.gasFees = gasFeeGaps(out.gasFees);
     return out;
   };
   const nearblocks = {} as ChainData["nearblocks"];
@@ -113,7 +120,7 @@ function buildChain(chain: ChainHistory, end: DateStr): ChainData {
   const nb = (k: string) => chain.nearblocks[k] ?? [];
   return {
     dates,
-    near: align(chain.near),
+    near: align(chain.near, chain.nearblocks.txns ?? []),
     aurora: align(chain.aurora),
     nearblocks,
     bigquery,
@@ -138,7 +145,7 @@ function buildChain(chain: ChainHistory, end: DateStr): ChainData {
 
 function emptyChain(asOf: DateStr): ChainData {
   const empty = () => Object.fromEntries(CHAIN_SERIES.map((k) => [k, []])) as unknown as ChainData["near"];
-  const latest: ChainLatest = { asOf, tvl: null, volume30d: null, fees30d: null, revenue30d: null, change: {} };
+  const latest: ChainLatest = { asOf, tvl: null, volume30d: null, fees30d: null, revenue30d: null, gasFees30d: null, change: {} };
   return {
     dates: [],
     near: empty(),
