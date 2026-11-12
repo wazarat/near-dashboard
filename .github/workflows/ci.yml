@@ -28,6 +28,8 @@ jobs:
       # The generated data is not committed; the type check and the tests read it.
       - run: npm run rebuild
       - run: npm run check:copy
+      # Two-source and gas-fee checks over the committed history (src/lib/data-checks.ts).
+      - run: npm run check:data
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test

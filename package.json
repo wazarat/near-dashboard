@@ -15,6 +15,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "check:copy": "node scripts/check-copy.mjs",
+    "check:data": "tsx scripts/check-data.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "playwright test -c e2e/playwright.config.ts",

@@ -69,6 +69,10 @@ jobs:
       - name: Rebuild generated data and THESIS.md (reads only committed files)
         run: npm run rebuild
 
+      # A failed accuracy check stops the run here, so conflicting data is never committed.
+      - name: Data checks
+        run: npm run check:data
+
       - name: Unit tests
         run: npm test
 
