@@ -182,3 +182,54 @@ A card's range is its own key, else the old `range` key, else 30d (`cardRange`).
 
 Per commit: `npm run check:copy`, `npm run lint`, `npm run typecheck`, `npm test` (152 tests at the end of the pass), `npm run e2e` (200 checks at desktop and phone widths, dark and light, wall off; 197 run and 3 are the analytics check skipping its repeat on three of the four projects) and `npm run e2e:wall` (38 checks). `git diff --stat origin/main -- data queries THESIS.md` is empty. The visible text of thirteen pages and pop-ups was saved from a build of the branch before this pass, again after the first four changes and again after the time range change, and compared line by line each time. `npm run e2e:auth` still needs the Clerk development keys and was not run.
 
+# Fourth pass, 2026-11-12: tabs in the header, legacy listings, filters across Overview
+
+Wazarat compared the atlas with the Robinhood landing page and asked for four things. The per-card time range was already on this branch from the third pass, and he chose to keep Chain over time's four panels in one row rather than two by two. The other three are below. Nothing under `data/`, `queries/` or `THESIS.md` changed and no TVL, volume, fee or revenue figure moved with no filter set; the figures that do change are listed and are changes he asked for.
+
+## What changed
+
+| Area | Change |
+|---|---|
+| Header | The page tabs sit between the lockup and Submit a project, as on the Robinhood atlas, from 1360px. Ten tabs need 718px at that width with Submit a project and Log in showing, and the container leaves 782px; below 1360px they keep their own scrolling row. On a phone Log in shows its icon only, so the lockup and both buttons fit. |
+| Legacy listings | Hidden by default. The 620 rows from the 2021 to 2023 AwesomeNEAR directory carry no TVL, volume, fee or revenue figure, so only counts move. Each card whose counts they change has its own "Include legacy (620)" switch in its actions. The `legacy` URL key lists the cards that include them (`?legacy=kpi,sectors`); `LEGACY_CARDS` in `src/lib/filters.ts` is the list. Picking "Legacy listing" in the Status filter shows them anywhere, and the Status counts include them. The switch left the filter bar, and it is a card control, not a filter, so it no longer counts towards "n filters active" or `filter_use`. |
+| Overview under a filter | **Chain over time** becomes **Selection over time**, which sums the selection's own DefiLlama daily history for TVL, DEX volume, fees and revenue (`src/lib/selection-series.ts`, `src/components/charts/selection-over-time.tsx`). That history covers the last 90 days for 132 projects, so 90d and All both show 90 days, and TVL keeps its 90-day floor. Summed protocol TVL double counts liquid staking and bridges, so the selection's share is taken against the same sum over every tracked project, never against DefiLlama's chain TVL. **Chain activity** swaps its function calls panel for calls to the selection's tracked contracts; transactions, accounts, contracts called and receipts cannot be split by project, so those panels stay chain-wide and are labelled "Whole chain". The **Timeline** keeps only events tagged with a selected project. The **Summed TVL** tile replaces "Chain TVL" with "x% of all summed TVL". Every other Overview card already followed the filters. |
+
+Cards with a legacy switch:
+
+| Page | Cards |
+|---|---|
+| Overview | KPI tiles, Sectors treemap, Insights, Native vs imported |
+| Sectors | Sector bars, Traction tier by sector, Sector cards, the sector pop-up |
+| Traction | Leaderboard, Activity without TVL, Listed vs live |
+| Funding | Funding type (its pop-up follows it) |
+| Security | Security facts and Security facts by sector (one switch) |
+| Explorer | The table and the map (one switch) |
+
+Concentration, Risers and fallers, Business model, Financials and the money columns get no switch, because no legacy row reaches them.
+
+## Figures that differ by design
+
+The visible text of fourteen pages and pop-ups was saved from a build of this branch after the 2026-11-12 data merge and again after this pass, then compared.
+
+- **Every page:** the filter bar reads "Showing 468 of 1,088 projects" and has no legacy switch. The Status paragraph of the footer methodology gains one sentence. On Thesis, Intents, Compare and Investors those are the only differences.
+- **Overview, with no filter set:**
+  - Projects reads 468 (of 1,088), with 250 NEAR-native instead of 657.
+  - Coverage lines change their denominator: "Tracked for 77/468 projects" for TVL, which was "84/1,088", because seven legacy rows report a $0 TVL; volume, fees and revenue keep 12, 13 and 9.
+  - The treemap, Insights and Native vs imported count 468 projects.
+  - Every money figure, the chain cards and the Timeline are unchanged.
+- **Sectors, Traction, Funding, Security and Explorer:** the counts on the switched cards drop by the legacy rows they held. Among them are funded projects found only in the old directory, such as Octopus Network and Mintbase. The funding type bars drop by those, and Activity without TVL loses Octopus Network and AstroDAO.
+- **Overview with `?chain=Other+EVM`:** Selection over time shows $4.4M summed TVL for the 33 of 113 selected projects with history (low $4.3M, high $4.7M, −5.9% over 90 days, 1% of the summed TVL of every tracked project), checked by hand against `series.json`. Chain activity shows calls to the 3 selected projects with tracked contracts, and the Timeline lists the events tagged with a selected project.
+
+## Differences from the Robinhood atlas kept on purpose
+
+- **Filters reach the chain cards.** The shared standard says a whole-chain card stays the same when filters change. Here, at the owner's request, Chain over time and the Timeline switch to the selection, and Chain activity splits what it can and labels the rest "Whole chain". With no filter set they are the whole-chain cards they were.
+- **Legacy listings are hidden by default, with a switch per card.** The Robinhood atlas has no legacy rows.
+- **The tabs join the header row at 1360px, not 1280px.** NEAR has ten tabs to Robinhood's six.
+
+## Found, not fixed
+
+`cn` in `src/lib/utils.ts` runs tailwind-merge without the design system's custom font sizes, so `text-label` (and the other custom sizes) is dropped whenever a `text-ink-*` colour sits beside it in one `cn` call. The text then inherits its parent's size. This pass keeps `text-label` outside `cn` for the scope note and the legacy switch. Fixing `cn` itself, by registering the custom sizes with `extendTailwindMerge`, would resize every plain-text label that hits it, such as tier and chain labels, so it needs its own before-and-after check.
+
+## Verification
+
+Per commit: `npm run check:copy`, `npm run lint`, `npm run typecheck`, `npm test` (157 tests), `npm run e2e` (208 checks; 205 run and 3 are the analytics check skipping its repeat on three of the four projects) and `npm run e2e:wall` (38 checks). `git diff --stat origin/main -- data queries THESIS.md` is empty.
