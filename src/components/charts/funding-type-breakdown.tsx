@@ -29,6 +29,7 @@ export function FundingTypeBreakdown({ projects, onSelect, className }: { projec
     <ChartCard
       className={className}
       id="funding-type"
+      legacyCard="funding-type"
       title="Funding type"
       takeaway={takeawayFor(projects, b)}
       info={`Projects per funding type from the Funding Type column of the research sheet, counting only projects with a disclosed type. A project with two types (for example "VC-backed; Token-funded") counts once in each bar${multi ? `; ${multi} projects do` : ""}. Rare types fold into Other. Projects never checked (Not researched) and projects checked with nothing found (Not disclosed) are counted in the line under the chart. Click a bar or a legend entry to open that type's projects and rounds.`}

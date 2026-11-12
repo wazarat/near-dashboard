@@ -1,6 +1,7 @@
 "use client";
 
 import { ScopeNote } from "@/components/atlas/chart-card";
+import { LegacySwitch, useLegacyOn } from "@/components/atlas/legacy-switch";
 import { InfoTip } from "@/components/ui/info-tip";
 import { NOT_TRACKED_HELP, coverageShort } from "@/lib/coverage";
 import { meta } from "@/lib/data";
@@ -22,6 +23,7 @@ interface Tile {
 }
 
 export function KpiTiles({ projects, total }: { projects: Project[]; total: number }) {
+  const legacy = useLegacyOn("kpi");
   const n = projects.length;
   const tvl = sumMetric(projects, "tvl");
   const vol = sumMetric(projects, "volume");
@@ -85,7 +87,10 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
 
   return (
     <div className="space-y-2">
-      <ScopeNote />
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+        <ScopeNote legacy={legacy} />
+        <LegacySwitch card="kpi" label="the KPI tiles" className="ml-auto" />
+      </div>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
       {tiles.map((t) => (
         <div key={t.label} className={cn("card-lit rounded-xl border border-ink-700/60 bg-ink-900 px-4 py-3.5", t.empty && "border-ink-700/40")}>

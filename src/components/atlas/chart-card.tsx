@@ -11,11 +11,12 @@ import { InfoTip } from "@/components/ui/info-tip";
 import { Segmented } from "@/components/ui/segmented";
 import { useAccess } from "@/lib/access";
 import { meta } from "@/lib/data";
-import { useActiveFilterCount, type Scale } from "@/lib/filters";
+import { useActiveFilterCount, type LegacyCard, type Scale } from "@/lib/filters";
 import { points } from "@/lib/takeaways";
 import { cn } from "@/lib/utils";
 import { ChartFrameProvider, type ChartFrame } from "./chart-frame";
 import { ChartTable, ChartTableToggle, type ChartTableSpec, type ChartView } from "./chart-table";
+import { LegacySwitch, useLegacyOn } from "./legacy-switch";
 import { TakeawayList } from "./takeaway-list";
 
 export interface QuerySpec {
@@ -64,6 +65,8 @@ interface ChartCardProps {
   source?: string;
   /** The view the card and its expanded copy open on. A card of records (the timeline) opens on its table. */
   defaultView?: ChartView;
+  /** A card whose counts legacy listings change: shows its "Include legacy" switch and says when it includes them. */
+  legacyCard?: LegacyCard;
 }
 
 const SCALE_OPTIONS = [
@@ -81,9 +84,10 @@ const noop = () => {};
  * its title. A card that ignores the filters (whole-chain history, a compare selection) simply stays
  * the same when filters change and carries no note.
  */
-export function ScopeNote({ scope = "filtered", className }: { scope?: ChartScope; className?: string }) {
+export function ScopeNote({ scope = "filtered", className, legacy = false }: { scope?: ChartScope; className?: string; /** The card includes legacy listings, which the rest of the page leaves out. */ legacy?: boolean }) {
   const active = useActiveFilterCount();
-  const text = scope === "filtered" && active > 0 ? `${active} filter${active === 1 ? "" : "s"} active` : null;
+  const parts = [scope === "filtered" && active > 0 ? `${active} filter${active === 1 ? "" : "s"} active` : null, legacy ? "includes legacy listings" : null].filter(Boolean);
+  const text = parts.length ? parts.join(", ").replace(/^./, (c) => c.toUpperCase()) : null;
   if (!text) return null;
   return (
     <span className={cn("text-label text-ink-300", className)} data-scope={scope}>
@@ -92,7 +96,8 @@ export function ScopeNote({ scope = "filtered", className }: { scope?: ChartScop
   );
 }
 
-export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries, scope, expandable = true, level = false, subtitle, source, takeawayPlacement = "expanded", defaultView = "chart" }: ChartCardProps) {
+export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries, scope, expandable = true, level = false, subtitle, source, takeawayPlacement = "expanded", defaultView = "chart", legacyCard }: ChartCardProps) {
+  const legacy = useLegacyOn(legacyCard);
   const firstView: ChartView = defaultView === "table" && !table ? "chart" : defaultView;
   const [view, setView] = useState<ChartView>(firstView);
   const [dialogView, setDialogView] = useState<ChartView>(firstView);
@@ -118,6 +123,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
 
   const controls = (v: ChartView, setV: (v: ChartView) => void) => (
     <>
+      {legacyCard && <LegacySwitch card={legacyCard} label={title} />}
       {actions}
       {level && v === "chart" && <Segmented value={axis} onChange={setAxis} options={AXIS_OPTIONS} ariaLabel="Y axis" />}
       {scale && onScaleChange && v === "chart" && <Segmented value={scale} onChange={onScaleChange} options={SCALE_OPTIONS} ariaLabel="Axis scale" />}
@@ -145,7 +151,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
                 <h3 className="text-sm font-semibold leading-tight">{title}</h3>
                 <InfoTip label={`About ${title}`}>{info}</InfoTip>
               </span>
-              <ScopeNote scope={scope} />
+              <ScopeNote scope={scope} legacy={legacy} />
             </div>
             {inline && <p className="mt-1 text-sm text-ink-300">{takeaway}</p>}
             {subtitle && <p className="mt-1 text-label text-ink-300">{subtitle}</p>}
@@ -169,7 +175,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
             <DialogHeader className="gap-1 pr-8">
               <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                 <DialogTitle className="text-title">{title}</DialogTitle>
-                <ScopeNote scope={scope} />
+                <ScopeNote scope={scope} legacy={legacy} />
               </div>
               <DialogDescription className={inline ? "text-sm text-ink-300" : "sr-only"}>{takeaway}</DialogDescription>
               {subtitle && <p className="text-label text-ink-300">{subtitle}</p>}

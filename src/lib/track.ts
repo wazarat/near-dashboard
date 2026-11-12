@@ -32,8 +32,8 @@ export type Auth = "off" | "in" | "out";
 export const LOGIN_TRIGGERS = ["tab", "compare", "project", "header", "sector", "investor", "funding"] as const;
 export type LoginTrigger = (typeof LOGIN_TRIGGERS)[number];
 
-/** URL keys that are filters a reader sets (the seven facets, search and the legacy switch). Chart metric, range and scale keys are controls, not filters. */
-export const FILTER_KEYS = ["q", "sector", "chain", "presence", "tier", "status", "funding", "via", "legacy"] as const;
+/** URL keys that are filters a reader sets (the seven facets and search). Chart metric, range, scale and legacy-listing keys are controls, not filters. */
+export const FILTER_KEYS = ["q", "sector", "chain", "presence", "tier", "status", "funding", "via"] as const;
 export type FilterKey = (typeof FILTER_KEYS)[number];
 
 /** Page slugs: one per tab; anything else is "other". */

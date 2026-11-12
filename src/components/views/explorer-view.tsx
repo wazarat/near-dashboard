@@ -34,6 +34,7 @@ import {
   xColumn,
 } from "@/components/explorer/project-columns";
 import { ScopeNote, TvlNote } from "@/components/atlas/chart-card";
+import { LegacySwitch } from "@/components/atlas/legacy-switch";
 import { MetricSegmented } from "@/components/atlas/chart-metric";
 import { SectorTreemap } from "@/components/charts/sector-treemap";
 import { ExplorerSearch } from "@/components/explorer/explorer-search";
@@ -71,7 +72,10 @@ const VIEW_OPTIONS: Array<{ value: ExplorerViewMode; label: string }> = [
  * (?view=map), the Overview treemap with its zoom over the same list, so the two views always agree.
  */
 export function ExplorerView() {
-  const { filtered, openProject, state, setState, setFacet } = useFilters();
+  const { projectsFor, legacyOn, openProject, state, setState, setFacet } = useFilters();
+  // The table and the map show the same list and share one legacy switch.
+  const filtered = projectsFor("explorer");
+  const legacy = legacyOn("explorer");
   const { view, tm, tmSector } = state;
   const columns = useMemo<ProjectColumnDef[]>(
     () => [
@@ -115,7 +119,7 @@ export function ExplorerView() {
             <div className="min-w-[min(15rem,100%)] flex-1">
               <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                 <h2 className="text-sm font-semibold">Explorer</h2>
-                <ScopeNote />
+                <ScopeNote legacy={legacy} />
               </div>
               <p className="mt-1 text-sm text-ink-300">
                 {view === "map"
@@ -124,6 +128,7 @@ export function ExplorerView() {
               </p>
             </div>
             <div className="flex max-w-full flex-wrap items-center gap-2">
+              <LegacySwitch card="explorer" label="the Explorer" />
               {view === "map" && <MetricSegmented value={tm} onChange={(m) => void setState({ tm: m })} ariaLabel="Map metric" />}
               <Segmented value={view} onChange={(v) => void setState({ view: v })} options={VIEW_OPTIONS} ariaLabel="Explorer view" role="tablist" />
             </div>

@@ -8,12 +8,12 @@ import { useCompare } from "@/lib/compare";
 import { filterParsers, useFilters } from "@/lib/filters";
 
 /** Link to the compare page carrying the selection plus any non-default compare metric, scale, legacy switch and old global range (which only a link shared before per-card ranges carries). */
-export function compareHref(ids: readonly string[], state: { cm: string; range: string; scale: string; legacy?: string }): string {
+export function compareHref(ids: readonly string[], state: { cm: string; range: string; scale: string; legacy?: readonly string[] }): string {
   const parts = [`compare=${ids.join(",")}`];
   if (state.cm !== filterParsers.cm.defaultValue) parts.push(`cm=${state.cm}`);
   if (state.range !== filterParsers.range.defaultValue) parts.push(`range=${state.range}`);
   if (state.scale !== filterParsers.scale.defaultValue) parts.push(`scale=${state.scale}`);
-  if (state.legacy && state.legacy !== filterParsers.legacy.defaultValue) parts.push(`legacy=${state.legacy}`);
+  if (state.legacy && state.legacy.length > 0) parts.push(`legacy=${state.legacy.join(",")}`);
   return `/compare/?${parts.join("&")}`;
 }
 
