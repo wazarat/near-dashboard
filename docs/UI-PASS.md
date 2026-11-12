@@ -254,11 +254,49 @@ Step S of [`LIVE-DATA.md`](LIVE-DATA.md) (section 5), with the `cn` fix before i
 
 ## Not done in step S
 
-- The stablecoin supply tile and the de-duplication of rule 9, which wait for the stablecoins fetcher in step M.
-- Utilization and borrow APY, from DefiLlama yields, also step M. The Rhea Lend snapshot test the spec asks for lands with them.
-- Holders from NearBlocks and Blockscout, launchpad token counts, BigQuery signers per project and the Intents referral map, which are step L. Until then those metrics read Not tracked, or the snapshot value with its date.
+Done in steps M and L below.
 
 ## Found, not fixed
 
 - The help page lists every not-tracked metric, so on a phone it runs very long (about 28,000px). Collapsing each group, or showing only the headline metric by default, would fix it.
 - Aurora's protocol fees panel is real but nearly empty (a few dollars a month).
+
+# Live data, steps M and L, 2026-11-12
+
+The rest of [`LIVE-DATA.md`](LIVE-DATA.md), sections 3 to 5, run without a pause between steps at the owner's request. Every new source is its own fetcher in `scripts/fetch/`, runs in the daily refresh, writes its status to `data/history/_meta.json`, skips gracefully on failure and retries a 429 on the server side. Each stores a dated snapshot under `data/history/extra/`, so every value on the site carries the day it was read.
+
+## Step M
+
+| Source | What it adds | Where it shows |
+|---|---|---|
+| DefiLlama stablecoins | USD-pegged supply on NEAR ($131.9M) and Aurora ($4.0M), every coin once. `data/stablecoin-map.csv` marks one row per coin primary, so DAI and DAI by MakerDAO never count twice (rule 9). | Stablecoin supply tile; the stablecoin projects' headline |
+| DefiLlama yields and lendBorrow | Utilization and a borrow-weighted borrow APY for lenders (Rhea Lend 83.9% and 14.3% across the markets DefiLlama lists), staking APY for liquid staking (Rhea LST 4.4%), largest-pool APY and pool count. | Project pop-up |
+| DefiLlama aggregators and bridge aggregators | 30-day volume routed by LeoDex, De1, DZap, Rubic, StableFlow and others, joined through the map. | Project pop-up |
+| DefiLlama hacks | The four exploits on NEAR or Aurora (Ref Finance 2021, Skyward 2022, Rhea Lend and Sweat in April 2026). | Security section of the pop-up; a data-check review entry when the events file has no matching Incident |
+| GeckoTerminal | 24h volume and liquidity over each DEX's top pools on NEAR and Aurora (`data/geckoterminal-map.csv`). NEAR Intents shows volume and never liquidity (rule 6). | Project pop-up |
+| NearBlocks and Aurora Blockscout stats | Nodes online (371), lifetime transactions and addresses. With the chain series, 30-day gas fees, transactions and DEX volume. | Chain facts on the NEAR Protocol and Aurora pop-ups only |
+| NearBlocks token list | Supply on NEAR times price, for project tokens matched by contract; never for a stablecoin (rule 5). | Project pop-up |
+
+## Step L
+
+| Item | What it does |
+|---|---|
+| Contracts and tokens | `npm run seed:contracts:metrics` adds every token contract on NEAR and Aurora and every known contract from the snapshot CSV to `data/contracts.csv`, plus launchpad factories, and marks a row Verified only when the account exists on NearBlocks or Aurora Blockscout. It now holds 110 rows across 52 projects, 109 of them verified, with 34 token contracts and 1 factory. The one account that does not exist (`tge-lockup.sweat`) stays listed as Verified No. A NEAR Catalog row that credited LiNEAR's main contract to Phoenix Bonds was removed, so LiNEAR's activity counts once. |
+| Spoof guard | A token reaches a project only by contract id or address, never by symbol (`isContractId` in `src/lib/extra-join.ts`, tested). One account belongs to one project: the snapshot's token column decides a token's owner, a contract already owned elsewhere is not added, and `npm run check:data` lists any account mapped twice. This dropped a stale row that gave Rhea Lend the RHEA token, and kept LiNEAR's contract off Phoenix Bonds. |
+| Holders | A new `holders` source counts holders for every verified token contract, on NEAR from NearBlocks and on Aurora from Blockscout, one dated point per run. NearBlocks allows about 6 calls a minute without a key; an optional `NEARBLOCKS_API_KEY` secret makes it faster. Holders never set a tier (rule 10). |
+| BigQuery | The daily receipts scan already sums function calls and signers per project from `data/contracts.csv`, so every newly verified contract is covered from the next run. The same scan now attributes account creations under a launchpad factory to that factory (`queries/daily_receipts.sql`), which gives tokens launched per launchpad at no extra scan cost. Only Meme Cooking's factory is confirmed so far (JAMBO is `jambo-1679.meme-cooking.near`). |
+| NEAR Intents per app | `npm run seed:referrals` lists the top 50 referral tags by 30-day volume in `data/intents-referrals.csv` and matches them to projects by name. An exact name match is verified and shown; a looser match is listed with Verified No until someone labels it. App fees per app are Not tracked, because the Explorer reports them by fee recipient rather than by referral. The volume shows on each app's pop-up and in a new card on the Intents page, and is never added to the app's DEX volume. |
+| Accuracy rule 1 | A project's Other traction signal shows the date of the research snapshot it came from, and folds behind "Older figure" once that is more than 30 days older than the data. |
+
+## For the owner to label or decide
+
+- `data/intents-referrals.csv`: 10 referral tags are matched and shown, 8 have a suggested project waiting for a label (Rango Exchange, Allbridge, NEAR Mobile Wallet, Rhea Finance, LayerZero, Meteor Wallet, NEAR Intents' own app), and 32 have no match. The four Aurora widget tags are among the unmatched ones, since "Aurora" and "Aurora+" are ambiguous. Setting Verified to Yes on a row shows its volume from the next build.
+- The Ref Finance exploit of August 2021 on DefiLlama's hacks list has no Incident event in the events file.
+- More launchpad factories (JustHoot, Nearly, Shards, NEARRR.fun, Pump.fun on NEAR) once their factory accounts are confirmed.
+- The BigQuery query change could not be dry-run locally, because the local Google login has expired. The daily refresh runs it with its own credentials; if it fails, the other sources still commit.
+
+## Not adopted from the spec
+
+- A 30-day distinct-signer count. The BigQuery history holds distinct signers per day, so the site keeps "7d signers", which is a sum of daily counts, and labels it an estimate.
+- Volume of tokens launched on each launchpad, which needs GeckoTerminal token pools matched to each factory.
+- The spec's count of 45 projects "tagged NEAR Intents". The dataset has no such tag, so referral tags are matched against every project instead.

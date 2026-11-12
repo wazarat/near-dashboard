@@ -1,60 +1,111 @@
 Project,Account ID,Role,Source,Verified
-NEAR Intents,intents.near,core,known account,Yes
+Allstake,allstake.near,staking,known account,Yes
+AstroDAO,sputnik-dao.near,core,known account,Yes
+Aurigami,1ab43204a195a0fd37edec621482afd3792ef90b.factory.bridge.near,catalog,nearcatalog aurigami,Yes
+Aurigami,0x09c9d464b58d96837f8d8b6f4d9fe4ad408d3a4f,token,live-metrics snapshot 2026-11-12,Yes
+Aurigami,1ab43204a195a0fd37edec621482afd3792ef90b.factory.bridge.near,token,live-metrics snapshot 2026-11-12,Yes
 Aurora,aurora,core,known account,Yes
-Rhea Finance,v2.ref-finance.near,core,known account,Yes
-Rhea Finance,dclv2.ref-labs.near,core,known account,Yes
-Rhea Lend (formerly Burrow),contract.main.burrow.near,core,known account,Yes
-Rhea LST (rNEAR),rnear.rhealab.near,staking,known account,Yes
+Aurora,aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near,token,live-metrics snapshot 2026-11-12,Yes
+Black Dragon,blackdragon.tkn.near,token,known account,Yes
+Cosmose,earn.kaiching,token,live-metrics snapshot 2026-11-12,Yes
+DAI by MakerDAO,6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near,catalog,nearcatalog dai-by-makerdao-2,Yes
+DAI by MakerDAO,6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near,token,live-metrics snapshot 2026-11-12,Yes
+Delta Trade,grid.deltatrade.near,catalog,nearcatalog delta-bot,Yes
+Delta Trade,deltabot.near,core,known account,Yes
+Delta Trade,grid.deltatrade.near,core,live-metrics snapshot 2026-11-12,Yes
+Enleap,gear.enleap.near,token,live-metrics snapshot 2026-11-12,Yes
+HAPI,d9c2d319cd7e6177336b0a9c93c21cb48d84fb54.factory.bridge.near,catalog,nearcatalog hapi,Yes
+HAPI,0x943f4bf75d5854e92140403255a471950ab8a26f,token,live-metrics snapshot 2026-11-12,Yes
+HAPI,d9c2d319cd7e6177336b0a9c93c21cb48d84fb54.factory.bridge.near,token,live-metrics snapshot 2026-11-12,Yes
+Harvest MOON,harvest-moon.near,catalog,nearcatalog harvest-moon,Yes
+Harvest MOON,harvest-moon.near,core,live-metrics snapshot 2026-11-12,Yes
+HOT Wallet (HOT Protocol),v2_1.omni.hot.tg,bridge,known account,Yes
+HOT Wallet (HOT Protocol),game.hot.tg,core,known account,Yes
+HOT Wallet (HOT Protocol),game.hot.tg,token,live-metrics snapshot 2026-11-12,Yes
+Intear Wallet,intel.tkn.near,catalog,nearcatalog intear-wallet,Yes
+Intear Wallet,intel.tkn.near,token,live-metrics snapshot 2026-11-12,Yes
+JAMBO,jambo-1679.meme-cooking.near,catalog,nearcatalog jambo,Yes
+JAMBO,jambo-1679.meme-cooking.near,token,live-metrics snapshot 2026-11-12,Yes
+Jumbo Exchange,v1.jumbo_exchange.near,core,known account,Yes
+Jumbo Exchange,token.jumbo_exchange.near,token,defillama jumbo-exchange,Yes
+Learn NEAR Club,learnx.near,catalog,nearcatalog learn-near-club,Yes
+Learn NEAR Club,learnx.near,core,live-metrics snapshot 2026-11-12,Yes
+LiNEAR Protocol,linear-protocol.near,staking,known account,Yes
+LiNEAR Protocol,0x918dbe087040a41b786f0da83190c293dae24749,token,live-metrics snapshot 2026-11-12,Yes
+LiNEAR Protocol,802d89b6e511b335f05024a65161bce7efc3f311.factory.bridge.near,token,defillama linear-protocol,Yes
+Meme Cooking,meme-cooking.near,core,known account,Yes
+Meme Cooking,meme-cooking.near,factory,"factory, JAMBO is jambo-1679.meme-cooking.near",Yes
+Meta Pool,mpdao-token.near,catalog,nearcatalog meta-pool,Yes
+Meta Pool,meta-pool.near,core,live-metrics snapshot 2026-11-12,Yes
 Meta Pool,meta-pool.near,staking,known account,Yes
 Meta Pool,meta-token.near,token,known account,Yes
-LiNEAR Protocol,linear-protocol.near,staking,known account,Yes
-SWEAT (Sweat Economy),token.sweat,token,known account,Yes
-HOT Wallet (HOT Protocol),game.hot.tg,core,known account,Yes
-HOT Wallet (HOT Protocol),v2_1.omni.hot.tg,bridge,known account,Yes
-Near Social,social.near,core,known account,Yes
-USDT,usdt.tether-token.near,token,known account,Yes
-USDC,17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1,token,known account,Yes
-NEAR Omni Bridge,omni.bridge.near,bridge,known account,Yes
-Rainbow Bridge,factory.bridge.near,bridge,known account,Yes
-Jumbo Exchange,v1.jumbo_exchange.near,core,known account,Yes
-Veax,veax.near,core,known account,Yes
-Delta Trade,deltabot.near,core,known account,Yes
-Meme Cooking,meme-cooking.near,core,known account,Yes
-Templar Protocol,templar.near,core,known account,Yes
-Orderly Network,asset-manager.orderly-network.near,core,known account,Yes
-Allstake,allstake.near,staking,known account,Yes
-Shitzu,token.0xshitzu.near,token,known account,Yes
-Black Dragon,blackdragon.tkn.near,token,known account,Yes
-POTLOCK,donate.potlock.near,core,known account,Yes
-AstroDAO,sputnik-dao.near,core,known account,Yes
+Meta Pool,mpdao-token.near,token,live-metrics snapshot 2026-11-12,Yes
+Moon Shot,moonshot.near,catalog,nearcatalog moon-shot,Yes
+Moon Shot,moonshot.near,core,live-metrics snapshot 2026-11-12,Yes
 NEAR House of Stake,venear.houseofstake.near,core,known account,Yes
-Jumbo Exchange,token.jumbo_exchange.near,token,defillama jumbo-exchange,No
-LiNEAR Protocol,802d89b6e511b335f05024a65161bce7efc3f311.factory.bridge.near,token,defillama linear-protocol,No
-NEKO,ftv2.nekotoken.near,token,defillama neko,No
-Octopus Network,f5cfbc74057c610c8ef151a439252680ac68c6dc.factory.bridge.near,token,defillama octopus-network,No
-Phoenix Bonds,phoenix-bonds.near,token,defillama phoenix-bonds,No
-Rhea Lend (formerly Burrow),token.rhealab.near,token,defillama rhea-lend,No
-Rhea Finance,token.rhealab.near,catalog,nearcatalog ref-finance,No
-Public AI,token.publicailab.near,catalog,nearcatalog publicai,No
-Sender AI (Sender Wallet),token.sendertge.near,catalog,nearcatalog sender-wallet,No
-PlayEmber,embr.playember_reserve.near,catalog,nearcatalog playember,No
-Pumpopoly,token.pumpopoly.near,catalog,nearcatalog pumpopoly,No
-ShardDog,mint.sharddog.near,catalog,nearcatalog sharddog,No
-UniFat,unifat.near,catalog,nearcatalog unifat,No
-Aurigami,1ab43204a195a0fd37edec621482afd3792ef90b.factory.bridge.near,catalog,nearcatalog aurigami,No
-HAPI,d9c2d319cd7e6177336b0a9c93c21cb48d84fb54.factory.bridge.near,catalog,nearcatalog hapi,No
-Delta Trade,grid.deltatrade.near,catalog,nearcatalog delta-bot,No
-NEAR Tip Bot,tipbot.app.near,catalog,nearcatalog near-tip-bot,No
-Harvest MOON,harvest-moon.near,catalog,nearcatalog harvest-moon,No
-Intear Wallet,intel.tkn.near,catalog,nearcatalog intear-wallet,No
-JAMBO,jambo-1679.meme-cooking.near,catalog,nearcatalog jambo,No
-Nearkat,kat.token0.near,catalog,nearcatalog nearkat,No
-Moon Shot,moonshot.near,catalog,nearcatalog moon-shot,No
-NOW Wallet,max-d.near,catalog,nearcatalog now-wallet,No
-WOO X,4691937a7508860f876c9c0a2a617e7d9e945d4b.factory.bridge.near,catalog,nearcatalog woo-x,No
-DAI by MakerDAO,6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near,catalog,nearcatalog dai-by-makerdao-2,No
-Meta Pool,mpdao-token.near,catalog,nearcatalog meta-pool,No
-Phoenix Bonds,linear-protocol.near,catalog,nearcatalog phoenix-bonds,No
-Near Social,db.social08.near,catalog,nearcatalog near-social,No
-Learn NEAR Club,learnx.near,catalog,nearcatalog learn-near-club,No
-opencann,opencann.near,catalog,nearcatalog opencann,No
+NEAR Intents,intents.near,core,known account,Yes
+NEAR Omni Bridge,omni.bridge.near,bridge,known account,Yes
+Near Social,db.social08.near,catalog,nearcatalog near-social,Yes
+Near Social,db.social08.near,core,live-metrics snapshot 2026-11-12,Yes
+Near Social,social.near,core,known account,Yes
+NEAR Tip Bot,tipbot.app.near,catalog,nearcatalog near-tip-bot,Yes
+NEAR Tip Bot,tipbot.app.near,core,live-metrics snapshot 2026-11-12,Yes
+Nearkat,kat.token0.near,catalog,nearcatalog nearkat,Yes
+Nearkat,kat.token0.near,token,live-metrics snapshot 2026-11-12,Yes
+NEKO,cookie.nekotoken.near,core,live-metrics snapshot 2026-11-12,Yes
+NEKO,ff.nekotoken.near,core,live-metrics snapshot 2026-11-12,Yes
+NEKO,ft.nekotoken.near,core,live-metrics snapshot 2026-11-12,Yes
+NEKO,nft.goodfortunefelines.near,core,live-metrics snapshot 2026-11-12,Yes
+NEKO,stake.nekotoken.near,core,live-metrics snapshot 2026-11-12,Yes
+NEKO,vesting.nekotoken.near,core,live-metrics snapshot 2026-11-12,Yes
+NEKO,ftv2.nekotoken.near,token,defillama neko,Yes
+NOW Wallet,max-d.near,catalog,nearcatalog now-wallet,Yes
+NOW Wallet,max-d.near,token,live-metrics snapshot 2026-11-12,Yes
+Octopus Network,f5cfbc74057c610c8ef151a439252680ac68c6dc.factory.bridge.near,token,defillama octopus-network,Yes
+opencann,opencann.near,catalog,nearcatalog opencann,Yes
+opencann,opencann.near,core,live-metrics snapshot 2026-11-12,Yes
+Orderly Network,asset-manager.orderly-network.near,core,known account,Yes
+Phoenix Bonds,phoenix-bonds.near,token,defillama phoenix-bonds,Yes
+Pitchtalk,v1.pitchtalk.near,core,live-metrics snapshot 2026-11-12,Yes
+PlayEmber,embr.playember_reserve.near,catalog,nearcatalog playember,Yes
+PlayEmber,embr.playember_reserve.near,core,live-metrics snapshot 2026-11-12,Yes
+POTLOCK,donate.potlock.near,core,known account,Yes
+POTLOCK,potlock.near,core,live-metrics snapshot 2026-11-12,Yes
+Public AI,token.publicailab.near,catalog,nearcatalog publicai,Yes
+Public AI,token.publicailab.near,token,live-metrics snapshot 2026-11-12,Yes
+Pumpopoly,token.pumpopoly.near,catalog,nearcatalog pumpopoly,Yes
+Pumpopoly,nft.pumpopoly.near,core,live-metrics snapshot 2026-11-12,Yes
+Pumpopoly,world.pumpopoly.near,core,live-metrics snapshot 2026-11-12,Yes
+Pumpopoly,token.pumpopoly.near,token,live-metrics snapshot 2026-11-12,Yes
+Rainbow Bridge,factory.bridge.near,bridge,known account,Yes
+Rainbow Bridge,factory.bridge.near,core,live-metrics snapshot 2026-11-12,Yes
+Rainbow Bridge,prover.bridge.near,core,live-metrics snapshot 2026-11-12,Yes
+Rhea Finance,token.rhealab.near,catalog,nearcatalog ref-finance,Yes
+Rhea Finance,dclv2.ref-labs.near,core,known account,Yes
+Rhea Finance,v2.ref-finance.near,core,known account,Yes
+Rhea Finance,token.rhealab.near,token,live-metrics snapshot 2026-11-12,Yes
+Rhea Lend (formerly Burrow),contract.main.burrow.near,core,known account,Yes
+Rhea Lend (formerly Burrow),token.burrow.near,token,live-metrics snapshot 2026-11-12,Yes
+Rhea LST (rNEAR),rnear.rhealab.near,staking,known account,Yes
+Sender AI (Sender Wallet),token.sendertge.near,catalog,nearcatalog sender-wallet,Yes
+Sender AI (Sender Wallet),token.sendertge.near,token,live-metrics snapshot 2026-11-12,Yes
+ShardDog,mint.sharddog.near,catalog,nearcatalog sharddog,Yes
+ShardDog,mint.sharddog.near,core,live-metrics snapshot 2026-11-12,Yes
+Shitzu,token.0xshitzu.near,token,known account,Yes
+SWEAT (Sweat Economy),community.sweat,core,live-metrics snapshot 2026-11-12,Yes
+SWEAT (Sweat Economy),deposits.grow.sweat,core,live-metrics snapshot 2026-11-12,Yes
+SWEAT (Sweat Economy),distributions.grow.sweat,core,live-metrics snapshot 2026-11-12,Yes
+SWEAT (Sweat Economy),grow.sweat,core,live-metrics snapshot 2026-11-12,Yes
+SWEAT (Sweat Economy),oracle.sweat,core,live-metrics snapshot 2026-11-12,Yes
+SWEAT (Sweat Economy),tge-lockup.sweat,core,live-metrics snapshot 2026-11-12,No
+SWEAT (Sweat Economy),token.sweat,token,known account,Yes
+Templar Protocol,templar.near,core,known account,Yes
+Trisolaris,0xfa94348467f64d5a457f75f8bc40495d33c65abb,token,live-metrics snapshot 2026-11-12,Yes
+UniFat,unifat.near,catalog,nearcatalog unifat,Yes
+UniFat,unifat.near,core,live-metrics snapshot 2026-11-12,Yes
+USDC,17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1,token,known account,Yes
+USDT,usdt.tether-token.near,token,known account,Yes
+Veax,veax.near,core,known account,Yes
+WOO X,4691937a7508860f876c9c0a2a617e7d9e945d4b.factory.bridge.near,catalog,nearcatalog woo-x,Yes
+WOO X,0x99ec8f13b2afef5ec49073b9d20df109d25f78c0,token,live-metrics snapshot 2026-11-12,Yes
+WOO X,4691937a7508860f876c9c0a2a617e7d9e945d4b.factory.bridge.near,token,live-metrics snapshot 2026-11-12,Yes
