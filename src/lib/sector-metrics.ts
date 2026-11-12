@@ -77,7 +77,7 @@ const U = (facts: MetricId[] = []): SectorDef => ({ measured: false, headline: n
 /** Section 4 of docs/LIVE-DATA.md. Keys are the sector names in the research CSV. */
 export const SECTOR_METRICS: Record<string, SectorDef> = {
   "DEXs & Liquidity": M("volume", ["tvl", "fees", "revenue", "supplySideRevenue", "aggregatorVolume", "calls30d"]),
-  "Bridges & Interoperability": M("volume", ["tvl", "fees", "holdersRevenue", "supplySideRevenue", "bridgeAggregatorVolume", "calls30d", "signers7d"]),
+  "Bridges & Interoperability": M("volume", ["tvl", "fees", "revenue", "holdersRevenue", "supplySideRevenue", "bridgeAggregatorVolume", "calls30d", "signers7d"]),
   "Lending & Credit": M("totalDeposited", ["borrowed", "tvl", "fees", "revenue"]),
   "Liquid Staking & Restaking": M("tvl", ["tokenHolders", "ownStaking", "fees", "revenue"]),
   Launchpads: M("tokensLaunched", ["volume", "tokenHolders", "fees", "tvl"]),
