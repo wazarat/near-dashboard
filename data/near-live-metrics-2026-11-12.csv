@@ -1,0 +1,469 @@
+Project/Company Name,Sector/Category,Native Chain,Status,DefiLlama Slugs,NEAR Catalog Slug,TVL on NEAR (USD),TVL on Aurora (USD),Borrowed (USD),Total Deposited (USD),Own-token Staking (USD),30d DEX Volume (USD),30d Fees (USD),30d Revenue (USD),30d Holders Revenue (USD),30d Supply-side Revenue (USD),30d Aggregator Volume (USD),30d Bridge Aggregator Volume (USD),"24h DEX Volume, top pools (USD)","DEX Liquidity, top pools (USD)",Yield Pools,"Best Pool (symbol, TVL, APY)",Lending Supplied (USD),Lending Borrowed (USD),Utilization,Stablecoin Supply on NEAR (USD),Stablecoin Supply on Aurora (USD),Token Symbol,Token Contract (NEAR),Token Contract (Aurora),CoinGecko ID,Token Price (USD),Token Supply x Price on NEAR (USD),Token Holders on NEAR,Token Holders on Aurora,Known Contracts,Hacks (DefiLlama),Headline Metric,Headline Value,Headline State,Metrics With Values,Sources,As Of
+Rhea Finance,DEXs & Liquidity,NEAR native,Mainnet,rhea-dex; rhea-cross-chain,ref-finance,21626850,,,,,284333017,505753,101937,,403817,,,7997174,7157045,2,USDT-USDC-USDT.E-USDC.E $0.1M 3.5%,,,,,,RHEA,token.rhealab.near,,rhea-2,0.03622,36217469,16285,,,2021-08-15 $3.2M Missing input validation,30d DEX volume,284333017,value,16,DefiLlama; DefiLlama yields; GeckoTerminal; NEAR Catalog; NearBlocks,2026-11-12
+Rhea Lend (formerly Burrow),Lending & Credit,NEAR native,Mainnet,rhea-lend,,140445943,,25029218,165475161,,,268757,71947,,,,,,,6,USDC $2.0M 8.9%,25913701,21963263,85% (stablecoin markets),,,BRRR,token.burrow.near,,,0.001887,1886950,99423,,,2026-04-16 $18.4M Spot price manipulation,Total deposited (TVL + borrowed),165475161,value,16,DefiLlama; DefiLlama yields; NearBlocks,2026-11-12
+Aurigami,Lending & Credit,Aurora native,Inactive,aurigami,aurigami,,602728,215932,818660,,,,,,,,,,,,,,,,,,PLY,1ab43204a195a0fd37edec621482afd3792ef90b.factory.bridge.near,0x09c9d464b58d96837f8d8b6f4d9fe4ad408d3a4f,aurigami,2.817e-05,230782,74,25742,,,Total deposited (TVL + borrowed),818660,value,11,Aurora Blockscout; DefiLlama; NEAR Catalog; NearBlocks,2026-11-12
+Meta Pool,Liquid Staking & Restaking,NEAR native,Mainnet,meta-pool-near,meta-pool,75628222,17,,,,,,,,,,,,,,,,,,,,MPDAO,mpdao-token.near,,meta-pool-dao,0.007922,7921709,83228,,meta-pool.near,,TVL,75628239,value,9,DefiLlama; NEAR Catalog; NearBlocks,2026-11-12
+NEAR Intents,Bridges & Interoperability,NEAR native,Mainnet,near-intents,near-intents,87250805,101,,,,3731354987,5991511,1797228,1797228,4194277,,,188754994,,,,,,,,,,,,,,,,,,,30d volume,3731354987,value,8,DefiLlama; GeckoTerminal,2026-11-12
+Trisolaris,DEXs & Liquidity,Aurora native,Inactive,trisolaris,trisolaris,,1759911,,,,3483540,,,,,,,74889,1164213,,,,,,,,TRI,,0xFa94348467f64D5A457F75F8bc40495D33c65aBB,trisolaris,,,,29498,,,30d DEX volume,3483540,value,8,Aurora Blockscout; DefiLlama; GeckoTerminal; NEAR Catalog,2026-11-12
+SWEAT (Sweat Economy),"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,sweat,,,,,,,,,,,,,,,,,,,,,,SWEAT,token.sweat,,sweatcoin,5.462e-05,1073935,23244524,,token.sweat tge-lockup.sweat grow.sweat deposits.grow.sweat distributions.grow.sweat oracle.sweat community.sweat,2026-04-29 $3.5M Withdrawal logic flaw,Token or collection holders,23244524,value,8,NEAR Catalog; NearBlocks,2026-11-12
+USDT,Stablecoins & Payments,NEAR native,Mainnet,,usdt,,,,,,,,,,,,,,,,,,,,39338747,1376425,USDT,usdt.tether-token.near,,tether,0.9992,,2496781,,usdt.tether-token.near,,Supply on NEAR + Aurora,40715172,value,8,DefiLlama stablecoins; NEAR Catalog; NearBlocks,2026-11-12
+NEKO,Yield & Asset Management,NEAR native,Defunct (DefiLlama dead URL),neko,neko,,,,,2990,,,,,,,,,,,,,,,,,neko,ftv2.nekotoken.near,,neko,5.37e-06,53260,152980,,ftv2.nekotoken.near cookie.nekotoken.near stake.nekotoken.near nft.goodfortunefelines.near ff.nekotoken.near ft.nekotoken.near vesting.nekotoken.near,,TVL,,zero (inactive),8,NEAR Catalog; NearBlocks,2026-11-12
+WannaSwap,DEXs & Liquidity,Aurora native,Defunct (DefiLlama dead URL),wannaswap,,,102596,,,6577,68801,,,,,,,1983,54529,,,,,,,,WANNA,,,,,,,3225,,,30d DEX volume,68801,value,7,Aurora Blockscout; DefiLlama; GeckoTerminal,2026-11-12
+Aurora,Infrastructure & Dev Tools,Aurora native,Mainnet,,aurora,,,,,,,2071,,,,,,,,,,,,,,,AURORA,aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near,,,0.03982,30528763,29682,52300,,,Unmeasured sector,,not-applicable,7,Aurora Blockscout; DefiLlama; NearBlocks,2026-11-12
+LiNEAR Protocol,Liquid Staking & Restaking,NEAR native,Mainnet,linear-protocol,linear-protocol,44431087,,,,,,,,,,,,,,,,,,,,,LNR,802d89b6e511b335f05024a65161bce7efc3f311.factory.bridge.near,0x918dbe087040a41b786f0da83190c293dae24749,linear-protocol-lnr,0.0001018,20368,,,,,TVL,44431087,value,7,DefiLlama; NEAR Catalog; NearBlocks,2026-11-12
+Black Dragon,Memecoins & Community,NEAR native,Mainnet,,black-dragon,,,,,,,,,,,,,,,,,,,,,,BLACKDRAGON,blackdragon.tkn.near,,black-dragon,1e-08,999995,286268,,blackdragon.tkn.near,,Token holders on NEAR,286268,value,7,NEAR Catalog; NearBlocks,2026-11-12
+JAMBO,Memecoins & Community,NEAR native,Mainnet,,jambo,,,,,,,,,,,,,,,,,,,,,,JAMBO,jambo-1679.meme-cooking.near,,jambo-2,0.0001786,178630,17380,,jambo-1679.meme-cooking.near,,Token holders on NEAR,17380,value,7,NEAR Catalog; NearBlocks,2026-11-12
+Nearkat,Memecoins & Community,NEAR native,Mainnet,,nearkat,,,,,,,,,,,,,,,,,,,,,,KAT,kat.token0.near,,nearkat,8.321e-05,83210,6377,,kat.token0.near,,Token holders on NEAR,6377,value,7,NEAR Catalog; NearBlocks,2026-11-12
+Shitzu,Memecoins & Community,NEAR native,Mainnet,,shitzu,,,,,,,,,,,,,,,,,,,,,,shitzu,token.0xshitzu.near,,shitzu,0.001356,415154,11924,,token.0xshitzu.near,,Token holders on NEAR,11924,value,7,NEAR Catalog; NearBlocks,2026-11-12
+HAPI,"Security, Risk & Compliance",Other EVM,Mainnet,,hapi,,,,,,,,,,,,,,,,,,,,,,HAPI,d9c2d319cd7e6177336b0a9c93c21cb48d84fb54.factory.bridge.near,0x943f4bf75d5854e92140403255a471950ab8a26f,hapi,0.1587,16632,33268,,,,Unmeasured sector,,not-applicable,7,NEAR Catalog; NearBlocks,2026-11-12
+USDC,Stablecoins & Payments,NEAR native,Mainnet,,usdc,,,,,,,,,,,,,,,,,,,,90454468,2465326,USDC,17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1,,usdc,0.9995,,614847,,,,Supply on NEAR + Aurora,92919794,value,7,DefiLlama stablecoins; NEAR Catalog; NearBlocks,2026-11-12
+Public AI,AI Agents,Other EVM,Mainnet,,publicai,,,,,,,,,,,,,,,,,,,,,,PUBLIC,token.publicailab.near,,publicai,0.003869,3869090,50621,,,,Token holders on NEAR,50621,value,6,NEAR Catalog; NearBlocks,2026-11-12
+Sender AI (Sender Wallet),AI Agents,NEAR native,Inactive,,sender-wallet,,,,,,,,,,,,,,,,,,,,,,ASI,token.sendertge.near,,sender-ai,9.386e-05,88909,90666,,,,Token holders on NEAR,90666,value,6,NEAR Catalog; NearBlocks,2026-11-12
+AuroraSwap,DEXs & Liquidity,Aurora native,Defunct (DefiLlama dead URL),auroraswap,,,132941,,,,360447,,,,,,,8561,119856,,,,,,,,BRL,,,,,,,1267,,,30d DEX volume,360447,value,6,Aurora Blockscout; DefiLlama; GeckoTerminal,2026-11-12
+Pad.fi (ex-NearPad),DEXs & Liquidity,Aurora native,Defunct (DefiLlama dead URL),nearpad,pad-fi,,47056,,,,9850,,,,,,,127,28193,,,,,,,,PAD,,,,,,,1536,,,30d DEX volume,9850,value,6,Aurora Blockscout; DefiLlama; GeckoTerminal,2026-11-12
+Rhea LST (rNEAR),Liquid Staking & Restaking,NEAR native,Mainnet,rhea-lst,,65652713,,,,5468662,,12632,12632,,,,,,,2,RNEAR $64.5M 4.4%,,,,,,,,,,,,,,,,TVL,65652713,value,6,DefiLlama; DefiLlama yields,2026-11-12
+DAI by MakerDAO,Stablecoins & Payments,Other EVM,Mainnet,,dai-by-makerdao-2,,,,,,,,,,,,,,,,,,,,787937,51231,DAI,6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near,,dai,0.9999,,,,,,Supply on NEAR + Aurora,839168,value,6,DefiLlama stablecoins; NEAR Catalog; NearBlocks,2026-11-12
+NEAR Protocol,Infrastructure & Dev Tools,NEAR native,Mainnet,,near-protocol,,,,,,,134174,93923,93923,,,,,,,,,,,,,NEAR,,,near,,,,,,,Unmeasured sector,,not-applicable,5,DefiLlama; NEAR Catalog,2026-11-12
+Enleap,Launchpads,NEAR native,Inactive,,enleap,,,,,,,,,,,,,,,,,,,,,,GEAR,gear.enleap.near,,,0.01161,112570,14814,,,,30d DEX volume,,zero (inactive),5,NearBlocks,2026-11-12
+Bastion,Lending & Credit,Aurora native,Mainnet,bastion,,,804924,53598,858522,,,,,,,,,,,,,,,,,,BSTN,,,,,,,23369,,,Total deposited (TVL + borrowed),858522,value,5,Aurora Blockscout; DefiLlama,2026-11-12
+Polaris Finance,DEXs & Liquidity,Aurora native,Mainnet,polaris-finance,,,6762,,,,87,,,,,,,,,,,,,,,,POLAR,,,,,,,438,,,30d DEX volume,87,value,4,Aurora Blockscout; DefiLlama,2026-11-12
+WOO X,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,,woo-x,,,,,,,,,,,,,,,,,,,,,,WOO,4691937a7508860f876c9c0a2a617e7d9e945d4b.factory.bridge.near,0x99ec8f13b2afef5ec49073b9d20df109d25f78c0,woo,,,,,,,Unmeasured sector,,not-applicable,4,NEAR Catalog,2026-11-12
+Amaterasu Finance,DEXs & Liquidity,Aurora native,Defunct (DefiLlama dead URL),amaterasu-finance,,,10194,,,,,,,,,,,,,,,,,,,,IZA,,,,,,,214,,,30d DEX volume,,zero (inactive),3,Aurora Blockscout; DefiLlama,2026-11-12
+Rose,DEXs & Liquidity,Aurora native,Defunct (DefiLlama dead URL),rose,,,112065,,,,,,,,,,,,,,,,,,,,ROSE,,,,,,,1158,,,30d DEX volume,,zero (inactive),3,Aurora Blockscout; DefiLlama,2026-11-12
+Veax,DEXs & Liquidity,NEAR native,Mainnet,veax-clmm,,8558,,,,,33380,6,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,33380,value,3,DefiLlama,2026-11-12
+Meme Cooking,Launchpads,NEAR native,Mainnet,meme-cooking,meme-cooking,1679,,,,,906,,1,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,906,value,3,DefiLlama,2026-11-12
+Nearlend DAO,Lending & Credit,NEAR native,Defunct (DefiLlama dead URL),nearlend-dao,,23,,11,34,,,,,,,,,,,,,,,,,,,,,,,,,,,,Total deposited (TVL + borrowed),34,value,3,DefiLlama,2026-11-12
+Templar Protocol,Lending & Credit,NEAR native,Mainnet,templar-lending,templar-protocol,539524,,54,539578,,,,,,,,,,,,,,,,,,,,,,,,,,,,Total deposited (TVL + borrowed),539578,value,3,DefiLlama,2026-11-12
+WePiggy,Lending & Credit,Other EVM,Mainnet,wepiggy,,,666,17,683,,,,,,,,,,,,,,,,,,,,,,,,,,,,Total deposited (TVL + borrowed),683,value,3,DefiLlama,2026-11-12
+Pumpopoly,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,pumpopoly,,,,,,,,,,,,,,,,,,,,,,PUMPOPOLY,token.pumpopoly.near,,,,,,,world.pumpopoly.near nft.pumpopoly.near token.pumpopoly.near,,Token or collection holders,,not-tracked,3,NEAR Catalog,2026-11-12
+Crafting Finance,"Perps, Options & Derivatives",Aurora native,Mainnet,crafting-finance,,,12645,,,,,,,,,,,,,,,,,,,,CRF,,,,,,,10414,,,TVL,12645,value,3,Aurora Blockscout; DefiLlama,2026-11-12
+KAIO (Libre Capital),RWA & Tokenized Assets,Other EVM,Building,kaio,libre-capital,3996048,,,,,,442,442,,,,,,,,,,,,,,,,,,,,,,,,TVL,3996048,value,3,DefiLlama,2026-11-12
+Delta Trade,Trading Tools & Bots,NEAR native,Mainnet,deltatrade,delta-bot,100782,,,,,398058,,,,,,,,,,,,,,,,,,,,,,,,grid.deltatrade.near,,30d DEX volume,398058,value,3,DefiLlama; NEAR Catalog,2026-11-12
+Pickle Finance,Yield & Asset Management,Other EVM,Defunct (DefiLlama dead URL),pickle,,,10182,,,,,,,,,,,,,,,,,,,,PICKLE,,,,,,,571,,,TVL,10182,value,3,Aurora Blockscout; DefiLlama,2026-11-12
+PinkPea Finance,Yield & Asset Management,Aurora native,Defunct (DefiLlama dead URL),pinkpea-finance,,,7253,,,,,,,,,,,,,,,,,,,,PEA,,,,,,,1438,,,TVL,7253,value,3,Aurora Blockscout; DefiLlama,2026-11-12
+Cosmose,AI Agents,NEAR native,Mainnet,,cosmose,,,,,,,,,,,,,,,,,,,,,,KAIKAI,earn.kaiching,,,,,,,,,Token holders on NEAR,,not-tracked,2,NEAR Catalog,2026-11-12
+IQ AI,AI Agents,Other EVM,Mainnet,,iq-ai,,,,,,,,,,,,,,,,,,,,,,IQ,,,iq,,,,,,,Token holders on NEAR,,not-tracked,2,NEAR Catalog,2026-11-12
+Kaito AI,AI Agents,Other EVM,Mainnet,,kaito-ai,,,,,,,,,,,,,,,,,,,,,,KAITO,,,kaito,,,,,,,Token holders on NEAR,,not-tracked,2,NEAR Catalog,2026-11-12
+Strawberry AI,AI Agents,Aurora native,Mainnet,,strawberry-ai,,,,,,,,,,,,,,,,,,,,,,BERRY,,,strawberry-ai,,,,,,,Token holders on NEAR,,not-tracked,2,NEAR Catalog,2026-11-12
+Allbridge,Bridges & Interoperability,Other EVM,Mainnet,allbridge-classic,,286,,,,3059,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,2,DefiLlama,2026-11-12
+Rainbow Bridge,Bridges & Interoperability,Aurora native,Mainnet,rainbow-bridge,rainbow-bridge,9311,,,,,,,,,,,,,,,,,,,,,,,,,,,,,prover.bridge.near factory.bridge.near,,30d volume,,not-tracked,2,DefiLlama; NEAR Catalog,2026-11-12
+KyberSwap,DEXs & Liquidity,Other EVM,Mainnet,kyberswap-classic,kyberswap,,,,,,,,,,,,,,,,,,,,,,KNC,,,kyber-network-crystal,,,,,,,30d DEX volume,,not-tracked,2,NEAR Catalog,2026-11-12
+SubQuery,DEXs & Liquidity,Other EVM,Mainnet,,subquery,,,,,,,,,,,,,,,,,,,,,,SQT,,,subquery-network,,,,,,,30d DEX volume,,not-tracked,2,NEAR Catalog,2026-11-12
+The Graph,DEXs & Liquidity,Other EVM,Mainnet,,graph,,,,,,,,,,,,,,,,,,,,,,GRT,,,the-graph,,,,,,,30d DEX volume,,not-tracked,2,NEAR Catalog,2026-11-12
+LunarCrush,Data & Analytics,Other EVM,Mainnet,,lunarcrush,,,,,,,,,,,,,,,,,,,,,,LUNR,,,lunr-token,,,,,,,Unmeasured sector,,not-applicable,2,NEAR Catalog,2026-11-12
+Chronicle,Infrastructure & Dev Tools,Aurora native,Defunct (DefiLlama dead URL),chronicle,,,,,,,,,,,,,,,,,,,,,,,XNL,,,,,,,215,,,Unmeasured sector,,not-applicable,2,Aurora Blockscout,2026-11-12
+SEDA (prev. Flux),Infrastructure & Dev Tools,Other non-EVM,Mainnet,,seda,,,,,,,,,,,,,,,,,,,,,,SEDA,,,seda,,,,,,,Unmeasured sector,,not-applicable,2,NEAR Catalog,2026-11-12
+JustHoot,Launchpads,NEAR native,Mainnet,,justhoot,,,,,,,,,,,,,,,,,,,,,,HOOT,,,hoot-2,,,,,,,30d DEX volume,,not-tracked,2,NEAR Catalog,2026-11-12
+Phoenix Bonds,Liquid Staking & Restaking,NEAR native,Inactive,phoenix-bonds,phoenix-bonds,165101,,,,,,,,,,,,,,,,,,,,,,,,,,,,,linear-protocol.near,,TVL,165101,value,2,DefiLlama; NEAR Catalog,2026-11-12
+Turbo Chain,Memecoins & Community,Aurora native,Mainnet,,turbo-chain,,,,,,,,,,,,,,,,,,,,,,TURBO,,,turbo,,,,,,,Token holders on NEAR,,not-tracked,2,NEAR Catalog,2026-11-12
+Solace,"Security, Risk & Compliance",NEAR native,Defunct (DefiLlama dead URL),solace,,,,,,,,,,,,,,,,,,,,,,,SOLACE,,,,,,,233,,,Unmeasured sector,,not-applicable,2,Aurora Blockscout,2026-11-12
+Coreto,Social & Identity,NEAR native,Inactive,,coreto,,,,,,,,,,,,,,,,,,,,,,COR,,,coreto,,,,,,,30d distinct signers,,zero (inactive),2,NEAR Catalog,2026-11-12
+DAI,Stablecoins & Payments,Other EVM,Unknown,,,,,,,,,,,,,,,,,,,,,,787937,51231,,,,,,,,,,,Supply on NEAR + Aurora,839168,value,2,DefiLlama stablecoins,2026-11-12
+Empyrean DAO,Stablecoins & Payments,Aurora native,Defunct (DefiLlama dead URL),empyrean-dao,,,,,,,,,,,,,,,,,,,,,,,EMPYR,,,,,,,948,,,Supply on NEAR + Aurora,,zero (inactive),2,Aurora Blockscout,2026-11-12
+Frax Finance,Stablecoins & Payments,Other EVM,Mainnet,,frax-finance,,,,,,,,,,,,,,,,,,,,207023,48143,,,,,,,,,,,Supply on NEAR + Aurora,255166,value,2,DefiLlama stablecoins,2026-11-12
+Coin98 Wallet,Wallets & Custody,NEAR native,Mainnet,,coin98-wallet,,,,,,,,,,,,,,,,,,,,,,C98,,,coin98,,,,,,,Unmeasured sector,,not-applicable,2,NEAR Catalog,2026-11-12
+HOT Wallet (HOT Protocol),Wallets & Custody,NEAR native,Mainnet,,hot-near-wallet-telegram,,,,,,,,,,,,,,,,,,,,,,,game.hot.tg,,,,,,,game.hot.tg,,Unmeasured sector,,not-applicable,2,NEAR Catalog,2026-11-12
+MathWallet,Wallets & Custody,NEAR native,Mainnet,,math-wallet,,,,,,,,,,,,,,,,,,,,,,MATH,,,math,,,,,,,Unmeasured sector,,not-applicable,2,NEAR Catalog,2026-11-12
+MoonFlower Farmers,Yield & Asset Management,Aurora native,Defunct (DefiLlama dead URL),moon-flower-farmers,,,,,,,,,,,,,,,,,,,,,,,MFF,,,,,,,11104,,,TVL,,zero (inactive),2,Aurora Blockscout,2026-11-12
+BoringDAO,Bridges & Interoperability,Other EVM,Mainnet,boringdao,,,25,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,1,DefiLlama,2026-11-12
+Celer cBridge,Bridges & Interoperability,Other EVM,Mainnet,cbridge,,,62900,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,1,DefiLlama,2026-11-12
+Moon Shot,Bridges & Interoperability,NEAR native,Mainnet,,moon-shot,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,moonshot.near,,30d volume,,not-tracked,1,NEAR Catalog,2026-11-12
+NEAR Omni Bridge,Bridges & Interoperability,NEAR native,Mainnet,near-bridge,,46354256,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,1,DefiLlama,2026-11-12
+Portal (Wormhole),Bridges & Interoperability,Other non-EVM,Mainnet,portal,,4440956,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,1,DefiLlama,2026-11-12
+Router Protocol,Bridges & Interoperability,Other EVM,Defunct (DefiLlama dead URL),router-protocol,,,9832,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,zero (inactive),1,DefiLlama,2026-11-12
+Stargate,Bridges & Interoperability,Other EVM,Mainnet,stargate-v2,,,67,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,1,DefiLlama,2026-11-12
+Synapse Protocol,Bridges & Interoperability,Other EVM,Mainnet,synapse-cross-chain-bridge,synapse-protocol,,82,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,1,DefiLlama,2026-11-12
+POTLOCK,"DAOs, Governance & Public Goods",NEAR native,Mainnet,,potlock,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,potlock.near donate.potlock.near,,30d distinct signers,,not-tracked,1,NEAR Catalog,2026-11-12
+Arctic,DEXs & Liquidity,Aurora native,Defunct (DefiLlama dead URL),arctic,,,1643,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,zero (inactive),1,DefiLlama,2026-11-12
+Curve Finance,DEXs & Liquidity,Other EVM,Mainnet,curve-dex,,,17260,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,1,DefiLlama,2026-11-12
+DODO,DEXs & Liquidity,Other EVM,Mainnet,dodo-amm,,,30319,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,1,DefiLlama,2026-11-12
+DZap,DEXs & Liquidity,NEAR native,Unknown,dzap,,,,,,,,,,,,7,,,,,,,,,,,,,,,,,,,,,30d DEX volume,7,value,1,DefiLlama,2026-11-12
+De1,DEXs & Liquidity,NEAR native,Unknown,de1,,,,,,,,,,,,296,,,,,,,,,,,,,,,,,,,,,30d DEX volume,296,value,1,DefiLlama,2026-11-12
+Holdr,DEXs & Liquidity,Aurora native,Defunct (DefiLlama dead URL),holdr,,,2100,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,zero (inactive),1,DefiLlama,2026-11-12
+Jumbo Exchange,DEXs & Liquidity,NEAR native,Mainnet,jumbo-exchange,,1056230,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,1,DefiLlama,2026-11-12
+LeoDex,DEXs & Liquidity,NEAR native,Mainnet,leodex,leodex,,,,,,,,,,,53488,,,,,,,,,,,,,,,,,,,,,30d DEX volume,53488,value,1,DefiLlama,2026-11-12
+OpenBiSea,DEXs & Liquidity,Other EVM,Mainnet,openbisea,,,44,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,1,DefiLlama,2026-11-12
+Rubic,DEXs & Liquidity,Other EVM,Mainnet,rubic,rubic,,,,,,,,,,,,35915,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,1,DefiLlama,2026-11-12
+Saddle,DEXs & Liquidity,Other EVM,Defunct (DefiLlama dead URL),saddle-finance,,,2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,zero (inactive),1,DefiLlama,2026-11-12
+Tonic DEX,DEXs & Liquidity,NEAR native,Defunct (DefiLlama dead URL),tonic,,31763,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,zero (inactive),1,DefiLlama,2026-11-12
+iZiSwap,DEXs & Liquidity,Other EVM,Mainnet,iziswap; izumi-liquidbox,,,1659,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,1,DefiLlama,2026-11-12
+DappRadar,Data & Analytics,Other EVM,Inactive,,dappradar,,,,,,,,,,,,,,,,,,,,,,RADAR,,,,,,,,,,Unmeasured sector,,not-applicable,1,NEAR Catalog,2026-11-12
+Learn NEAR Club,"Ecosystem, Funding & Education",NEAR native,Mainnet,,learn-near-club,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,learnx.near,,Unmeasured sector,,not-applicable,1,NEAR Catalog,2026-11-12
+opencann,"Ecosystem, Funding & Education",NEAR native,Inactive,,opencann,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,opencann.near,,Unmeasured sector,,not-applicable,1,NEAR Catalog,2026-11-12
+Alchemy Pay,Exchanges & On/Off-Ramps,Other EVM,Mainnet,,alchemy-pay,,,,,,,,,,,,,,,,,,,,,,ACH,,,,,,,,,,Unmeasured sector,,not-applicable,1,NEAR Catalog,2026-11-12
+NOW Wallet,Exchanges & On/Off-Ramps,Centralized / off-chain,Unknown,,now-wallet,,,,,,,,,,,,,,,,,,,,,,,max-d.near,,,,,,,,,Unmeasured sector,,not-applicable,1,NEAR Catalog,2026-11-12
+Impossible Finance,Launchpads,Other EVM,Mainnet,impossible,,,2662,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,1,DefiLlama,2026-11-12
+Pitchtalk,Launchpads,NEAR native,Inactive,,pitchtalk,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,v1.pitchtalk.near,,30d DEX volume,,zero (inactive),1,NEAR Catalog,2026-11-12
+Allstake,Liquid Staking & Restaking,NEAR native,Inactive,allstake,allstake,532197,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,532197,value,1,DefiLlama,2026-11-12
+TruFin,Liquid Staking & Restaking,Other EVM,Mainnet,trustake,truefin,221530,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,221530,value,1,DefiLlama,2026-11-12
+LazyFi,"NFTs, Gaming & Collectibles",NEAR native,Defunct (DefiLlama dead URL),lazyfi,,54,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,zero (inactive),1,DefiLlama,2026-11-12
+PlayEmber,"NFTs, Gaming & Collectibles",NEAR native,Inactive,,playember,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,embr.playember_reserve.near,,Token or collection holders,,zero (inactive),1,NEAR Catalog,2026-11-12
+ShardDog,"NFTs, Gaming & Collectibles",NEAR native,Inactive,,sharddog,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,mint.sharddog.near,,Token or collection holders,,zero (inactive),1,NEAR Catalog,2026-11-12
+UniFat,"NFTs, Gaming & Collectibles",NEAR native,Inactive,,unifat,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,unifat.near,,Token or collection holders,,zero (inactive),1,NEAR Catalog,2026-11-12
+Orderly Network,"Perps, Options & Derivatives",NEAR native,Mainnet,orderly-bridge,,319301,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,319301,value,1,DefiLlama,2026-11-12
+Spin,"Perps, Options & Derivatives",NEAR native,Defunct (DefiLlama dead URL),spin-dov; spin-perps; spin-spot,,89358,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,89358,value,1,DefiLlama,2026-11-12
+Ante Finance,"Security, Risk & Compliance",Other EVM,Mainnet,ante-finance,,,2039,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,1,DefiLlama,2026-11-12
+Risk Harbor,"Security, Risk & Compliance",Other EVM,Mainnet,risk-harbor,,,4,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,1,DefiLlama,2026-11-12
+Near Social,Social & Identity,NEAR native,Mainnet,,near-social,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,db.social08.near,,30d distinct signers,,not-tracked,1,NEAR Catalog,2026-11-12
+Roketo,Stablecoins & Payments,NEAR native,Defunct (DefiLlama dead URL),roketo,,5509,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,zero (inactive),1,DefiLlama,2026-11-12
+StableFlow,Stablecoins & Payments,NEAR native,Mainnet,stableflow,stableflow,,,,,,,,,,,,51284,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,not-tracked,1,DefiLlama,2026-11-12
+NEAR Tip Bot,Trading Tools & Bots,NEAR native,Inactive,,near-tip-bot,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,tipbot.app.near,,30d DEX volume,,zero (inactive),1,NEAR Catalog,2026-11-12
+Akash,Validators & Node Operators,Other non-EVM,Mainnet,,akash,,,,,,,,,,,,,,,,,,,,,,AKT,,,,,,,,,,Unmeasured sector,,not-applicable,1,NEAR Catalog,2026-11-12
+HERE Wallet,Wallets & Custody,NEAR native,Inactive,here-wallet-staking,here-wallet,808017,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,1,DefiLlama,2026-11-12
+Harvest MOON,Wallets & Custody,NEAR native,Mainnet,,harvest-moon,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,harvest-moon.near,,Unmeasured sector,,not-applicable,1,NEAR Catalog,2026-11-12
+Intear Wallet,Wallets & Custody,NEAR native,Mainnet,,intear-wallet,,,,,,,,,,,,,,,,,,,,,,,intel.tkn.near,,,,,,,,,Unmeasured sector,,not-applicable,1,NEAR Catalog,2026-11-12
+Aurora+,Yield & Asset Management,Aurora native,Inactive,aurora-plus,aurora-plus,,2347262,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,2347262,value,1,DefiLlama,2026-11-12
+Autofarm,Yield & Asset Management,Other EVM,Defunct (DefiLlama dead URL),autofarm,,,174,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,174,value,1,DefiLlama,2026-11-12
+Dew Finance,Yield & Asset Management,NEAR native,Mainnet,dewfinance,dew-finance,247376,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,247376,value,1,DefiLlama,2026-11-12
+Magik Finance,Yield & Asset Management,Other EVM,Defunct (DefiLlama dead URL),magik-farm,,,27,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,27,value,1,DefiLlama,2026-11-12
+Rift Finance,Yield & Asset Management,Aurora native,Defunct (DefiLlama dead URL),rift-finance,,,80721,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,80721,value,1,DefiLlama,2026-11-12
+Securo Finance,Yield & Asset Management,Aurora native,Defunct (DefiLlama dead URL),securo-finance,,,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,1,value,1,DefiLlama,2026-11-12
+UNO Farm,Yield & Asset Management,Aurora native,Defunct (DefiLlama dead URL),uno-farm,,,837,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,837,value,1,DefiLlama,2026-11-12
+Bitte Protocol,AI Agents,NEAR native,Mainnet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+Crynux,AI Agents,NEAR native,Inactive,,crynux,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,zero (inactive),0,,2026-11-12
+Delta League,AI Agents,NEAR native,Mainnet,,delta-league,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+Intellex AI,AI Agents,NEAR native,Mainnet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+IronClaw,AI Agents,NEAR native,Mainnet,,ironclaw,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+Multi Agency,AI Agents,NEAR native,Mainnet,,multi-agency,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+NEAR AI,AI Agents,NEAR native,Mainnet,,near-ai,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+NEAR AI Agent Market,AI Agents,NEAR native,Mainnet,,near-ai-agent-market,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+NEAR Crowd,AI Agents,NEAR native,Inactive,,near-crowd,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,zero (inactive),0,,2026-11-12
+NEAR FM,AI Agents,NEAR native,Mainnet,,near-fm,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+NEAR Legion,AI Agents,NEAR native,Mainnet,,near-ai-legion,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+Near Neighbors Network,AI Agents,NEAR native,Mainnet,,near-neighbors-network,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+Nillion,AI Agents,Other non-EVM,Inactive,,nillion,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,zero (inactive),0,,2026-11-12
+OLLM,AI Agents,NEAR native,Mainnet,,ollm-confidential-ai-gateway,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+Phala Network,AI Agents,Other non-EVM,Mainnet,,phala-network,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+RSS3,AI Agents,Other EVM,Inactive,,rss3-2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,zero (inactive),0,,2026-11-12
+Shade Agents,AI Agents,NEAR native,Mainnet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+Trace Commons,AI Agents,NEAR native,Building,,trace-commons,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+TravAI,AI Agents,NEAR native,Mainnet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+Yupland,AI Agents,NEAR native,Mainnet,,yupland,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+tpro network,AI Agents,Aurora native,Inactive,,tpro-network,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,zero (inactive),0,,2026-11-12
+Asterizm,Bridges & Interoperability,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,0,,2026-11-12
+Chainspot,Bridges & Interoperability,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,0,,2026-11-12
+DCA Space,Bridges & Interoperability,NEAR native,Mainnet,,dca-space-dollar-cost-averaging,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,0,,2026-11-12
+Everclear,Bridges & Interoperability,NEAR native,Mainnet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,0,,2026-11-12
+Gas.zip,Bridges & Interoperability,Other EVM,Inactive,,gas-zip,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,zero (inactive),0,,2026-11-12
+Hashport,Bridges & Interoperability,Other EVM,Defunct (DefiLlama dead URL),hashport,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,zero (inactive),0,,2026-11-12
+LayerZero,Bridges & Interoperability,Other EVM,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,0,,2026-11-12
+Meson,Bridges & Interoperability,Other EVM,Mainnet,meson,meson,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,0,,2026-11-12
+Multichain,Bridges & Interoperability,Other EVM,Defunct (DefiLlama dead URL),multichain,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,zero (inactive),0,,2026-11-12
+Range Explorer,Bridges & Interoperability,NEAR native,Mainnet,,range-explorer,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,0,,2026-11-12
+Spherium,Bridges & Interoperability,Other EVM,Defunct (DefiLlama dead URL),spherium,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,zero (inactive),0,,2026-11-12
+Wormhole,Bridges & Interoperability,Other non-EVM,Mainnet,,wormhole,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d volume,,not-tracked,0,,2026-11-12
+Blunt DAO,"DAOs, Governance & Public Goods",NEAR native,Mainnet,,blunt-dao,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d distinct signers,,not-tracked,0,,2026-11-12
+NEAR DevHub,"DAOs, Governance & Public Goods",NEAR native,Mainnet,,near-devhub,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d distinct signers,,not-tracked,0,,2026-11-12
+NEAR DevHub DAO,"DAOs, Governance & Public Goods",NEAR native,Mainnet,,near-devhub-2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d distinct signers,,not-tracked,0,,2026-11-12
+NEAR House of Stake,"DAOs, Governance & Public Goods",NEAR native,Building,,near-house-of-stake-alpha,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d distinct signers,,not-tracked,0,,2026-11-12
+NEAR Treasury,"DAOs, Governance & Public Goods",NEAR native,Mainnet,,near-treasury,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d distinct signers,,not-tracked,0,,2026-11-12
+curate.fun,"DAOs, Governance & Public Goods",NEAR native,Inactive,,curate-fun,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d distinct signers,,zero (inactive),0,,2026-11-12
+Atomic Wallet,DEXs & Liquidity,NEAR native,Mainnet,,atomic-wallet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Aurora Intents Widget,DEXs & Liquidity,NEAR native,Mainnet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+BitKeep (Bitget Wallet),DEXs & Liquidity,Other EVM,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Chainge,DEXs & Liquidity,Other EVM,Inactive,,chainge,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,zero (inactive),0,,2026-11-12
+DEXTools,DEXs & Liquidity,Other EVM,Mainnet,,dextools,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+DONASWAP V2,DEXs & Liquidity,Other EVM,Defunct (DefiLlama dead URL),donaswap-v2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,zero (inactive),0,,2026-11-12
+Doge Swap,DEXs & Liquidity,NEAR native,Mainnet,,doge-swap,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Emiswap,DEXs & Liquidity,Other EVM,Defunct (DefiLlama dead URL),emiswap,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,zero (inactive),0,,2026-11-12
+Envio,DEXs & Liquidity,Other EVM,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Flair,DEXs & Liquidity,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Infinex,DEXs & Liquidity,Other EVM,Mainnet,,infinex,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Intear DEX,DEXs & Liquidity,NEAR native,Mainnet,,intear-trade-alpha,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Jumper.Exchange,DEXs & Liquidity,Other EVM,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+LI.FI,DEXs & Liquidity,Other EVM,Mainnet,,li-fi,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+NEAR Saboteur,DEXs & Liquidity,NEAR native,Mainnet,,near-saboteur,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Near.com Super App,DEXs & Liquidity,NEAR native,Mainnet,,near-com-super-app,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+OpenOcean,DEXs & Liquidity,Other EVM,Mainnet,,openocean,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Solswap,DEXs & Liquidity,NEAR native,Mainnet,,solswap,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+SwapKit,DEXs & Liquidity,Other EVM,Mainnet,,swapkit,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+SwapSpace,DEXs & Liquidity,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Tidepool,DEXs & Liquidity,NEAR native,Testnet,,tidepool,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Trump Swap,DEXs & Liquidity,NEAR native,Inactive,,trump-swap,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,zero (inactive),0,,2026-11-12
+Turbo Swap,DEXs & Liquidity,Aurora native,Inactive,,turbo-swap,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,zero (inactive),0,,2026-11-12
+ZOLANEAR,DEXs & Liquidity,NEAR native,Inactive,,zolanear,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,zero (inactive),0,,2026-11-12
+Zashi,DEXs & Liquidity,Other non-EVM,Mainnet,,zashi,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Artemis,Data & Analytics,Other EVM,Mainnet,,artemis,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Aurora Blocks Explorer,Data & Analytics,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Chainspect,Data & Analytics,Other EVM,Mainnet,,chainspect,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+DefiLlama,Data & Analytics,Other EVM,Mainnet,,defillama,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Dune Analytics,Data & Analytics,NEAR native,Mainnet,,dune-analytics,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Flipside,Data & Analytics,Other EVM,Mainnet,,flipeside,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+GetBlock,Data & Analytics,Other EVM,Mainnet,,getblock,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+GrowthMate,Data & Analytics,NEAR native,Unknown,,growthmate,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Intear DeFi Map,Data & Analytics,NEAR native,Mainnet,,intear-defi-map,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Explorer,Data & Analytics,NEAR native,Mainnet,,near-explorer,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NearBlocks,Data & Analytics,NEAR native,Mainnet,,near-blocks,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Orally,Data & Analytics,NEAR native,Inactive,,orally,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Pikespeak,Data & Analytics,NEAR native,Mainnet,,pikespeak,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Rhea Analytics,Data & Analytics,NEAR native,Mainnet,,ref-analytics,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+near.ad,Data & Analytics,NEAR native,Mainnet,,near-ad,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+AAXXII,"Ecosystem, Funding & Education",NEAR native,Inactive,,aaxxii,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Banyan Collective,"Ecosystem, Funding & Education",NEAR native,Inactive,,banyan-collective,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Electric Capital,"Ecosystem, Funding & Education",Other EVM,Mainnet,,electric-capital,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Merchants of NEAR,"Ecosystem, Funding & Education",NEAR native,Mainnet,,merchants-of-near,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+MetaWeb Ventures,"Ecosystem, Funding & Education",NEAR native,Mainnet,,metaweb-ventures,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Mirae Asset,"Ecosystem, Funding & Education",NEAR native,Inactive,,mirae-asset,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Alpha,"Ecosystem, Funding & Education",NEAR native,Mainnet,,near-alpha,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Balkans,"Ecosystem, Funding & Education",NEAR native,Inactive,,near-balkans,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Docs,"Ecosystem, Funding & Education",NEAR native,Mainnet,,near-docs,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Foundation,"Ecosystem, Funding & Education",NEAR native,Mainnet,,near-foundation,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR India,"Ecosystem, Funding & Education",NEAR native,Mainnet,,near-india,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Korea,"Ecosystem, Funding & Education",NEAR native,Inactive,,near-korea,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Merch,"Ecosystem, Funding & Education",NEAR native,Mainnet,,near-merch,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Native,"Ecosystem, Funding & Education",NEAR native,Inactive,,near-native,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR One,"Ecosystem, Funding & Education",NEAR native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Toronto,"Ecosystem, Funding & Education",NEAR native,Inactive,,near-toronto,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Ukraine Guild,"Ecosystem, Funding & Education",NEAR native,Mainnet,,near-ukraine-guild,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Vietnam Hub,"Ecosystem, Funding & Education",NEAR native,Mainnet,,near-vietnam-hub,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NearZombies,"Ecosystem, Funding & Education",NEAR native,Inactive,,nearzombies,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Outlier Ventures,"Ecosystem, Funding & Education",Other EVM,Inactive,,outlier-ventures,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Proximity Labs,"Ecosystem, Funding & Education",NEAR native,Mainnet,,proximity-labs,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+QSTN,"Ecosystem, Funding & Education",NEAR native,Mainnet,,qstn,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Ready Layer One,"Ecosystem, Funding & Education",NEAR native,Inactive,,ready-layer-one,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+freeCodeCamp,"Ecosystem, Funding & Education",Other EVM,Inactive,,free-code-camp,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+BTSE,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,,btse,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Backpack Exchange,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,backpack,backpack-exchange,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,DefiLlama,2026-11-12
+Binance,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,binance-cex,binance,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,DefiLlama,2026-11-12
+BingX,Exchanges & On/Off-Ramps,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+BitMart,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,,bitmart,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Bitfinex,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,bitfinex,bitfinex,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,DefiLlama,2026-11-12
+Bitget,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,bitget,bitget,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,DefiLlama,2026-11-12
+Bitlo,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,bitlo,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,DefiLlama,2026-11-12
+Bitstamp,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,bitstamp,bitstamp,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,DefiLlama,2026-11-12
+Bitvavo,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,,bitvavo,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Blockchain.com,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,,blockchain-com,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Bybit,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,,bybit,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Changelly,Exchanges & On/Off-Ramps,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+CoinEx,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,,coinex,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Coinbase,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,,coinbase,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Crypto.com,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,,crypto-com,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+DigiFinex,Exchanges & On/Off-Ramps,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+FinchPay,Exchanges & On/Off-Ramps,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Flipster,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,flipster,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,DefiLlama,2026-11-12
+Gate,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,gate; gate-us,gate-io,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,DefiLlama,2026-11-12
+Gate.io,Exchanges & On/Off-Ramps,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+HTX,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,,htx,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Huobi (HTX),Exchanges & On/Off-Ramps,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Kraken,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,,kraken,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+KuCoin,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,kucoin,kucoin,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,DefiLlama,2026-11-12
+LATOKEN,Exchanges & On/Off-Ramps,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+LetsExchange,Exchanges & On/Off-Ramps,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+MEXC,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,mexc,mexc,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,DefiLlama,2026-11-12
+OKX,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,,okx,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Poloniex,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,,poloniex,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Ramper,Exchanges & On/Off-Ramps,NEAR native,Inactive,,ramper,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Remitano,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,,remitano,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+SwissBorg,Exchanges & On/Off-Ramps,Centralized / off-chain,Mainnet,swissborg,swissborg,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,DefiLlama,2026-11-12
+Transak,Exchanges & On/Off-Ramps,Other EVM,Mainnet,,transak-5,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+WhiteBIT,Exchanges & On/Off-Ramps,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+1RPC,Infrastructure & Dev Tools,NEAR native,Mainnet,,1rpc,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Activelink,Infrastructure & Dev Tools,NEAR native,Inactive,,activelink,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Backdrop Build,Infrastructure & Dev Tools,NEAR native,Inactive,,backdrop-build-2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+BlockPI,Infrastructure & Dev Tools,Other EVM,Mainnet,,blockpi,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Blockchain Radar,Infrastructure & Dev Tools,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Bounce Finance,Infrastructure & Dev Tools,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Bunzz,Infrastructure & Dev Tools,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Calimero Network,Infrastructure & Dev Tools,NEAR native,Mainnet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Chain Signatures / NEAR MPC,Infrastructure & Dev Tools,NEAR native,Mainnet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Collab.Land,Infrastructure & Dev Tools,Other EVM,Mainnet,,collab-land,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+CompareNodes,Infrastructure & Dev Tools,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Cookbook,Infrastructure & Dev Tools,Other EVM,Mainnet,,cookbook,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+DEV3,Infrastructure & Dev Tools,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Encode Club,Infrastructure & Dev Tools,Other EVM,Mainnet,,encode-club,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+FastNEAR,Infrastructure & Dev Tools,NEAR native,Mainnet,,fastnear,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Google Cloud,Infrastructure & Dev Tools,Other EVM,Mainnet,,google-cloud,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+IPFS,Infrastructure & Dev Tools,Other EVM,Mainnet,,ipfs,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Keypom,Infrastructure & Dev Tools,NEAR native,Inactive,,keypom,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Lantstool,Infrastructure & Dev Tools,NEAR native,Mainnet,,lantstool,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Learn NEAR Smart Contract by Example,Infrastructure & Dev Tools,NEAR native,Mainnet,,learn-near-smart-contract-by-example,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+LinkDrop,Infrastructure & Dev Tools,NEAR native,Inactive,,linkdrop,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Mintnite,Infrastructure & Dev Tools,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Mises,Infrastructure & Dev Tools,Other EVM,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Academy,Infrastructure & Dev Tools,NEAR native,Inactive,,near-academy,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Builders,Infrastructure & Dev Tools,NEAR native,Mainnet,,build-dao,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Catalog,Infrastructure & Dev Tools,NEAR native,Mainnet,,near-catalog,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Examples,Infrastructure & Dev Tools,NEAR native,Inactive,,near-examples,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Faucet,Infrastructure & Dev Tools,NEAR native,Testnet,,near-faucet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Nomicon,Infrastructure & Dev Tools,NEAR native,Mainnet,,near-nomicon,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Playground,Infrastructure & Dev Tools,NEAR native,Mainnet,,near-playground,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Protocol Rewards SDK,Infrastructure & Dev Tools,NEAR native,Inactive,,near-protocol-rewards,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Near Plugins,Infrastructure & Dev Tools,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Nuffle Labs,Infrastructure & Dev Tools,NEAR native,Mainnet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+OMNIA,Infrastructure & Dev Tools,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Pyth Network,Infrastructure & Dev Tools,Other non-EVM,Mainnet,,pyth-network,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+QuickNode,Infrastructure & Dev Tools,Other EVM,Mainnet,,quicknode,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+RAEN,Infrastructure & Dev Tools,NEAR native,Inactive,,raen-2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+SaaSGo (Encentive),Infrastructure & Dev Tools,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+SafeTransfer,Infrastructure & Dev Tools,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Secret Network,Infrastructure & Dev Tools,Other EVM,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Seracle,Infrastructure & Dev Tools,NEAR native,Inactive,,seracle,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Shitzu Token Farm,Infrastructure & Dev Tools,NEAR native,Mainnet,,token-farm,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Socket,Infrastructure & Dev Tools,Other EVM,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+TKN,Infrastructure & Dev Tools,NEAR native,Mainnet,,tkn,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Tatum,Infrastructure & Dev Tools,Other EVM,Mainnet,,tatum,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+ValidEntry,Infrastructure & Dev Tools,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Web4.near,Infrastructure & Dev Tools,NEAR native,Mainnet,,web4-near,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+dRPC,Infrastructure & Dev Tools,Other EVM,Mainnet,,drpc,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+dRPC NodeCloud,Infrastructure & Dev Tools,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+nCaptcha,Infrastructure & Dev Tools,NEAR native,Mainnet,,ncaptcha,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+nStamp,Infrastructure & Dev Tools,NEAR native,Mainnet,,nstamp,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+near.mom,Infrastructure & Dev Tools,NEAR native,Mainnet,,near-mom,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+AIDOLS,Launchpads,NEAR native,Inactive,,aidols,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,zero (inactive),0,,2026-11-12
+Calyx,Launchpads,NEAR native,Inactive,,calyx-a-near-intents-launchpad,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,zero (inactive),0,,2026-11-12
+GraFun,Launchpads,NEAR native,Mainnet,,grafun,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+MITTE:meme,Launchpads,NEAR native,Unknown,,mitte-meme,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+NEARRR.fun,Launchpads,NEAR native,Mainnet,,nearrr-fun,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Nearly,Launchpads,NEAR native,Mainnet,,nearly,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Portal Pad,Launchpads,NEAR native,Mainnet,,portal-pad,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Pump.fun,Launchpads,Other non-EVM,Mainnet,,pump-fun,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Shards,Launchpads,NEAR native,Mainnet,,shards,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Shore,Launchpads,NEAR native,Mainnet,,shore,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+SmartPad,Launchpads,Aurora native,Defunct (DefiLlama dead URL),smartpad,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,zero (inactive),0,,2026-11-12
+near.cooking,Launchpads,NEAR native,Mainnet,,near-cooking,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+KINU,Liquid Staking & Restaking,NEAR native,Mainnet,,kinu,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,not-tracked,0,,2026-11-12
+Conclave $VOTE,Memecoins & Community,NEAR native,Mainnet,,conclave-vote,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+HOODL,Memecoins & Community,NEAR native,Mainnet,,hoodl,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+SPEAR on NEAR,Memecoins & Community,NEAR native,Inactive,,spear-on-near,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,zero (inactive),0,,2026-11-12
+THREE,Memecoins & Community,NEAR native,Mainnet,,three,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+WAGMI Chain,Memecoins & Community,Aurora native,Mainnet,,wagmi-chain,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+What the Hoot,Memecoins & Community,NEAR native,Mainnet,,what-the-hoot,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,not-tracked,0,,2026-11-12
+noear $NOEAR,Memecoins & Community,NEAR native,Inactive,,noear,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token holders on NEAR,,zero (inactive),0,,2026-11-12
+CryptoBlades,"NFTs, Gaming & Collectibles",Other EVM,Defunct (DefiLlama dead URL),cryptoblades,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,zero (inactive),0,,2026-11-12
+DAOrecords,"NFTs, Gaming & Collectibles",NEAR native,Inactive,,daorecords,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,zero (inactive),0,,2026-11-12
+DeFiShards,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,defishards,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+Dega,"NFTs, Gaming & Collectibles",Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+Degen Arena,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,degen-arena,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+Dripz,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,dripz,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+EggoQuest,"NFTs, Gaming & Collectibles",Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+GenaDrop,"NFTs, Gaming & Collectibles",NEAR native,Inactive,,genadrop,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,zero (inactive),0,,2026-11-12
+Hexyz,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,hexyz,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+Hot Craft,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,hot-craft-nft-marketplace,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+Hot Craft NFT Marketplace,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,hot-craft-nft-marketplace,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+JAMBO Coinflip,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,jambo-coinflip,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+Jolly Crates,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,jolly-crates,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+Loozr,"NFTs, Gaming & Collectibles",NEAR native,Inactive,,loozr,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,zero (inactive),0,,2026-11-12
+NEAR Account Market,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,near-account-market,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+NEAR Tinker Union,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,near-tinker-union,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+NEARchan,"NFTs, Gaming & Collectibles",NEAR native,Inactive,,nearchan,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,zero (inactive),0,,2026-11-12
+Namesky,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,namesky,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+Near Kingdoms,"NFTs, Gaming & Collectibles",NEAR native,Inactive,,near-kingdoms,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,zero (inactive),0,,2026-11-12
+Near Lotto,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,near-lotto,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+Pixel Tokens (CryptoHeroes),"NFTs, Gaming & Collectibles",NEAR native,Inactive,,pixel-tokens,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,zero (inactive),0,,2026-11-12
+Pixudi,"NFTs, Gaming & Collectibles",NEAR native,Inactive,,pixudi,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,zero (inactive),0,,2026-11-12
+Protocol Pawns,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,protocol-pawns,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+Shilen,"NFTs, Gaming & Collectibles",NEAR native,Inactive,,shilen,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,zero (inactive),0,,2026-11-12
+TooRichCity,"NFTs, Gaming & Collectibles",NEAR native,Inactive,,toorichcity,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,zero (inactive),0,,2026-11-12
+Wars Of Cards,"NFTs, Gaming & Collectibles",NEAR native,Mainnet,,wars-of-cards,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Token or collection holders,,not-tracked,0,,2026-11-12
+CoinSpot,Other,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Dragon Mail,Other,NEAR native,Inactive,,dragon-mail,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Forward Protocol,Other,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Kolibrio,Other,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Zeeve,Other,Other EVM,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+HeX (HOT Exchange),"Perps, Options & Derivatives",NEAR native,Building,,hex-hot-exchange,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,not-tracked,0,,2026-11-12
+NEX,"Perps, Options & Derivatives",NEAR native,Defunct (DefiLlama dead URL),nex,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,zero (inactive),0,,2026-11-12
+dep.now,"Perps, Options & Derivatives",NEAR native,Mainnet,,dep-now,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,not-tracked,0,,2026-11-12
+Kalshi,Prediction Markets,Other non-EVM,Mainnet,,kalshi,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,not-tracked,0,,2026-11-12
+Noa Market,Prediction Markets,NEAR native,Mainnet,,noa-market-prediction-market-on-near,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,not-tracked,0,,2026-11-12
+Prophet,Prediction Markets,NEAR native,Mainnet,,prophet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,not-tracked,0,,2026-11-12
+Abound,RWA & Tokenized Assets,NEAR native,Inactive,,abound,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,zero (inactive),0,,2026-11-12
+Bitwise NEAR ETF (NRR),RWA & Tokenized Assets,Other non-EVM,Mainnet,,bitwise-near-etf-nrr,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,not-tracked,0,,2026-11-12
+Ondo Finance,RWA & Tokenized Assets,Other EVM,Mainnet,,ondo-finance,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,not-tracked,0,,2026-11-12
+SVRN (Sovereign AI),RWA & Tokenized Assets,NEAR native,Mainnet,,svrn,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,not-tracked,0,,2026-11-12
+South Pole,RWA & Tokenized Assets,NEAR native,Inactive,,south-pole,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,zero (inactive),0,,2026-11-12
+BlockSec,"Security, Risk & Compliance",Other EVM,Mainnet,,blocksec-2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Fractal ID,"Security, Risk & Compliance",Other EVM,Mainnet,,fractal,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Guvenkaya,"Security, Risk & Compliance",NEAR native,Mainnet,,guvenkaya,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Hacken,"Security, Risk & Compliance",Other EVM,Mainnet,,hacken,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+HackenProof,"Security, Risk & Compliance",Other EVM,Mainnet,,hackenproof,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Halborn,"Security, Risk & Compliance",Other EVM,Mainnet,,halborn,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Immunefi,"Security, Risk & Compliance",Other EVM,Mainnet,,immunefi,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR OutLayer,"Security, Risk & Compliance",NEAR native,Mainnet,,near-outlayer,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Nym,"Security, Risk & Compliance",Other non-EVM,Mainnet,,nym,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+OtterSec,"Security, Risk & Compliance",Other EVM,Mainnet,,ottersec-2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Reclaim Protocol,"Security, Risk & Compliance",NEAR native,Mainnet,,reclaim-protocol,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Scamfari,"Security, Risk & Compliance",NEAR native,Inactive,,scamfari,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+B4B.WORLD,Social & Identity,NEAR native,Inactive,,b4b-world,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d distinct signers,,zero (inactive),0,,2026-11-12
+NEAR Email,Social & Identity,NEAR native,Mainnet,,near-email,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d distinct signers,,not-tracked,0,,2026-11-12
+Popula,Social & Identity,NEAR native,Inactive,,popula,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d distinct signers,,zero (inactive),0,,2026-11-12
+QuestN,Social & Identity,Other EVM,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d distinct signers,,not-tracked,0,,2026-11-12
+Relayz,Social & Identity,NEAR native,Inactive,,relayz,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d distinct signers,,zero (inactive),0,,2026-11-12
+RubyScore,Social & Identity,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d distinct signers,,not-tracked,0,,2026-11-12
+Talentum,Social & Identity,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d distinct signers,,not-tracked,0,,2026-11-12
+HOT Pay,Stablecoins & Payments,NEAR native,Mainnet,,hot-pay,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,not-tracked,0,,2026-11-12
+Kai Ching by Cosmose,Stablecoins & Payments,NEAR native,Inactive,,kai-ching,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,zero (inactive),0,,2026-11-12
+MoonPay,Stablecoins & Payments,Other EVM,Mainnet,,moonpay,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,not-tracked,0,,2026-11-12
+NEAR Business,Stablecoins & Payments,NEAR native,Building,,near-business,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,not-tracked,0,,2026-11-12
+NEARCatalog Bio,Stablecoins & Payments,NEAR native,Mainnet,,nearcatalog-bio,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,not-tracked,0,,2026-11-12
+Nearsend,Stablecoins & Payments,NEAR native,Inactive,,nearsend,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,zero (inactive),0,,2026-11-12
+OIN Finance,Stablecoins & Payments,NEAR native,Unknown,oin-finance,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,not-tracked,0,,2026-11-12
+ORA Finance,Stablecoins & Payments,NEAR native,Unknown,ora-finance,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,not-tracked,0,,2026-11-12
+PAPR Ecosystem,Stablecoins & Payments,Other EVM,Defunct (DefiLlama dead URL),paprprintr,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,zero (inactive),0,,2026-11-12
+Ping Pay,Stablecoins & Payments,NEAR native,Mainnet,,ping,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,not-tracked,0,,2026-11-12
+Quidli,Stablecoins & Payments,NEAR native,Mainnet,,quidli,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,not-tracked,0,,2026-11-12
+Rapt Network,Stablecoins & Payments,NEAR native,Mainnet,,rapt-network,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,not-tracked,0,,2026-11-12
+Request Finance,Stablecoins & Payments,Other EVM,Mainnet,,request-finance,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,not-tracked,0,,2026-11-12
+ZokshPay,Stablecoins & Payments,NEAR native,Mainnet,,zokshpay,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,not-tracked,0,,2026-11-12
+idOS,Stablecoins & Payments,Other EVM,Mainnet,,idos,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,not-tracked,0,,2026-11-12
+reply.cash,Stablecoins & Payments,NEAR native,Mainnet,,reply-cash,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Supply on NEAR + Aurora,,not-tracked,0,,2026-11-12
+Banana Gun,Trading Tools & Bots,Other EVM,Mainnet,,banana-gun,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Bettear Bot,Trading Tools & Bots,NEAR native,Mainnet,,bettear-bot,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+DEX Screener,Trading Tools & Bots,Other EVM,Mainnet,,dex-screener,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Intear Bot,Trading Tools & Bots,NEAR native,Mainnet,,intearbot,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+NEAR Terminal,Trading Tools & Bots,NEAR native,Mainnet,,near-terminal,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+NEAR Trending,Trading Tools & Bots,NEAR native,Mainnet,,near-trending,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+NEAR Validator Watcher,Trading Tools & Bots,NEAR native,Mainnet,,near-validator-watcher-bot,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+NOMO,Trading Tools & Bots,NEAR native,Mainnet,,nomo,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Near NFT Staking,Trading Tools & Bots,NEAR native,Mainnet,,near-nft-staking,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+NearFi,Trading Tools & Bots,NEAR native,Mainnet,,nearfi,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Nerd.Win,Trading Tools & Bots,NEAR native,Mainnet,,nerd-win,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+REKTD Terminal,Trading Tools & Bots,NEAR native,Mainnet,,rektd-terminal,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Shitcoins New Token Alerts,Trading Tools & Bots,NEAR native,Mainnet,,shitcoins-alerts,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Token Terminal,Trading Tools & Bots,Other EVM,Mainnet,,token-terminal,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Unrealized,Trading Tools & Bots,NEAR native,Mainnet,,unrealized,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+baZOOka,Trading Tools & Bots,NEAR native,Mainnet,,bazooka,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+nearswaps,Trading Tools & Bots,NEAR native,Building,,nearswaps,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+neartrade Terminal,Trading Tools & Bots,NEAR native,Mainnet,,neartrade-terminal,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,30d DEX volume,,not-tracked,0,,2026-11-12
+Ankr,Validators & Node Operators,Other EVM,Mainnet,,ankr,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+AuditOne,Validators & Node Operators,Other EVM,Mainnet,,auditone,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Lava Network,Validators & Node Operators,Other non-EVM,Mainnet,,lava-network,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR-STAKING,Validators & Node Operators,NEAR native,Mainnet,,near-staking,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Staking Rewards,Validators & Node Operators,Other EVM,Mainnet,,staking-rewards,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Aurora Pass,Wallets & Custody,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Avocado Wallet,Wallets & Custody,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+BitGo,Wallets & Custody,Other EVM,Mainnet,,bitgo,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+BlockWallet,Wallets & Custody,Other EVM,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Brave Wallet,Wallets & Custody,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+DropWallet,Wallets & Custody,NEAR native,Inactive,,dropwallet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Exodus,Wallets & Custody,Other EVM,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Finoa,Wallets & Custody,Other EVM,Mainnet,,finoa,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Fireblocks,Wallets & Custody,Other EVM,Mainnet,,fireblocks,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+FoxWallet,Wallets & Custody,Other EVM,Mainnet,,foxwallet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Guarda,Wallets & Custody,Other EVM,Mainnet,,guarda,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Instadapp (Avocado Wallet),Wallets & Custody,Other EVM,Mainnet,,instadapp-avocado-wallet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Ledger,Wallets & Custody,Other EVM,Mainnet,,ledger,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+MetaMask,Wallets & Custody,Other EVM,Mainnet,,metamask,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Meteor Wallet,Wallets & Custody,NEAR native,Mainnet,,meteor-wallet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+MyNearWallet,Wallets & Custody,NEAR native,Mainnet,,mynearwallet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Mobile Wallet,Wallets & Custody,NEAR native,Mainnet,,near-mobile-app,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+NEAR Vault,Wallets & Custody,NEAR native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Nightly Wallet,Wallets & Custody,NEAR native,Mainnet,,nightly-wallet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+PrimeVault,Wallets & Custody,NEAR native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+RAEN Foundation,Wallets & Custody,NEAR native,Mainnet,,raen-foundation,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Safe (Gnosis Safe),Wallets & Custody,Other EVM,Mainnet,,gnosis-safe,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+SafePal,Wallets & Custody,Other EVM,Mainnet,,safepal,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Sendler,Wallets & Custody,NEAR native,Mainnet,,sendler,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+StealthEX,Wallets & Custody,Aurora native,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Trezu,Wallets & Custody,NEAR native,Mainnet,,trezu,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Trust Wallet,Wallets & Custody,Other EVM,Mainnet,,trust-wallet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+Unity Wallet,Wallets & Custody,Other EVM,Mainnet,,unity-wallet,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+WalletConnect,Wallets & Custody,Other EVM,Mainnet,,wallet-connect,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+imToken,Wallets & Custody,Other EVM,Unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Unmeasured sector,,not-applicable,0,,2026-11-12
+BlueBit Finance,Yield & Asset Management,Aurora native,Defunct (DefiLlama dead URL),bluebit,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,zero (inactive),0,,2026-11-12
+MoreMarkets.xyz,Yield & Asset Management,NEAR native,Defunct (DefiLlama dead URL),moremarkets.xyz,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,zero (inactive),0,,2026-11-12
+Nansen Portfolio,Yield & Asset Management,Other EVM,Inactive,,nansen-portfolio-2,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,zero (inactive),0,,2026-11-12
+PembRock Finance,Yield & Asset Management,NEAR native,Defunct (DefiLlama dead URL),pembrock-finance,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,zero (inactive),0,,2026-11-12
+Pulsar Finance,Yield & Asset Management,Other EVM,Mainnet,,pulsar-finance,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,not-tracked,0,,2026-11-12
+Sweeper Click,Yield & Asset Management,NEAR native,Mainnet,,sweeper-click,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,not-tracked,0,,2026-11-12
+The Boring Capital,Yield & Asset Management,NEAR native,Mainnet,,the-boring-capital,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,not-tracked,0,,2026-11-12
+Vaporwave Finance,Yield & Asset Management,Other EVM,Defunct (DefiLlama dead URL),vaporwave,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,TVL,,zero (inactive),0,,2026-11-12
