@@ -10,6 +10,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { daysBetween, dateRange, utcToday, type DateStr } from "../src/lib/dates";
 import { emptyOverview, type ChainHistory, type HistoryMeta, type LlamaProtocolSnap, type Series, type SeriesMap } from "../src/lib/history-types";
+import { mergeExtra, parseSeedRow, type SeedRow } from "../src/lib/extra-metrics";
+import type { MetricId } from "../src/lib/sector-metrics";
 import { gasFeeGaps, txnGaps } from "../src/lib/chain-gaps";
 import { alignSeries, applyLive, changes, computeLive, emptyLive, sparkDates, sumWindow, valueAt, windowEnd, type HistoryStore } from "../src/lib/live";
 import { parseMapRows, rowsByProject } from "../src/lib/mapping";
@@ -18,7 +20,7 @@ import { CHAIN_SERIES, NEARBLOCKS_SERIES, TIERS, type ChainData, type ChainLates
 import { EMPTY_INTENTS, summarizeIntents } from "../src/lib/intents";
 import { validate, type Expected } from "../src/lib/validate";
 import { readDaily as readIntentsDaily } from "./fetch/intents";
-import { dateFromName, findFile, readCsv, readCsvOrEmpty } from "./lib/csv";
+import { dateFromName, findFile, findFileOrNull, readCsv, readCsvOrEmpty } from "./lib/csv";
 import { DATA, HISTORY, OUT } from "./lib/paths";
 import { readJson } from "./lib/store";
 
@@ -217,6 +219,36 @@ function main() {
     return { ...applyLive(p, live, rows.length > 0), contracts };
   });
 
+  // Registry metrics beyond DefiLlama's four: live (DefiLlama's borrowed and staking views) first, then the
+  // dated snapshot CSV for anything no live source covers yet (docs/LIVE-DATA.md, requirement 7).
+  const seedFile = findFileOrNull("near-live-metrics-", ".csv");
+  const seedById = new Map<string, SeedRow>();
+  const unmatchedSeed: string[] = [];
+  if (seedFile) {
+    for (const row of readCsv(seedFile)) {
+      const s = parseSeedRow(row as Record<string, string>);
+      if (!s) continue;
+      const id = resolver.resolve(s.name);
+      if (id) seedById.set(id, s);
+      else unmatchedSeed.push(s.name);
+    }
+  }
+  const protoBySlug = new Map((history?.protocols ?? []).map((pr) => [pr.slug, pr]));
+  for (const p of projects) {
+    let live: { values: Partial<Record<MetricId, number>>; asOf: string } | null = null;
+    if (history && end) {
+      const values: Partial<Record<MetricId, number>> = {};
+      for (const r of mapRowsOf.get(p.name) ?? []) {
+        const other = protoBySlug.get(r.slug)?.otherTvl;
+        if (other?.borrowed !== undefined) values.borrowed = (values.borrowed ?? 0) + other.borrowed;
+        if (other?.staking !== undefined) values.ownStaking = (values.ownStaking ?? 0) + other.staking;
+      }
+      if (Object.keys(values).length) live = { values, asOf: end };
+    }
+    const extra = mergeExtra(live, seedById.get(p.id) ?? null, p.tvl);
+    if (extra) p.extra = extra;
+  }
+
   const leaders = readCsv(leadersFile).map((r) => toLeader(r, resolver));
   for (const l of leaders) {
     const p = l.projectId ? projects.find((x) => x.id === l.projectId) : undefined;
@@ -358,6 +390,7 @@ function main() {
     console.log(`\n  live vs snapshot totals: tvl ${fmt(meta.totals.tvl)} vs ${fmt(snap.tvl)} · volume ${fmt(meta.totals.volume)} vs ${fmt(snap.volume)} · fees ${fmt(meta.totals.fees)} vs ${fmt(snap.fees)} · revenue ${fmt(meta.totals.revenue)} vs ${fmt(snap.revenue)}`);
     console.log(`  window end ${end} · ${meta.counts.liveProjects} projects with live data · tiers ${TIERS.map((t) => `${t.split(" - ")[0]}: ${tierCounts[t]}`).join(", ")}`);
     console.log(`  chain TVL (DefiLlama default): NEAR ${fmt(meta.chainTvl.near ?? 0)} · Aurora ${fmt(meta.chainTvl.aurora ?? 0)} · CEX reserves on NEAR ${fmt(cexReserves)}`);
+    console.log(`  live-metrics snapshot: ${seedFile ? `${path.basename(seedFile)}, ${seedById.size} projects joined${unmatchedSeed.length ? `, unmatched: ${unmatchedSeed.join(", ")}` : ""}` : "none"} · ${projects.filter((x) => x.extra?.from.borrowed === "live").length} projects with live borrowed`);
     console.log(`  mapping: ${meta.counts.mappedSlugs} slugs · ${history.meta.newlyDetected.length} newly detected · CSV projects with metrics but no map row: ${unmatchedCsv.length ? unmatchedCsv.join(", ") : "none"}`);
     console.log(`  series: ${Object.keys(series.projects).length} projects × ${series.dates.length} days · chain: ${chain?.dates.length ?? 0} days from ${chain?.dates[0] ?? "-"}`);
   }

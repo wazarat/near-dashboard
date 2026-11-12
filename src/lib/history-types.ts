@@ -82,6 +82,8 @@ export interface LlamaProtocolSnap {
   geckoId: string | null;
   url: string | null;
   kinds: Array<"tvl" | "dexs" | "fees" | "aggregators">;
+  /** DefiLlama's other TVL views on NEAR plus Aurora (the "Near-borrowed", "Aurora-staking" keys and so on). None of them is part of TVL. */
+  otherTvl?: Partial<Record<"borrowed" | "staking" | "vesting" | "pool2", number>>;
 }
 
 export interface ChainOverview {

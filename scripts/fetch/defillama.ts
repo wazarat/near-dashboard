@@ -41,7 +41,21 @@ function num(v: unknown): number | null {
   return typeof v === "number" && Number.isFinite(v) ? v : null;
 }
 
-/** Protocols listed on NEAR or Aurora, with the plain per-chain TVL (no -borrowed / -staking variants). */
+/** The -borrowed, -staking, -vesting and -pool2 views, summed over NEAR and Aurora. Kept apart from TVL. */
+export function otherTvlOf(chainTvls: Record<string, number> | undefined): LlamaProtocolSnap["otherTvl"] {
+  const out: NonNullable<LlamaProtocolSnap["otherTvl"]> = {};
+  for (const kind of ["borrowed", "staking", "vesting", "pool2"] as const) {
+    let total: number | null = null;
+    for (const chain of ["Near", "Aurora"]) {
+      const v = num(chainTvls?.[`${chain}-${kind}`]);
+      if (v !== null) total = (total ?? 0) + v;
+    }
+    if (total !== null) out[kind] = Math.round(total);
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
+/** Protocols listed on NEAR or Aurora, with the plain per-chain TVL and, apart from it, the -borrowed / -staking / -vesting / -pool2 views. */
 export function parseProtocols(json: RawProtocol[]): LlamaProtocolSnap[] {
   return json
     .filter((p) => {
@@ -61,6 +75,7 @@ export function parseProtocols(json: RawProtocol[]): LlamaProtocolSnap[] {
       geckoId: p.gecko_id ?? null,
       url: p.url ?? null,
       kinds: ["tvl"] as LlamaProtocolSnap["kinds"],
+      otherTvl: otherTvlOf(p.chainTvls),
     }))
     .sort((a, b) => a.slug.localeCompare(b.slug));
 }
