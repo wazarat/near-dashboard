@@ -7,7 +7,7 @@ import { useAccess } from "@/lib/access";
 import { AUTH_ENABLED } from "@/lib/auth-config";
 import { clerkAppearance } from "@/lib/clerk-appearance";
 
-/** Header control: "Log in" when logged out, Clerk's UserButton when logged in, nothing with the wall off. */
+/** Header control: "Log in" when logged out (the icon alone on a phone, where the lockup needs the room), Clerk's UserButton when logged in, nothing with the wall off. */
 export function AuthControls() {
   const { enabled, loaded, signedIn, openLogin } = useAccess();
   if (!enabled) return null;
@@ -15,9 +15,9 @@ export function AuthControls() {
   // The user button needs Clerk's provider, which is only mounted when its key is set.
   if (signedIn && AUTH_ENABLED) return <UserButton appearance={clerkAppearance} />;
   return (
-    <Button variant="ghost" size="sm" className="gap-1.5" onClick={() => openLogin("header")} data-testid="header-login">
+    <Button variant="ghost" size="sm" className="gap-1.5" onClick={() => openLogin("header")} data-testid="header-login" aria-label="Log in">
       <LogIn className="size-3.5" />
-      <span>Log in</span>
+      <span className="hidden sm:inline">Log in</span>
     </Button>
   );
 }

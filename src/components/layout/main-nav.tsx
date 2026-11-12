@@ -21,8 +21,8 @@ export function carriedQuery(params: URLSearchParams | null): string {
 function NavLinks({ query, compareCount }: { query: string; compareCount: number }) {
   const pathname = usePathname();
   return (
-    <nav aria-label="Primary" className="-mx-2.5 overflow-x-auto">
-      <ul className="flex h-10 items-stretch gap-1 text-sm">
+    <nav aria-label="Primary" className="-mx-2.5 overflow-x-auto [scrollbar-width:none] min-[1360px]:mx-0 [&::-webkit-scrollbar]:hidden">
+      <ul className="flex h-10 items-stretch gap-1 text-sm min-[1360px]:h-16 min-[1360px]:gap-0.5">
         {NAV.map((item) => {
           const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href.replace(/\/$/, ""));
           return (
@@ -31,8 +31,8 @@ function NavLinks({ query, compareCount }: { query: string; compareCount: number
                 href={`${item.href}${query}`}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative inline-flex items-center whitespace-nowrap px-2.5 text-control text-ink-300 transition-colors hover:text-ink-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60",
-                  "after:absolute after:inset-x-2.5 after:bottom-0 after:h-0.5 after:rounded-full after:bg-transparent after:content-['']",
+                  "relative inline-flex items-center whitespace-nowrap px-2.5 text-control min-[1360px]:px-2 text-ink-300 transition-colors hover:text-ink-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60",
+                  "after:absolute after:inset-x-2.5 after:bottom-0 min-[1360px]:after:inset-x-2 after:h-0.5 after:rounded-full after:bg-transparent after:content-['']",
                   active && "text-ink-50 after:bg-electric-500",
                 )}
               >

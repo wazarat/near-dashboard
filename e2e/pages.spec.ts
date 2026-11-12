@@ -49,6 +49,28 @@ for (const p of PAGES) {
   });
 }
 
+test("the tabs sit in the header row from 1360px and drop to their own row below it", async ({ page }) => {
+  const rows = async () =>
+    page.evaluate(() => {
+      const top = (s: string) => Math.round(document.querySelector(s)?.getBoundingClientRect().top ?? -1);
+      const nav = document.querySelector('header nav[aria-label="Primary"]') as HTMLElement;
+      return { lockup: top('header a[href="/"]'), tabs: top('[data-testid="header-tabs"]'), overflow: nav.scrollWidth - nav.clientWidth, page: document.documentElement.scrollWidth - document.documentElement.clientWidth };
+    });
+  for (const [width, inline] of [[1440, true], [1360, true], [1280, false], [390, false]] as const) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await expect(page.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Compare" })).toBeVisible({ timeout: 15_000 });
+    const r = await rows();
+    expect(r.page, `no page overflow at ${width}`).toBeLessThanOrEqual(1);
+    if (inline) {
+      expect(r.tabs, `tabs share the lockup's row at ${width}`).toBe(r.lockup);
+      expect(r.overflow, `every tab visible at ${width}`).toBeLessThanOrEqual(0);
+    } else {
+      expect(r.tabs, `tabs on their own row at ${width}`).toBeGreaterThan(r.lockup);
+    }
+  }
+});
+
 test("filters round-trip through the URL and the count updates", async ({ page }) => {
   await page.goto("/?sector=Lending+%26+Credit&chain=NEAR+native");
   await expect(page.getByText(/Showing \d+ of 1,088 projects/)).toBeVisible();

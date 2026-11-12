@@ -32,6 +32,8 @@ for (const open of ["/", "/thesis/"]) {
     const errors = await guard(page);
     await page.goto(open);
     await expect(page.getByTestId("header-login")).toBeVisible();
+    // Log in, the tabs and the lockup share the header without overflowing it.
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
     await expect(page.getByTestId("login-dialog")).toHaveCount(0);
     await expect(page.getByTestId("login-wall")).toHaveCount(0);
     await expect(page.locator("[data-chart-card]").first()).toBeVisible({ timeout: 15_000 });
