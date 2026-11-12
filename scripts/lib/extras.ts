@@ -11,16 +11,18 @@ import type { MapRow } from "../../src/lib/mapping";
 import type { NameResolver } from "../../src/lib/parse";
 import type { Project } from "../../src/lib/types";
 import { readCsvOrEmpty } from "./csv";
-import { DATA, HISTORY } from "./paths";
+import fs from "node:fs";
+import { referralsByProject, referralTotals, type ReferralDay, type ReferralMapRow } from "../../src/lib/referrals";
+import { DATA, HISTORY, RAW } from "./paths";
 import { readJson } from "./store";
 
 const EXTRA = path.join(HISTORY, "extra");
 const yes = (v: string | undefined) => /^(yes|true|1)$/i.test((v ?? "").trim());
 
-/** Token contracts per project from data/contracts.csv (Role token). A 0x address is an Aurora token. */
+/** Verified token contracts per project from data/contracts.csv (Role token, Verified Yes). A 0x address is an Aurora token. */
 export function tokenRows(): TokenRow[] {
   return readCsvOrEmpty(path.join(DATA, "contracts.csv"))
-    .filter((r) => (r["Role"] ?? "").trim() === "token" && (r["Project"] ?? "").trim() && (r["Account ID"] ?? "").trim())
+    .filter((r) => (r["Role"] ?? "").trim() === "token" && (r["Verified"] ?? "").trim() === "Yes" && (r["Project"] ?? "").trim() && (r["Account ID"] ?? "").trim())
     .map((r) => {
       const contract = (r["Account ID"] ?? "").trim();
       return { project: (r["Project"] ?? "").trim(), contract, chain: /^0x/i.test(contract) ? "aurora" : "near" } as TokenRow;
@@ -35,6 +37,13 @@ export function loadExtras(projects: Project[], mapRowsOf: Map<string, MapRow[]>
   const hacks = readJson<HacksFile | null>(path.join(EXTRA, "hacks.json"), null);
   const holders = readJson<HoldersFile | null>(path.join(EXTRA, "holders.json"), null);
   const chainStats = readJson<ChainStatsFile | null>(path.join(EXTRA, "chain-stats.json"), null);
+  const launches = readJson<Record<string, Array<[string, number]>>>(path.join(HISTORY, "bigquery", "factory-launches.json"), {});
+  // NEAR Intents volume per app: the last 30 complete Explorer days, through the verified rows of data/intents-referrals.csv.
+  const rawDir = path.join(RAW, "intents", "daily");
+  const days = fs.existsSync(rawDir) ? fs.readdirSync(rawDir).filter((f) => f.endsWith(".json")).sort().map((f) => readJson<ReferralDay>(path.join(rawDir, f), { date: "" })) : [];
+  const refTotals = referralTotals(days, 30);
+  const refMap: ReferralMapRow[] = readCsvOrEmpty(path.join(DATA, "intents-referrals.csv")).map((r) => ({ referral: (r["Referral"] ?? "").trim(), project: (r["Project"] ?? "").trim(), verified: yes(r["Verified"]) }));
+  const refByProject = referralsByProject(refTotals.rows, refMap);
 
   const stableMap: StablecoinMapRow[] = readCsvOrEmpty(path.join(DATA, "stablecoin-map.csv")).map((r) => ({ project: (r["Project"] ?? "").trim(), id: (r["Stablecoin ID"] ?? "").trim(), primary: yes(r["Primary"]) }));
   const geckoMap: GeckoMapRow[] = readCsvOrEmpty(path.join(DATA, "geckoterminal-map.csv")).map((r) => ({ network: (r["Network"] ?? "").trim() as GeckoMapRow["network"], dex: (r["DEX ID"] ?? "").trim(), project: (r["Project"] ?? "").trim(), showLiquidity: yes(r["Show liquidity"]) }));
@@ -61,6 +70,19 @@ export function loadExtras(projects: Project[], mapRowsOf: Map<string, MapRow[]>
     }
   }
 
+  /** Tokens launched in the last 30 days per launchpad, from its factory's sub-accounts (BigQuery). */
+  const launchParts = new Map<string, LivePart[]>();
+  for (const r of readCsvOrEmpty(path.join(DATA, "contracts.csv"))) {
+    if ((r["Role"] ?? "").trim() !== "factory") continue;
+    const s = launches[(r["Account ID"] ?? "").trim().toLowerCase()];
+    if (!s?.length) continue;
+    const last = s[s.length - 1][0];
+    const from = new Date(Date.parse(`${last}T00:00:00Z`) - 29 * 86_400_000).toISOString().slice(0, 10);
+    const total = s.filter(([d]) => d >= from).reduce((a, [, n]) => a + n, 0);
+    const project = (r["Project"] ?? "").trim();
+    launchParts.set(project, [...(launchParts.get(project) ?? []), { values: { tokensLaunched: total }, asOf: last }]);
+  }
+
   const part = (asOf: string | undefined, values: LivePart["values"] | undefined): LivePart[] => (asOf && values && Object.keys(values).length ? [{ values, asOf }] : []);
 
   return {
@@ -70,6 +92,7 @@ export function loadExtras(projects: Project[], mapRowsOf: Map<string, MapRow[]>
     unmatchedHacks: hk.unmatched,
     stablecoinTotals: stable ? { ...stablecoinTotals(stable.coins), asOf: stable.asOf } : null,
     chainStats,
+    referrals: { days: refTotals.days, end: refTotals.end, apps: Array.from(refByProject.entries()).map(([project, v]) => ({ project, usd: Math.round(v.usd), count: v.count, tags: v.tags })).sort((a, b) => b.usd - a.usd) },
     gecko,
     partsFor(p: Project): LivePart[] {
       return [
@@ -78,6 +101,8 @@ export function loadExtras(projects: Project[], mapRowsOf: Map<string, MapRow[]>
         ...part(gecko?.asOf, gv.get(p.name)),
         ...part(tokens?.asOf, tv.get(p.name)),
         ...(holderParts.get(p.name) ?? []),
+        ...(launchParts.get(p.name) ?? []),
+        ...(refTotals.end && refByProject.has(p.name) ? [{ values: { referralVolume: Math.round(refByProject.get(p.name)!.usd), referralSwaps: refByProject.get(p.name)!.count }, asOf: refTotals.end }] : []),
       ];
     },
   };

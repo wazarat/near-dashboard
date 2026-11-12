@@ -16,6 +16,7 @@ import * as bigquery from "./fetch/bigquery";
 import * as blockscout from "./fetch/blockscout";
 import * as geckoterminal from "./fetch/geckoterminal";
 import * as hacks from "./fetch/hacks";
+import * as holders from "./fetch/holders";
 import * as stablecoins from "./fetch/stablecoins";
 import * as yields from "./fetch/yields";
 import * as catalog from "./fetch/catalog";
@@ -35,6 +36,7 @@ const SOURCES: Source[] = [
   { id: "yields", run: yields.run },
   { id: "hacks", run: hacks.run },
   { id: "geckoterminal", run: geckoterminal.run },
+  { id: "holders", run: holders.run },
   { id: "catalog", run: catalog.run },
   { id: "price", run: price.run },
   { id: "bigquery", run: bigquery.run },

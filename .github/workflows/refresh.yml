@@ -58,6 +58,8 @@ jobs:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
           NEAR_INTENTS_JWT: ${{ secrets.NEAR_INTENTS_JWT }}
           COINGECKO_DEMO_KEY: ${{ secrets.COINGECKO_DEMO_KEY }}
+          # Optional. Without it NearBlocks allows about 6 calls a minute, enough for the token holder counts.
+          NEARBLOCKS_API_KEY: ${{ secrets.NEARBLOCKS_API_KEY }}
           INTENTS_BACKFILL_DAYS: ${{ vars.INTENTS_BACKFILL_DAYS || '560' }}
         run: |
           if [ "${{ github.event.inputs.backfill }}" = "true" ]; then

@@ -5,8 +5,9 @@
  *   npm run check:data
  */
 import path from "node:path";
-import { crossCheck, gasFeeOutage, hacksWithoutIncident, type Finding } from "../src/lib/data-checks";
-import { OUT } from "./lib/paths";
+import { crossCheck, gasFeeOutage, hacksWithoutIncident, sharedAccounts, type Finding } from "../src/lib/data-checks";
+import { readCsvOrEmpty } from "./lib/csv";
+import { DATA, OUT } from "./lib/paths";
 import { readJson } from "./lib/store";
 import { readChain } from "./fetch/defillama";
 import { HISTORY } from "./lib/paths";
@@ -27,6 +28,7 @@ function main() {
     gasFeeOutage("Aurora", chain.aurora.gasFees ?? [], chain.aurora.txns ?? []),
     gasFeeOutage("NEAR", chain.near.gasFees ?? [], chain.nearblocks.txns ?? []),
     ...hackReview(),
+    ...sharedAccounts(readCsvOrEmpty(path.join(DATA, "contracts.csv")).map((r) => ({ project: (r["Project"] ?? "").trim(), account: (r["Account ID"] ?? "").trim().toLowerCase() }))),
   ];
   const list = findings.filter((f): f is Finding => f !== null);
   console.log(`\nData checks over ${path.relative(process.cwd(), HISTORY)}\n`);

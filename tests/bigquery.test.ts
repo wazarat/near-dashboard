@@ -35,3 +35,19 @@ describe("bigquery helpers", () => {
     expect(chunks("2026-11-07", "2026-11-07", 90)).toEqual([["2026-11-07", "2026-11-07"]]);
   });
 });
+
+describe("launchpad factories in the receipts scan", () => {
+  it("attributes a factory's sub-account creations to it and keeps them apart from receiver rows", async () => {
+    const { factoryLaunches, receiverRows, loadSql, NO_FACTORY } = await import("../scripts/fetch/bigquery");
+    const rows = [
+      { block_date: { value: "2026-11-10" }, account_id: "factory:meme-cooking.near", new_accounts: 4, function_calls: 0, distinct_signers: 0 },
+      { block_date: { value: "2026-11-09" }, account_id: "factory:meme-cooking.near", new_accounts: 2, function_calls: 0, distinct_signers: 0 },
+      { block_date: { value: "2026-11-10" }, account_id: "meme-cooking.near", new_accounts: 0, function_calls: 120, distinct_signers: 30 },
+    ];
+    expect(factoryLaunches(rows)).toEqual({ "meme-cooking.near": [["2026-11-09", 2], ["2026-11-10", 4]] });
+    expect(Object.keys(receiverRows(rows.filter((r) => !String(r.account_id).startsWith("factory:"))))).toEqual(["meme-cooking.near"]);
+    // The query reads the factories parameter in the same scan, and an empty list has a placeholder.
+    expect(loadSql("daily_receipts")).toContain("UNNEST(@factories)");
+    expect(NO_FACTORY).not.toMatch(/\./);
+  });
+});

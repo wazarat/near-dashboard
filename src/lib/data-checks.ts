@@ -26,6 +26,18 @@ export function crossCheck(name: string, a: { label: string; series: Series }, b
   return { rule: "two-source", severity: "fail", message: `${name}, ${a.label} ${Math.round(sa).toLocaleString("en-US")} vs ${b.label} ${Math.round(sb).toLocaleString("en-US")} over ${shared[0]} to ${shared[shared.length - 1]}, ${(diff * 100).toFixed(1)}% apart (limit ${Math.round(tolerance * 100)}%).` };
 }
 
+/** One account, one project (accuracy rule 8): an account listed under two projects is listed for review. */
+export function sharedAccounts(rows: Array<{ project: string; account: string }>): Finding[] {
+  const owners = new Map<string, Set<string>>();
+  for (const r of rows) {
+    if (!r.account || !r.project) continue;
+    (owners.get(r.account) ?? owners.set(r.account, new Set()).get(r.account)!).add(r.project);
+  }
+  return Array.from(owners.entries())
+    .filter(([, ps]) => ps.size > 1)
+    .map(([a, ps]) => ({ rule: "shared-account", severity: "review" as const, message: `${a} is listed for ${Array.from(ps).sort().join(" and ")} in data/contracts.csv; one account should belong to one project.` }));
+}
+
 /**
  * Every exploit on DefiLlama's hacks list should have an Incident in the events file for the same project within
  * 45 days. One that does not is listed for review (a missing event, or a project matched wrongly); it never fails.

@@ -73,6 +73,34 @@ export function chunks(start: DateStr, end: DateStr, days: number): Array<[DateS
   return out;
 }
 
+/** Launchpad factories (Role factory in data/contracts.csv): account → project. */
+export function factoryAccounts(): Map<string, string> {
+  const m = new Map<string, string>();
+  for (const r of readCsvOrEmpty(path.join(DATA, "contracts.csv"))) {
+    if ((r["Role"] ?? "").trim() !== "factory") continue;
+    const a = (r["Account ID"] ?? "").trim().toLowerCase();
+    const p = (r["Project"] ?? "").trim();
+    if (a && p) m.set(a, p);
+  }
+  return m;
+}
+
+/** A query parameter array cannot be empty (BigQuery cannot type it), so an unused placeholder stands in. */
+export const NO_FACTORY = "~no-factory~";
+
+/** Factory rows from the receipts query → factory account → [date, sub-accounts created]. */
+export function factoryLaunches(rows: Array<Record<string, unknown>>): Record<string, Array<[DateStr, number]>> {
+  const out: Record<string, Array<[DateStr, number]>> = {};
+  for (const r of rows) {
+    const a = String(r.account_id ?? "");
+    if (!a.startsWith("factory:")) continue;
+    const d = String((r.block_date as { value?: string })?.value ?? r.block_date).slice(0, 10) as DateStr;
+    (out[a.slice(8)] ??= []).push([d, Number(r.new_accounts) || 0]);
+  }
+  for (const k of Object.keys(out)) out[k].sort((x, y) => (x[0] < y[0] ? -1 : 1));
+  return out;
+}
+
 function trackedAccounts(): Map<string, string[]> {
   const m = new Map<string, string[]>();
   for (const r of readCsvOrEmpty(path.join(DATA, "contracts.csv"))) {
@@ -107,6 +135,8 @@ export async function run(ctx: Ctx): Promise<RunResult> {
   const start = (id: string) => (ctx.mode === "backfill" || !cursors[id] ? (ctx.env.BQ_START as DateStr | undefined) ?? BQ_START_DEFAULT : addDays(cursors[id], -2));
   const tracked = trackedAccounts();
   const accounts = Array.from(new Set([...WELL_KNOWN_RECEIVERS, ...Array.from(tracked.values()).flat()]));
+  const factories = factoryAccounts();
+  const factoryList = factories.size ? Array.from(factories.keys()) : [NO_FACTORY];
 
   async function runJob(job: QueryJob): Promise<Array<Record<string, unknown>>> {
     const base = { query: job.sql, params: { ...job.params, start: job.start, end: job.end }, useLegacySql: false };
@@ -149,15 +179,21 @@ export async function run(ctx: Ctx): Promise<RunResult> {
     }
     // 2. Receipt actions: chain-level rows (account_id null) and per-receiver rows in one scan.
     const activity = readJson<Record<string, Array<[DateStr, number, number]>>>(path.join(HISTORY, "bigquery", "receivers.json"), {});
+    const launches = readJson<Record<string, Array<[DateStr, number]>>>(path.join(HISTORY, "bigquery", "factory-launches.json"), {});
     const receiptCols = ["function_calls", "distinct_signers", "contracts_called", "new_accounts", "contracts_deployed"];
     for (const [s, e] of chunks(start("daily_receipts"), end, chunkDays)) {
-      const out = await runJob({ id: "daily_receipts", sql: loadSql("daily_receipts"), params: { accounts }, start: s, end: e });
+      const out = await runJob({ id: "daily_receipts", sql: loadSql("daily_receipts"), params: { accounts, factories: factoryList }, start: s, end: e });
       rows += out.length;
       persist("daily_receipts", s, e, out, ["block_date", "account_id", ...receiptCols]);
       const chainRows = out.filter((r) => r.account_id === null || r.account_id === undefined);
       const series = rowsToSeries(chainRows, receiptCols);
       for (const c of receiptCols) chain.bigquery[c] = upsertSeries(chain.bigquery[c] ?? [], series[c], { today: ctx.today });
-      for (const [a, pts] of Object.entries(receiverRows(out.filter((r) => r.account_id)))) {
+      for (const [f, pts] of Object.entries(factoryLaunches(out))) {
+        const m = new Map<string, number>((launches[f] ?? []).map(([d, n]) => [d, n]));
+        for (const [d, n] of pts) if (d < ctx.today) m.set(d, n);
+        launches[f] = Array.from(m.entries()).map(([d, n]) => [d, n] as [DateStr, number]).sort((x, y) => (x[0] < y[0] ? -1 : 1));
+      }
+      for (const [a, pts] of Object.entries(receiverRows(out.filter((r) => r.account_id && !String(r.account_id).startsWith("factory:"))))) {
         const m = new Map<string, [number, number]>((activity[a] ?? []).map(([d, c, g]) => [d, [c, g]]));
         for (const [d, c, g] of pts) if (d < ctx.today) m.set(d, [c, g]);
         activity[a] = Array.from(m.entries()).map(([d, [c, g]]) => [d, c, g] as [DateStr, number, number]).sort((x, y) => (x[0] < y[0] ? -1 : 1));
@@ -166,6 +202,7 @@ export async function run(ctx: Ctx): Promise<RunResult> {
     }
     if (!ctx.dryRun) {
       writeJsonStable(path.join(HISTORY, "bigquery", "receivers.json"), activity);
+      writeJsonStable(path.join(HISTORY, "bigquery", "factory-launches.json"), launches);
       // Per-project activity = sum of its tracked accounts per day.
       const perProject: Record<string, Array<[DateStr, number, number]>> = {};
       for (const [p, accts] of tracked) {

@@ -302,6 +302,8 @@ export interface Meta {
   chainTvl: { near: number | null; aurora: number | null; asOf: string | null };
   /** Facts for the NEAR Protocol and Aurora pop-ups (docs/LIVE-DATA.md, unmeasured sectors), each source dated. */
   chainFacts?: ChainFacts;
+  /** NEAR Intents volume per app over the last complete Explorer days, through verified referral tags. */
+  referralApps?: { days: number; end: string | null; apps: Array<{ project: string; usd: number; count: number; tags: string[] }> };
   /** USD-pegged stablecoin supply on each chain, every coin once (DefiLlama stablecoins). */
   stablecoins?: { near: number; aurora: number; asOf: string } | null;
   cexReserves: number;

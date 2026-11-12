@@ -6,7 +6,7 @@ import { ChangeCell } from "@/components/atlas/change-cell";
 import { InfoTip } from "@/components/ui/info-tip";
 import { fmtDate, fmtInt, fmtPct, fmtUsd, fmtUsdFull } from "@/lib/format";
 import { isStale } from "@/lib/freshness";
-import { METRIC_DEFS, projectMetrics, sectorDef, type MetricValue } from "@/lib/sector-metrics";
+import { CROSS_SECTOR_FACTS, METRIC_DEFS, projectMetrics, sectorDef, type MetricValue } from "@/lib/sector-metrics";
 import type { MetricSource, NumericMetricKey, Project } from "@/lib/types";
 
 const DAILY = new Set<string>(["tvl", "volume", "fees", "revenue"]);
@@ -102,6 +102,11 @@ function Value({ p, m }: { p: Project; m: MetricValue }) {
 export function MetricRows({ p }: { p: Project }) {
   const def = sectorDef(p.sector);
   const rows = projectMetrics(p).filter((m) => m.state !== "not-applicable");
+  // Facts any project can carry (NEAR Intents routing), shown only when a value exists.
+  for (const id of CROSS_SECTOR_FACTS) {
+    const v = p.extra?.values[id];
+    if (v !== undefined && !rows.some((r) => r.id === id)) rows.push({ id, state: "value", value: v, reason: METRIC_DEFS[id].info });
+  }
   if (!def.measured && rows.length === 0) return <p className="text-xs text-ink-300">{p.sector} has no traction headline, so this project shows facts rather than metrics.</p>;
   return (
     <>

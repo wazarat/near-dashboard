@@ -75,7 +75,7 @@ export function SiteFooter() {
         <div className="mt-10 flex flex-col gap-6 border-t border-ink-700/40 pt-6 text-label text-ink-300 md:flex-row md:items-start md:justify-between">
           <div className="max-w-2xl space-y-2">
             <DataFreshness />
-            <p>Sources. DefiLlama, NearBlocks, NEAR Catalog, the NEAR Intents Explorer API, the NEAR BigQuery public dataset and the CanHav research CSVs committed in the repository.</p>
+            <p>Sources. DefiLlama (protocols, fees, stablecoins, yields, hacks), NearBlocks, Aurora Blockscout, GeckoTerminal, NEAR Catalog, the NEAR Intents Explorer API, the NEAR BigQuery public dataset and the CanHav research CSVs committed in the repository.</p>
             <p>Independent research by CanHav Research, built for NEAR Hackathon 2026. Not affiliated with, endorsed by or sponsored by the NEAR Foundation, NEAR Protocol or Aurora.</p>
             <p className="text-ink-50">Research preview, not financial advice.</p>
           </div>

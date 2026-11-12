@@ -362,6 +362,7 @@ function main() {
     chainTvl: chain ? { near: chain.latest.near.tvl, aurora: chain.latest.aurora.tvl, asOf: end } : { near: null, aurora: null, asOf: null },
     chainFacts: chainFactsOf(history?.chain ?? null, end, ex.chainStats),
     stablecoins: ex.stablecoinTotals,
+    referralApps: ex.referrals,
     cexReserves,
     tierCounts,
     sectors: uniqueSorted(projects.map((p) => p.sector)),

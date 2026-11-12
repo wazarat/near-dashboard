@@ -1,5 +1,6 @@
 "use client";
 
+import { AppsCard } from "@/components/intents/apps-card";
 import { AssetsCards } from "@/components/intents/assets";
 import { CoverageCard } from "@/components/intents/coverage-card";
 import { IntentsKpis } from "@/components/intents/kpi";
@@ -24,6 +25,7 @@ export function IntentsView() {
       <ChainsCards data={intentsData} />
       <AssetsCards data={intentsData} />
       <ReferralsCards data={intentsData} />
+      <AppsCard />
       <CoverageCard data={intentsData} />
     </div>
   );

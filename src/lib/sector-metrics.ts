@@ -103,9 +103,9 @@ export const SECTOR_METRICS: Record<string, SectorDef> = {
   "Liquid Staking & Restaking": M("tvl", ["stakingApy", "tokenHolders", "ownStaking", "fees", "revenue"]),
   Launchpads: M("tokensLaunched", ["volume", "tokenHolders", "fees", "tvl"]),
   "Memecoins & Community": M("tokenHolders", ["tokenHoldersAurora", "tokenSupplyValue"]),
-  "AI Agents": M("tokenHolders", ["referralVolume", "signers7d", "calls30d"]),
+  "AI Agents": M("tokenHolders", ["signers7d", "calls30d"]),
   "NFTs, Gaming & Collectibles": M("tokenHolders", ["signers7d", "calls30d"]),
-  "Stablecoins & Payments": M("stablecoinSupply", ["tokenHolders", "tokenHoldersAurora", "referralVolume", "signers7d"]),
+  "Stablecoins & Payments": M("stablecoinSupply", ["tokenHolders", "tokenHoldersAurora", "signers7d"]),
   "Yield & Asset Management": M("tvl", ["bestPoolApy", "poolCount", "fees"]),
   "RWA & Tokenized Assets": M("tvl", ["tokenHolders", "tokenSupplyValue", "fees"]),
   "Perps, Options & Derivatives": M("tvl", ["calls30d"]),
@@ -114,7 +114,7 @@ export const SECTOR_METRICS: Record<string, SectorDef> = {
   "Social & Identity": M("signers7d", ["calls30d"]),
   "DAOs, Governance & Public Goods": M("signers7d", ["calls30d"]),
   "Infrastructure & Dev Tools": U(),
-  "Wallets & Custody": U(["referralVolume", "referralSwaps", "signers7d"]),
+  "Wallets & Custody": U(["signers7d"]),
   "Exchanges & On/Off-Ramps": U(["cexAssets"]),
   "Data & Analytics": U(),
   "Security, Risk & Compliance": U(),
@@ -212,6 +212,13 @@ export function valueState(p: Project, id: MetricId): MetricValue {
   if (value === 0) return { id, state: "zero-by-design", value, reason: `${METRIC_DEFS[id].source} lists the project and reports zero.` };
   return { id, state: "value", value, reason: METRIC_DEFS[id].info };
 }
+
+/**
+ * Facts any project can carry whatever its sector, shown only when a value exists and never listed as Not
+ * tracked: NEAR Intents volume routed by the app's referral tag reaches wallets, aggregators, exchanges and
+ * bridges alike.
+ */
+export const CROSS_SECTOR_FACTS: readonly MetricId[] = ["referralVolume", "referralSwaps"];
 
 /** Every metric row the project shows, in the sector's order. not-applicable rows are left out. */
 export function projectMetrics(p: Project): MetricValue[] {
