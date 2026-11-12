@@ -92,8 +92,8 @@ describe("analytics events", () => {
   it("filter_use carries the filter's key, never what was typed", () => {
     expect(eventProps("filter_use", { filter: "pantera capital", page: "explorer" })).toEqual({ page: "explorer" });
     for (const k of FILTER_KEYS) expect(eventProps("filter_use", { filter: k, page: "overview" })).toEqual({ filter: k, page: "overview" });
-    // The filters a reader sets are the facets, search and the legacy switch.
-    expect([...FILTER_KEYS].sort()).toEqual([...FACETS.map((f) => f.key), "q", "legacy"].sort());
+    // The filters a reader sets are the facets and search; the legacy switches are a card's control.
+    expect([...FILTER_KEYS].sort()).toEqual([...FACETS.map((f) => f.key), "q"].sort());
   });
 
   it("name pages by tab, and anything unknown as other", () => {

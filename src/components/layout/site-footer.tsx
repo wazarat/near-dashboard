@@ -56,7 +56,7 @@ export function SiteFooter() {
               </p>
               <p>
                 <strong className="font-medium text-ink-50">Status.</strong> 620 listings come only from the 2021 to 2023 AwesomeNEAR directory, which marks everything active, so
-                they read &ldquo;Legacy listing, status unverified&rdquo;. &ldquo;Defunct&rdquo; marks protocols whose DefiLlama page no longer resolves.
+                they read &ldquo;Legacy listing, status unverified&rdquo;. They are left out of every card by default; a card whose counts they change has its own &ldquo;Include legacy&rdquo; switch. &ldquo;Defunct&rdquo; marks protocols whose DefiLlama page no longer resolves.
               </p>
               <p>
                 <strong className="font-medium text-ink-50">Confidence.</strong> Native-chain classification for directory-only rows is heuristic and carries its own confidence flag.

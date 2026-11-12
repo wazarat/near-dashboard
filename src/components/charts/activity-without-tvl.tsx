@@ -20,6 +20,7 @@ export function ActivityWithoutTvl({ projects, onOpen }: { projects: Project[]; 
   return (
     <ChartCard
       id="activity-without-tvl"
+      legacyCard="activity-without-tvl"
       title="Activity without TVL"
       takeaway={takeaway}
       info="Projects whose tracked NEAR accounts (data/contracts.csv) received FUNCTION_CALL receipts in the last 7 days per the NEAR BigQuery public dataset but report no TVL on DefiLlama. Wallets, games, payments and social apps show up here. Distinct signers are an estimate."

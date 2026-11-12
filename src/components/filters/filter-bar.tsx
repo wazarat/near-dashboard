@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Switch } from "@/components/ui/switch";
+import { InfoTip } from "@/components/ui/info-tip";
 import { CHAIN_COLOR, STATUS_COLOR, STATUS_GROUP_LABEL, TIER_COLOR } from "@/lib/colors";
 import { meta, projects as allProjects } from "@/lib/data";
 import { FACETS, LEGACY_GROUP, applyFilters, facetValue, useFilters, type FacetKey } from "@/lib/filters";
@@ -56,8 +56,9 @@ function labelFor(key: FacetKey, value: string): string | undefined {
 }
 
 const legacyCount = allProjects.filter((p) => p.statusGroup === LEGACY_GROUP).length;
+const LEGACY_NOTE = `${legacyCount.toLocaleString("en-US")} legacy listings from the 2021 to 2023 AwesomeNEAR directory are left out by default. A card whose counts they change has its own switch to include them, and the Status filter shows them when Legacy listing is picked.`;
 
-/** The sticky filter bar: search, facets, the result count, Reset, Copy link and the legacy-listing switch. Time ranges live on each card (standard section 4). */
+/** The sticky filter bar: search, facets, the result count, Reset and Copy link. Time ranges and the legacy-listing switches live on each card (standard section 4). */
 export function FilterBar() {
   const { state, setState, filtered, setFacet, reset, activeCount } = useFilters();
   const [copied, setCopied] = useState(false);
@@ -67,7 +68,8 @@ export function FilterBar() {
   const optionsByFacet = useMemo(() => {
     const out = {} as Record<FacetKey, Option[]>;
     for (const { key } of FACETS) {
-      const base = applyFilters(allProjects, { ...state, [key]: [] });
+      // The Status counts include legacy listings, so "Legacy listing" shows how many picking it brings back.
+      const base = applyFilters(allProjects, { ...state, [key]: [] }, key === "status");
       const counts = new Map<string, number>();
       for (const p of base) for (const v of facetValue(p, key)) counts.set(v, (counts.get(v) ?? 0) + 1);
       out[key] = orderedValues(key)
@@ -92,21 +94,13 @@ export function FilterBar() {
       <MultiSelect key={key} label={label} options={optionsByFacet[key]} selected={state[key]} onChange={(vals) => setFacet(key, vals)} className={vertical ? "w-full" : undefined} />
     ));
 
-  const legacySwitch = (
-    <label className="inline-flex cursor-pointer items-center gap-2 text-label text-ink-300">
-      <Switch checked={state.legacy === "hide"} onCheckedChange={(on) => void setState({ legacy: on ? "hide" : "show" })} aria-label="Hide legacy listings" />
-      <span>
-        Hide legacy listings <span className="font-mono text-ink-300">({legacyCount.toLocaleString("en-US")})</span>
-      </span>
-    </label>
-  );
 
   return (
     <div className="sticky top-0 z-30 border-b border-ink-700/40 bg-ink-950/80 backdrop-blur-xl">
       {/*
         One wrapping row with a forced break, so each control exists once and only its place changes with the width.
-        Wide screens: search, facets and the result count, then the legacy switch and, under the count, Reset and
-        Copy link (standard section 4). Narrow screens: search and Filters, then the count and the two icon buttons.
+        Wide screens: search, facets and the result count, then, under the count, Reset and Copy link (standard
+        section 4). Narrow screens: search and Filters, then the count and the two icon buttons.
       */}
       <div className="mx-auto flex w-full max-w-atlas flex-wrap items-center gap-x-2 gap-y-2 px-5 py-2.5 sm:px-6 lg:px-8">
         <div className="relative order-1 min-w-0 flex-1 md:max-w-xs">
@@ -136,7 +130,6 @@ export function FilterBar() {
               </SheetHeader>
               <div className="flex flex-col gap-2 px-4 pb-6">
                 {facetControls(true)}
-                <div className="pt-1">{legacySwitch}</div>
                 <div className="mt-2 flex gap-2">
                   <Button variant="outline" size="sm" className="flex-1" onClick={reset} disabled={activeCount === 0}>
                     Reset
@@ -150,10 +143,14 @@ export function FilterBar() {
           </Sheet>
         </div>
         <p className="order-6 shrink-0 text-label text-ink-300 lg:order-3 lg:ml-auto" aria-live="polite" data-testid="result-count">
-          Showing <span className="tabular font-medium text-ink-50">{filtered.length.toLocaleString("en-US")}</span> of {allProjects.length.toLocaleString("en-US")} projects
+          <span className="inline-flex items-center gap-1">
+            <span>
+              Showing <span className="tabular font-medium text-ink-50">{filtered.length.toLocaleString("en-US")}</span> of {allProjects.length.toLocaleString("en-US")} projects
+            </span>
+            <InfoTip label="About legacy listings">{LEGACY_NOTE}</InfoTip>
+          </span>
         </p>
         <div aria-hidden className="order-4 h-0 basis-full" />
-        <div className="order-5 hidden min-w-0 max-w-full items-center xl:flex">{legacySwitch}</div>
         <div className="order-7 ml-auto hidden items-center gap-1.5 lg:flex" data-testid="filter-actions">
           <Button variant="ghost" size="sm" className="h-8" onClick={reset} disabled={activeCount === 0} title="Clear search and filters">
             <RotateCcw className="size-3.5" /> Reset

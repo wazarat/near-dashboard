@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CARRIED_PARAMS, FACETS, RANGE_KEYS, activeFilterCount, applyFilters, cardRange, cardRangeWrite, filterParsers } from "../src/lib/filters";
+import { CARRIED_PARAMS, FACETS, LEGACY_CARDS, RANGE_KEYS, activeFilterCount, applyFilters, cardRange, cardRangeWrite, filterParsers, legacyIncluded, legacyWrite } from "../src/lib/filters";
 import { generateInsights } from "../src/lib/insights";
 import { concentration, nativeShare, topNShare } from "../src/lib/metrics";
 import { toProject } from "../src/lib/parse";
@@ -19,19 +19,29 @@ describe("applyFilters", () => {
     expect(applyFilters(projects, { status: ["Mainnet"] })).toHaveLength(3);
   });
 
-  it("shows legacy listings by default and hides exactly them with legacy=hide", () => {
+  it("hides legacy listings by default and brings back exactly them for a card that includes them", () => {
     const all = [...projects, legacy];
     expect(legacy.statusGroup).toBe("Legacy listing");
-    expect(applyFilters(all, {})).toHaveLength(4);
-    expect(applyFilters(all, { legacy: "show" })).toHaveLength(4);
-    expect(applyFilters(all, { legacy: "hide" }).map((p) => p.name)).toEqual(["A", "B", "C"]);
-    expect(applyFilters(all, { legacy: "hide", status: ["Legacy listing"] })).toHaveLength(0);
+    expect(applyFilters(all, {}).map((p) => p.name)).toEqual(["A", "B", "C"]);
+    expect(applyFilters(all, {}, true)).toHaveLength(4);
+    // Facets still apply to a card that includes legacy listings.
+    expect(applyFilters(all, { chain: ["NEAR native"] }, true).map((p) => p.name)).toEqual(["A", "L"]);
+    // Picking "Legacy listing" in the Status filter shows them whatever the switch says.
+    expect(applyFilters(all, { status: ["Legacy listing"] }).map((p) => p.name)).toEqual(["L"]);
   });
 
-  it("counts the legacy switch as an active filter and carries it between pages", () => {
-    const base = { q: "", sector: [], chain: [], presence: [], tier: [], status: [], funding: [], via: [], legacy: "show" as const };
+  it("keeps the legacy choice per card in one list key, and does not count it as a filter", () => {
+    expect(filterParsers.legacy.defaultValue).toEqual([]);
+    expect(legacyIncluded({ legacy: [] }, "kpi")).toBe(false);
+    expect(legacyIncluded({ legacy: ["kpi"] }, "kpi")).toBe(true);
+    expect(legacyIncluded({ legacy: ["kpi"] }, "sectors")).toBe(false);
+    // A link from before the change (legacy=hide) names no card, so every card hides them, as it meant to.
+    for (const c of LEGACY_CARDS) expect(legacyIncluded({ legacy: ["hide"] }, c)).toBe(false);
+    expect(legacyWrite({ legacy: [] }, "sectors", true)).toEqual(["sectors"]);
+    expect(legacyWrite({ legacy: ["sectors"] }, "kpi", true)).toEqual(["kpi", "sectors"]);
+    expect(legacyWrite({ legacy: ["kpi", "sectors", "hide"] }, "kpi", false)).toEqual(["sectors"]);
+    const base = { q: "", sector: [], chain: [], presence: [], tier: [], status: [], funding: [], via: [] };
     expect(activeFilterCount(base)).toBe(0);
-    expect(activeFilterCount({ ...base, legacy: "hide" })).toBe(1);
     expect(activeFilterCount({ ...base, q: "x", sector: ["a", "b"] })).toBe(3);
     expect(CARRIED_PARAMS).toContain("legacy");
     expect(CARRIED_PARAMS).not.toContain("metric");

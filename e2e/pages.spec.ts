@@ -90,28 +90,43 @@ test("each chart owns its metric key; the treemap control writes tm and nothing 
   await expect(page.getByRole("radiogroup", { name: "Concentration metric" }).getByRole("radio", { name: "TVL" })).toHaveAttribute("aria-checked", "true");
 });
 
-test("the legacy switch hides exactly the legacy listings and is counted as a filter", async ({ page }) => {
-  await page.goto("/explorer/");
-  const total = page.getByText(/Showing [\d,]+ of [\d,]+ projects/);
-  await expect(total).toBeVisible();
-  // Below the xl breakpoint the switch lives inside the Filters sheet.
-  let sw = page.getByRole("switch", { name: "Hide legacy listings" }).first();
-  if (!(await sw.isVisible())) {
-    await page.getByRole("button", { name: /Filters/ }).click();
-    sw = page.getByRole("switch", { name: "Hide legacy listings" }).first();
-    await expect(sw).toBeVisible();
-  }
-  const legacyLabel = await page.getByText(/Hide legacy listings/).first().textContent();
-  const legacyCount = Number(legacyLabel?.match(/\(([\d,]+)\)/)?.[1].replace(/,/g, ""));
-  expect(legacyCount).toBeGreaterThan(0);
-  await sw.click();
-  await expect(page).toHaveURL(/legacy=hide/);
-  await page.keyboard.press("Escape");
-  const text = await total.textContent();
-  const shown = Number(text?.match(/Showing ([\d,]+) of ([\d,]+)/)?.[1].replace(/,/g, ""));
-  const all = Number(text?.match(/Showing ([\d,]+) of ([\d,]+)/)?.[2].replace(/,/g, ""));
-  expect(all - shown).toBe(legacyCount);
-  await expect(page.getByText("1 filter active").first()).toBeVisible();
+test("legacy listings are hidden by default and each card has its own switch to include them", async ({ page }) => {
+  const errors = await collectErrors(page);
+  const nums = (t: string | null) => (t?.match(/Showing ([\d,]+) of ([\d,]+)/) ?? []).slice(1).map((v) => Number(v.replace(/,/g, "")));
+  await page.goto("/");
+  const total = page.getByTestId("result-count");
+  await expect(total).toBeVisible({ timeout: 15_000 });
+  const [shown, all] = nums(await total.textContent());
+  expect(shown).toBeLessThan(all);
+  const legacyCount = all - shown;
+  await expect(page.getByRole("switch", { name: /legacy/i })).toHaveCount(4);
+  await expect(page.locator("[data-scope]")).toHaveCount(0);
+  const kpi = page.getByTestId("kpi-sub").first();
+  const kpiBefore = await kpi.textContent();
+  const projectsTile = Number((await page.getByText(/^Selection, [\d,]+ of [\d,]+ projects/).textContent())?.match(/Selection, ([\d,]+)/)?.[1].replace(/,/g, ""));
+  expect(projectsTile).toBe(shown);
+  // The treemap's own switch brings the legacy listings back into that card only.
+  const map = page.locator('[data-chart-card^="Sectors by"]');
+  const mapTable = async () => {
+    await map.getByRole("tablist", { name: "View as" }).getByRole("tab", { name: "Table" }).click();
+    const cells = await map.locator("tbody tr td:nth-child(3)").allTextContents();
+    await map.getByRole("tablist", { name: "View as" }).getByRole("tab", { name: "Chart" }).click();
+    return cells.reduce((a, c) => a + Number(c.replace(/,/g, "")), 0);
+  };
+  const before = await mapTable();
+  expect(before).toBe(shown);
+  await page.getByTestId("legacy-sectors").click();
+  await expect(page).toHaveURL(/[?&]legacy=sectors/);
+  await expect(map.locator("[data-scope]")).toHaveText("Includes legacy listings");
+  expect(await mapTable()).toBe(shown + legacyCount);
+  await expect(kpi).toHaveText(kpiBefore ?? "");
+  await expect(total).toHaveText(new RegExp(`Showing ${shown.toLocaleString("en-US")} of`));
+  await page.getByTestId("legacy-sectors").click();
+  await expect(page).not.toHaveURL(/[?&]legacy=/);
+  // The Status filter shows them when Legacy listing is picked by name.
+  await page.goto("/explorer/?status=Legacy+listing");
+  await expect(page.getByTestId("result-count")).toContainText(`Showing ${legacyCount.toLocaleString("en-US")} of`, { timeout: 15_000 });
+  expect(errors, errors.join("\n")).toEqual([]);
 });
 
 test("expand opens a larger copy of the chart with a brush, writes ?expand= and closes on Escape", async ({ page }) => {
@@ -205,7 +220,8 @@ test("the explorer search writes the same q as the filter bar and its count foll
   await page.goto("/explorer/");
   const box = page.getByTestId("explorer-search");
   await expect(box).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByTestId("explorer-count")).toHaveText("1,088 projects");
+  const base = (await page.getByTestId("result-count").textContent())?.match(/Showing ([\d,]+)/)?.[1];
+  await expect(page.getByTestId("explorer-count")).toHaveText(`${base} projects`);
   await box.fill("rhea");
   await expect(page).toHaveURL(/q=rhea/);
   await expect(page.getByPlaceholder(/Search name/)).toHaveValue("rhea");
@@ -482,7 +498,7 @@ test("whole-chain cards carry no scope note and do not change when a filter is a
 test("KPI tiles use the short coverage text and the range line sits under its chart", async ({ page }, info) => {
   await page.goto("/");
   const subs = page.getByTestId("kpi-sub");
-  await expect(subs.nth(1)).toHaveText(/^Tracked for [\d,]+\/1,088 projects$/, { timeout: 15_000 });
+  await expect(subs.nth(1)).toHaveText(/^Tracked for [\d,]+\/[\d,]+ projects$/, { timeout: 15_000 });
   const card = page.locator('[data-chart-card="Chain over time"]');
   const stats = card.getByTestId("range-stats").first();
   await expect(stats).toBeVisible({ timeout: 15_000 });

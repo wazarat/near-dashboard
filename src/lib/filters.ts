@@ -20,10 +20,30 @@ export type ExplorerViewMode = (typeof EXPLORER_VIEWS)[number];
 export const ALIGNS = ["date", "days"] as const;
 export type Align = (typeof ALIGNS)[number];
 
-/** Legacy listings (status "Unknown (legacy 2021-23 listing)") are shown by default and can be hidden with one switch. */
-export const LEGACY_MODES = ["show", "hide"] as const;
-export type LegacyMode = (typeof LEGACY_MODES)[number];
+/**
+ * Legacy listings (status "Unknown (legacy 2021-23 listing)", 620 rows from the 2021 to 2023 AwesomeNEAR
+ * directory) are hidden by default (owner, 2026-11-12). Each card whose numbers they change has its own
+ * "Include legacy listings" switch; the `legacy` URL key lists the cards that include them
+ * (`?legacy=kpi,sectors`). None of them carries a TVL, volume, fee or revenue figure, so only counts move.
+ */
 export const LEGACY_GROUP = "Legacy listing" as const;
+export const LEGACY_CARDS = [
+  "kpi",
+  "sectors",
+  "insights",
+  "native-vs-imported",
+  "sector-bars",
+  "tier-by-sector",
+  "sector-cards",
+  "sector-modal",
+  "leaderboard",
+  "activity-without-tvl",
+  "listed-vs-live",
+  "funding-type",
+  "security-facts",
+  "explorer",
+] as const;
+export type LegacyCard = (typeof LEGACY_CARDS)[number];
 
 const NUMERIC_METRICS = ["tvl", "volume", "fees", "revenue"] as const satisfies readonly NumericMetricKey[];
 
@@ -56,7 +76,8 @@ export const filterParsers = {
   status: list,
   funding: list,
   via: list,
-  legacy: parseAsStringLiteral(LEGACY_MODES).withDefault("show"),
+  /** Cards that include legacy listings. An old `legacy=hide` link names no card, so it hides them everywhere, as it meant to. */
+  legacy: list,
   scale: parseAsStringLiteral(SCALES).withDefault("log"),
   /** The old global range. Nothing writes it any more; it is read so a link shared before the change opens as it did. */
   range: parseAsStringLiteral(RANGES).withDefault("30d"),
@@ -149,10 +170,13 @@ export function facetValue(p: Project, key: FacetKey): string[] {
   }
 }
 
-/** Pure filter so it can be tested without React. */
-export function applyFilters(projects: Project[], f: Partial<FilterState>): Project[] {
+/**
+ * Pure filter so it can be tested without React. Legacy listings are left out unless `includeLegacy`
+ * is set or the Status facet selects them by name (an explicit filter wins over the default).
+ */
+export function applyFilters(projects: Project[], f: Partial<FilterState>, includeLegacy = false): Project[] {
   const q = (f.q ?? "").trim().toLowerCase();
-  const hideLegacy = f.legacy === "hide";
+  const hideLegacy = !includeLegacy && !(f.status ?? []).includes(LEGACY_GROUP);
   const sets: Partial<Record<FacetKey, Set<string>>> = {};
   for (const { key } of FACETS) {
     const vals = f[key] ?? [];
@@ -172,18 +196,36 @@ export function applyFilters(projects: Project[], f: Partial<FilterState>): Proj
   });
 }
 
-export function activeFilterCount(f: Pick<FilterState, "q" | "legacy" | FacetKey>): number {
+/** Search and facets. The legacy switches are a card's control, not a filter, so they do not count. */
+export function activeFilterCount(f: Pick<FilterState, "q" | FacetKey>): number {
   let n = f.q.trim() ? 1 : 0;
   for (const { key } of FACETS) n += f[key].length;
-  if (f.legacy === "hide") n += 1;
   return n;
 }
 
-const EMPTY_FACETS = { q: "", sector: [], chain: [], presence: [], tier: [], status: [], funding: [], via: [], legacy: "show" as const };
+/** Whether a card includes legacy listings. Pure. */
+export function legacyIncluded(state: Pick<FilterState, "legacy">, card: LegacyCard): boolean {
+  return state.legacy.includes(card);
+}
+
+/** The `legacy` list after a card's switch is turned on or off, in the fixed card order. Pure. */
+export function legacyWrite(state: Pick<FilterState, "legacy">, card: LegacyCard, on: boolean): string[] {
+  const next = new Set(state.legacy.filter((c) => (LEGACY_CARDS as readonly string[]).includes(c)));
+  if (on) next.add(card);
+  else next.delete(card);
+  return LEGACY_CARDS.filter((c) => next.has(c));
+}
+
+const EMPTY_FACETS = { q: "", sector: [], chain: [], presence: [], tier: [], status: [], funding: [], via: [] };
 
 export function useFilters() {
   const [state, setState] = useQueryStates(filterParsers, { history: "replace", clearOnDefault: true });
   const filtered = useMemo(() => applyFilters(allProjects, state), [state]);
+  const withLegacy = useMemo(() => applyFilters(allProjects, state, true), [state]);
+  /** The projects a card shows: the filtered list, with legacy listings when that card's switch is on. */
+  const projectsFor = useCallback((card: LegacyCard) => (legacyIncluded(state, card) ? withLegacy : filtered), [state, withLegacy, filtered]);
+  const legacyOn = useCallback((card: LegacyCard) => legacyIncluded(state, card), [state]);
+  const setLegacy = useCallback((card: LegacyCard, on: boolean) => void setState((prev) => ({ legacy: legacyWrite(prev, card, on) })), [setState]);
 
   const reset = useCallback(() => {
     void setState(EMPTY_FACETS);
@@ -212,6 +254,9 @@ export function useFilters() {
     state,
     setState,
     filtered,
+    projectsFor,
+    legacyOn,
+    setLegacy,
     all: allProjects,
     scale: state.scale,
     rangeOf,

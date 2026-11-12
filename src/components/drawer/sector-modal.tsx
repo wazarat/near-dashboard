@@ -5,10 +5,11 @@ import { AtlasModal } from "@/components/atlas/atlas-modal";
 import { LoginPanel } from "@/components/auth/login-dialog";
 import { ChainChip, TierBadge } from "@/components/atlas/badges";
 import { ScopeNote } from "@/components/atlas/chart-card";
+import { LegacySwitch } from "@/components/atlas/legacy-switch";
 import { MetricSegmented } from "@/components/atlas/chart-metric";
 import { DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useAccess } from "@/lib/access";
-import { leadersBySector, projects as allProjects } from "@/lib/data";
+import { leadersBySector } from "@/lib/data";
 import { useFilters } from "@/lib/filters";
 import { displayUrl, fmtMetric, METRIC_SHORT } from "@/lib/format";
 import { metricValue, sumMetric } from "@/lib/metrics";
@@ -19,13 +20,16 @@ import { metricValue, sumMetric } from "@/lib/metrics";
  * Opening a project from here replaces this modal rather than stacking a second one.
  */
 export function SectorModal() {
-  const { state, setState, openSector, filtered, activeCount } = useFilters();
+  const { state, setState, openSector, projectsFor, legacyOn, activeCount } = useFilters();
+  const legacy = legacyOn("sector-modal");
+  const filtered = projectsFor("sector-modal");
   const metric = state.sm;
   // Logged out, a shared sector link shows the title and the summary line; the lists sit behind one login panel.
   const full = useAccess().can({ action: "sector-detail" });
   const sector = state.sectorDrawer;
   const open = Boolean(sector);
-  const scope = activeCount > 0 ? filtered : allProjects;
+  // The filtered list, legacy listings left out unless the pop-up's own switch is on.
+  const scope = filtered;
   const inScope = new Set(scope.map((p) => p.id));
   const openProject = (id: string | null) => void setState({ sectorDrawer: null, project: id });
   const leaders = sector ? (leadersBySector.get(sector) ?? []).filter((l) => activeCount === 0 || (l.projectId !== null && inScope.has(l.projectId))) : [];
@@ -50,10 +54,13 @@ export function SectorModal() {
                 </>
               )}
             </DialogDescription>
-            <ScopeNote className="block" />
-            <div className="flex items-center gap-2 pt-1 text-label text-ink-300">
-              Order by
-              <MetricSegmented value={metric} onChange={(sm) => void setState({ sm })} ariaLabel="Sector pop-up metric" />
+            <ScopeNote className="block" legacy={legacy} />
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 text-label text-ink-300">
+              <span className="flex items-center gap-2">
+                Order by
+                <MetricSegmented value={metric} onChange={(sm) => void setState({ sm })} ariaLabel="Sector pop-up metric" />
+              </span>
+              <LegacySwitch card="sector-modal" label="the sector pop-up" />
             </div>
           </header>
           {!full && <LoginPanel trigger="sector" />}

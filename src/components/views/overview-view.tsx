@@ -19,12 +19,16 @@ import { concentration, nativeShare, topNShare } from "@/lib/metrics";
 import { TIMELINE_DEFAULT_START } from "@/lib/timeline";
 
 export function OverviewView() {
-  const { filtered, all, scale, rangeOf, setRange, state, setState, setFacet, openProject } = useFilters();
+  const { filtered, projectsFor, all, scale, rangeOf, setRange, state, setState, setFacet, openProject } = useFilters();
+  // Cards whose counts legacy listings change each follow their own switch; the money cards use `filtered`.
+  const kpiProjects = projectsFor("kpi");
+  const mapProjects = projectsFor("sectors");
+  const stackProjects = projectsFor("native-vs-imported");
   const { tm, cc, mv, ins, tmSector } = state;
   const label = METRIC_LABEL[tm].toLowerCase();
-  const n = filtered.length;
+  const n = mapProjects.length;
 
-  const level = useTreemapLevel(filtered, tm, tmSector);
+  const level = useTreemapLevel(mapProjects, tm, tmSector);
   const treemapTakeaway = useMemo(() => {
     if (n === 0) return "No projects match the current filters.";
     if (level.tiles.length === 0) return level.sector ? `No ${label} data in ${level.sector}.` : `No ${label} data in this selection.`;
@@ -41,32 +45,33 @@ export function OverviewView() {
     return `${valued.length} project${valued.length === 1 ? "" : "s"} in ${level.sector} report ${label}; ${top.name} is the largest with ${fmtPct(level.total > 0 ? top.size / level.total : null)}${untracked ? `, and ${untracked.count} are not tracked for it` : ""}.`;
   }, [level, n, label]);
 
-  const stackRows = useMemo(() => nativeStackRows(filtered), [filtered]);
+  const stackRows = useMemo(() => nativeStackRows(stackProjects), [stackProjects]);
   const stackTakeaway = useMemo(() => {
-    if (n === 0) return "No projects match the current filters.";
-    const natCount = filtered.filter((p) => p.chain === "NEAR native").length / n;
-    const natTvl = nativeShare(filtered, "tvl");
-    const natFees = nativeShare(filtered, "fees");
+    const sn = stackProjects.length;
+    if (sn === 0) return "No projects match the current filters.";
+    const natCount = stackProjects.filter((p) => p.chain === "NEAR native").length / sn;
+    const natTvl = nativeShare(stackProjects, "tvl");
+    const natFees = nativeShare(stackProjects, "fees");
     const parts: string[] = [];
     if (natTvl !== null) parts.push(`hold ${fmtPct(natTvl)} of TVL`);
     if (natFees !== null) parts.push(`earn ${fmtPct(natFees)} of fees`);
     if (parts.length === 0) return `NEAR-native projects are ${fmtPct(natCount)} of the selection; no TVL or fee figures to compare against.`;
     return `NEAR-native projects are ${fmtPct(natCount)} of the selection but ${parts.join(" and ")}.`;
-  }, [filtered, n]);
+  }, [stackProjects]);
 
   const points = useMemo(() => concentration(filtered, cc), [filtered, cc]);
   const curveTakeaway = useMemo(() => {
-    if (n === 0) return "No projects match the current filters.";
+    if (filtered.length === 0) return "No projects match the current filters.";
     if (points.length === 0) return `No ${METRIC_LABEL[cc]} data in this selection.`;
     if (points.length < 3) return `Only ${points.length} project${points.length === 1 ? "" : "s"} report${points.length === 1 ? "s" : ""} ${METRIC_LABEL[cc]}; ${points[0].name} is ${fmtPct(points[0].share)} of it.`;
     const top3 = topNShare(points, 3);
     const top10 = points.length >= 10 ? topNShare(points, 10) : null;
     return `Top 3 projects hold ${fmtPct(top3)} of ${METRIC_LABEL[cc]}${top10 !== null ? ` and the top 10 hold ${fmtPct(top10)}` : ""}; ${points[0].name} alone is ${fmtPct(points[0].share)}.`;
-  }, [points, n, cc]);
+  }, [points, filtered.length, cc]);
 
   return (
     <div className="space-y-4">
-      <KpiTiles projects={filtered} total={all.length} />
+      <KpiTiles projects={kpiProjects} total={all.length} />
 
       <ChainOverTime range={rangeOf("cr")} onRangeChange={(r) => setRange("cr", r)} />
       <ChainActivity range={rangeOf("ar")} onRangeChange={(r) => setRange("ar", r)} />
@@ -83,9 +88,10 @@ export function OverviewView() {
           actions={<MetricSegmented value={tm} onChange={(m) => void setState({ tm: m })} ariaLabel="Treemap metric" />}
           footer={tm === "tvl" ? <TvlNote /> : undefined}
           table={sectorTreemapTable(level, tm)}
+          legacyCard="sectors"
         >
           <SectorTreemap
-            projects={filtered}
+            projects={mapProjects}
             metric={tm}
             sector={tmSector}
             onSectorChange={(s) => void setState({ tmSector: s })}
@@ -93,7 +99,7 @@ export function OverviewView() {
             onFilterSector={(s) => setFacet("sector", [s])}
           />
         </ChartCard>
-        <InsightsPanel projects={filtered} metric={ins} onMetricChange={(m) => void setState({ ins: m })} total={all.length} />
+        <InsightsPanel projects={projectsFor("insights")} metric={ins} onMetricChange={(m) => void setState({ ins: m })} total={all.length} />
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
@@ -105,8 +111,9 @@ export function OverviewView() {
           source="Research CSV Native Chain column, DefiLlama metrics"
           footer={<TvlNote />}
           table={nativeStackTable(stackRows)}
+          legacyCard="native-vs-imported"
         >
-          <NativeStackedBar projects={filtered} />
+          <NativeStackedBar projects={stackProjects} />
         </ChartCard>
         <ChartCard
           id="concentration"
@@ -127,7 +134,7 @@ export function OverviewView() {
       <Timeline events={events} defaultStart={TIMELINE_DEFAULT_START} />
 
       <p className="text-label text-ink-300">
-        Selection, {fmtInt(n)} of {fmtInt(all.length)} projects
+        Selection, {fmtInt(kpiProjects.length)} of {fmtInt(all.length)} projects
         {tm !== "count" && level.mode === "sectors" && `, selection total by ${label} ${fmtMetric(tm, level.total || null)}`}
       </p>
     </div>

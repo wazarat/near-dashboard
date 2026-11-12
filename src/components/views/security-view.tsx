@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { ScopeNote } from "@/components/atlas/chart-card";
+import { LegacySwitch } from "@/components/atlas/legacy-switch";
 import { IncidentsTable, summariseIncidents } from "@/components/charts/incidents-table";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { InfoTip } from "@/components/ui/info-tip";
@@ -43,7 +44,10 @@ function pluralProjects(n: number) {
 }
 
 export function SecurityView() {
-  const { filtered, all } = useFilters();
+  const { projectsFor, legacyOn, all } = useFilters();
+  // Both facts cards count the same projects, so they share one legacy switch.
+  const filtered = projectsFor("security-facts");
+  const legacy = legacyOn("security-facts");
 
   const incidents = useMemo(() => events.filter((e) => e.type === "Incident"), []);
   const incidentSummary = useMemo(() => summariseIncidents(incidents), [incidents]);
@@ -103,7 +107,8 @@ export function SecurityView() {
           <CardHeader className="px-4">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
               <h2 className="text-sm font-semibold">Security facts</h2>
-              <ScopeNote />
+              <ScopeNote legacy={legacy} />
+              <LegacySwitch card="security-facts" label="the security facts" className="ml-auto" />
             </div>
             <p className="mt-1 text-sm text-ink-300">{factsTakeaway}</p>
           </CardHeader>
@@ -145,7 +150,7 @@ export function SecurityView() {
           <CardHeader className="px-4">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
               <h2 className="text-sm font-semibold">Security facts by sector</h2>
-              <ScopeNote />
+              <ScopeNote legacy={legacy} />
             </div>
             <p className="mt-1 text-sm text-ink-300">Sectors with at least one checked project in the selection, most checked first.</p>
           </CardHeader>

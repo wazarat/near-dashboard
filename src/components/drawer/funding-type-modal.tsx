@@ -108,7 +108,10 @@ function projectColumns(onOpenProject: (id: string) => void): AnyColumnDef<Row>[
  * is the separate action. Opening a project from here replaces this modal.
  */
 export function FundingTypeModal() {
-  const { state, setState, openFundingType, openInvestor, filtered } = useFilters();
+  const { state, setState, openFundingType, openInvestor, projectsFor, legacyOn } = useFilters();
+  // The pop-up lists what its bar counts, so it follows the funding type card's legacy switch.
+  const filtered = projectsFor("funding-type");
+  const legacy = legacyOn("funding-type");
   // Logged out, a shared link shows the title and the summary line; the lists sit behind one login panel.
   const full = useAccess().can({ action: "funding-detail" });
   const everyMember = useMemo(() => (isFundingBucket(state.fundingType) ? projectsInBucket(allProjects, state.fundingType) : []), [state.fundingType]);
@@ -172,7 +175,7 @@ export function FundingTypeModal() {
                 </>
               )}
             </DialogDescription>
-            <ScopeNote className="block" />
+            <ScopeNote className="block" legacy={legacy} />
             <p className="text-sm text-ink-300">A project with two funding types is listed under each of them.</p>
           </header>
           {!full && <LoginPanel trigger="funding" />}

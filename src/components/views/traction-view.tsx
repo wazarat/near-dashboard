@@ -8,12 +8,12 @@ import { useFilters } from "@/lib/filters";
 
 /** Traction page: who has measurable onchain activity, how fees turn into revenue, and which listings are live. */
 export function TractionView() {
-  const { filtered, rangeOf, setRange, scale, state, setState, openProject, setFacet } = useFilters();
+  const { filtered, projectsFor, rangeOf, setRange, scale, state, setState, openProject, setFacet } = useFilters();
 
   return (
     <div className="space-y-4">
       <Leaderboard
-        projects={filtered}
+        projects={projectsFor("leaderboard")}
         metric={state.lb}
         onMetricChange={(lb) => void setState({ lb })}
         range={rangeOf("lr")}
@@ -23,8 +23,8 @@ export function TractionView() {
         onOpen={openProject}
       />
       <BusinessModelScatter projects={filtered} scale={scale} onScaleChange={(scale) => void setState({ scale })} onOpen={openProject} />
-      <ActivityWithoutTvl projects={filtered} onOpen={openProject} />
-      <ListedVsLive projects={filtered} onSelect={(via) => setFacet("via", [via])} />
+      <ActivityWithoutTvl projects={projectsFor("activity-without-tvl")} onOpen={openProject} />
+      <ListedVsLive projects={projectsFor("listed-vs-live")} onSelect={(via) => setFacet("via", [via])} />
     </div>
   );
 }

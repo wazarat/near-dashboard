@@ -2,10 +2,12 @@
 
 import { useMemo } from "react";
 import { ScopeNote } from "@/components/atlas/chart-card";
+import { LegacySwitch, useLegacyOn } from "@/components/atlas/legacy-switch";
 import { MetricSegmented } from "@/components/atlas/chart-metric";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { memoInsights } from "@/lib/data";
+import { useActiveFilterCount } from "@/lib/filters";
 import { generateInsights } from "@/lib/insights";
 import type { MemoInsight, MetricKey, Project } from "@/lib/types";
 
@@ -20,7 +22,9 @@ function memoBody(m: MemoInsight): string {
 
 export function InsightsPanel({ projects, metric, onMetricChange, total }: { projects: Project[]; metric: MetricKey; onMetricChange: (m: MetricKey) => void; total: number }) {
   const live = useMemo(() => generateInsights(projects, metric), [projects, metric]);
-  const filteredView = projects.length !== total;
+  // "Full dataset" means no search or facet is set; legacy listings are a card switch, not a filter.
+  const filteredView = useActiveFilterCount() > 0 || projects.length > total;
+  const legacy = useLegacyOn("insights");
 
   return (
     <Card className="gap-3 py-4" data-chart-card="Insights">
@@ -28,9 +32,12 @@ export function InsightsPanel({ projects, metric, onMetricChange, total }: { pro
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
             <h3 className="text-sm font-semibold leading-tight">Insights</h3>
-            <ScopeNote />
+            <ScopeNote legacy={legacy} />
           </span>
-          <MetricSegmented value={metric} onChange={onMetricChange} ariaLabel="Insights metric" />
+          <span className="flex flex-wrap items-center gap-2">
+            <LegacySwitch card="insights" label="Insights" />
+            <MetricSegmented value={metric} onChange={onMetricChange} ariaLabel="Insights metric" />
+          </span>
         </div>
         <p className="text-sm text-ink-300">Live sentences are recomputed from the {filteredView ? "current selection" : "full dataset"} for the chosen metric; analyst notes are fixed.</p>
       </CardHeader>

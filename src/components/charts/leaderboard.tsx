@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { ScopeNote, TvlNote } from "@/components/atlas/chart-card";
+import { LegacySwitch, useLegacyOn } from "@/components/atlas/legacy-switch";
 import { MetricSegmented } from "@/components/atlas/chart-metric";
 import { RangeControl } from "@/components/atlas/range-control";
 import { DataTable, type ProjectColumnDef } from "@/components/explorer/data-table";
@@ -67,6 +68,7 @@ export function Leaderboard({ projects, metric, onMetricChange, range, onRangeCh
 
   const sortId = cols === "activity" ? "calls7d" : cols === "financials" ? "fees" : m;
   const liveCount = rows.filter((p) => p.live).length;
+  const legacy = useLegacyOn("leaderboard");
   const withActivity = rows.filter((p) => p.live?.calls7d !== null && p.live?.calls7d !== undefined).length;
 
   const description =
@@ -84,9 +86,10 @@ export function Leaderboard({ projects, metric, onMetricChange, range, onRangeCh
         <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
             <h3 className="text-sm font-semibold">Leaderboard</h3>
-            <ScopeNote />
+            <ScopeNote legacy={legacy} />
           </span>
           <div className="flex flex-wrap items-center gap-2">
+            <LegacySwitch card="leaderboard" label="the leaderboard" />
             {(cols === "traction" || cols === "momentum") && <RangeControl value={range} onChange={onRangeChange} ariaLabel="Leaderboard trend range" />}
             <MetricSegmented value={metric} onChange={onMetricChange} ariaLabel="Leaderboard metric" />
             <Segmented value={cols} onChange={onColsChange} options={COL_SETS.map((c) => ({ value: c, label: COL_SET_LABEL[c] }))} ariaLabel="Column set" />
