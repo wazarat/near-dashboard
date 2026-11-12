@@ -90,8 +90,7 @@ export function ScopeNote({ scope = "filtered", className, legacy = false }: { s
   const text = parts.length ? parts.join(", ").replace(/^./, (c) => c.toUpperCase()) : null;
   if (!text) return null;
   return (
-    // text-label sits outside cn: tailwind-merge reads the custom size as a colour and would drop it beside text-ink-300.
-    <span className={`text-label ${cn("text-ink-300", className)}`} data-scope={scope}>
+    <span className={cn("text-label text-ink-300", className)} data-scope={scope}>
       {text}
     </span>
   );

@@ -18,8 +18,7 @@ export function LegacySwitch({ card, label, className }: { card: LegacyCard; lab
   const { legacyOn, setLegacy } = useFilters();
   const on = legacyOn(card);
   return (
-    // text-label sits outside cn: tailwind-merge reads the custom size as a colour and would drop it beside text-ink-300.
-    <label className={`text-label ${cn("inline-flex cursor-pointer items-center gap-2 whitespace-nowrap text-ink-300", className)}`} title={LEGACY_HELP}>
+    <label className={cn("inline-flex cursor-pointer items-center gap-2 whitespace-nowrap text-label text-ink-300", className)} title={LEGACY_HELP}>
       <Switch checked={on} onCheckedChange={(v) => setLegacy(card, v)} aria-label={`Include legacy listings in ${label}`} data-testid={`legacy-${card}`} />
       <span>
         Include legacy <span className="font-mono text-ink-300">({LEGACY_COUNT.toLocaleString("en-US")})</span>
