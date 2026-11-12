@@ -5,8 +5,9 @@ import { ArrowRight } from "lucide-react";
 import { useMemo } from "react";
 import { EmptyState } from "@/components/atlas/chart-card";
 import type { ChartTableSpec } from "@/components/atlas/chart-table";
-import { leadersBySector } from "@/lib/data";
-import { fmtMetric, fmtMetricFull, fmtPct, METRIC_SHORT } from "@/lib/format";
+import { leadersBySector, projectById } from "@/lib/data";
+import { fmtInt, fmtMetric, fmtMetricFull, fmtPct, fmtUsd, METRIC_SHORT } from "@/lib/format";
+import { coverageWhereApplies, isInactive, METRIC_DEFS, metricOf, sectorDef, type MetricId } from "@/lib/sector-metrics";
 import { sumMetric } from "@/lib/metrics";
 import type { Leader, MetricKey, Project } from "@/lib/types";
 
@@ -20,6 +21,18 @@ export interface SectorCard {
   total: number | null;
   /** Ranked leaders for the sector from the research CSV, independent of the filters. */
   leaders: Leader[];
+  /** The sector's headline metric from the registry (src/lib/sector-metrics.ts); null for an unmeasured sector. */
+  headline: MetricId | null;
+  /** Sum of the headline over projects that report it, for a money headline; null for a count (holders overlap). */
+  headlineTotal: number | null;
+  headlineTracked: number;
+  headlineApplies: number;
+}
+
+/** The headline as text for a card or a leader row. */
+export function fmtHeadline(id: MetricId, v: number | null): string {
+  if (v === null) return "Not tracked";
+  return METRIC_DEFS[id].unit === "usd" ? fmtUsd(v) : fmtInt(v);
 }
 
 export function sectorCards(projects: Project[], metric: MetricKey): SectorCard[] {
@@ -36,9 +49,22 @@ export function sectorCards(projects: Project[], metric: MetricKey): SectorCard[
         nativeShare: inS.length ? native / inS.length : null,
         total: sumMetric(inS, metric),
         leaders: (leadersBySector.get(s) ?? []).slice(0, 3),
+        ...headlineOf(s, inS),
       };
     })
     .sort((a, b) => (b.total ?? -1) - (a.total ?? -1) || b.count - a.count || a.sector.localeCompare(b.sector));
+}
+
+function headlineOf(sector: string, inS: Project[]) {
+  const headline = sectorDef(sector).headline;
+  if (!headline) return { headline: null, headlineTotal: null, headlineTracked: 0, headlineApplies: 0 };
+  const cov = coverageWhereApplies(inS, headline);
+  let total: number | null = null;
+  if (METRIC_DEFS[headline].unit === "usd") for (const p of inS) {
+    const v = isInactive(p) ? null : metricOf(p, headline);
+    if (v !== null) total = (total ?? 0) + v;
+  }
+  return { headline, headlineTotal: total, headlineTracked: cov.tracked, headlineApplies: cov.applies };
 }
 
 export function sectorCardTable(cards: SectorCard[], metric: MetricKey): ChartTableSpec {
@@ -51,9 +77,18 @@ export function sectorCardTable(cards: SectorCard[], metric: MetricKey): ChartTa
       { key: "live", label: "With traction", align: "right" },
       { key: "nativeShare", label: "NEAR-native share", align: "right", format: (v) => fmtPct(v as number | null) },
       { key: "total", label: METRIC_SHORT[metric], align: "right", format: (v) => fmtMetricFull(metric, v as number | null) },
+      { key: "headlineLabel", label: "Headline metric" },
+      { key: "headlineValue", label: "Headline total", align: "right" },
+      { key: "headlineCoverage", label: "Headline tracked where it applies", align: "right" },
       { key: "top", label: "Top leaders" },
     ],
-    rows: cards.map((c) => ({ ...c, top: c.leaders.map((l) => `${l.rank}. ${l.name}`).join("; ") || NONE })),
+    rows: cards.map((c) => ({
+      ...c,
+      headlineLabel: c.headline ? METRIC_DEFS[c.headline].label : "Not applicable",
+      headlineValue: c.headline && c.headlineTotal !== null ? fmtHeadline(c.headline, c.headlineTotal) : NONE,
+      headlineCoverage: c.headline ? `${c.headlineTracked} of ${c.headlineApplies}` : NONE,
+      top: c.leaders.map((l) => `${l.rank}. ${l.name}`).join("; ") || NONE,
+    })),
   };
 }
 
@@ -109,6 +144,18 @@ export function SectorGrid({ projects, metric, onSelect, onOpen }: Props) {
               </span>
             </p>
           )}
+          <p className="mt-2 flex items-baseline justify-between gap-3 text-label text-ink-300" data-testid="sector-headline">
+            {c.headline ? (
+              <>
+                <span>
+                  {METRIC_DEFS[c.headline].label}, tracked for {c.headlineTracked} of {c.headlineApplies}
+                </span>
+                {c.headlineTotal !== null && <span className="tabular text-sm text-ink-50">{fmtHeadline(c.headline, c.headlineTotal)}</span>}
+              </>
+            ) : (
+              <span>No traction headline for this sector</span>
+            )}
+          </p>
           <div className="mt-3 flex-1 border-t border-ink-700/40 pt-3 text-xs">
             <div className="mb-1 text-label text-ink-300">Ranked leaders</div>
             {c.leaders.length === 0 && <div className="text-ink-300">No leaders ranked for this sector.</div>}
@@ -125,6 +172,11 @@ export function SectorGrid({ projects, metric, onSelect, onOpen }: Props) {
                       {l.name}
                     </span>
                   )}
+                  {c.headline && (() => {
+                    const lp = projectById(l.projectId);
+                    const v = lp ? metricOf(lp, c.headline) : null;
+                    return v === null ? null : <span className="tabular ml-auto shrink-0 text-ink-300">{fmtHeadline(c.headline, v)}</span>;
+                  })()}
                 </li>
               ))}
             </ol>

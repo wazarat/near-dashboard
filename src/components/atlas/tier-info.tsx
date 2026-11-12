@@ -3,7 +3,7 @@
 import { InfoTip } from "@/components/ui/info-tip";
 import { TIER_COLOR } from "@/lib/colors";
 import { fmtUsd } from "@/lib/format";
-import { TBD_LINE, TIER_THRESHOLDS } from "@/lib/tier";
+import { NOT_APPLICABLE_LINE, TBD_LINE, TIER_THRESHOLDS } from "@/lib/tier";
 import type { Tier } from "@/lib/types";
 
 const t1 = TIER_THRESHOLDS.tier1;
@@ -17,6 +17,7 @@ export const TIER_LINES: Array<{ tier: Tier; name: string; rule: string }> = [
   { tier: "Tier 3 - Emerging", name: "Tier 3, emerging", rule: "Any tracked TVL, volume, fees or revenue below Tier 2." },
   { tier: "Tracked, negligible", name: "Tracked, negligible", rule: "Listed on DefiLlama, with every figure at zero." },
   { tier: "Not tracked", name: "TBD", rule: `${TBD_LINE}.` },
+  { tier: "Not applicable", name: "Not applicable", rule: `${NOT_APPLICABLE_LINE}.` },
 ];
 
 /** The tier explanation: an intro and one bullet per tier with its legend swatch. */

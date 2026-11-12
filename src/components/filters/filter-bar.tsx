@@ -9,7 +9,7 @@ import { InfoTip } from "@/components/ui/info-tip";
 import { CHAIN_COLOR, STATUS_COLOR, STATUS_GROUP_LABEL, TIER_COLOR } from "@/lib/colors";
 import { meta, projects as allProjects } from "@/lib/data";
 import { FACETS, LEGACY_GROUP, applyFilters, facetValue, useFilters, type FacetKey } from "@/lib/filters";
-import { TBD_LINE, tierLabel } from "@/lib/tier";
+import { NOT_APPLICABLE_LINE, TBD_LINE, tierLabel } from "@/lib/tier";
 import { CHAIN_PRESENCE, NATIVE_CHAINS, STATUS_GROUPS, TIERS, type Tier } from "@/lib/types";
 import { MultiSelect, type Option } from "./multi-select";
 
@@ -21,6 +21,7 @@ const FACET_HINTS: Partial<Record<string, string>> = {
   Defunct: "DefiLlama page no longer resolves",
   "Tracked, negligible": "Listed on DefiLlama but every figure is zero",
   "Not tracked": TBD_LINE,
+  "Not applicable": NOT_APPLICABLE_LINE,
 };
 
 function orderedValues(key: FacetKey): string[] {

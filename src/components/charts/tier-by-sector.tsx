@@ -18,7 +18,7 @@ export function tierRows(projects: Project[]): TierRow[] {
     const r = m.get(p.sector) ?? ({ sector: p.sector, total: 0, tracked: 0, ...Object.fromEntries(TIERS.map((t) => [t, 0])) } as TierRow);
     r[p.tier] += 1;
     r.total += 1;
-    if (p.tier !== "Not tracked") r.tracked += 1;
+    if (p.tier !== "Not tracked" && p.tier !== "Not applicable") r.tracked += 1;
     m.set(p.sector, r);
   }
   return Array.from(m.values()).sort((a, b) => b.total - a.total);

@@ -37,6 +37,7 @@ export const TIER_COLOR: Record<Tier, string> = {
   "Tier 3 - Emerging": "var(--tier-3)",
   "Tracked, negligible": "var(--tier-negligible)",
   "Not tracked": "var(--tier-none)",
+  "Not applicable": "var(--ink-700)",
 };
 
 export const TIER_SHORT: Record<Tier, string> = {
@@ -45,6 +46,7 @@ export const TIER_SHORT: Record<Tier, string> = {
   "Tier 3 - Emerging": "Tier 3",
   "Tracked, negligible": "Negligible",
   "Not tracked": "TBD",
+  "Not applicable": "Not applicable",
 };
 
 /** Display labels where the group name alone would mislead. The CSV value and the group key are unchanged. */

@@ -1,0 +1,114 @@
+"use client";
+
+import Link from "next/link";
+import type { ReactNode } from "react";
+import { ChangeCell } from "@/components/atlas/change-cell";
+import { InfoTip } from "@/components/ui/info-tip";
+import { fmtDate, fmtInt, fmtUsd, fmtUsdFull } from "@/lib/format";
+import { isStale } from "@/lib/freshness";
+import { METRIC_DEFS, projectMetrics, sectorDef, type MetricValue } from "@/lib/sector-metrics";
+import type { MetricSource, NumericMetricKey, Project } from "@/lib/types";
+
+const DAILY = new Set<string>(["tvl", "volume", "fees", "revenue"]);
+
+function Row({ label, info, children }: { label: string; info: string; children: ReactNode }) {
+  return (
+    <div className="grid grid-cols-[7.5rem_1fr] gap-x-3 gap-y-0.5 text-sm" data-testid="metric-row">
+      <dt className="inline-flex items-start gap-1 text-ink-300">
+        <span>{label}</span>
+        <InfoTip label={`About ${label}`}>{info}</InfoTip>
+      </dt>
+      <dd className="min-w-0 break-words">{children}</dd>
+    </div>
+  );
+}
+
+function fmt(m: MetricValue): string {
+  const v = m.value as number;
+  return METRIC_DEFS[m.id].unit === "usd" ? fmtUsdFull(v) : fmtInt(v);
+}
+
+/** Where a value came from and how old it is: daily figures carry their 30-day change; a snapshot value older than three days shows its date (accuracy rule 4). */
+function Provenance({ p, m }: { p: Project; m: MetricValue }) {
+  if (DAILY.has(m.id)) {
+    const k = m.id as NumericMetricKey;
+    const s: MetricSource = p.metricSource?.[k] ?? "none";
+    if (s === "none") return null;
+    const change = p.live?.change[k].d30;
+    return (
+      <span className="ml-2 inline-flex items-center gap-1.5 text-xs text-ink-300">
+        {s === "live" ? "daily" : `snapshot ${fmtDate(p.snapshot.asOf)}`}
+        {s === "live" && change !== null && change !== undefined && (
+          <>
+            · 30d <ChangeCell value={change} />
+          </>
+        )}
+      </span>
+    );
+  }
+  const asOf = p.extra?.asOf[m.id];
+  if (!asOf) return null;
+  return <span className="ml-2 text-xs text-ink-300">{isStale(asOf) ? `as of ${fmtDate(asOf)}` : p.extra?.from[m.id] === "snapshot" ? "snapshot" : "daily"}</span>;
+}
+
+function Value({ p, m }: { p: Project; m: MetricValue }) {
+  switch (m.state) {
+    case "value":
+      return (
+        <>
+          <span className="tabular">{fmt(m)}</span>
+          <Provenance p={p} m={m} />
+          {m.id === "tvl" && (p.tvlNear !== null || p.tvlAurora !== null) && p.tvlNear !== p.tvl && (
+            <span className="ml-2 text-xs text-ink-300">
+              NEAR {fmtUsd(p.tvlNear)} · Aurora {fmtUsd(p.tvlAurora)}
+            </span>
+          )}
+        </>
+      );
+    case "zero-by-design":
+      return (
+        <span className="inline-flex items-center gap-1">
+          <span className="tabular">{METRIC_DEFS[m.id].unit === "usd" ? "$0" : "0"}</span>
+          <InfoTip label={`Why ${METRIC_DEFS[m.id].label} is zero`}>{m.reason}</InfoTip>
+        </span>
+      );
+    case "inactive":
+      return (
+        <span className="text-ink-300">
+          {m.value === null ? "none recorded" : <span className="tabular">{fmt(m)}</span>}
+          <span className="ml-2 text-xs">last value, project {p.statusGroup.toLowerCase()}</span>
+        </span>
+      );
+    case "not-tracked":
+      return (
+        <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 text-ink-300">
+          <span className="text-label">Not tracked</span>
+          <InfoTip label={`Why ${METRIC_DEFS[m.id].label} is not tracked`}>{m.reason}</InfoTip>
+          <Link href="/help-track/" prefetch={false} className="text-xs underline-offset-2 hover:text-ink-50 hover:underline">
+            Help us track this
+          </Link>
+        </span>
+      );
+    default:
+      return null;
+  }
+}
+
+/**
+ * The project's metrics from the sector registry (src/lib/sector-metrics.ts), headline first. A metric that does
+ * not apply to the sector is not listed at all; one that applies with no source says Not tracked.
+ */
+export function MetricRows({ p }: { p: Project }) {
+  const def = sectorDef(p.sector);
+  const rows = projectMetrics(p).filter((m) => m.state !== "not-applicable");
+  if (!def.measured && rows.length === 0) return <p className="text-xs text-ink-300">{p.sector} has no traction headline, so this project shows facts rather than metrics.</p>;
+  return (
+    <>
+      {rows.map((m, i) => (
+        <Row key={m.id} label={METRIC_DEFS[m.id].label} info={`${i === 0 && def.measured ? `The headline metric for ${p.sector}. ` : ""}${METRIC_DEFS[m.id].info}${i === 0 && def.note ? ` ${def.note}` : ""}`}>
+          <Value p={p} m={m} />
+        </Row>
+      ))}
+    </>
+  );
+}

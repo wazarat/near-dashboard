@@ -18,6 +18,8 @@ export const TIERS = [
   "Tier 3 - Emerging",
   "Tracked, negligible",
   "Not tracked",
+  /** A project in a sector with no traction headline (wallets, infrastructure, exchanges and so on); docs/LIVE-DATA.md, section 2. */
+  "Not applicable",
 ] as const;
 export type Tier = (typeof TIERS)[number];
 
@@ -162,6 +164,16 @@ export interface Project {
   live: LiveMetrics | null;
   metricSource: Record<NumericMetricKey, MetricSource>;
   contracts: ContractInfo[];
+  /** Registry metrics beyond the four DefiLlama ones (src/lib/sector-metrics.ts), each with the day it was taken. */
+  extra?: ProjectExtra;
+}
+
+export interface ProjectExtra {
+  values: Partial<Record<string, number>>;
+  /** YYYY-MM-DD per metric id. */
+  asOf: Partial<Record<string, string>>;
+  /** Where each value came from: "live" (this build's fetch) or "snapshot" (data/near-live-metrics-*.csv). */
+  from: Partial<Record<string, "live" | "snapshot">>;
 }
 
 export interface Leader {

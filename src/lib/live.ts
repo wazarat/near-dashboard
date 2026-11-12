@@ -5,6 +5,7 @@
 import { addDays, dateRange, type DateStr } from "./dates";
 import type { Series, SeriesMap } from "./history-types";
 import { sumSeries, type MapRow } from "./mapping";
+import { isMeasured } from "./sector-metrics";
 import { recomputeTier } from "./tier";
 import type { LiveMetrics, MetricChange, NumericMetricKey, Project } from "./types";
 
@@ -247,8 +248,9 @@ export function applyLive(p: Project, live: LiveMetrics | null, mapped: boolean)
     fees,
     revenue,
     metricSource: { tvl: sTvl, volume: sVol, fees: sFees, revenue: sRev },
-    // Recompute only when daily data exists; an unmapped project keeps its researched tier.
-    tier: live ? recomputeTier({ tvl, volume, fees, revenue, mapped }) : snapshot.tier,
+    // A sector with no traction headline has no tier (docs/LIVE-DATA.md, section 2). Otherwise recompute
+    // only when daily data exists; an unmapped project keeps its researched tier.
+    tier: !isMeasured(p.sector) ? "Not applicable" : live ? recomputeTier({ tvl, volume, fees, revenue, mapped }) : snapshot.tier,
     hasTraction: [tvl, volume, fees, revenue].some((v) => v !== null),
     revenueCapture: fees !== null && revenue !== null && fees > 0 ? revenue / fees : null,
   };

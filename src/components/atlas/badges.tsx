@@ -19,7 +19,7 @@ export function ChainChip({ chain, className, short = true }: { chain: NativeCha
 }
 
 export function TierBadge({ tier, className }: { tier: Tier; className?: string }) {
-  const quiet = tier === "Not tracked" || tier === "Tracked, negligible";
+  const quiet = tier === "Not tracked" || tier === "Tracked, negligible" || tier === "Not applicable";
   return (
     <PlainState tone={quiet ? "neutral" : "strong"} className={className} title={tier === "Tracked, negligible" ? "Listed on DefiLlama but every figure is zero" : tier === "Not tracked" ? TBD_LINE : tier}>
       {TIER_SHORT[tier]}

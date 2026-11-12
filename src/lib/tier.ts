@@ -16,6 +16,7 @@ export const TIER_LABEL: Record<Tier, string> = {
   "Tier 3 - Emerging": "Tier 3 - Emerging",
   "Tracked, negligible": "Tracked, negligible",
   "Not tracked": "TBD",
+  "Not applicable": "Not applicable",
 };
 
 export function tierLabel(tier: Tier): string {
@@ -24,6 +25,9 @@ export function tierLabel(tier: Tier): string {
 
 /** What TBD means, in one sentence, for titles and hints. */
 export const TBD_LINE = "DefiLlama does not track this project yet, so its tier is to be determined";
+
+/** What Not applicable means: the sector has no traction headline, so its projects show facts and no tier. */
+export const NOT_APPLICABLE_LINE = "Wallets, infrastructure, exchanges, data, security, ecosystem, validator and other projects carry no traction headline, so they show facts and no tier";
 
 export interface TierInput {
   tvl: number | null;

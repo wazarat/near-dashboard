@@ -6,20 +6,21 @@ import type { ReactNode } from "react";
 import { AtlasModal } from "@/components/atlas/atlas-modal";
 import { LoginPanel } from "@/components/auth/login-dialog";
 import { ChainChip } from "@/components/atlas/badges";
-import { ChangeCell } from "@/components/atlas/change-cell";
 import { EstimateLabel } from "@/components/atlas/estimate-label";
 import { TierInfoTip } from "@/components/atlas/tier-info";
+import { MetricRows } from "@/components/drawer/metric-rows";
+import { isMeasured } from "@/lib/sector-metrics";
 import { HistoryChart } from "@/components/charts/history-chart";
 import { DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useAccess } from "@/lib/access";
 import { eventsByProject, projectById, roundsByProject } from "@/lib/data";
 import { useFilters } from "@/lib/filters";
-import { displayUrl, fmtDate, fmtEventDate, fmtInt, fmtMetric, fmtPct, fmtUsd, fmtUsdFull, METRIC_SHORT, xUrl } from "@/lib/format";
+import { displayUrl, fmtDate, fmtEventDate, fmtInt, fmtMetric, fmtPct, fmtUsd, METRIC_SHORT, xUrl } from "@/lib/format";
 import { TIER_SHORT } from "@/lib/colors";
 import { similarProjects } from "@/lib/metrics";
 import { tierLabel } from "@/lib/tier";
 import { trackCorrectionClick } from "@/lib/track";
-import type { MetricKey, MetricSource, NumericMetricKey, Project } from "@/lib/types";
+import type { MetricKey, Project } from "@/lib/types";
 import { CompareButton } from "@/components/compare/compare-button";
 import { TALLY_CORRECT_URL, tallyCorrectUrl } from "@/lib/env";
 import { Button } from "@/components/ui/button";
@@ -51,26 +52,6 @@ export function Ext({ href, children }: { href: string; children?: ReactNode }) 
       <span className="truncate">{children ?? displayUrl(href)}</span>
       <ExternalLink className="size-3 shrink-0 text-ink-300" />
     </a>
-  );
-}
-
-function Money({ v }: { v: number | null }) {
-  return v === null ? <span className="text-ink-300">no data</span> : <span className="tabular">{fmtUsdFull(v)}</span>;
-}
-
-function Src({ p, k }: { p: Project; k: NumericMetricKey }) {
-  const s: MetricSource = p.metricSource?.[k] ?? "none";
-  if (s === "none") return null;
-  const change = p.live?.change[k].d30;
-  return (
-    <span className="ml-2 inline-flex items-center gap-1.5 text-xs text-ink-300">
-      {s === "live" ? "daily" : "snapshot"}
-      {s === "live" && change !== null && change !== undefined && (
-        <>
-          · 30d <ChangeCell value={change} />
-        </>
-      )}
-    </span>
   );
 }
 
@@ -137,36 +118,10 @@ function ProjectBody({ p, all, metric, onOpen }: { p: Project; all: Project[]; m
         {tierLabel(p.tier)} <TierInfoTip />
         {p.live && p.snapshot.tier !== p.tier && <span className="text-ink-300"> · was {TIER_SHORT[p.snapshot.tier]} in the {fmtDate(p.snapshot.asOf)} snapshot</span>}
       </Field>
-      <Field label="TVL">
-        <Money v={p.tvl} />
-        <Src p={p} k="tvl" />
-        {(p.tvlNear !== null || p.tvlAurora !== null) && p.tvlNear !== p.tvl && (
-          <span className="ml-2 text-xs text-ink-300">
-            NEAR {fmtUsd(p.tvlNear)} · Aurora {fmtUsd(p.tvlAurora)}
-          </span>
-        )}
-      </Field>
-      <Field label="30d DEX volume">
-        <Money v={p.volume} />
-        <Src p={p} k="volume" />
-      </Field>
-      <Field label="30d fees">
-        <Money v={p.fees} />
-        <Src p={p} k="fees" />
-      </Field>
-      <Field label="30d revenue">
-        <Money v={p.revenue} />
-        <Src p={p} k="revenue" />
-      </Field>
-      <Field label="Revenue capture">{p.revenueCapture === null ? <span className="text-ink-300">no data</span> : `${fmtPct(p.revenueCapture)} of fees`}</Field>
-      {p.live?.cexReserves !== null && p.live?.cexReserves !== undefined && (
-        <Field label="CEX reserves on NEAR">
-          <span className="tabular">{fmtUsdFull(p.live.cexReserves)}</span>
-          <span className="ml-2 text-xs text-ink-300">excluded from TVL</span>
-        </Field>
-      )}
+      <MetricRows p={p} />
+      {p.revenueCapture !== null && <Field label="Revenue capture">{`${fmtPct(p.revenueCapture)} of fees`}</Field>}
       <Field label="Other signal">{p.otherTraction}</Field>
-      {!p.hasTraction && <p className="text-xs text-ink-300">DefiLlama lists no TVL, volume, fee or revenue figure for this project. Blank means no data, not zero.</p>}
+      {!p.hasTraction && isMeasured(p.sector) && <p className="text-xs text-ink-300">DefiLlama lists no TVL, volume, fee or revenue figure for this project. Not tracked means no source covers it yet, never zero.</p>}
       {p.live && p.live.slugs.length > 0 && (
         <p className="text-xs text-ink-300">
           Daily figures cover complete UTC days up to {fmtDate(p.live.asOf)} and sum {p.live.slugs.length === 1 ? "one DefiLlama listing" : `${p.live.slugs.length} DefiLlama listings`} ({p.live.slugs.join(", ")}).
