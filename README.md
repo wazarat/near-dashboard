@@ -36,7 +36,7 @@ npm start            # open http://localhost:3000
 
 | Page | What it shows |
 |---|---|
-| `/` Overview | KPI tiles, chain over time (NEAR and Aurora), chain activity, risers and fallers, sector treemap, native vs imported, concentration curve, live insights and analyst notes, events timeline (table first, each event in a pop-up with its source) |
+| `/` Overview | KPI tiles, chain over time (NEAR and Aurora, or the selection's own summed history when a filter is set), chain activity, risers and fallers, sector treemap, native vs imported, concentration curve, live insights and analyst notes, events timeline (table first, each event in a pop-up with its source) |
 | `/sectors` | Sector bars, tier by sector, sector cards with ranked leaders |
 | `/traction` | Leaderboard with traction, momentum, activity and financials column sets, business-model scatter, activity without TVL, listed vs live by discovery source |
 | `/intents` | 1Click swap volume, weekly series, success and refund rates, routes, assets, referrals, coverage against DefiLlama |
@@ -47,7 +47,7 @@ npm start            # open http://localhost:3000
 | `/explorer` | Every column with a column chooser and CSV download of the filtered view, a Map and Table switch (`?view=map` is the sector treemap of the same selection) and its own search box, plus the "Newly detected" review list |
 | `/compare` | Up to four projects: metric matrix with sector ranks, ratios, indexed overlay, side-by-side profiles |
 
-Every chart has an info icon naming its source, an empty state, a table view and an Expand button that opens it larger with a range brush and its computed summary as points (Thesis and Intents keep the summary on the card); the thesis and chain-activity charts also have a Query tab. Filters, each chart's own metric and each card's own time range (7d, 30d, 90d or All, under its own key such as `cr` or `hr`), the compare selection, the open project, sector, investor, funding type (`?fundingType=`) or event (`?event=`) pop-up and the expanded chart (`?expand=<id>`) live in the URL, so any view can be shared.
+Every chart has an info icon naming its source, an empty state, a table view and an Expand button that opens it larger with a range brush and its computed summary as points (Thesis and Intents keep the summary on the card); the thesis and chain-activity charts also have a Query tab. Filters, each chart's own metric and each card's own time range (7d, 30d, 90d or All, under its own key such as `cr` or `hr`), the legacy-listing switch of each card (`legacy`, a list of the cards that include the 620 legacy listings, which are hidden by default), the compare selection, the open project, sector, investor, funding type (`?fundingType=`) or event (`?event=`) pop-up and the expanded chart (`?expand=<id>`) live in the URL, so any view can be shared.
 
 ## Data
 
