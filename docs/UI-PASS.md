@@ -233,3 +233,32 @@ The visible text of fourteen pages and pop-ups was saved from a build of this br
 ## Verification
 
 Per commit: `npm run check:copy`, `npm run lint`, `npm run typecheck`, `npm test` (157 tests), `npm run e2e` (208 checks; 205 run and 3 are the analytics check skipping its repeat on three of the four projects) and `npm run e2e:wall` (38 checks). `git diff --stat origin/main -- data queries THESIS.md` is empty.
+
+# Live data, step S, 2026-11-12
+
+Step S of [`LIVE-DATA.md`](LIVE-DATA.md) (section 5), with the `cn` fix before it. Each item is its own commit on `main`.
+
+## What changed
+
+| Area | Change |
+|---|---|
+| `cn` | `src/lib/utils.ts` registers the design system's text sizes (`micro`, `label`, `body`, `control`, `card-title`, `title`, `stat`) with tailwind-merge, so `text-label` beside `text-ink-300` keeps both. Before, the size was dropped and the text inherited its parent's. Measured on Overview, Sectors, a project pop-up and Intents at 1440 and 390px: 350 control labels went from 14 to 12px (range, metric, Chart and Table, Fitted and From zero, Reset, Copy link, Filters), the KPI values from 16 to 24px. None is below 12px. |
+| Chain over time | Six panels: Chain TVL, DEX volume, Protocol fees, Gas fees, Protocol revenue, Transactions. Gas fees are the chain's own, from DefiLlama's chain fee summary; the old "fees" summed only the protocols and left the chain row out, which is why Aurora read about $5 a month instead of about $2,071. Transactions are NearBlocks for NEAR and Aurora Blockscout (a new fetcher) for Aurora. Aurora revenue reads Not tracked with DefiLlama's reason, never $0. |
+| Zero days | `src/lib/chain-gaps.ts`. A reported 0 in gas fees or transactions is drawn as a gap. For other flows a 0 is a gap only when the chain had no transactions that day, the spec's rule. The spec's fixture marks Aurora's $0 gas days of Nov 1, 5 and 9 as gaps although Aurora had transactions, which only the stricter rule for gas allows. |
+| Registry | `src/lib/sector-metrics.ts` holds every sector's metrics, headline, info text and `measured` flag, and the five value states. The project pop-up and the sector cards render from it; a metric that does not apply to a sector is not shown at all. |
+| Tiers | The eight unmeasured sectors read "Not applicable" instead of a tier or TBD. This moves NEAR Protocol (was Tier 2), Aurora, HERE Wallet, Ante Finance and Risk Harbor (were Tier 3) and every TBD in those sectors. |
+| New figures | Borrowed and own-token staking from DefiLlama's `-borrowed` and `-staking` views; total deposited as TVL plus borrowed (Rhea Lend $168.8M on Nov 11). Values with no live source yet come from the dated snapshot `data/near-live-metrics-2026-11-12.csv`, all 468 rows joined, and show their date once more than three days old. |
+| Overview tiles | Coverage reads "Tracked for X of Y where it applies", where Y leaves out the unmeasured sectors and defunct or inactive projects (TVL 34 of 107, was 77/468). New tiles: Total borrowed, and 30d DEX volume without NEAR Intents, beside the volume tile now labelled "Including NEAR Intents". |
+| Help us track this | `/help-track/`, public, linked from the footer and from every Not tracked row in a project pop-up. 199 projects in measured sectors have at least one applicable metric with no source; the page lists them by metric with a link to suggest a source. |
+| Data checks | `npm run check:data` (`src/lib/data-checks.ts`): NEAR daily transactions from NearBlocks and from BigQuery must agree within 10% over the last 7 shared days (they agree exactly), and a chain's gas fees must not be missing for more than 3 days in a row while it has transactions. It runs in CI and in the daily refresh before the commit, not in the Vercel build. |
+
+## Not done in step S
+
+- The stablecoin supply tile and the de-duplication of rule 9, which wait for the stablecoins fetcher in step M.
+- Utilization and borrow APY, from DefiLlama yields, also step M. The Rhea Lend snapshot test the spec asks for lands with them.
+- Holders from NearBlocks and Blockscout, launchpad token counts, BigQuery signers per project and the Intents referral map, which are step L. Until then those metrics read Not tracked, or the snapshot value with its date.
+
+## Found, not fixed
+
+- The help page lists every not-tracked metric, so on a phone it runs very long (about 28,000px). Collapsing each group, or showing only the headline metric by default, would fix it.
+- Aurora's protocol fees panel is real but nearly empty (a few dollars a month).
