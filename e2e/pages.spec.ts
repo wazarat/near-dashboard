@@ -479,20 +479,56 @@ test("security publishes facts, not ratings, and lists incidents as a sortable t
   await expect(page.getByRole("menuitemcheckbox", { name: "Security risk" })).toHaveCount(0);
 });
 
-test("whole-chain cards carry no scope note and do not change when a filter is applied", async ({ page }) => {
+test("with no filter the chain cards show chain totals and carry no scope note", async ({ page }) => {
   await page.goto("/");
   const card = page.locator('[data-chart-card="Chain over time"]');
   const stats = card.getByTestId("range-stats").first();
   await expect(stats).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText("Whole chain, not filtered")).toHaveCount(0);
   await expect(card.locator("[data-scope]")).toHaveCount(0);
-  const before = await stats.textContent();
-  expect(before).toMatch(/^Low \$[\d.]+[KMB]?, high \$[\d.]+[KMB]?, [+-][\d.]+% over \d+ days$/);
-  await page.goto("/?sector=Lending+%26+Credit");
-  const after = page.locator('[data-chart-card="Chain over time"]');
-  await expect(after.getByTestId("range-stats").first()).toHaveText(before ?? "");
-  await expect(after.locator("[data-scope]")).toHaveCount(0);
-  await expect(page.locator('[data-chart-card="Native vs imported"]').getByText("1 filter active")).toBeVisible();
+  await expect(page.locator('[data-chart-card="Chain activity"] [data-scope]')).toHaveCount(0);
+  await expect(page.locator('[data-chart-card="Timeline"] [data-scope]')).toHaveCount(0);
+  expect(await stats.textContent()).toMatch(/^Low \$[\d.]+[KMB]?, high \$[\d.]+[KMB]?, [+-][\d.]+% over \d+ days$/);
+});
+
+test("with a filter every Overview card follows it, the chain cards switching to the selection", async ({ page }, info) => {
+  const errors = await collectErrors(page);
+  await page.goto("/");
+  const chainStats = await page.locator('[data-chart-card="Chain over time"]').getByTestId("range-stats").first().textContent({ timeout: 15_000 });
+  const timeline = page.locator('[data-chart-card="Timeline"]');
+  await expect(timeline.locator("tbody tr").first()).toBeVisible();
+  const allRows = await timeline.locator("tbody tr").count();
+
+  await page.goto("/?chain=Other+EVM");
+  await expect(page.locator('[data-chart-card="Chain over time"]')).toHaveCount(0, { timeout: 15_000 });
+  const sel = page.locator('[data-chart-card="Selection over time"]');
+  await expect(sel.locator("[data-scope]")).toHaveText("1 filter active");
+  const selStats = sel.getByTestId("range-stats").first();
+  await expect(selStats).toBeVisible();
+  expect(await selStats.textContent()).not.toBe(chainStats);
+  await expect(sel).toContainText(/Summed from DefiLlama history for \d+ of \d+ selected projects/);
+  await expect(sel).toContainText("of the summed TVL of every tracked project");
+  // The KPI TVL tile compares the selection with all summed TVL, not with the chain total.
+  await expect(page.getByText(/^[\d.]+% of all summed TVL$/)).toBeVisible();
+  await expect(page.getByText(/^Chain TVL \$/)).toHaveCount(0);
+
+  const activity = page.locator('[data-chart-card="Chain activity"]');
+  await expect(activity.locator("[data-scope]")).toHaveText("1 filter active");
+  await expect(activity.getByText("Function calls to the selection's tracked contracts (BigQuery)")).toBeVisible();
+  await expect(activity.getByTestId("panel-scope").filter({ hasText: "Selection" })).toHaveCount(1);
+  await expect(activity.getByTestId("panel-scope").filter({ hasText: "Whole chain" })).toHaveCount(5);
+
+  // The timeline keeps only events tagged with a selected project.
+  await expect(timeline.locator("[data-scope]")).toHaveText("1 filter active");
+  const rows = await timeline.locator("tbody tr").count();
+  expect(rows).toBeGreaterThan(0);
+  expect(rows).toBeLessThan(allRows);
+  await page.screenshot({ path: path.join(SHOTS, `overview-filtered-${info.project.name}.png`), fullPage: true });
+
+  // Clearing the filter brings the chain totals back.
+  await page.goto("/");
+  await expect(page.locator('[data-chart-card="Chain over time"]')).toBeVisible({ timeout: 15_000 });
+  expect(errors, errors.join("\n")).toEqual([]);
 });
 
 test("KPI tiles use the short coverage text and the range line sits under its chart", async ({ page }, info) => {
@@ -623,8 +659,8 @@ test("analytics events carry closed-set properties only", async ({ page }, info)
   await page.getByPlaceholder(/Search name/).fill("meta pool");
   await expect.poll(async () => (await queued(page)).find((e) => e.name === "filter_use")?.data).toEqual({ filter: "q", page: "overview" });
 
-  await page.getByRole("button", { name: "Expand Chain over time" }).click();
-  await expect.poll(async () => (await queued(page)).find((e) => e.name === "chart_expand")?.data).toEqual({ chart: "chain-over-time", auth: "off" });
+  await page.getByRole("button", { name: "Expand Concentration curve" }).click();
+  await expect.poll(async () => (await queued(page)).find((e) => e.name === "chart_expand")?.data).toEqual({ chart: "concentration", auth: "off" });
   await page.keyboard.press("Escape");
 
   await page.goto("/traction/");

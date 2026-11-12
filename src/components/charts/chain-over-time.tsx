@@ -9,7 +9,9 @@ import { chainData, meta } from "@/lib/data";
 import { fmtDateShort, fmtPctSigned, fmtUsd } from "@/lib/format";
 import { rangeDays, RANGE_LONG, sliceTail, type Range } from "@/lib/ranges";
 import type { ChainSeriesKey } from "@/lib/types";
+import type { Project } from "@/lib/types";
 import { MiniSeries } from "./mini-series";
+import { SelectionOverTime } from "./selection-over-time";
 
 const PANELS: Array<{ key: ChainSeriesKey; label: string; kind: "line" | "bar" }> = [
   { key: "tvl", label: "Chain TVL", kind: "line" },
@@ -28,7 +30,12 @@ const CHAIN_COLOR: Record<Chain, string> = { near: "var(--chain-near)", aurora: 
  * "From zero" toggle); volume, fees and revenue are flows that start at zero
  * and follow the card's own range control (standard sections 4 and 6).
  */
-export function ChainOverTime({ range, onRangeChange }: { range: Range; onRangeChange: (r: Range) => void }) {
+export function ChainOverTime({ range, onRangeChange, selection = null }: { range: Range; onRangeChange: (r: Range) => void; /** With a filter set, the selected projects; the card then shows their own summed history. */ selection?: Project[] | null }) {
+  if (selection) return <SelectionOverTime projects={selection} range={range} onRangeChange={onRangeChange} />;
+  return <ChainTotals range={range} onRangeChange={onRangeChange} />;
+}
+
+function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r: Range) => void }) {
   const total = chainData.dates.length;
   const flowN = rangeDays(range, total);
   const levelN = levelWindow(range, total);
