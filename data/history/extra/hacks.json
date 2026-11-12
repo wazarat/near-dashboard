@@ -1,0 +1,4 @@
+{
+  "asOf": "2026-11-12",
+  "hacks": [{"amount":3203000,"classification":"Input Validation","date":"2021-08-15","defillamaId":null,"name":"Ref Finance","technique":"Missing Input Validation"},{"amount":3000000,"classification":"Input Validation","date":"2022-11-02","defillamaId":null,"name":"Skyward Finance","technique":"Missing Input Validation"},{"amount":18400000,"classification":"Oracle Manipulation","date":"2026-04-16","defillamaId":"1546","name":"Rhea Lend","technique":"Spot Price Manipulation"},{"amount":3500000,"classification":"Protocol Logic","date":"2026-04-29","defillamaId":null,"name":"Sweat Foundation","technique":"Withdrawal Logic Flaw"}]
+}
