@@ -4,7 +4,8 @@ import { ScopeNote } from "@/components/atlas/chart-card";
 import { LegacySwitch, useLegacyOn } from "@/components/atlas/legacy-switch";
 import { InfoTip } from "@/components/ui/info-tip";
 import { NOT_TRACKED_HELP, coverageShort } from "@/lib/coverage";
-import { meta } from "@/lib/data";
+import { meta, projects as allProjects } from "@/lib/data";
+import { useActiveFilterCount } from "@/lib/filters";
 import { fmtInt, fmtPct, fmtUsd, fmtUsdFull } from "@/lib/format";
 import { countWith, nativeShare, sumMetric } from "@/lib/metrics";
 import type { Project } from "@/lib/types";
@@ -24,6 +25,9 @@ interface Tile {
 
 export function KpiTiles({ projects, total }: { projects: Project[]; total: number }) {
   const legacy = useLegacyOn("kpi");
+  // With a filter set, the TVL tile compares the selection with the same sum over every project, not with the chain total.
+  const filteredView = useActiveFilterCount() > 0;
+  const allTvl = sumMetric(allProjects, "tvl");
   const n = projects.length;
   const tvl = sumMetric(projects, "tvl");
   const vol = sumMetric(projects, "volume");
@@ -47,7 +51,7 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
       label: "Summed TVL",
       value: fmtUsd(tvl),
       sub: coverage("tvl"),
-      sub2: chainTvl !== null ? `Chain TVL ${fmtUsd(chainTvl)}` : undefined,
+      sub2: filteredView ? (allTvl && tvl !== null && tracked("tvl") > 0 ? `${fmtPct(tvl / allTvl)} of all summed TVL` : undefined) : chainTvl !== null ? `Chain TVL ${fmtUsd(chainTvl)}` : undefined,
       full: fmtUsdFull(tvl),
       empty: tracked("tvl") === 0,
       info: `Sum of each protocol's TVL on NEAR and Aurora per DefiLlama. Double counts liquid staking and bridges; DefiLlama's default chain TVL excludes them (NEAR $174.9M, Aurora $3.8M on Nov 8, 2026). CEX reserves are excluded. ${NOT_TRACKED_HELP}`,

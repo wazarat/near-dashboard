@@ -19,7 +19,15 @@ import { concentration, nativeShare, topNShare } from "@/lib/metrics";
 import { TIMELINE_DEFAULT_START } from "@/lib/timeline";
 
 export function OverviewView() {
-  const { filtered, projectsFor, all, scale, rangeOf, setRange, state, setState, setFacet, openProject } = useFilters();
+  const { filtered, projectsFor, all, scale, rangeOf, setRange, state, setState, setFacet, openProject, activeCount } = useFilters();
+  // With a search or facet set, every card follows it: the chain cards switch to the selection's own history
+  // and the timeline keeps the events tagged with a selected project (owner request, 2026-11-12).
+  const selection = activeCount > 0 ? filtered : null;
+  const timelineEvents = useMemo(() => {
+    if (!selection) return events;
+    const ids = new Set(selection.map((p) => p.id));
+    return events.filter((e) => e.projectIds.some((id) => ids.has(id)));
+  }, [selection]);
   // Cards whose counts legacy listings change each follow their own switch; the money cards use `filtered`.
   const kpiProjects = projectsFor("kpi");
   const mapProjects = projectsFor("sectors");
@@ -73,8 +81,8 @@ export function OverviewView() {
     <div className="space-y-4">
       <KpiTiles projects={kpiProjects} total={all.length} />
 
-      <ChainOverTime range={rangeOf("cr")} onRangeChange={(r) => setRange("cr", r)} />
-      <ChainActivity range={rangeOf("ar")} onRangeChange={(r) => setRange("ar", r)} />
+      <ChainOverTime range={rangeOf("cr")} onRangeChange={(r) => setRange("cr", r)} selection={selection} />
+      <ChainActivity range={rangeOf("ar")} onRangeChange={(r) => setRange("ar", r)} selection={selection} />
       <MoversPanel projects={filtered} metric={mv} onMetricChange={(m) => void setState({ mv: m })} range={rangeOf("mr")} onRangeChange={(r) => setRange("mr", r)} minSize={state.minSize} onMinSizeChange={(minSize) => void setState({ minSize })} onOpen={openProject} />
 
       <div className="grid gap-4 xl:grid-cols-3">
@@ -131,7 +139,7 @@ export function OverviewView() {
         </ChartCard>
       </div>
 
-      <Timeline events={events} defaultStart={TIMELINE_DEFAULT_START} />
+      <Timeline events={timelineEvents} defaultStart={TIMELINE_DEFAULT_START} filtered={activeCount > 0} />
 
       <p className="text-label text-ink-300">
         Selection, {fmtInt(kpiProjects.length)} of {fmtInt(all.length)} projects

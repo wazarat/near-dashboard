@@ -92,6 +92,8 @@ interface Props {
   height?: number;
   /** Extra explanation after the standard one, e.g. what the events file is. */
   info?: string;
+  /** The events are those tagged with a project in the current selection, so the card shows its filter note. */
+  filtered?: boolean;
 }
 
 /**
@@ -102,7 +104,7 @@ interface Props {
  * the amount, the detail and the source. In the chart, events before
  * `defaultStart` stay one click away.
  */
-export function Timeline({ events, defaultStart, title = "Timeline", id = "timeline", initialTypes, height = 320, info }: Props) {
+export function Timeline({ events, defaultStart, title = "Timeline", id = "timeline", initialTypes, height = 320, info, filtered = false }: Props) {
   const [on, setOn] = useState<Set<EventType>>(() => new Set(initialTypes ?? EVENT_ORDER));
   const [showEarlier, setShowEarlier] = useState(false);
   const { openEvent } = useFilters();
@@ -152,8 +154,8 @@ export function Timeline({ events, defaultStart, title = "Timeline", id = "timel
     <ChartCard
       id={id}
       title={title}
-      takeaway={timelineTakeaway(events)}
-      scope="whole-chain"
+      takeaway={filtered && events.length === 0 ? "No recorded event is tagged with a project in this selection." : timelineTakeaway(events)}
+      scope={filtered ? "filtered" : "whole-chain"}
       info={`Every dated event from the research events CSV. The card opens on its table, newest first; click a row for the amount, the detail and the source. The chart has one lane per type. Marker area follows the recorded Amount (USD); events without an amount use a fixed minimum size. Dates known only to the month sit on the first of that month and are labelled as month only. The chart opens on ${fmtMonthYear(defaultStart)}; earlier events are one click away and always listed in the table.${info ? ` ${info}` : ""}`}
       source="Research events CSV (data/near-events-*.csv), every row with its source link"
       table={table}
@@ -193,7 +195,7 @@ export function Timeline({ events, defaultStart, title = "Timeline", id = "timel
             )}
           </div>
           {events.length === 0 ? (
-            <EmptyState message="No events to show." />
+            <EmptyState message={filtered ? "No recorded event is tagged with a project in this selection." : "No events to show."} />
           ) : visible.length === 0 ? (
             <EmptyState message={inView.length === 0 ? `No events since ${fmtMonthYear(defaultStart)}. Show earlier events to see the rest.` : "Every event type is hidden. Turn one back on above."} />
           ) : (
