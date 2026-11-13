@@ -2,7 +2,6 @@
 
 import { ChartCard, EmptyState, TvlNote } from "@/components/atlas/chart-card";
 import { frameHeight, type ChartFrame } from "@/components/atlas/chart-frame";
-import { NotTracked } from "@/components/atlas/not-tracked";
 import { RangeBrush } from "@/components/atlas/range-brush";
 import { RangeControl } from "@/components/atlas/range-control";
 import { brushSlice, fittedDomain, levelWindow, rangeStats } from "@/lib/chart-frame";
@@ -22,9 +21,6 @@ const PANELS: Array<{ key: ChainSeriesKey; label: string; kind: "line" | "bar"; 
   { key: "revenue", label: "Protocol revenue", kind: "bar" },
   { key: "txns", label: "Transactions", kind: "bar", count: true },
 ];
-
-/** Aurora publishes no daily revenue series: DefiLlama counts its revenue as burned coins and returns no daily figure. */
-const AURORA_REVENUE_NOTE = "DefiLlama counts Aurora's revenue as burned coins and publishes no daily series for it, so it is Not tracked rather than $0.";
 
 type Chain = "near" | "aurora";
 const CHAIN_LABEL: Record<Chain, string> = { near: "NEAR", aurora: "Aurora" };
@@ -81,21 +77,7 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {PANELS.map((p) => (
             <div key={p.key} className="rounded-lg border border-ink-700/40 p-2">
-              {(["near", "aurora"] as Chain[]).map((chain) => {
-                if (chain === "aurora" && p.key === "revenue") {
-                  return (
-                    <div key={chain} className="mt-2" data-testid="aurora-revenue-not-tracked">
-                      <div className="mb-1 flex items-center justify-between gap-2 text-xs">
-                        <span className="sr-only">{p.label}</span>
-                        <span className="ml-auto text-ink-300">{CHAIN_LABEL[chain]}</span>
-                      </div>
-                      <div className="flex flex-col justify-center gap-1 rounded-md border border-dashed border-ink-700/60 px-3" style={{ height: auroraHeight }}>
-                        <NotTracked />
-                        <p className="text-label text-ink-300">{AURORA_REVENUE_NOTE}</p>
-                      </div>
-                    </div>
-                  );
-                }
+              {(p.key === "revenue" ? (["near"] as Chain[]) : (["near", "aurora"] as Chain[])).map((chain) => {
                 const { dates, values } = panelData(chain, p.key, p.kind);
                 const level = p.kind === "line";
                 const stats = level ? rangeStats(dates, values) : null;
@@ -110,7 +92,7 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
                       values={values}
                       kind={p.kind}
                       primaryLabel={`${CHAIN_LABEL[chain]} ${p.label}`}
-                      height={chain === "near" ? nearHeight : auroraHeight}
+                      height={p.key === "revenue" ? nearHeight + auroraHeight + 28 : chain === "near" ? nearHeight : auroraHeight}
                       color={CHAIN_COLOR[chain]}
                       format={p.count ? fmtCompact : fmtUsd}
                       yDomain={level && !frame.startAtZero ? fittedDomain(values) : undefined}
@@ -152,7 +134,7 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
           ...PANELS.flatMap((p) => {
             const format = (v: unknown) => (p.count ? fmtCompact(v as number | null) : fmtUsd(v as number | null));
             const cols = [{ key: `near_${p.key}`, label: `NEAR ${p.label}`, align: "right" as const, format }];
-            // Aurora revenue has no daily series (Not tracked), so it gets no column rather than a column of zeros.
+            // Aurora has no daily revenue series, so its revenue panel and column are left out.
             if (p.key !== "revenue") cols.push({ key: `aurora_${p.key}`, label: `Aurora ${p.label}`, align: "right" as const, format });
             return cols;
           }),

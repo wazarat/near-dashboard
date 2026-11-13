@@ -9,13 +9,15 @@ import type { Project } from "@/lib/types";
 export const CHAIN_PROJECTS: Record<string, "near" | "aurora"> = { "near-protocol": "near", aurora: "aurora" };
 
 function Row({ label, info, value }: { label: string; info: string; value: string | null }) {
+  // A fact no source covers is left out rather than shown as a placeholder.
+  if (value === null) return null;
   return (
     <div className="grid grid-cols-[7.5rem_1fr] gap-x-3 text-sm" data-testid="chain-fact">
       <dt className="inline-flex items-start gap-1 text-ink-300">
         <span>{label}</span>
         <InfoTip label={`About ${label}`}>{info}</InfoTip>
       </dt>
-      <dd className="tabular min-w-0">{value ?? <span className="text-label text-ink-300">Not tracked</span>}</dd>
+      <dd className="tabular min-w-0">{value}</dd>
     </div>
   );
 }

@@ -10,7 +10,6 @@ import { EstimateLabel } from "@/components/atlas/estimate-label";
 import { TierInfoTip } from "@/components/atlas/tier-info";
 import { ChainFacts } from "@/components/drawer/chain-facts";
 import { MetricRows } from "@/components/drawer/metric-rows";
-import { isMeasured } from "@/lib/sector-metrics";
 import { HistoryChart } from "@/components/charts/history-chart";
 import { DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useAccess } from "@/lib/access";
@@ -147,7 +146,6 @@ function ProjectBody({ p, all, metric, onOpen }: { p: Project; all: Project[]; m
       <ChainFacts p={p} />
       {p.revenueCapture !== null && <Field label="Revenue capture">{`${fmtPct(p.revenueCapture)} of fees`}</Field>}
       {p.otherTraction && <OtherSignal text={p.otherTraction} asOf={p.snapshot.asOf} />}
-      {!p.hasTraction && isMeasured(p.sector) && <p className="text-xs text-ink-300">DefiLlama lists no TVL, volume, fee or revenue figure for this project. Not tracked means no source covers it yet, never zero.</p>}
       {p.live && p.live.slugs.length > 0 && (
         <p className="text-xs text-ink-300">
           Daily figures cover complete UTC days up to {fmtDate(p.live.asOf)} and sum {p.live.slugs.length === 1 ? "one DefiLlama listing" : `${p.live.slugs.length} DefiLlama listings`} ({p.live.slugs.join(", ")}).

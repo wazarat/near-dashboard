@@ -171,7 +171,8 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
 
       {canExpand && (
         <Dialog open={open} onOpenChange={(o) => !o && close()}>
-          <DialogContent className="flex max-h-[92vh] w-full flex-col gap-3 overflow-y-auto sm:max-w-[min(1400px,calc(100%-2rem))]" data-expanded-chart={id}>
+          {/* Every child keeps its full height and the dialog scrolls; a shrinking chart would let the notes below draw over it. */}
+          <DialogContent className="flex max-h-[92dvh] w-full flex-col gap-3 overflow-y-auto overscroll-contain sm:max-w-[min(1400px,calc(100%-2rem))] [&>*]:shrink-0" data-expanded-chart={id}>
             <DialogHeader className="gap-1 pr-8">
               <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
                 <DialogTitle className="text-title">{title}</DialogTitle>
@@ -181,7 +182,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
               {subtitle && <p className="text-label text-ink-300">{subtitle}</p>}
             </DialogHeader>
             <div className="flex flex-wrap items-center gap-2">{controls(dialogView, setDialogView)}</div>
-            <div className="min-h-0 flex-1">{open && body(dialogView, dialogFrame)}</div>
+            <div>{open && body(dialogView, dialogFrame)}</div>
             {!inline && <TakeawayList takeaway={points(takeaway)} className="border-t border-ink-700/40 pt-3" />}
             {footer && <div className="text-xs text-ink-300">{footer}</div>}
             <p className="text-label text-ink-300">

@@ -72,13 +72,15 @@ test("the tabs sit in the header row from 1360px and drop to their own row below
   }
 });
 
-test("Help us track this lists not-tracked projects by metric and is linked from the footer and from Not tracked rows", async ({ page }) => {
+test("Pop-ups list only tracked metrics, and Help us track this lists the gaps by metric from the footer link", async ({ page }) => {
   await page.goto("/?project=rhea-lend-formerly-burrow");
   const modal = page.getByTestId("project-modal");
   await expect(modal.getByTestId("metric-row").first()).toBeVisible({ timeout: 15_000 });
   // Lending carries no DEX volume row; its headline is total deposited.
   await expect(modal.getByTestId("metric-row").first()).toContainText("Total deposited");
   await expect(modal.getByText("30d DEX volume", { exact: true })).toHaveCount(0);
+  // A metric no source covers is left out of the pop-up, not shown as a placeholder.
+  await expect(modal.getByText("Not tracked", { exact: true })).toHaveCount(0);
   await page.keyboard.press("Escape");
   await page.locator("footer").getByRole("link", { name: "Help us track this" }).click();
   await expect(page).toHaveURL(/\/help-track\/$/);
@@ -215,6 +217,41 @@ test("a shared ?expand= link opens the dialog on load and level charts offer a F
   await expect(zeroTick).toHaveCount(0);
   await axis.getByRole("radio", { name: "From zero" }).click();
   await expect(zeroTick.first()).toBeVisible();
+});
+
+test("the expanded Chain over time stacks its notes below the panels and its range control works after a zoom", async ({ page }) => {
+  await page.setViewportSize({ width: 1536, height: 1000 });
+  await page.goto("/?expand=chain-over-time&cr=all");
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.locator(".recharts-wrapper").first()).toBeVisible({ timeout: 15_000 });
+  // Each direct child of the dialog starts at or below the bottom of the one before it, so nothing draws over a chart.
+  const boxes = await dialog.evaluate((el) =>
+    Array.from(el.children)
+      .filter((c) => (c as HTMLElement).offsetParent !== null && getComputedStyle(c).position !== "absolute")
+      .map((c) => {
+        const r = c.getBoundingClientRect();
+        return { top: Math.round(r.top), bottom: Math.round(r.bottom) };
+      }),
+  );
+  for (let i = 1; i < boxes.length; i++) expect(boxes[i].top, `dialog child ${i} overlaps the one above`).toBeGreaterThanOrEqual(boxes[i - 1].bottom);
+  // The Aurora revenue panel is gone, not a placeholder.
+  await expect(dialog.getByText("Not tracked")).toHaveCount(0);
+  await expect(dialog.getByText(/burned coins/)).toHaveCount(0);
+
+  // Zoom with the brush, then pick 7d: the new range applies and the stale zoom is dropped.
+  const traveller = dialog.locator(".recharts-brush-traveller").first();
+  await traveller.scrollIntoViewIfNeeded();
+  const tb = await traveller.boundingBox();
+  if (!tb) throw new Error("no brush handle");
+  await page.mouse.move(tb.x + tb.width / 2, tb.y + tb.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(tb.x + 300, tb.y + tb.height / 2, { steps: 8 });
+  await page.mouse.up();
+  const range = dialog.getByRole("radiogroup", { name: "Chain over time range" });
+  await range.getByRole("radio", { name: "7d" }).click();
+  await expect(range.getByRole("radio", { name: "7d" })).toHaveAttribute("aria-checked", "true");
+  await expect(page).toHaveURL(/cr=7d/);
+  await expect(dialog.getByTestId("range-stats").first()).toContainText(/over 9\d days$/);
 });
 
 test("the treemap drills into a sector, opens a project from a tile and filters only on request", async ({ page }) => {

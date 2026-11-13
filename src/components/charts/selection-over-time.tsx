@@ -47,7 +47,7 @@ export function SelectionOverTime({ projects, range, onRangeChange }: { projects
       ? "No project in this selection has daily DefiLlama history."
       : `The selection's summed TVL is ${fmtUsd(tvlNow)}${share !== null ? `, ${fmtPct(share)} of the summed TVL of every tracked project` : ""}${tvlStats ? ` (${fmtPctSigned(tvlStats.change)} over ${levelN} days)` : ""}; ${fmtUsd(volume)} of DEX volume and ${fmtUsd(fees)} of fees over the last ${flowLabel}.`;
   const subtitle = sel
-    ? `Summed from DefiLlama history for ${sel.withAnyHistory} of ${projects.length} selected project${projects.length === 1 ? "" : "s"}; the rest are Not tracked. Per-project history covers the last ${total} days${levelN !== flowN ? `, and TVL keeps at least ${levelN} in view` : ""}.`
+    ? `Summed from DefiLlama history for ${sel.withAnyHistory} of ${projects.length} selected project${projects.length === 1 ? "" : "s"}. Per-project history covers the last ${total} days${levelN !== flowN ? `, and TVL keeps at least ${levelN} in view` : ""}.`
     : undefined;
 
   const rows = sel

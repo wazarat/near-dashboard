@@ -27,7 +27,7 @@ interface Tile {
 /** NEAR Intents, counted once (accuracy rule 7). */
 const INTENTS_ID = "near-intents";
 
-const WHERE_HELP = "Tracked for X of Y where it applies counts, in Y, only projects whose sector uses the metric and that are not defunct or inactive. It leaves out the unmeasured sectors (wallets, infrastructure, exchanges, data and analytics, security, ecosystem and funding, validators, other), where the metric does not exist, rather than counting them as gaps. Blank values are Not tracked, never zero.";
+const WHERE_HELP = "Tracked for X of Y where it applies counts, in Y, only projects whose sector uses the metric and that are not defunct or inactive. It leaves out the unmeasured sectors (wallets, infrastructure, exchanges, data and analytics, security, ecosystem and funding, validators, other), where the metric does not exist, rather than counting them as gaps. A blank value is never counted as zero.";
 
 function coverageWhereLabel(tracked: number, applies: number): string {
   return `Tracked for ${tracked.toLocaleString("en-US")} of ${applies.toLocaleString("en-US")} where it applies`;

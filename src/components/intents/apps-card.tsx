@@ -22,7 +22,7 @@ export function AppsCard() {
         <h3 className="inline-flex items-center gap-1 text-sm font-semibold">
           Apps routing through NEAR Intents
           <InfoTip label="About apps routing through NEAR Intents">
-            1Click swaps whose referral tag belongs to a project in the atlas, summed over the last {r.days} complete days of NEAR Intents Explorer data{r.end ? ` to ${fmtDate(r.end)}` : ""}. A tag counts only after it has been matched to a project and checked, so the list grows as tags are labelled. App fees per app are Not tracked, since the Explorer reports them by fee recipient, not by referral. This volume is already inside NEAR Intents&apos; own figure.
+            1Click swaps whose referral tag belongs to a project in the atlas, summed over the last {r.days} complete days of NEAR Intents Explorer data{r.end ? ` to ${fmtDate(r.end)}` : ""}. A tag counts only after it has been matched to a project and checked, so the list grows as tags are labelled. This volume is already inside NEAR Intents&apos; own figure.
           </InfoTip>
         </h3>
         <p className="text-sm text-ink-300">

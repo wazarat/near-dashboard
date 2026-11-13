@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { ChangeCell } from "@/components/atlas/change-cell";
 import { InfoTip } from "@/components/ui/info-tip";
@@ -80,16 +79,6 @@ function Value({ p, m }: { p: Project; m: MetricValue }) {
           <span className="ml-2 text-xs">last value, project {p.statusGroup.toLowerCase()}</span>
         </span>
       );
-    case "not-tracked":
-      return (
-        <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 text-ink-300">
-          <span className="text-label">Not tracked</span>
-          <InfoTip label={`Why ${METRIC_DEFS[m.id].label} is not tracked`}>{m.reason}</InfoTip>
-          <Link href="/help-track/" prefetch={false} className="text-xs underline-offset-2 hover:text-ink-50 hover:underline">
-            Help us track this
-          </Link>
-        </span>
-      );
     default:
       return null;
   }
@@ -97,11 +86,11 @@ function Value({ p, m }: { p: Project; m: MetricValue }) {
 
 /**
  * The project's metrics from the sector registry (src/lib/sector-metrics.ts), headline first. A metric that does
- * not apply to the sector is not listed at all; one that applies with no source says Not tracked.
+ * not apply to the sector, or that no source covers yet, is not listed.
  */
 export function MetricRows({ p }: { p: Project }) {
   const def = sectorDef(p.sector);
-  const rows = projectMetrics(p).filter((m) => m.state !== "not-applicable");
+  const rows = projectMetrics(p).filter((m) => m.state !== "not-applicable" && m.state !== "not-tracked");
   // Facts any project can carry (NEAR Intents routing), shown only when a value exists.
   for (const id of CROSS_SECTOR_FACTS) {
     const v = p.extra?.values[id];
