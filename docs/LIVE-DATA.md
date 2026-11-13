@@ -52,6 +52,8 @@ These rules are new and specific to NEAR.
 
 A fifth display case is **`inactive`**, for a Defunct or Inactive project. Show the last value with its date, and leave it out of leaderboards.
 
+**Leader ranking.** One rule ranks sector leaders on the cards, in the sector pop-up and on the Traction tab, over the same set as the sector totals. It is `rankLeaders` in `src/lib/sector-metrics.ts`, specified in `docs/SECTOR-METRICS.md`, section 1.
+
 **Measured and unmeasured sectors.** Some sectors carry a traction headline and some do not.
 - **Measured.** These sectors have a headline metric that drives tiers and sector leaders.
   - DEXs and Liquidity, Launchpads and Lending and Credit.

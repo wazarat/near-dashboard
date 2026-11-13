@@ -34,6 +34,12 @@ export function SiteFooter() {
                 $100K; Tier 3 any measurable activity; &ldquo;Tracked, negligible&rdquo; means a DefiLlama listing exists but every figure is zero; a project DefiLlama does not track yet reads &ldquo;TBD&rdquo;.
               </p>
               <p>
+                <strong className="font-medium text-ink-50">Sector leaders.</strong> One rule ranks leaders on the sector cards, in the sector pop-up and on the Traction tab.
+                Active projects whose headline metric is at least 1% of the sector&apos;s top value come first, highest first; the rest follow in research rank. Sectors with no
+                traction headline rank by a fact where one exists (NEAR Intents volume routed for wallets, assets held on NEAR for exchanges, NEAR staked for validators) and
+                otherwise by research rank. Defunct and Inactive projects are never ranked, and sector totals use the same set as the leaders.
+              </p>
+              <p>
                 <strong className="font-medium text-ink-50">Coverage terms.</strong> <em>Not tracked</em> means DefiLlama does not report that metric for the project. It is a coverage
                 gap, not a zero and not unverified data, so blank cells are left out of every sum. <em>Not researched</em> means the field was never checked. <em>Not disclosed</em> and{" "}
                 <em>Unknown</em> mean it was checked and nothing was found.
