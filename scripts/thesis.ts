@@ -356,11 +356,14 @@ function main() {
     const n = Object.keys(results).length;
     const e = { ...te, supported: verdictOf(te.leadWins, te.priceLeadWins, te.oosWins, te.priceOosWins) };
     const l = { ...tl, supported: verdictOf(tl.leadWins, tl.priceLeadWins, tl.oosWins, tl.priceOosWins) };
-    const holds = e.supported === supported;
+    // The conclusion holds when the Explorer verdict is at least as strong as the full-window one.
+    const rank = { no: 0, partly: 1, yes: 2 } as const;
+    const holds = rank[e.supported] >= rank[supported];
+    const outcome = rank[e.supported] > rank[supported] ? "holds, and reads stronger there than over the full window," : holds ? "holds" : "does not hold";
     const conclusion =
       `With Explorer 1Click volume as the predictor over ${span.weeks} weekly changes (${span.start} to ${span.end}), Intents volume is the stronger positive lead for ${e.leadWins} of ${n} usage series (${e.priceLeadWins} for price, ${e.ties} inconclusive) and wins ${e.oosWins} out-of-sample comparisons to price's ${e.priceOosWins}, which reads as ${verdictWord(e.supported)}. ` +
       `DefiLlama volume over the same weeks gives ${l.leadWins} of ${n} (${l.priceLeadWins} for price, ${l.ties} inconclusive) and ${l.oosWins} to ${l.priceOosWins} out of sample, ${verdictWord(l.supported)}. ` +
-      `The full-window result with DefiLlama volume is ${verdictWord(supported)}, so the conclusion ${holds ? "holds" : "does not hold"} with the Explorer as the Intents source over the weeks it covers.`;
+      `The full-window result with DefiLlama volume is ${verdictWord(supported)}, so the conclusion ${outcome} with the Explorer as the Intents source over the weeks it covers. Fewer weeks mean a wider noise band, so the Explorer result rests on the smaller sample.`;
     return { available: true, ...span, results, explorer: e, llama: l, holds, conclusion };
   })();
   const tested = USAGE.filter((u) => leadLagOut[u.key]);

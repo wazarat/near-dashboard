@@ -82,7 +82,7 @@ export interface ExplorerTest {
   /** Wins by the same rules as the headline test, with each Intents measure against price. */
   explorer: { leadWins: number; priceLeadWins: number; ties: number; oosWins: number; priceOosWins: number; supported: "yes" | "partly" | "no" };
   llama: { leadWins: number; priceLeadWins: number; ties: number; oosWins: number; priceOosWins: number; supported: "yes" | "partly" | "no" };
-  /** True when the Explorer verdict over its weeks equals the headline verdict of the full window. */
+  /** True when the Explorer verdict over its weeks is at least as strong as the headline verdict of the full window. */
   holds: boolean | null;
   conclusion: string;
 }
