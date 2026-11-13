@@ -18,6 +18,7 @@ export function InfoTip({
   side = "top",
   align = "start",
   className,
+  contentClassName,
 }: {
   children: React.ReactNode;
   title?: string;
@@ -26,6 +27,8 @@ export function InfoTip({
   side?: "top" | "bottom" | "left" | "right";
   align?: "start" | "center" | "end";
   className?: string;
+  /** Extra classes for the popover, for example a wider one that holds a list. */
+  contentClassName?: string;
 }) {
   return (
     <Popover>
@@ -47,7 +50,10 @@ export function InfoTip({
         align={align}
         sideOffset={6}
         onClick={(e) => e.stopPropagation()}
-        className="w-72 max-w-[calc(100vw-2rem)] rounded-lg border border-ink-700/60 bg-ink-900 p-3 text-left text-xs font-normal leading-relaxed text-ink-300 shadow-popover"
+        className={cn(
+          "max-h-[var(--radix-popover-content-available-height)] w-72 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-lg border border-ink-700/60 bg-ink-900 p-3 text-left text-xs font-normal leading-relaxed text-ink-300 shadow-popover",
+          contentClassName,
+        )}
       >
         {title && <p className="mb-1 font-medium text-ink-50">{title}</p>}
         {children}

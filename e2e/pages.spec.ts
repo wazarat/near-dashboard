@@ -655,14 +655,19 @@ test("with a filter every Overview card follows it, the chain cards switching to
   expect(errors, errors.join("\n")).toEqual([]);
 });
 
-test("KPI tiles count coverage where the metric applies, show total borrowed and DEX volume without NEAR Intents", async ({ page }) => {
+test("KPI tiles count the projects in each sum and list them in the info pop-up", async ({ page }) => {
   await page.goto("/");
   const tile = (label: string) => page.locator(`[data-kpi="${label}"]`);
-  await expect(tile("30d fees").getByTestId("kpi-sub")).toHaveText(/^Tracked for \d+ of \d+ where it applies$/, { timeout: 15_000 });
-  const [x, y] = ((await tile("30d fees").getByTestId("kpi-sub").textContent())?.match(/(\d+) of (\d+)/) ?? []).slice(1).map(Number);
-  expect(x).toBeLessThanOrEqual(y);
-  // Unmeasured sectors are left out of Y, so it is well below the 468 projects shown.
-  expect(y).toBeLessThan(300);
+  const sub = tile("30d DEX volume").getByTestId("kpi-sub");
+  await expect(sub).toHaveText(/^Tracked for [\d,]+ projects?$/, { timeout: 15_000 });
+  const n = Number((await sub.textContent())?.match(/([\d,]+)/)?.[1].replace(/,/g, ""));
+  await tile("30d DEX volume").getByRole("button", { name: "About 30d DEX volume" }).click();
+  const list = page.getByTestId("kpi-breakdown");
+  await expect(list).toBeVisible();
+  await expect(list.getByRole("listitem")).toHaveCount(n);
+  await expect(list.getByRole("listitem").first()).toContainText(/\$[\d.]+[KMB]?/);
+  await expect(list.getByRole("listitem").filter({ hasText: "NEAR Intents" })).toHaveCount(1);
+  await page.keyboard.press("Escape");
   await expect(tile("Total borrowed")).toContainText(/\$[\d.]+[KMB]/);
   await expect(tile("30d DEX volume")).toContainText("Including NEAR Intents");
   await expect(tile("30d DEX volume without NEAR Intents")).toContainText(/NEAR Intents \$[\d.]+[KMB] left out/);
@@ -671,7 +676,7 @@ test("KPI tiles count coverage where the metric applies, show total borrowed and
 test("KPI tiles use the short coverage text and the range line sits under its chart", async ({ page }, info) => {
   await page.goto("/");
   const subs = page.getByTestId("kpi-sub");
-  await expect(subs.nth(1)).toHaveText(/^Tracked for [\d,]+ of [\d,]+ where it applies$/, { timeout: 15_000 });
+  await expect(subs.nth(1)).toHaveText(/^Tracked for [\d,]+ projects?$/, { timeout: 15_000 });
   const card = page.locator('[data-chart-card="Chain over time"]');
   const stats = card.getByTestId("range-stats").first();
   await expect(stats).toBeVisible({ timeout: 15_000 });

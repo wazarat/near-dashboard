@@ -80,7 +80,7 @@ NEAR's role: NEAR Intents is the object of study, and the NEAR BigQuery public d
 
 ## 90-second demo script
 
-1. **(0:00) Overview.** Open the live site. "An independent map of 1,088 NEAR and Aurora projects, refreshed daily." Point at the KPI tiles and read one coverage line: "Tracked for X of Y where it applies, so a wallet without fees is never counted as a gap."
+1. **(0:00) Overview.** Open the live site. "An independent map of 1,088 NEAR and Aurora projects, refreshed daily." Point at the KPI tiles and open the info icon on the DEX volume tile, which lists every project in the sum with its value.
 2. **(0:12) Chain over time.** Pick All. "Six panels for NEAR and Aurora. Aurora's transaction history comes from BigQuery receipts to the aurora account, which match the Aurora explorer within 1%." Open its How this is calculated block and scroll to the SQL file.
 3. **(0:27) Chain activity.** Expand the card and drag the zoom handles. "NearBlocks since 2020, with the BigQuery overlay for the last year."
 4. **(0:37) Intents.** Open the Intents page. "1Click swap volume from the Explorer API beside DefiLlama's all-channel series." Scroll to the apps table: "volume, swaps and app fees per app, by referral tag."
