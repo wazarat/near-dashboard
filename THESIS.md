@@ -135,7 +135,7 @@ Correlations inside roughly ±0.20 are indistinguishable from noise at this samp
 
 ### Explorer-only test
 
-The NEAR Intents Explorer API, the source the track names, covers 1Click swaps only. The committed backfill holds 555 complete days from 2025-05-02 to 2026-11-12 and has reached the API's first day. Over the 555 days that both sources have, it reports $13,755,315,462 against DefiLlama's $37,370,614,416 for every channel, 37% of the total, with a median daily share of 35%.
+The NEAR Intents Explorer API, the source the track names, covers 1Click swaps only. The committed backfill holds 555 complete days from 2025-05-02 to 2026-11-12 and had not reached the API's first day (late May 2025) when this file was built. Over the 555 days that both sources have, it reports $13,755,315,462 against DefiLlama's $37,370,614,416 for every channel, 37% of the total, with a median daily share of 35%.
 
 With Explorer 1Click volume as the predictor over 78 weekly changes (2025-05-02 to 2026-11-12), Intents volume is the stronger positive lead for 3 of 5 usage series (0 for price, 2 inconclusive) and wins 1 out-of-sample comparisons to price's 2, which reads as not supported. DefiLlama volume over the same weeks gives 2 of 5 (0 for price, 3 inconclusive) and 1 to 2 out of sample, not supported. The full-window result with DefiLlama volume is partly supported, so the conclusion does not hold with the Explorer as the Intents source over the weeks it covers. Fewer weeks mean a wider noise band, so the Explorer result rests on the smaller sample.
 
@@ -222,7 +222,7 @@ The same lead-lag and out-of-sample tests on both sources:
 
 ## Metrics that could not be computed
 
-- The NEAR Intents Explorer API covers 1Click swaps only and starts in late May 2025; the committed backfill covers 555 complete days from 2025-05-02. Where both sources exist the Explorer reports a median 35% of DefiLlama's daily volume. Until the backfill completes, every Intents chart uses DefiLlama's series and labels the source.
+- The NEAR Intents Explorer API covers 1Click swaps only and starts in late May 2025; the committed backfill covers 555 complete days from 2025-05-02 and is still running. Where both sources exist the Explorer reports a median 35% of DefiLlama's daily volume. Until the backfill completes, every Intents chart uses DefiLlama's series and labels the source.
 - Function calls and contracts called (BigQuery `receipt_actions`) cover 52 weeks only: running `queries/daily_receipts.sql` over 2024-12-10 to 2025-11-07 would scan 549.70 GB by dry run, over the 300 GB backfill budget. For the same reason new accounts come from NearBlocks' daily charts and not from CREATE_ACCOUNT receipts. Transactions and active accounts come from BigQuery for the whole window.
 - Distinct signers are an estimate of users: one person can hold many accounts, and relayers or intents hide the end user, so no "unique users" metric is claimed.
 - No incentive or emissions data is available from a free source (DefiLlama's emissions endpoint is paid), so wash-like or incentive-driven volume cannot be separated from organic volume; the confounders above are the known programs.

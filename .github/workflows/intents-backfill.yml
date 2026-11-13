@@ -21,6 +21,9 @@ on:
       failures:
         description: "Runs that failed in a row (set by the chain; leave at 0)"
         default: "0"
+      backfill_days:
+        description: "How many days back the backfill may reach; 720 is before the API's first swap, so it ends on an empty page"
+        default: "720"
 
 permissions:
   contents: write
@@ -50,7 +53,7 @@ jobs:
       - name: Continue the backfill
         env:
           NEAR_INTENTS_JWT: ${{ secrets.NEAR_INTENTS_JWT }}
-          INTENTS_BACKFILL_DAYS: ${{ vars.INTENTS_BACKFILL_DAYS || '560' }}
+          INTENTS_BACKFILL_DAYS: ${{ inputs.backfill_days }}
           INTENTS_SKIP_RECENT: "1"
           MAX_CALLS: ${{ inputs.max_calls }}
         run: |
@@ -109,9 +112,10 @@ jobs:
           STOP_AFTER: ${{ inputs.stop_after }}
           MAX_CALLS: ${{ inputs.max_calls }}
           FAILURES: ${{ inputs.failures }}
+          BACKFILL_DAYS: ${{ inputs.backfill_days }}
         run: |
           if [ "$DONE" = "true" ]; then echo "Backfill complete."; exit 0; fi
           if [ "$(( $(date -u +%s) + 2700 ))" -ge "$(date -u -d "$STOP_AFTER" +%s)" ]; then echo "Within 45 minutes of $STOP_AFTER, the data is final."; exit 0; fi
           if [ "$RESULT" = "success" ]; then FAILURES=0; else FAILURES=$(( FAILURES + 1 )); fi
           if [ "$FAILURES" -ge 3 ]; then echo "Three runs failed in a row, stopping the chain."; exit 1; fi
-          gh workflow run intents-backfill.yml --repo "$GITHUB_REPOSITORY" --ref main -f max_calls="$MAX_CALLS" -f stop_after="$STOP_AFTER" -f chain=true -f failures="$FAILURES"
+          gh workflow run intents-backfill.yml --repo "$GITHUB_REPOSITORY" --ref main -f max_calls="$MAX_CALLS" -f stop_after="$STOP_AFTER" -f chain=true -f failures="$FAILURES" -f backfill_days="$BACKFILL_DAYS"
