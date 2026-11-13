@@ -27,7 +27,7 @@ export function CoverageStrip({ data }: { data: ThesisJson }) {
       ? "No daily Intents series yet."
       : coverage.explorerDays === 0 || !coverage.explorerFirstDay
         ? "The 1Click Explorer backfill has not produced a complete day yet, so every Intents chart on this page uses DefiLlama's series."
-        : `The Explorer (1Click swaps only) covers ${coverage.explorerDays} complete day${coverage.explorerDays === 1 ? "" : "s"} from ${fmtDate(coverage.explorerFirstDay)} and reports a median ${fmtPct(coverage.ratioMedian)} of DefiLlama's daily volume where both exist; the backfill is ${coverage.explorerBackfillDone ? "complete" : "still running"}, so every Intents chart on this page uses DefiLlama's series.`;
+        : `The Explorer covers 1Click swaps only, ${coverage.explorerDays} complete day${coverage.explorerDays === 1 ? "" : "s"} from ${fmtDate(coverage.explorerFirstDay)} to ${coverage.explorerLastDay ? fmtDate(coverage.explorerLastDay) : "today"}. Over those days it reports ${fmtPct(coverage.ratioSum)} of DefiLlama's all-channel volume in total and a median ${fmtPct(coverage.ratioMedian)} per day. The backfill is ${coverage.explorerBackfillDone ? "complete" : "not complete"}, so the headline tests use DefiLlama's series and the Explorer-only test above uses this one.`;
 
   const table: ChartTableSpec = {
     columns: [
@@ -85,15 +85,20 @@ export function CoverageStrip({ data }: { data: ThesisJson }) {
             </div>
             <div>
               <dt className="text-ink-300">First complete day</dt>
-              <dd className="text-sm font-medium">{coverage.explorerFirstDay ? fmtDate(coverage.explorerFirstDay) : "none yet"}</dd>
+              <dd className="text-sm font-medium">
+                {coverage.explorerFirstDay ? fmtDate(coverage.explorerFirstDay) : "none yet"}
+                {coverage.explorerLastDay ? `, last ${fmtDate(coverage.explorerLastDay)}` : ""}
+              </dd>
             </div>
             <div>
-              <dt className="text-ink-300">Median Explorer / DefiLlama</dt>
-              <dd className="tabular text-sm font-medium">{fmtPct(coverage.ratioMedian)}</dd>
+              <dt className="text-ink-300">Explorer share of DefiLlama volume</dt>
+              <dd className="tabular text-sm font-medium">
+                {fmtPct(coverage.ratioSum)} in total, median {fmtPct(coverage.ratioMedian)} per day
+              </dd>
             </div>
             <div>
               <dt className="text-ink-300">Backfill</dt>
-              <dd className="text-sm font-medium">{coverage.explorerBackfillDone ? "complete" : "still running"}</dd>
+              <dd className="text-sm font-medium">{coverage.explorerBackfillDone ? "complete" : "not complete"}</dd>
             </div>
           </dl>
         </div>

@@ -25,8 +25,8 @@ export function CoverageCard({ data }: { data: IntentsSummary & { llamaDaily: Se
     },
     { label: "Backfill", value: backfill },
     {
-      label: "1Click / DefiLlama ratio",
-      value: ratioStats.days ? `median ${fmtPct(ratioStats.median)} · mean ${fmtPct(ratioStats.mean)} · latest ${fmtPct(ratioStats.latest)}` : "no complete day overlaps DefiLlama yet",
+      label: "1Click share of DefiLlama volume",
+      value: ratioStats.days ? `${fmtPct(ratioStats.sum)} in total · median ${fmtPct(ratioStats.median)} per day · latest ${fmtPct(ratioStats.latest)}` : "no complete day overlaps DefiLlama yet",
       note: ratioStats.days ? `over ${fmtInt(ratioStats.days)} complete day${ratioStats.days === 1 ? "" : "s"} with both sources` : undefined,
     },
     {
@@ -41,8 +41,14 @@ export function CoverageCard({ data }: { data: IntentsSummary & { llamaDaily: Se
       <CardHeader className="gap-1 px-4">
         <h3 className="text-sm font-semibold leading-tight">Coverage</h3>
         <p className="text-sm text-ink-300">
-          The Explorer API covers 1Click swaps only and starts in late May 2025{coverage.firstDay ? `; the committed backfill currently reaches back to ${fmtDate(coverage.firstDay)}` : ""}. DefiLlama&apos;s NEAR Intents series covers every channel
-          {llamaFirst ? ` and starts ${fmtDate(llamaFirst)}` : ""}. Where both exist, the ratio below says how much of the all-channel volume 1Click swaps account for.
+          <span data-testid="explorer-scope">
+            The Explorer API covers 1Click swaps only.
+            {ratioStats.days && ratioStats.from && ratioStats.to
+              ? ` From ${fmtDate(ratioStats.from)} to ${fmtDate(ratioStats.to)} it reports ${fmtUsd(ratioStats.explorerUsd)}, which is ${fmtPct(ratioStats.sum)} of the ${fmtUsd(ratioStats.llamaUsd)} DefiLlama reports for every channel over the same ${fmtInt(ratioStats.days)} days.`
+              : " No complete day overlaps DefiLlama's series yet."}
+          </span>{" "}
+          The API starts in late May 2025{coverage.firstDay ? ` and the committed backfill reaches back to ${fmtDate(coverage.firstDay)}` : ""}. DefiLlama&apos;s NEAR Intents series covers every channel
+          {llamaFirst ? ` and starts ${fmtDate(llamaFirst)}` : ""}.
         </p>
       </CardHeader>
       <CardContent className="px-4">

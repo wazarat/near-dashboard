@@ -60,6 +60,8 @@ The service account keeps only `roles/bigquery.jobUser` and `roles/bigquery.read
 
 - Locally: `npm run refresh -- --backfill` (add `--only defillama,nearblocks` to limit sources, `--max-calls N` to cap paginated calls per source, `--dry-run` to fetch without writing).
 - In GitHub: Actions, Refresh data, Run workflow, tick `backfill`.
+- NEAR Intents Explorer only: Actions, Intents Explorer backfill, Run workflow (`.github/workflows/intents-backfill.yml`). One run reads up to `max_calls` pages (default 380, 1,000 rows each, 5.2 s apart, about 33 minutes) with `--only intents`, so BigQuery is not touched and the as-of date does not move. It commits the per-day aggregates on top of main and starts the next run by itself until the backfill is done, three runs fail in a row, or the `stop_after` time is within 45 minutes. A runner has no row files (`data/raw/intents/days/` is gitignored), so each run restarts at the oldest complete committed day and reads the day before it whole.
+- One older BigQuery window: `BQ_START=2024-12-10 BQ_END=2025-11-07 BQ_QUERIES=daily_chain BQ_CHUNK_DAYS=14 npm run refresh -- --only bigquery --backfill --dry-run`, then the same without `--dry-run`. Raise `BQ_BACKFILL_MAX_BYTES` only after reading the dry-run total. Bytes per query land in `data/history/bq-usage.json`.
 
 The history store is idempotent: a second run with the same upstream data produces no diff. Only the last three days of each series may be revised (DefiLlama restates recent days); older points are frozen.
 

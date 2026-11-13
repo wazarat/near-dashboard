@@ -56,3 +56,49 @@ describe("summarizeIntents", () => {
     expect(out.anomalies.map((a) => a.date)).toEqual(["2026-11-06"]);
   });
 });
+
+describe("backfill resume point", () => {
+  const unix = (iso: string) => Math.floor(Date.parse(iso) / 1000);
+  const days = [
+    { date: "2025-12-21", partial: true },
+    { date: "2025-12-22", partial: false },
+    { date: "2025-12-23", partial: false },
+  ];
+  it("continues at the cursor when that day's rows are on disk", async () => {
+    const { backfillResume } = await import("../scripts/fetch/intents");
+    const cursor = unix("2025-12-21T01:30:48Z");
+    expect(backfillResume(cursor, days, (d) => d === "2025-12-21", 0)).toEqual({ before: cursor, ceiling: null });
+  });
+  it("on a fresh checkout restarts at the oldest complete day, so the partial day is read whole and finished days are left alone", async () => {
+    const { backfillResume } = await import("../scripts/fetch/intents");
+    const start = unix("2025-12-22T00:00:00Z");
+    expect(backfillResume(unix("2025-12-21T01:30:48Z"), days, () => false, 0)).toEqual({ before: start, ceiling: start });
+    // A cursor that was put back by mistake does not matter: the committed days decide.
+    expect(backfillResume(unix("2026-03-01T12:00:00Z"), days, () => false, 0)).toEqual({ before: start, ceiling: start });
+  });
+  it("falls back to the cursor, then to the recent window, when nothing is committed yet", async () => {
+    const { backfillResume } = await import("../scripts/fetch/intents");
+    expect(backfillResume(null, [], () => false, 123)).toEqual({ before: 123, ceiling: null });
+    expect(backfillResume(456, [{ date: "2025-12-21", partial: true }], () => false, 123)).toEqual({ before: 456, ceiling: null });
+  });
+});
+
+describe("backfill commit on top of a moving main", () => {
+  it("lays only the Intents cursor and status over the meta file on main", async () => {
+    const { mergeIntentsState } = await import("../scripts/ci/keep-intents-backfill");
+    const { emptyMeta } = await import("../src/lib/history-types");
+    const main = emptyMeta();
+    main.lastRunDate = "2026-11-14";
+    main.cursors.bigquery = { daily_chain: "2026-11-13" };
+    main.cursors.intents = { ...main.cursors.intents, newestCreatedAt: "2026-11-14T03:20:00.000Z", oldestCreatedAt: "2025-12-21T01:30:48.000Z" };
+    const ours = emptyMeta();
+    ours.cursors.intents = { ...ours.cursors.intents, newestCreatedAt: "2026-11-13T16:24:13.000Z", oldestCreatedAt: "2025-11-20T08:00:00.000Z", backfillDone: false };
+    ours.perSource.intents = { ...ours.perSource.intents, calls: 400, rows: 400000 };
+    const out = mergeIntentsState(main, ours);
+    expect(out.lastRunDate).toBe("2026-11-14");
+    expect(out.cursors.bigquery).toEqual({ daily_chain: "2026-11-13" });
+    expect(out.cursors.intents.oldestCreatedAt).toBe("2025-11-20T08:00:00.000Z");
+    expect(out.cursors.intents.newestCreatedAt).toBe("2026-11-14T03:20:00.000Z");
+    expect(out.perSource.intents.calls).toBe(400);
+  });
+});

@@ -59,6 +59,37 @@ Correlations inside roughly ±0.20 are indistinguishable from noise at this samp
 - **Daily instead of weekly** (1 for Intents, 1 for price). Day-over-day log changes at lags of −8 to +8 days; noisier, but not dependent on the week boundary. Transactions: Intents 0.06 @7 vs price 0.04 @7; Active accounts: Intents 0.04 @1 vs price 0.04 @6; New accounts: Intents 0.05 @5 vs price 0.06 @4; Function calls: Intents 0.07 @7 vs price 0.16 @3; Contracts called: Intents 0.14 @3 vs price 0.11 @8.
 - **1Click Explorer volume instead of DefiLlama** (3 for Intents, 1 for price). The Explorer covers 1Click swaps only, from 2025-12-22; DefiLlama's adapter covers every channel. Transactions: Intents 0.52 @7 vs price 0.24 @2; Active accounts: Intents 0.30 @1 vs price 0.17 @7; New accounts: Intents 0.23 @7 vs price 0.10 @6; Function calls: Intents 0.64 @7 vs price 0.33 @2; Contracts called: Intents 0.25 @6 vs price 0.35 @1.
 
+### Explorer-only test
+
+The NEAR Intents Explorer API, the source the track names, covers 1Click swaps only. The committed backfill holds 325 complete days from 2025-12-22 to 2026-11-12 and had not reached the API's first day (late May 2025) when this file was built. Over the 325 days that both sources have, it reports $11,096,971,318 against DefiLlama's $29,294,842,559 for every channel, 38% of the total, with a median daily share of 40%.
+
+With Explorer 1Click volume as the predictor over 45 weekly changes (2025-12-22 to 2026-11-12), Intents volume is the stronger positive lead for 3 of 5 usage series (1 for price, 1 inconclusive) and wins 2 out-of-sample comparisons to price's 0, which reads as partly supported. DefiLlama volume over the same weeks gives 3 of 5 (1 for price, 1 inconclusive) and 2 to 0 out of sample, partly supported. The full-window result with DefiLlama volume is partly supported, so the conclusion holds with the Explorer as the Intents source over the weeks it covers.
+
+Lead-lag and out-of-sample results per predictor. "Same weeks" rows use only the weeks the Explorer covers; the last row of each series repeats the full-window result from the tables above.
+
+| Usage series | Predictor | Leads by | r | Same-week r | Weeks | Out-of-sample lag | Train / test weeks | Out-of-sample R² | Sign hit rate |
+|---|---|---|---|---|---|---|---|---|---|
+| Transactions | Explorer 1Click | 7 w | 0.52 | 0.20 | 45 | 7 w | 11 / 27 | -0.11 | 52% |
+| Transactions | DefiLlama, same weeks | 7 w | 0.49 | 0.23 | 45 | 7 w | 11 / 27 | -0.25 | 52% |
+| Transactions | NEAR price, same weeks | 2 w | 0.24 | 0.02 | 45 | 5 w | 13 / 27 | -2.27 | 52% |
+| Transactions | DefiLlama, full window | 7 w | 0.07 | 0.27 | 99 | 2 w | 70 / 27 | -0.04 | 52% |
+| Active accounts | Explorer 1Click | 1 w | 0.30 | -0.09 | 45 | 1 w | 17 / 27 | -0.16 | 67% |
+| Active accounts | DefiLlama, same weeks | 1 w | 0.31 | -0.10 | 45 | 1 w | 17 / 27 | -0.16 | 59% |
+| Active accounts | NEAR price, same weeks | 6 w | 0.18 | -0.18 | 45 | 4 w | 14 / 27 | -2.63 | 56% |
+| Active accounts | DefiLlama, full window | 1 w | 0.09 | -0.07 | 99 | 4 w | 68 / 27 | -0.01 | 82% |
+| New accounts | Explorer 1Click | 7 w | 0.23 | 0.03 | 45 | 7 w | 11 / 27 | -0.68 | 44% |
+| New accounts | DefiLlama, same weeks | 7 w | 0.24 | 0.03 | 45 | 7 w | 11 / 27 | -0.70 | 48% |
+| New accounts | NEAR price, same weeks | 6 w | 0.10 | -0.01 | 45 | 5 w | 13 / 27 | -2.20 | 56% |
+| New accounts | DefiLlama, full window | 3 w | 0.13 | 0.23 | 99 | 2 w | 70 / 27 | 0.02 | 56% |
+| Function calls | Explorer 1Click | 7 w | 0.64 | 0.23 | 45 | 7 w | 11 / 27 | 0.34 | 63% |
+| Function calls | DefiLlama, same weeks | 7 w | 0.50 | 0.31 | 45 | 7 w | 11 / 27 | 0.10 | 63% |
+| Function calls | NEAR price, same weeks | 2 w | 0.33 | 0.12 | 45 | 5 w | 13 / 27 | -0.58 | 56% |
+| Function calls | DefiLlama, full window | 7 w | 0.42 | 0.28 | 51 | 7 w | 17 / 27 | 0.15 | 59% |
+| Contracts called | Explorer 1Click | 6 w | 0.25 | 0.02 | 45 | 8 w | 10 / 27 | 0.06 | 41% |
+| Contracts called | DefiLlama, same weeks | 6 w | 0.24 | 0.02 | 45 | 8 w | 10 / 27 | 0.04 | 37% |
+| Contracts called | NEAR price, same weeks | 1 w | 0.35 | 0.32 | 45 | 3 w | 15 / 27 | 0.01 | 59% |
+| Contracts called | DefiLlama, full window | 2 w | 0.41 | -0.16 | 51 | 2 w | 22 / 27 | -0.45 | 56% |
+
 ### NearBlocks cross-check
 
 Transactions and active accounts are counted twice: from BigQuery (`queries/daily_chain.sql`, the rows used in every test above) and from NearBlocks daily charts, which stay as a check and do not enter the verdict.

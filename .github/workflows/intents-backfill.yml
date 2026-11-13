@@ -1,0 +1,117 @@
+name: Intents Explorer backfill
+
+# Continues the NEAR Intents Explorer backfill (1Click swaps) towards the API's first day, one chunk per run.
+# Manual start only (Actions, Intents Explorer backfill, Run workflow). A run reads at most `max_calls` pages of
+# 1,000 rows at 1 request per 5.2 s, stays under 45 minutes, commits the per-day aggregates on top of whatever
+# main holds by then, and starts the next run itself until the backfill is done or the stop time is near.
+# It only runs the Intents source: no BigQuery job is started and the daily as-of date does not move.
+on:
+  workflow_dispatch:
+    inputs:
+      max_calls:
+        description: "Pages to read in this run (1,000 rows each, 5.2 s apart)"
+        default: "380"
+      stop_after:
+        description: "UTC time after which the data is final; no run is started within 45 minutes of it"
+        default: "2026-11-14T18:00:00Z"
+      chain:
+        description: "Start the next run when this one finishes"
+        type: boolean
+        default: true
+      failures:
+        description: "Runs that failed in a row (set by the chain; leave at 0)"
+        default: "0"
+
+permissions:
+  contents: write
+  actions: write # lets the last job start the next run through workflow_dispatch
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # Shares the daily refresh's group, so the two never write data/history at the same time.
+    concurrency:
+      group: refresh-data
+      cancel-in-progress: false
+    outputs:
+      done: ${{ steps.state.outputs.done }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # 38 minutes at most, so the commit below always has time to run. A stopped run keeps what it flushed.
+      - name: Continue the backfill
+        env:
+          NEAR_INTENTS_JWT: ${{ secrets.NEAR_INTENTS_JWT }}
+          INTENTS_BACKFILL_DAYS: ${{ vars.INTENTS_BACKFILL_DAYS || '560' }}
+          INTENTS_SKIP_RECENT: "1"
+          MAX_CALLS: ${{ inputs.max_calls }}
+        run: |
+          code=0
+          timeout --signal=TERM 38m ./node_modules/.bin/tsx scripts/refresh.ts --only intents --backfill --max-calls "$MAX_CALLS" || code=$?
+          if [ "$code" -eq 124 ] || [ "$code" -eq 143 ]; then echo "Time budget reached, keeping what was flushed."; exit 0; fi
+          exit "$code"
+
+      # The day files and the Intents cursor of this run are laid over main as it is now, the generated files are
+      # rebuilt from that, and the push is retried if main moved again. Nothing else on main is touched.
+      - name: Commit on top of main
+        if: ${{ !cancelled() }}
+        run: |
+          git config user.name "Wazarat Hussain"
+          git config user.email "wazarat100@gmail.com"
+          KEEP="$RUNNER_TEMP/intents-backfill"
+          ./node_modules/.bin/tsx scripts/ci/keep-intents-backfill.ts save "$KEEP"
+          for attempt in 1 2 3 4; do
+            git fetch --quiet origin main
+            git reset --quiet --hard origin/main
+            npm ci --silent --no-audit --no-fund
+            ./node_modules/.bin/tsx scripts/ci/keep-intents-backfill.ts restore "$KEEP"
+            npm run rebuild
+            npm run check:data
+            npm test
+            git add data/raw/intents/daily data/history/_meta.json THESIS.md README.md
+            if git diff --cached --quiet; then
+              echo "No new days."
+              exit 0
+            fi
+            OLDEST="$(node -p "(require('./data/history/_meta.json').cursors.intents.oldestCreatedAt || '').slice(0, 10)")"
+            git commit --quiet -m "data: NEAR Intents backfill to $OLDEST"
+            if git push origin HEAD:main; then exit 0; fi
+            echo "main moved during the push, attempt $attempt"
+            sleep 5
+          done
+          echo "could not push after four attempts"
+          exit 1
+
+      - name: Backfill state
+        id: state
+        if: ${{ !cancelled() }}
+        run: echo "done=$(node -p "require('./data/history/_meta.json').cursors.intents.backfillDone === true")" >> "$GITHUB_OUTPUT"
+
+  next:
+    needs: backfill
+    if: ${{ !cancelled() && inputs.chain }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Start the next run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DONE: ${{ needs.backfill.outputs.done }}
+          RESULT: ${{ needs.backfill.result }}
+          STOP_AFTER: ${{ inputs.stop_after }}
+          MAX_CALLS: ${{ inputs.max_calls }}
+          FAILURES: ${{ inputs.failures }}
+        run: |
+          if [ "$DONE" = "true" ]; then echo "Backfill complete."; exit 0; fi
+          if [ "$(( $(date -u +%s) + 2700 ))" -ge "$(date -u -d "$STOP_AFTER" +%s)" ]; then echo "Within 45 minutes of $STOP_AFTER, the data is final."; exit 0; fi
+          if [ "$RESULT" = "success" ]; then FAILURES=0; else FAILURES=$(( FAILURES + 1 )); fi
+          if [ "$FAILURES" -ge 3 ]; then echo "Three runs failed in a row, stopping the chain."; exit 1; fi
+          gh workflow run intents-backfill.yml --repo "$GITHUB_REPOSITORY" --ref main -f max_calls="$MAX_CALLS" -f stop_after="$STOP_AFTER" -f chain=true -f failures="$FAILURES"

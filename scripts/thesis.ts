@@ -10,7 +10,7 @@ import { addDays, type DateStr } from "../src/lib/dates";
 import { emptyOverview, type ChainHistory, type HistoryMeta, type Series, type SeriesMap } from "../src/lib/history-types";
 import { windowEnd } from "../src/lib/live";
 import { indexTo100, leadLag, logChanges, outOfSample, subtractSeries, toWeekly, trimTop, dropTop, type LeadLagSummary, type OosResult } from "../src/lib/stats";
-import type { Confounder, CrossCheck, RobustnessVariant, ThesisJson, UsageKey, UsageMeta, UsageWindow } from "../src/lib/thesis-types";
+import type { Confounder, CrossCheck, ExplorerTest, ExplorerTestCell, RobustnessVariant, ThesisJson, UsageKey, UsageMeta, UsageWindow } from "../src/lib/thesis-types";
 import type { EcosystemEvent } from "../src/lib/types";
 import { BQ_BACKFILL_MAX_DEFAULT } from "./fetch/bigquery";
 import { readDaily as readIntentsDaily } from "./fetch/intents";
@@ -227,9 +227,13 @@ function main() {
 
   // Coverage of the Explorer vs DefiLlama.
   const llamaMap = new Map(intentsLlama);
-  const ratios = explorerDays.map((d) => (llamaMap.get(d.date) ? d.volumeUsd / (llamaMap.get(d.date) as number) : null)).filter((v): v is number => v !== null && Number.isFinite(v));
+  const both = explorerDays.filter((d) => (llamaMap.get(d.date) ?? 0) > 0);
+  const ratios = both.map((d) => d.volumeUsd / (llamaMap.get(d.date) as number)).filter((v) => Number.isFinite(v));
   const sortedRatios = [...ratios].sort((a, b) => a - b);
   const ratioMedian = sortedRatios.length ? sortedRatios[Math.floor(sortedRatios.length / 2)] : null;
+  const explorerSum = both.reduce((a, d) => a + d.volumeUsd, 0);
+  const llamaSum = both.reduce((a, d) => a + (llamaMap.get(d.date) as number), 0);
+  const ratioSum = llamaSum > 0 ? explorerSum / llamaSum : null;
 
   // Confounders from the events file (matched by title keywords; nothing invented).
   const pickEvent = (re: RegExp, why: string): Confounder | null => {
@@ -306,7 +310,58 @@ function main() {
   const riw = robustness.slice(1).reduce((a, v) => a + v.intentsWins, 0);
   const rpw = robustness.slice(1).reduce((a, v) => a + v.priceWins, 0);
   const total = iw + pw + ties;
-  const supported: ThesisJson["verdict"]["supported"] = iw >= 3 && pw === 0 && oiw >= opw ? "yes" : iw > pw && oiw >= opw ? "partly" : "no";
+  /** The verdict rule, shared by the headline and the Explorer-only test. */
+  const verdictOf = (lead: number, priceLead: number, oosWins: number, priceOosWins: number): ThesisJson["verdict"]["supported"] => (lead >= 3 && priceLead === 0 && oosWins >= priceOosWins ? "yes" : lead > priceLead && oosWins >= priceOosWins ? "partly" : "no");
+  const verdictWord = (v: ThesisJson["verdict"]["supported"]) => (v === "yes" ? "supported" : v === "partly" ? "partly supported" : "not supported");
+  const supported = verdictOf(iw, pw, oiw, opw);
+
+  // Explorer-only test: both tests again with the track's named source, 1Click Explorer volume, as the predictor over
+  // the weeks it covers, next to DefiLlama volume and price over those same weeks.
+  const explorerClipped = clip(explorerDaily, start, end);
+  const xExplorer = logChanges(toWeekly(explorerClipped, "flow", end));
+  const explorerTest: ExplorerTest = (() => {
+    const tally = () => ({ leadWins: 0, priceLeadWins: 0, ties: 0, oosWins: 0, priceOosWins: 0 });
+    const te = tally();
+    const tl = tally();
+    const span = { start: explorerClipped[0]?.[0] ?? null, end: explorerClipped.at(-1)?.[0] ?? null, weeks: xExplorer.length };
+    const none = { ...tally(), supported: "no" as const };
+    if (xExplorer.length < 12) {
+      return { available: false, ...span, results: {}, explorer: none, llama: none, holds: null, conclusion: `The Explorer backfill gives ${xExplorer.length} weekly changes, fewer than the 12 the tests need, so no Explorer-only result is reported.` };
+    }
+    const from = xExplorer[0][0];
+    const to = xExplorer[xExplorer.length - 1][0];
+    const sameWeeks = (s: Series) => s.filter(([d]) => d >= from && d <= to);
+    const xl = sameWeeks(xIntents);
+    const xp = sameWeeks(xPrice);
+    const results: ExplorerTest["results"] = {};
+    for (const u of USAGE) {
+      const y = sameWeeks(baseUsage[u.key]);
+      if (y.length < 12) continue;
+      const cell = (x: Series): ExplorerTestCell => ({ leadLag: roundLL(leadLag(x, y, MAX_LAG)), oos: roundOos(outOfSample(x, y, cutoff, MAX_LAG)) });
+      const r = { explorer: cell(xExplorer), llama: cell(xl), price: cell(xp) };
+      results[u.key] = r;
+      for (const [t, c] of [[te, r.explorer], [tl, r.llama]] as const) {
+        const w = score(c.leadLag, r.price.leadLag);
+        if (w === "intents") t.leadWins += 1;
+        else if (w === "price") t.priceLeadWins += 1;
+        else t.ties += 1;
+        const a = c.oos.r2Oos;
+        const b = r.price.oos.r2Oos;
+        if (a === null || b === null) continue;
+        if (a > 0 && a > b + 0.01) t.oosWins += 1;
+        else if (b > 0 && b > a + 0.01) t.priceOosWins += 1;
+      }
+    }
+    const n = Object.keys(results).length;
+    const e = { ...te, supported: verdictOf(te.leadWins, te.priceLeadWins, te.oosWins, te.priceOosWins) };
+    const l = { ...tl, supported: verdictOf(tl.leadWins, tl.priceLeadWins, tl.oosWins, tl.priceOosWins) };
+    const holds = e.supported === supported;
+    const conclusion =
+      `With Explorer 1Click volume as the predictor over ${span.weeks} weekly changes (${span.start} to ${span.end}), Intents volume is the stronger positive lead for ${e.leadWins} of ${n} usage series (${e.priceLeadWins} for price, ${e.ties} inconclusive) and wins ${e.oosWins} out-of-sample comparisons to price's ${e.priceOosWins}, which reads as ${verdictWord(e.supported)}. ` +
+      `DefiLlama volume over the same weeks gives ${l.leadWins} of ${n} (${l.priceLeadWins} for price, ${l.ties} inconclusive) and ${l.oosWins} to ${l.priceOosWins} out of sample, ${verdictWord(l.supported)}. ` +
+      `The full-window result with DefiLlama volume is ${verdictWord(supported)}, so the conclusion ${holds ? "holds" : "does not hold"} with the Explorer as the Intents source over the weeks it covers.`;
+    return { available: true, ...span, results, explorer: e, llama: l, holds, conclusion };
+  })();
   const tested = USAGE.filter((u) => leadLagOut[u.key]);
   const levelLine = (level: UsageMeta["level"], name: string) => {
     const of = tested.filter((u) => u.level === level);
@@ -369,7 +424,19 @@ function main() {
     leadLag: leadLagOut,
     oos: oosOut,
     robustness,
-    coverage: { explorerDays: explorerDays.length, explorerFirstDay: explorerDays[0]?.date ?? null, ratioMedian: r3(ratioMedian), ratioLatest: r3(ratios.at(-1) ?? null), explorerBackfillDone: meta.cursors.intents.backfillDone },
+    coverage: {
+      explorerDays: explorerDays.length,
+      explorerFirstDay: explorerDays[0]?.date ?? null,
+      explorerLastDay: explorerDays.at(-1)?.date ?? null,
+      ratioMedian: r3(ratioMedian),
+      ratioLatest: r3(ratios.at(-1) ?? null),
+      ratioSum: r3(ratioSum),
+      explorerVolumeUsd: Math.round(explorerSum),
+      llamaVolumeUsd: Math.round(llamaSum),
+      ratioDays: both.length,
+      explorerBackfillDone: meta.cursors.intents.backfillDone,
+    },
+    explorerTest,
     confounders,
     verdict: { baseIntentsWins: iw, basePriceWins: pw, baseTies: ties, oosIntentsWins: oiw, oosPriceWins: opw, robustnessIntentsWins: riw, robustnessPriceWins: rpw, supported, headline, evidenceFor: forLines, evidenceAgainst: againstLines, changeMyMind, gaps },
     queries: QUERIES,
@@ -417,6 +484,18 @@ function main() {
       return [row(`${u.source} (used)`, leadLagOut[u.key]!, oosOut[u.key]!), row("NearBlocks (check)", c.leadLag, c.oos)];
     })
     .join("\n");
+  const usd0 = (v: number) => `$${Math.round(v).toLocaleString("en-US")}`;
+  const explorerStatement = explorerDays.length
+    ? `The NEAR Intents Explorer API, the source the track names, covers 1Click swaps only. The committed backfill holds ${explorerDays.length} complete days from ${explorerDays[0].date} to ${explorerDays[explorerDays.length - 1].date}${meta.cursors.intents.backfillDone ? " and has reached the API's first day" : " and had not reached the API's first day (late May 2025) when this file was built"}. Over the ${both.length} days that both sources have, it reports ${usd0(explorerSum)} against DefiLlama's ${usd0(llamaSum)} for every channel, ${pct(ratioSum)} of the total, with a median daily share of ${pct(ratioMedian)}.`
+    : "The NEAR Intents Explorer API, the source the track names, covers 1Click swaps only. No complete day has been fetched yet.";
+  const explorerRows = USAGE.filter((u) => explorerTest.results[u.key])
+    .flatMap((u) => {
+      const r = explorerTest.results[u.key]!;
+      const row = (name: string, ll: LeadLagSummary, o: OosResult) => `| ${u.label} | ${name} | ${ll.bestPositiveLead ? `${ll.bestPositiveLead.lag} w | ${fmtR(ll.bestPositiveLead.r)}` : "none | n/a"} | ${fmtR(ll.r0)} | ${ll.n} | ${o.lag} w | ${o.train?.n ?? 0} / ${o.testN} | ${fmtR(o.r2Oos)} | ${pct(o.hitRate)} |`;
+      const full = leadLagOut[u.key] && oosOut[u.key] ? [row("DefiLlama, full window", leadLagOut[u.key]!.intents, oosOut[u.key]!.intents)] : [];
+      return [row("Explorer 1Click", r.explorer.leadLag, r.explorer.oos), row("DefiLlama, same weeks", r.llama.leadLag, r.llama.oos), row("NEAR price, same weeks", r.price.leadLag, r.price.oos), ...full];
+    })
+    .join("\n");
   const confRows = confounders.map((c) => `- ${c.date}${c.monthOnly ? " (month only)" : ""}, ${c.kind}: ${c.title}. ${c.why}${c.sourceUrl ? ` [source](${c.sourceUrl})` : ""}`).join("\n") || "- No matching events in the events file.";
   const fill: Record<string, string> = {
     asOf: end,
@@ -436,6 +515,9 @@ function main() {
     oosTable: oosRows,
     robustnessTable: robRows,
     sourceTable: sourceRows,
+    explorerStatement,
+    explorerConclusion: explorerTest.conclusion,
+    explorerTable: explorerRows || "| n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a |",
     crossCheckLines: crossLines || "- No NearBlocks series to compare with.",
     crossCheckTable: crossRows,
     confounders: confRows,

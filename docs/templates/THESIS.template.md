@@ -37,6 +37,18 @@ Correlations inside roughly ±{{noiseBand}} are indistinguishable from noise at 
 
 {{robustnessTable}}
 
+### Explorer-only test
+
+{{explorerStatement}}
+
+{{explorerConclusion}}
+
+Lead-lag and out-of-sample results per predictor. "Same weeks" rows use only the weeks the Explorer covers; the last row of each series repeats the full-window result from the tables above.
+
+| Usage series | Predictor | Leads by | r | Same-week r | Weeks | Out-of-sample lag | Train / test weeks | Out-of-sample R² | Sign hit rate |
+|---|---|---|---|---|---|---|---|---|---|
+{{explorerTable}}
+
 ### NearBlocks cross-check
 
 Transactions and active accounts are counted twice: from BigQuery (`queries/daily_chain.sql`, the rows used in every test above) and from NearBlocks daily charts, which stay as a check and do not enter the verdict.

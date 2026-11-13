@@ -138,7 +138,9 @@ async function main() {
     for (const n of st.notes) if (!n.startsWith("skipped:")) log(`${"".padEnd(15)}· ${n}`);
     save();
   }
-  if (!args.dryRun) {
+  // Only a run of every source moves the as-of date: a run limited with --only (a backfill of one source, say)
+  // must not tell the rebuild that the whole store is a day newer than it is.
+  if (!args.dryRun && args.only.size === 0) {
     meta.lastRun = isoNow();
     meta.lastRunDate = ctx.today;
     meta.mode = ctx.mode;

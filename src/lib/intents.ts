@@ -44,7 +44,8 @@ export interface IntentsSummary {
   referrals: Bucket[];
   appFeeRecipients: Bucket[];
   /** Explorer volume / DefiLlama volume on days where both exist. */
-  ratioStats: { days: number; median: number | null; mean: number | null; latest: number | null };
+  /** `sum` is Explorer volume over DefiLlama volume, both summed over the complete days that have both. */
+  ratioStats: { days: number; median: number | null; mean: number | null; latest: number | null; sum: number | null; explorerUsd: number; llamaUsd: number; from: DateStr | null; to: DateStr | null };
   /** Complete days whose refund share is at least five times the median refund share and above 10%. */
   anomalies: Array<{ date: DateStr; rows: number; refundRate: number; medianUsd: number | null }>;
 }
@@ -127,6 +128,9 @@ export function summarizeIntents(daysIn: IntentsDay[], llama: Series, backfillDo
     weeks.set(w, b);
   }
   const ratios = rows.map((r) => r.ratio).filter((v): v is number => v !== null);
+  const bothRows = rows.filter((r) => r.ratio !== null);
+  const bothExplorer = sum(bothRows.map((r) => r.volumeUsd));
+  const bothLlama = sum(bothRows.map((r) => r.llamaVolume ?? 0));
   const refundRates = rows.filter((r) => !r.partial && r.refundRate !== null).map((r) => r.refundRate as number);
   const medianRefund = median(refundRates) ?? 0;
   const anomalies = rows
@@ -160,7 +164,17 @@ export function summarizeIntents(daysIn: IntentsDay[], llama: Series, backfillDo
     destinationAssets: topBuckets(last30Days, "destinationAssets", 12),
     referrals: topBuckets(last30Days, "referrals", 12),
     appFeeRecipients: topBuckets(last30Days, "appFeeRecipients", 12),
-    ratioStats: { days: ratios.length, median: median(ratios), mean: ratios.length ? sum(ratios) / ratios.length : null, latest: ratios.at(-1) ?? null },
+    ratioStats: {
+      days: ratios.length,
+      median: median(ratios),
+      mean: ratios.length ? sum(ratios) / ratios.length : null,
+      latest: ratios.at(-1) ?? null,
+      sum: bothLlama > 0 ? bothExplorer / bothLlama : null,
+      explorerUsd: Math.round(bothExplorer),
+      llamaUsd: Math.round(bothLlama),
+      from: bothRows[0]?.date ?? null,
+      to: bothRows.at(-1)?.date ?? null,
+    },
     anomalies,
   };
 }
@@ -178,7 +192,7 @@ export const EMPTY_INTENTS: IntentsSummary = {
   destinationAssets: [],
   referrals: [],
   appFeeRecipients: [],
-  ratioStats: { days: 0, median: null, mean: null, latest: null },
+  ratioStats: { days: 0, median: null, mean: null, latest: null, sum: null, explorerUsd: 0, llamaUsd: 0, from: null, to: null },
   anomalies: [],
 };
 

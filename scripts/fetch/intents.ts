@@ -259,6 +259,21 @@ export function readDaily(): IntentsDay[] {
     .filter(Boolean);
 }
 
+/**
+ * Where a backfill run picks up, and the newest second it may keep rows from.
+ *
+ * With the cursor day's rows on disk (a machine that ran the earlier pages) it continues at the cursor. On a fresh
+ * checkout the trimmed rows are not there (they are gitignored), so continuing inside a day would rebuild that day's
+ * aggregate from part of its rows. It then restarts at the start of the oldest complete committed day: every older
+ * day is read whole, and rows from that day onward are dropped (`ceiling`) so finished aggregates are never rewritten.
+ */
+export function backfillResume(cursorUnix: number | null, days: Array<Pick<IntentsDay, "date" | "partial">>, hasRows: (d: DateStr) => boolean, fallbackUnix: number): { before: number; ceiling: number | null } {
+  if (cursorUnix !== null && hasRows(dateOfUnix(cursorUnix))) return { before: cursorUnix, ceiling: null };
+  const oldestComplete = days.filter((d) => !d.partial).map((d) => d.date).sort()[0];
+  if (oldestComplete) return { before: toUnixDay(oldestComplete), ceiling: toUnixDay(oldestComplete) };
+  return { before: cursorUnix ?? fallbackUnix, ceiling: null };
+}
+
 interface Page {
   rows: ApiRow[];
   cursor: { lastDepositAddress: string; lastDepositMemo: string | null } | null;
@@ -311,9 +326,10 @@ export async function run(ctx: Ctx): Promise<RunResult> {
     aggregate(days);
     saveProgress?.();
   };
-  const absorb = (page: ApiRow[]) => {
+  const absorb = (page: ApiRow[], ceiling: number | null = null) => {
     for (const r of page) {
       const t = trimRow(r);
+      if (ceiling !== null && t[0] >= ceiling) continue;
       const d = dateOfUnix(t[0]);
       (buffer.get(d) ?? buffer.set(d, []).get(d)!).push(t);
     }
@@ -326,9 +342,11 @@ export async function run(ctx: Ctx): Promise<RunResult> {
   // rows trimmed before they were kept); rows merge by deposit address, so a re-read never double counts.
   const refetchDays = Math.max(1, Number(ctx.env.INTENTS_REFETCH_DAYS ?? 1) || 1);
   const recentStart = toUnixDay(addDays(ctx.today, -refetchDays));
+  // INTENTS_SKIP_RECENT=1 leaves this phase out, for backfill runs that only continue the cursor.
+  const skipRecent = ctx.env.INTENTS_SKIP_RECENT === "1";
   let pageCursor: Page["cursor"] = null;
   let newest: number | null = null;
-  while (calls < ctx.maxCalls) {
+  while (!skipRecent && calls < ctx.maxCalls) {
     const page = await fetchPage(client, jwt, { direction: "next", startTimestampUnix: recentStart - 1, lastDepositAddress: pageCursor?.lastDepositAddress, lastDepositMemo: pageCursor?.lastDepositMemo });
     calls += 1;
     if (!page.rows.length) break;
@@ -340,14 +358,15 @@ export async function run(ctx: Ctx): Promise<RunResult> {
   }
   flush();
   if (newest) cursor.newestCreatedAt = new Date(newest * 1000).toISOString();
-  notes.push(`recent window: ${rows} rows in ${calls} calls`);
+  notes.push(skipRecent ? "recent window skipped (INTENTS_SKIP_RECENT)" : `recent window: ${rows} rows in ${calls} calls`);
 
   // Phase B (remaining budget): walk older from the backfill cursor until the target date.
   // Daily runs only continue an unfinished backfill when asked (INTENTS_CONTINUE_BACKFILL=1), so a
   // scheduled run never races a long local backfill for the same cursor.
   const continueBackfill = ctx.mode === "backfill" || ctx.env.INTENTS_CONTINUE_BACKFILL === "1";
   if (!cursor.backfillDone && continueBackfill) {
-    const before = cursor.oldestCreatedAt ? Math.floor(Date.parse(cursor.oldestCreatedAt) / 1000) : recentStart;
+    const { before, ceiling } = backfillResume(cursor.oldestCreatedAt ? Math.floor(Date.parse(cursor.oldestCreatedAt) / 1000) : null, readDaily(), (d) => fs.existsSync(dayFile(d)), recentStart);
+    if (ceiling !== null) notes.push(`backfill resumed at ${dateOfUnix(ceiling)} 00:00 UTC (no row files on disk, so the day before it is read whole)`);
     let older: Page["cursor"] = null;
     let oldest = before;
     let bRows = 0;
@@ -359,7 +378,7 @@ export async function run(ctx: Ctx): Promise<RunResult> {
         cursor.backfillDone = true;
         break;
       }
-      absorb(page.rows);
+      absorb(page.rows, ceiling);
       bRows += page.rows.length;
       older = page.cursor;
       oldest = trimRow(page.rows.at(-1)!)[0];

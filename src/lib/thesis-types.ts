@@ -64,6 +64,29 @@ export interface Confounder {
   why: string;
 }
 
+/** One predictor against one usage series in the Explorer-only test. */
+export interface ExplorerTestCell {
+  leadLag: LeadLagSummary;
+  oos: OosResult;
+}
+
+/** The lead-lag and out-of-sample tests over the weeks the 1Click Explorer covers, per predictor. */
+export interface ExplorerTest {
+  available: boolean;
+  /** First and last complete Explorer day used, and the weekly changes they give. */
+  start: DateStr | null;
+  end: DateStr | null;
+  weeks: number;
+  /** Per usage series: Explorer 1Click volume, DefiLlama volume over the same weeks, and price over the same weeks. */
+  results: Partial<Record<UsageKey, { explorer: ExplorerTestCell; llama: ExplorerTestCell; price: ExplorerTestCell }>>;
+  /** Wins by the same rules as the headline test, with each Intents measure against price. */
+  explorer: { leadWins: number; priceLeadWins: number; ties: number; oosWins: number; priceOosWins: number; supported: "yes" | "partly" | "no" };
+  llama: { leadWins: number; priceLeadWins: number; ties: number; oosWins: number; priceOosWins: number; supported: "yes" | "partly" | "no" };
+  /** True when the Explorer verdict over its weeks equals the headline verdict of the full window. */
+  holds: boolean | null;
+  conclusion: string;
+}
+
 export interface ThesisJson {
   available: boolean;
   asOf: DateStr;
@@ -87,7 +110,20 @@ export interface ThesisJson {
   leadLag: Partial<Record<UsageKey, PredictorPair<LeadLagSummary>>>;
   oos: Partial<Record<UsageKey, PredictorPair<OosResult>>>;
   robustness: RobustnessVariant[];
-  coverage: { explorerDays: number; explorerFirstDay: DateStr | null; ratioMedian: number | null; ratioLatest: number | null; explorerBackfillDone: boolean };
+  coverage: {
+    explorerDays: number;
+    explorerFirstDay: DateStr | null;
+    explorerLastDay: DateStr | null;
+    ratioMedian: number | null;
+    ratioLatest: number | null;
+    /** Explorer volume over DefiLlama volume, both summed over the complete days that have both. */
+    ratioSum: number | null;
+    explorerVolumeUsd: number;
+    llamaVolumeUsd: number;
+    ratioDays: number;
+    explorerBackfillDone: boolean;
+  };
+  explorerTest: ExplorerTest;
   confounders: Confounder[];
   verdict: {
     baseIntentsWins: number;

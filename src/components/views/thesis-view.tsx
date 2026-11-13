@@ -7,6 +7,7 @@ import { ClaimCard } from "@/components/thesis/claim-card";
 import { Confounders } from "@/components/thesis/confounders";
 import { CoverageStrip } from "@/components/thesis/coverage-strip";
 import { CrossCheckTable } from "@/components/thesis/cross-check-table";
+import { ExplorerTest } from "@/components/thesis/explorer-test";
 import { LeadLagChart } from "@/components/thesis/lead-lag-chart";
 import { LevelsChart } from "@/components/thesis/levels-chart";
 import { OosChart } from "@/components/thesis/oos-chart";
@@ -62,6 +63,10 @@ export function ThesisView() {
 
       <Section id="robustness" title="Does the result survive the obvious objections?" lede="Spikes, settlement counting itself as usage, and the week boundary.">
         <RobustnessTable data={data} />
+      </Section>
+
+      <Section id="explorer-test" title="Does it hold with the Explorer as the source?" lede="The track names the NEAR Intents Explorer API. It covers 1Click swaps only and a shorter window, so the same two tests are run on it alone.">
+        <ExplorerTest data={data} />
       </Section>
 
       <Section id="cross-check" title="Do two sources agree on chain usage?" lede="Transactions and active accounts are counted from BigQuery and again from NearBlocks. Only the BigQuery rows enter the verdict.">
