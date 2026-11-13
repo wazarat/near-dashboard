@@ -1,13 +1,11 @@
 import { CircleCheck, OctagonAlert, TriangleAlert, type LucideIcon } from "lucide-react";
-import type { ThesisJson } from "@/lib/thesis-types";
 import { cn } from "@/lib/utils";
-
-type Supported = ThesisJson["verdict"]["supported"];
+import { VERDICT_LABEL, type Supported } from "@/lib/verdict";
 
 const META: Record<Supported, { label: string; className: string; Icon: LucideIcon }> = {
-  yes: { label: "Supported", className: "text-signal-400", Icon: CircleCheck },
-  partly: { label: "Partly supported", className: "text-ink-50", Icon: TriangleAlert },
-  no: { label: "Not supported", className: "text-rose-400", Icon: OctagonAlert },
+  yes: { label: VERDICT_LABEL.yes, className: "text-signal-400", Icon: CircleCheck },
+  partly: { label: VERDICT_LABEL.partly, className: "text-ink-50", Icon: TriangleAlert },
+  no: { label: VERDICT_LABEL.no, className: "text-rose-400", Icon: OctagonAlert },
 };
 
 /** The verdict as plain text with an outline icon. Colour sits on the word only when the claim is met or fails. */

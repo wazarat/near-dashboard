@@ -13,7 +13,18 @@ Repository settings the workflow needs (GitHub UI):
    - `GCP_WORKLOAD_IDENTITY_PROVIDER` (full provider resource name, printed by the setup below)
    - `GCP_SERVICE_ACCOUNT` = `near-dashboard-bq@canhav-eth-493705.iam.gserviceaccount.com`
    - optional `COINGECKO_DEMO_KEY`
-3. Optional repository variable `INTENTS_BACKFILL_DAYS` (default 90).
+   - `NEAR_ANCHOR_ACCOUNT_ID` = `canhav.near` and `NEAR_ANCHOR_PRIVATE_KEY` (the function-call key that can only call `set` on `social.near`; never a full access key) for the onchain anchor
+3. Optional repository variables `INTENTS_BACKFILL_DAYS` (default 90) and `NEAR_RPC_URL` (default `https://rpc.mainnet.near.org`).
+
+## Onchain anchor
+
+The last step of the refresh writes the day's evidence fingerprints to SocialDB (`npm run anchor:write -- --soft`), then commits `data/anchors/<date>.manifest.txt`, `data/anchors/index.json` and the `anchor` status in `data/history/_meta.json` as `data: anchor <date>`. It never fails the job. Costs about 0.003 NEAR of prepaid SocialDB storage and at most 0.003 NEAR of gas (30 Tgas) per day. A warning appears in the log and in `_meta.json` when either the SocialDB storage or the key's allowance drops under 0.05 NEAR. To top up, run in your own terminal with the full access key:
+
+```bash
+near contract call-function as-transaction social.near storage_deposit json-args '{}' prepaid-gas '30 Tgas' attached-deposit '0.5 NEAR' sign-as canhav.near network-config mainnet sign-with-keychain send
+```
+
+A spent allowance needs a new function-call key (`near account add-key canhav.near grant-function-call-access ...`) and an updated `NEAR_ANCHOR_PRIVATE_KEY` secret; delete the old key afterwards.
 
 A missing secret skips that source and records the reason in `data/history/_meta.json`; the job never fails for it.
 

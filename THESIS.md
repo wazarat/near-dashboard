@@ -238,3 +238,15 @@ npm run build        # static site in out/ (the /thesis page shows the same numb
 ```
 
 To refresh the raw data instead: `npm run refresh` (DefiLlama, NearBlocks and NEAR Catalog need no keys; BigQuery needs `GCP_PROJECT_ID` with Application Default Credentials; the Intents Explorer needs `NEAR_INTENTS_JWT`). Sources: `queries/daily_chain.sql`, `queries/daily_receipts.sql`, `https://api.llama.fi/overview/dexs/near`, `https://api.nearblocks.io/v1/charts`, `https://explorer.near-intents.org/api/v0/transactions`.
+
+### Verify the evidence
+
+Each daily refresh writes two SHA-256 fingerprints to NEAR mainnet through SocialDB (`canhav.near/canhav-atlas/anchors/<date>`): one over every committed raw file the rebuild reads, one over what `npm run rebuild` writes. The transaction for each date is listed in `data/anchors/index.json` and the per-file hashes in `data/anchors/<date>.manifest.txt`.
+
+```bash
+git clone https://github.com/wazarat/near-dashboard.git && cd near-dashboard && git checkout <commit>
+npm ci
+npm run verify:anchor -- <date> --rebuild
+```
+
+A match on both fingerprints proves the evidence existed on that date and that the published numbers are rebuilt from it unchanged.

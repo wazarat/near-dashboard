@@ -64,6 +64,34 @@ export interface HistoryMeta {
   newlyDetected: NewlyDetected[];
   unmatchedCsv: string[];
   unmatchedMap: string[];
+  /** Outcome of the last onchain anchor write (scripts/anchor/write.ts). Never blocks the refresh. */
+  anchor?: AnchorStatus;
+}
+
+export interface AnchorStatus {
+  date: DateStr;
+  status: "written" | "exists" | "skipped" | "failed";
+  /** Why it was skipped or failed. */
+  reason: string | null;
+  txHash: string | null;
+  /** SocialDB storage left for the signer, in NEAR. */
+  storageNear: string | null;
+  /** What is left of the function-call key's gas allowance, in NEAR. */
+  allowanceNear: string | null;
+  /** Set when storage or allowance is under 0.05 NEAR. */
+  warning: string | null;
+}
+
+/** One line of data/anchors/index.json. */
+export interface AnchorIndexEntry {
+  commit: string;
+  inputs: string;
+  outputs: string;
+  verdict: string;
+  account: string;
+  txHash: string;
+  /** Block height SocialDB reports for the record; a later rewrite would change it. */
+  blockHeight: number;
 }
 
 export const LLAMA_CHAINS = ["near", "aurora"] as const;

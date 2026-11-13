@@ -834,3 +834,21 @@ test("card summaries show as points in the expanded view, and stay on the card f
   await page.goto("/intents/");
   await expect(page.locator('[data-chart-card]').first().locator("p").first()).not.toBeEmpty();
 });
+
+test("the Verified on NEAR card renders and links a NearBlocks transaction", async ({ page }) => {
+  const index = path.join(__dirname, "..", "data", "anchors", "index.json");
+  const anchored = fs.existsSync(index) && Object.keys(JSON.parse(fs.readFileSync(index, "utf8"))).length > 0;
+  await page.goto("/thesis/");
+  const card = page.getByTestId("anchor-card");
+  await expect(card).toBeVisible({ timeout: 15_000 });
+  await expect(card.getByRole("heading", { name: "Verified on NEAR" })).toBeVisible();
+  if (!anchored) {
+    await expect(card.getByText("The first anchor has not been written yet")).toBeVisible();
+    return;
+  }
+  const href = await card.getByTestId("anchor-tx-link").getAttribute("href");
+  expect(href).toMatch(/^https:\/\/nearblocks\.io\/txns\/[1-9A-HJ-NP-Za-km-z]{43,44}$/);
+  await expect(card.getByRole("button", { name: "Copy inputs fingerprint" })).toBeVisible();
+  await expect(card.getByRole("button", { name: "Copy outputs fingerprint" })).toBeVisible();
+  await expect(card.locator("pre")).toHaveCount(3);
+});

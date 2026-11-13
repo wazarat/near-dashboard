@@ -3,6 +3,7 @@
 import { CircleCheck, CircleX, HelpCircle, Lightbulb } from "lucide-react";
 import type { ReactNode } from "react";
 import { EmptyState } from "@/components/atlas/chart-card";
+import { AnchorCard } from "@/components/thesis/anchor-card";
 import { ClaimCard } from "@/components/thesis/claim-card";
 import { Confounders } from "@/components/thesis/confounders";
 import { CoverageStrip } from "@/components/thesis/coverage-strip";
@@ -14,7 +15,7 @@ import { OosChart } from "@/components/thesis/oos-chart";
 import { ReproduceCard } from "@/components/thesis/reproduce-card";
 import { RobustnessTable } from "@/components/thesis/robustness-table";
 import { TextListCard } from "@/components/thesis/text-list-card";
-import { thesisData } from "@/lib/data";
+import { anchorData, thesisData } from "@/lib/data";
 import { useFilters } from "@/lib/filters";
 import type { ThesisJson } from "@/lib/thesis-types";
 
@@ -95,7 +96,10 @@ export function ThesisView() {
         </div>
       </Section>
 
-      <ReproduceCard />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <AnchorCard data={anchorData} />
+        <ReproduceCard />
+      </div>
     </div>
   );
 }

@@ -100,6 +100,13 @@ export default function Page() {
             . The coverage terms and tier rules are in the Methodology section at the foot of every page.
           </p>
           <p>
+            Every daily refresh also anchors the evidence on NEAR mainnet. It hashes each committed raw file and each file the rebuild writes with SHA-256, folds them into two fingerprints, and writes those with the date, the commit and the verdict to NEAR SocialDB under canhav.near. The write is signed by a key that can only call set on social.near, with a 0.25 NEAR gas allowance, so it cannot move funds. Each record costs about 0.003 NEAR of storage and at most 0.003 NEAR of gas. The full access key never leaves the author&apos;s machine. The card at the foot of the{" "}
+            <Link className={LINK} href="/thesis/" prefetch={false}>
+              Thesis
+            </Link>{" "}
+            page links the latest transaction and the three commands to check it.
+          </p>
+          <p>
             Source code and data are public on{" "}
             <a className={LINK} href={REPO} target="_blank" rel="noopener noreferrer">
               GitHub

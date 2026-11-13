@@ -9,7 +9,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { daysBetween, dateRange, utcToday, type DateStr } from "../src/lib/dates";
-import { emptyOverview, type ChainHistory, type HistoryMeta, type LlamaProtocolSnap, type Series, type SeriesMap } from "../src/lib/history-types";
+import { emptyOverview, type AnchorIndexEntry, type ChainHistory, type HistoryMeta, type LlamaProtocolSnap, type Series, type SeriesMap } from "../src/lib/history-types";
+import { latestAnchor } from "../src/lib/anchor";
 import { mergeExtra, parseSeedRow, type LivePart, type SeedRow } from "../src/lib/extra-metrics";
 import { loadExtras } from "./lib/extras";
 import type { ChainStatsFile } from "../src/lib/extra-types";
@@ -463,6 +464,8 @@ function main() {
   const llamaIntents: Series = history ? (history.store.volume.near["NEAR Intents"] ?? []) : [];
   const intents = intentsDays.length ? summarizeIntents(intentsDays, llamaIntents, history?.meta.cursors.intents.backfillDone ?? false) : EMPTY_INTENTS;
   write("intents.json", { ...intents, llamaDaily: llamaIntents });
+  // The latest onchain anchor (scripts/anchor/write.ts) for the "Verified on NEAR" card on /thesis.
+  write("anchor.json", latestAnchor(readJson<Record<string, AnchorIndexEntry>>(path.join(DATA, "anchors", "index.json"), {})));
   console.log(`  intents: ${intents.coverage.days} days of 1Click aggregates${intents.coverage.firstDay ? ` from ${intents.coverage.firstDay}` : ""} · DefiLlama series ${llamaIntents.length} days`);
   console.log(`\n  wrote ${OUT}\n`);
 }

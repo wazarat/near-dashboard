@@ -193,6 +193,18 @@ A missing secret skips that source and records the reason in `data/history/_meta
 
 `.github/workflows/refresh.yml` runs at 03:23 UTC: `npm run refresh`, `npm run rebuild`, `npm test`, `npm run build`, then commits `data/history`, `data/raw` and `THESIS.md` when they changed, authored as Wazarat Hussain. BigQuery authenticates with Workload Identity Federation. To rerun a backfill: Actions, Refresh data, Run workflow with `backfill` ticked, or locally `npm run refresh -- --backfill` (`--only a,b`, `--max-calls N`, `--dry-run`). The NEAR Intents Explorer backfill has its own workflow, `.github/workflows/intents-backfill.yml` (Actions, Intents Explorer backfill, Run workflow): each run reads up to 380 pages at 1 request per 5.2 s, stays under 45 minutes, commits the per-day aggregates and starts the next run until the API's first day is reached. It runs the Intents source only, so no BigQuery job starts. Details, the federation setup and the required repository secrets are in [`docs/OPERATIONS.md`](docs/OPERATIONS.md). Community corrections: [`docs/REVIEW.md`](docs/REVIEW.md).
 
+## Verify the evidence
+
+Each daily refresh writes two SHA-256 fingerprints to NEAR mainnet through SocialDB, signed by `canhav.near` with a key that can only call `set` on `social.near`: one over every committed raw file the rebuild reads (`data/raw`, `data/history`, the dataset files, `queries/` and the THESIS template), one over what `npm run rebuild` writes (`THESIS.md` and `src/data/generated`, minus the run-dated `meta.json`). Records live at `canhav.near/canhav-atlas/anchors/<date>`; `data/anchors/index.json` lists each date's commit and transaction, and `data/anchors/<date>.manifest.txt` the per-file hashes.
+
+```bash
+git clone https://github.com/wazarat/near-dashboard.git && cd near-dashboard && git checkout <commit>
+npm ci
+npm run verify:anchor -- <date> --rebuild
+```
+
+A match on both fingerprints proves the evidence existed on that date and that the published numbers are rebuilt from it unchanged. `npm run anchor:fingerprint` prints today's fingerprints; `npm run anchor:write -- --dry-run` shows the record without sending it.
+
 ## Thesis method in one paragraph
 
 Weekly ISO-week series of Intents volume (DefiLlama, all channels, since 2024-12-10; the 1Click Explorer series where backfilled), NEAR price (NearBlocks) and five usage series (transactions and active accounts from BigQuery over the whole window, with NearBlocks kept as a cross-check; new accounts from NearBlocks; function calls and contracts called from BigQuery over its shorter receipt window) are turned into week-over-week log changes. Lead-lag cross-correlations at −8 to +8 weeks say which predictor moves first; a one-variable regression fitted before 2026-05-01 and scored after it says which predicts better out of sample; robustness variants cap spikes, remove Intents settlement receipts from usage, use daily data and swap in the Explorer series. Only positive lead correlations outside the ±2/√n noise band count as evidence. `scripts/thesis.ts` computes all of it and renders `THESIS.md` from `docs/templates/THESIS.template.md`, so the page and the document cannot drift.
