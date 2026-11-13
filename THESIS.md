@@ -135,7 +135,7 @@ Correlations inside roughly ±0.20 are indistinguishable from noise at this samp
 
 ### Explorer-only test
 
-The NEAR Intents Explorer API, the source the track names, covers 1Click swaps only. The committed backfill holds 325 complete days from 2025-12-22 to 2026-11-12 and had not reached the API's first day (late May 2025) when this file was built. Over the 325 days that both sources have, it reports $11,096,971,318 against DefiLlama's $29,294,842,559 for every channel, 38% of the total, with a median daily share of 40%.
+The NEAR Intents Explorer API, the source the track names, covers 1Click swaps only. The committed backfill holds 325 complete days from 2025-12-22 to 2026-11-12 and had not reached the API's first day (late May 2025) when this file was built. Over the 325 days that both sources have, it reports $11,100,844,286 against DefiLlama's $29,294,842,559 for every channel, 38% of the total, with a median daily share of 40%.
 
 With Explorer 1Click volume as the predictor over 45 weekly changes (2025-12-22 to 2026-11-12), Intents volume is the stronger positive lead for 3 of 5 usage series (1 for price, 1 inconclusive) and wins 2 out-of-sample comparisons to price's 0, which reads as partly supported. DefiLlama volume over the same weeks gives 3 of 5 (1 for price, 1 inconclusive) and 2 to 0 out of sample, partly supported. The full-window result with DefiLlama volume is partly supported, so the conclusion holds with the Explorer as the Intents source over the weeks it covers.
 
