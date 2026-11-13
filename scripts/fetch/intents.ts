@@ -274,6 +274,16 @@ export function backfillResume(cursorUnix: number | null, days: Array<Pick<Inten
   return { before: cursorUnix ?? fallbackUnix, ceiling: null };
 }
 
+/**
+ * Has the backfill reached the end? Only an empty page, or a page whose oldest row is at or before the target day,
+ * ends it. A page shorter than 1,000 rows does not: the API returned 999 rows in the middle of October 2025 with
+ * months of older swaps still behind it, so a short page is followed by one more request, not treated as the end.
+ */
+export function backfillEnded(rowsInPage: number, oldestUnix: number | null, targetUnix: number): boolean {
+  if (rowsInPage === 0) return true;
+  return oldestUnix !== null && oldestUnix <= targetUnix;
+}
+
 interface Page {
   rows: ApiRow[];
   cursor: { lastDepositAddress: string; lastDepositMemo: string | null } | null;
@@ -353,7 +363,7 @@ export async function run(ctx: Ctx): Promise<RunResult> {
     newest ??= trimRow(page.rows[0])[0];
     absorb(page.rows);
     pageCursor = page.cursor;
-    if (page.rows.length < 1000) break;
+    // No stop on a short page (see backfillEnded): the window ends with the empty page that follows its last rows.
     if (calls % 5 === 0) flush();
   }
   flush();
@@ -374,7 +384,7 @@ export async function run(ctx: Ctx): Promise<RunResult> {
     while (calls < ctx.maxCalls) {
       const page = await fetchPage(client, jwt, { direction: "next", endTimestampUnix: before, startTimestampUnix: toUnixDay(target) - 1, lastDepositAddress: older?.lastDepositAddress, lastDepositMemo: older?.lastDepositMemo });
       calls += 1;
-      if (!page.rows.length) {
+      if (backfillEnded(page.rows.length, null, toUnixDay(target))) {
         cursor.backfillDone = true;
         break;
       }
@@ -385,8 +395,8 @@ export async function run(ctx: Ctx): Promise<RunResult> {
       cursor.oldestCreatedAt = new Date(oldest * 1000).toISOString();
       cursor.lastDepositAddress = older?.lastDepositAddress ?? null;
       cursor.lastDepositMemo = older?.lastDepositMemo ?? null;
-      if (page.rows.length < 1000 || oldest <= toUnixDay(target)) {
-        cursor.backfillDone = oldest <= toUnixDay(target) || page.rows.length < 1000;
+      if (backfillEnded(page.rows.length, oldest, toUnixDay(target))) {
+        cursor.backfillDone = true;
         break;
       }
       if (calls % 5 === 0) flush();

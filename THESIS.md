@@ -131,27 +131,27 @@ Correlations inside roughly ±0.20 are indistinguishable from noise at this samp
 - **Largest 5% of Intents days removed** (0 for Intents, 1 for price). The 36 biggest Intents volume days (above $145,432,171) are left out before weekly resampling; their weeks keep the remaining days, and weeks left with fewer than 4 days are dropped. Transactions: Intents 0.08 @6 vs price 0.13 @2; Active accounts: Intents 0.11 @3 vs price 0.18 @6; New accounts: Intents 0.12 @3 vs price 0.11 @3; Function calls: Intents 0.20 @7 vs price 0.30 @2; Contracts called: Intents 0.14 @4 vs price 0.21 @3.
 - **Function calls without aurora and intents.near receipts** (1 for Intents, 0 for price). Receipts to the aurora and intents.near accounts are subtracted from function calls, so the usage series cannot contain the Intents settlement itself. Function calls: Intents 0.42 @7 vs price 0.30 @2.
 - **Daily instead of weekly** (1 for Intents, 1 for price). Day-over-day log changes at lags of −8 to +8 days; noisier, but not dependent on the week boundary. Transactions: Intents 0.06 @7 vs price 0.04 @7; Active accounts: Intents 0.04 @1 vs price 0.04 @6; New accounts: Intents 0.05 @5 vs price 0.06 @4; Function calls: Intents 0.07 @7 vs price 0.16 @3; Contracts called: Intents 0.14 @3 vs price 0.11 @8.
-- **1Click Explorer volume instead of DefiLlama** (3 for Intents, 0 for price). The Explorer covers 1Click swaps only, from 2025-10-06; DefiLlama's adapter covers every channel. Transactions: Intents 0.42 @7 vs price 0.20 @2; Active accounts: Intents 0.22 @2 vs price 0.23 @6; New accounts: Intents 0.19 @7 vs price 0.08 @3; Function calls: Intents 0.56 @7 vs price 0.30 @2; Contracts called: Intents 0.42 @2 vs price 0.21 @3.
+- **1Click Explorer volume instead of DefiLlama** (3 for Intents, 0 for price). The Explorer covers 1Click swaps only, from 2025-10-07; DefiLlama's adapter covers every channel. Transactions: Intents 0.43 @7 vs price 0.21 @2; Active accounts: Intents 0.22 @2 vs price 0.23 @6; New accounts: Intents 0.19 @7 vs price 0.07 @6; Function calls: Intents 0.56 @7 vs price 0.30 @2; Contracts called: Intents 0.42 @2 vs price 0.21 @3.
 
 ### Explorer-only test
 
-The NEAR Intents Explorer API, the source the track names, covers 1Click swaps only. The committed backfill holds 402 complete days from 2025-10-06 to 2026-11-12 and has reached the API's first day. Over the 402 days that both sources have, it reports $13,374,515,065 against DefiLlama's $35,752,982,994 for every channel, 37% of the total, with a median daily share of 38%.
+The NEAR Intents Explorer API, the source the track names, covers 1Click swaps only. The committed backfill holds 401 complete days from 2025-10-07 to 2026-11-12 and had not reached the API's first day (late May 2025) when this file was built. Over the 401 days that both sources have, it reports $13,368,367,983 against DefiLlama's $35,713,999,494 for every channel, 37% of the total, with a median daily share of 38%.
 
-With Explorer 1Click volume as the predictor over 56 weekly changes (2025-10-06 to 2026-11-12), Intents volume is the stronger positive lead for 3 of 5 usage series (0 for price, 2 inconclusive) and wins 1 out-of-sample comparisons to price's 0, which reads as supported. DefiLlama volume over the same weeks gives 3 of 5 (0 for price, 2 inconclusive) and 1 to 0 out of sample, supported. The full-window result with DefiLlama volume is partly supported, so the conclusion holds, and reads stronger there than over the full window, with the Explorer as the Intents source over the weeks it covers. Fewer weeks mean a wider noise band, so the Explorer result rests on the smaller sample.
+With Explorer 1Click volume as the predictor over 56 weekly changes (2025-10-07 to 2026-11-12), Intents volume is the stronger positive lead for 3 of 5 usage series (0 for price, 2 inconclusive) and wins 1 out-of-sample comparisons to price's 0, which reads as supported. DefiLlama volume over the same weeks gives 3 of 5 (0 for price, 2 inconclusive) and 1 to 0 out of sample, supported. The full-window result with DefiLlama volume is partly supported, so the conclusion holds, and reads stronger there than over the full window, with the Explorer as the Intents source over the weeks it covers. Fewer weeks mean a wider noise band, so the Explorer result rests on the smaller sample.
 
 Lead-lag and out-of-sample results per predictor. "Same weeks" rows use only the weeks the Explorer covers; the last row of each series repeats the full-window result from the tables above.
 
 | Usage series | Predictor | Leads by | r | Same-week r | Weeks | Out-of-sample lag | Train / test weeks | Out-of-sample R² | Sign hit rate |
 |---|---|---|---|---|---|---|---|---|---|
-| Transactions | Explorer 1Click | 7 w | 0.42 | 0.17 | 56 | 7 w | 22 / 27 | -0.07 | 48% |
+| Transactions | Explorer 1Click | 7 w | 0.43 | 0.17 | 56 | 7 w | 22 / 27 | -0.08 | 48% |
 | Transactions | DefiLlama, same weeks | 7 w | 0.40 | 0.20 | 56 | 7 w | 22 / 27 | -0.12 | 48% |
 | Transactions | NEAR price, same weeks | 2 w | 0.21 | -0.01 | 56 | 5 w | 24 / 27 | -0.45 | 56% |
 | Transactions | DefiLlama, full window | 7 w | 0.07 | 0.27 | 99 | 2 w | 70 / 27 | -0.04 | 52% |
-| Active accounts | Explorer 1Click | 2 w | 0.22 | -0.07 | 56 | 1 w | 28 / 27 | -0.01 | 67% |
+| Active accounts | Explorer 1Click | 2 w | 0.22 | -0.07 | 56 | 1 w | 28 / 27 | -0.01 | 70% |
 | Active accounts | DefiLlama, same weeks | 2 w | 0.21 | -0.07 | 56 | 1 w | 28 / 27 | 0.00 | 63% |
 | Active accounts | NEAR price, same weeks | 6 w | 0.23 | -0.18 | 56 | 2 w | 27 / 27 | -0.39 | 67% |
 | Active accounts | DefiLlama, full window | 1 w | 0.09 | -0.07 | 99 | 4 w | 68 / 27 | -0.01 | 82% |
-| New accounts | Explorer 1Click | 7 w | 0.19 | 0.01 | 56 | 7 w | 22 / 27 | -0.48 | 48% |
+| New accounts | Explorer 1Click | 7 w | 0.19 | 0.01 | 56 | 7 w | 22 / 27 | -0.49 | 48% |
 | New accounts | DefiLlama, same weeks | 7 w | 0.20 | 0.01 | 56 | 7 w | 22 / 27 | -0.44 | 48% |
 | New accounts | NEAR price, same weeks | 6 w | 0.07 | -0.03 | 56 | 5 w | 24 / 27 | -0.56 | 56% |
 | New accounts | DefiLlama, full window | 3 w | 0.13 | 0.23 | 99 | 2 w | 70 / 27 | 0.02 | 56% |
@@ -222,7 +222,7 @@ The same lead-lag and out-of-sample tests on both sources:
 
 ## Metrics that could not be computed
 
-- The NEAR Intents Explorer API covers 1Click swaps only and starts in late May 2025; the committed backfill covers 402 complete days from 2025-10-06. Where both sources exist the Explorer reports a median 38% of DefiLlama's daily volume. Until the backfill completes, every Intents chart uses DefiLlama's series and labels the source.
+- The NEAR Intents Explorer API covers 1Click swaps only and starts in late May 2025; the committed backfill covers 401 complete days from 2025-10-07 and is still running. Where both sources exist the Explorer reports a median 38% of DefiLlama's daily volume. Until the backfill completes, every Intents chart uses DefiLlama's series and labels the source.
 - Function calls and contracts called (BigQuery `receipt_actions`) cover 52 weeks only: running `queries/daily_receipts.sql` over 2024-12-10 to 2025-11-07 would scan 549.70 GB by dry run, over the 300 GB backfill budget. For the same reason new accounts come from NearBlocks' daily charts and not from CREATE_ACCOUNT receipts. Transactions and active accounts come from BigQuery for the whole window.
 - Distinct signers are an estimate of users: one person can hold many accounts, and relayers or intents hide the end user, so no "unique users" metric is claimed.
 - No incentive or emissions data is available from a free source (DefiLlama's emissions endpoint is paid), so wash-like or incentive-driven volume cannot be separated from organic volume; the confounders above are the known programs.

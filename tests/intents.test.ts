@@ -83,6 +83,24 @@ describe("backfill resume point", () => {
   });
 });
 
+describe("end of the backfill", () => {
+  const target = Math.floor(Date.parse("2025-05-02T00:00:00Z") / 1000);
+  const oct = Math.floor(Date.parse("2025-10-06T11:56:01Z") / 1000);
+  it("a short page is not the end, an empty page is", async () => {
+    const { backfillEnded } = await import("../scripts/fetch/intents");
+    expect(backfillEnded(999, oct, target)).toBe(false);
+    expect(backfillEnded(1000, oct, target)).toBe(false);
+    expect(backfillEnded(1, oct, target)).toBe(false);
+    expect(backfillEnded(0, null, target)).toBe(true);
+  });
+  it("reaching the target day ends it", async () => {
+    const { backfillEnded } = await import("../scripts/fetch/intents");
+    expect(backfillEnded(1000, target, target)).toBe(true);
+    expect(backfillEnded(1000, target - 60, target)).toBe(true);
+    expect(backfillEnded(1000, target + 60, target)).toBe(false);
+  });
+});
+
 describe("backfill commit on top of a moving main", () => {
   it("lays only the Intents cursor and status over the meta file on main", async () => {
     const { mergeIntentsState } = await import("../scripts/ci/keep-intents-backfill");
