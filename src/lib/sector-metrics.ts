@@ -7,6 +7,7 @@
  * Measured sectors have a headline metric that drives tiers and leaders. Unmeasured sectors (wallets,
  * infrastructure, exchanges and the like) show facts with no tier; their tier reads "Not applicable".
  */
+import { fmtCompact, fmtInt, fmtPct, fmtUsd, fmtUsdFull } from "./format";
 import type { Project, StatusGroup } from "./types";
 
 export const METRIC_IDS = [
@@ -41,6 +42,9 @@ export const METRIC_IDS = [
   "signers7d",
   "tokensLaunched",
   "cexAssets",
+  "validatorStake",
+  "auditedProjects",
+  "fundingDisclosed",
 ] as const;
 export type MetricId = (typeof METRIC_IDS)[number];
 
@@ -50,8 +54,8 @@ export interface MetricDef {
   /** What the number counts and what it leaves out (accuracy rule 2). Sources are named here, never on the page. */
   info: string;
   source: string;
-  /** pct values are stored as fractions (0.85 is 85%). */
-  unit: "usd" | "count" | "pct";
+  /** pct values are stored as fractions (0.85 is 85%); near values are whole NEAR. */
+  unit: "usd" | "count" | "pct" | "near";
 }
 
 export const METRIC_DEFS: Record<MetricId, MetricDef> = {
@@ -86,7 +90,25 @@ export const METRIC_DEFS: Record<MetricId, MetricDef> = {
   signers7d: { id: "signers7d", label: "7d signers", unit: "count", source: "NEAR BigQuery", info: "Distinct signer accounts calling the project's tracked accounts, summed per day over 7 days from the NEAR BigQuery public dataset. An estimate, since one person can use many accounts, and relayers or intents hide the end user." },
   tokensLaunched: { id: "tokensLaunched", label: "Tokens launched (30d)", unit: "count", source: "NEAR BigQuery", info: "New accounts created under the launchpad's factory account over 30 days. Needs the factory account mapped first." },
   cexAssets: { id: "cexAssets", label: "Assets held on NEAR", unit: "usd", source: "DefiLlama", info: "Exchange reserves held on NEAR per DefiLlama's CEX adapters. Kept out of chain TVL, since they are customer deposits." },
+  validatorStake: { id: "validatorStake", label: "NEAR staked", unit: "near", source: "NEAR RPC", info: "NEAR staked with the operator's validator pools in the current epoch, summed over its pools, per the NEAR RPC validators method. Pools are matched by account id in data/validator-pools.csv." },
+  auditedProjects: { id: "auditedProjects", label: "NEAR projects it audits or hosts bounties for", unit: "count", source: "Research CSV", info: "NEAR and Aurora projects in the atlas whose audits column names the firm as auditor or bug bounty host. A count of mentions in the research, not of every engagement the firm has had." },
+  fundingDisclosed: { id: "fundingDisclosed", label: "Disclosed rounds joined", unit: "usd", source: "Research CSV", info: "Total size of the disclosed funding rounds the organisation joined as an investor, per the research funding rounds file. Its own share of each round is rarely disclosed, so this is the size of the rounds, not money it put in." },
 };
+
+/** A value as text, compact by default (cards, leader rows) or in full (the project pop-up). */
+export function fmtMetricValue(id: MetricId, v: number | null, full = false): string {
+  if (v === null) return "Not tracked";
+  switch (METRIC_DEFS[id].unit) {
+    case "usd":
+      return full ? fmtUsdFull(v) : fmtUsd(v);
+    case "pct":
+      return fmtPct(v, 1);
+    case "near":
+      return `${full ? fmtInt(v) : fmtCompact(v)} NEAR`;
+    default:
+      return fmtInt(v);
+  }
+}
 
 export interface SectorDef {
   measured: boolean;
@@ -96,36 +118,45 @@ export interface SectorDef {
   metrics: readonly MetricId[];
   /** A note for the headline, e.g. a double count to flag. */
   note?: string;
+  /** Labels this sector reads differently, e.g. a bridge's volume is not DEX volume. */
+  labels?: Partial<Record<MetricId, string>>;
+  /** Unmeasured sectors only: the facts that rank leaders, in order. A project with no value on the first falls to the next. */
+  rankBy?: readonly MetricId[];
 }
 
-const M = (headline: MetricId, rest: MetricId[], note?: string): SectorDef => ({ measured: true, headline, metrics: [headline, ...rest], note });
-const U = (facts: MetricId[] = []): SectorDef => ({ measured: false, headline: null, metrics: facts });
+const M = (headline: MetricId, rest: MetricId[], extra: Pick<SectorDef, "note" | "labels"> = {}): SectorDef => ({ measured: true, headline, metrics: [headline, ...rest], ...extra });
+/** An unmeasured sector: facts with no tier. Facts rank leaders unless `rankBy` says otherwise. */
+const U = (facts: MetricId[] = [], rankBy: MetricId[] = facts): SectorDef => ({ measured: false, headline: null, metrics: facts, rankBy });
 
 /** Section 4 of docs/LIVE-DATA.md. Keys are the sector names in the research CSV. */
 export const SECTOR_METRICS: Record<string, SectorDef> = {
   "DEXs & Liquidity": M("volume", ["tvl", "fees", "revenue", "supplySideRevenue", "dexVolume24h", "dexLiquidity", "aggregatorVolume", "bestPoolApy", "poolCount", "tokenHolders", "tokenHoldersAurora", "calls30d"]),
-  "Bridges & Interoperability": M("volume", ["tvl", "fees", "revenue", "holdersRevenue", "supplySideRevenue", "dexVolume24h", "bridgeAggregatorVolume", "calls30d", "signers7d"]),
+  // NEAR Intents' volume is swaps across chains, not DEX trading, so the bridges sector reads it as plain volume.
+  "Bridges & Interoperability": M("volume", ["tvl", "fees", "revenue", "holdersRevenue", "supplySideRevenue", "dexVolume24h", "bridgeAggregatorVolume", "calls30d", "signers7d"], { labels: { volume: "30d volume" } }),
   "Lending & Credit": M("totalDeposited", ["borrowed", "tvl", "utilization", "borrowApy", "fees", "revenue", "tokenHolders", "tokenHoldersAurora"]),
   "Liquid Staking & Restaking": M("tvl", ["stakingApy", "tokenHolders", "ownStaking", "fees", "revenue"]),
   Launchpads: M("tokensLaunched", ["volume", "tokenHolders", "fees", "revenue"]),
   "Memecoins & Community": M("tokenHolders", ["tokenHoldersAurora", "tokenSupplyValue"]),
-  "AI Agents": M("tokenHolders", ["signers7d", "calls30d"]),
-  "NFTs, Gaming & Collectibles": M("tokenHolders", ["signers7d", "calls30d"]),
+  // Signers rather than holders: most AI projects have no token, and holders never set a tier (accuracy rule 10).
+  "AI Agents": M("signers7d", ["calls30d", "tokenHolders"]),
+  // Signers rather than holders: app-created accounts inflate game token holders (SWEAT), accuracy rule 10.
+  "NFTs, Gaming & Collectibles": M("signers7d", ["calls30d", "tokenHolders"]),
   "Stablecoins & Payments": M("stablecoinSupply", ["tokenHolders", "tokenHoldersAurora", "signers7d"]),
   "Yield & Asset Management": M("tvl", ["bestPoolApy", "poolCount", "fees", "revenue"]),
   "RWA & Tokenized Assets": M("tvl", ["tokenHolders", "tokenSupplyValue"]),
   "Perps, Options & Derivatives": M("tvl", ["fees", "revenue", "calls30d"]),
   "Prediction Markets": M("signers7d", ["tvl", "fees", "revenue"]),
-  "Trading Tools & Bots": M("volume", ["fees", "revenue", "signers7d"], "Volume routed through a trading bot is counted again by the DEX it trades on."),
+  "Trading Tools & Bots": M("volume", ["fees", "revenue", "signers7d"], { note: "Volume routed through a trading bot is counted again by the DEX it trades on.", labels: { volume: "30d volume routed" } }),
   "Social & Identity": M("signers7d", ["calls30d"]),
   "DAOs, Governance & Public Goods": M("signers7d", ["calls30d"]),
   "Infrastructure & Dev Tools": U(),
-  "Wallets & Custody": U(["signers7d"]),
+  // Wallets rank by NEAR Intents volume their referral tag routed, then by signers to their own contracts.
+  "Wallets & Custody": U(["signers7d"], ["referralVolume", "signers7d"]),
   "Exchanges & On/Off-Ramps": U(["cexAssets"]),
   "Data & Analytics": U(),
-  "Security, Risk & Compliance": U(),
-  "Ecosystem, Funding & Education": U(),
-  "Validators & Node Operators": U(),
+  "Security, Risk & Compliance": U(["auditedProjects"]),
+  "Ecosystem, Funding & Education": U(["fundingDisclosed"]),
+  "Validators & Node Operators": U(["validatorStake"]),
   Other: U(),
 };
 
@@ -138,6 +169,15 @@ export function sectorDef(sector: string): SectorDef {
 export function isMeasured(sector: string): boolean {
   return sectorDef(sector).measured;
 }
+
+/** A metric's label as the sector reads it (a bridge's volume is "30d volume", not DEX volume). */
+export function metricLabel(sector: string, id: MetricId): string {
+  return sectorDef(sector).labels?.[id] ?? METRIC_DEFS[id].label;
+}
+
+/** Projects whose token holders are mostly accounts the app created for its users, so holders say little about use. */
+export const INFLATED_HOLDERS = new Set(["sweat-sweat-economy"]);
+export const INFLATED_HOLDERS_NOTE = "Most of these accounts were created by the app for its users, so the count says little about how many people use it.";
 
 /** Defunct and Inactive projects keep their last value with its date and stay out of leaderboards. */
 export const INACTIVE_GROUPS: readonly StatusGroup[] = ["Defunct", "Inactive"];
@@ -256,4 +296,93 @@ export function coverageWhereApplies(projects: readonly Project[], id: MetricId)
     if (metricOf(p, id) !== null) tracked += 1;
   }
   return { tracked, applies: total };
+}
+
+/** A value counts toward a leader's rank only if it is at least this share of the sector's top value; smaller ones keep curated order. */
+export const LEADER_FLOOR = 0.01;
+
+/** The metrics that rank a sector's leaders: the headline for a measured sector, its ranking facts otherwise. */
+export function rankKeys(sector: string): MetricId[] {
+  const d = sectorDef(sector);
+  return d.headline ? [d.headline] : [...(d.rankBy ?? [])];
+}
+
+/** A ranking metric's value for a project. Sector metrics go through `applies` (a stablecoin counted on another row has none); cross-sector facts do not. */
+function rankValue(p: Project, id: MetricId): number | null {
+  if (sectorDef(p.sector).metrics.includes(id) && !applies(p, id)) return null;
+  return metricOf(p, id);
+}
+
+/**
+ * The projects a sector's totals and leaders are both drawn from: the given (already filtered) projects in the
+ * sector that are not Defunct or Inactive. Totals and leaders read the same set, so they can never disagree.
+ */
+export function sectorProjects(sector: string, projects: readonly Project[]): Project[] {
+  return projects.filter((p) => p.sector === sector && !isInactive(p));
+}
+
+export interface RankedLeader {
+  project: Project;
+  /** The metric that placed the project, or null when it sits by curated rank or by name. */
+  key: MetricId | null;
+  value: number | null;
+  /** "value": ranked by a metric; "curated": by the research leaders CSV; "unranked": neither, listed by name. */
+  basis: "value" | "curated" | "unranked";
+}
+
+/**
+ * The one leader order used by the sector cards, the sector pop-up and the Traction tab (docs/SECTOR-METRICS.md, section 1).
+ * 1. Active projects with a ranking value of at least 1% of the sector's top value, highest first. For an
+ *    unmeasured sector with several ranking facts, each fact ranks the projects the previous one left.
+ * 2. Then active projects by curated rank from the leaders CSV.
+ * 3. Then the remaining active projects by name.
+ * Defunct and Inactive projects never appear.
+ */
+export function rankLeaders(sector: string, projects: readonly Project[]): RankedLeader[] {
+  let pool = sectorProjects(sector, projects);
+  const out: RankedLeader[] = [];
+  for (const key of rankKeys(sector)) {
+    const withValue = pool.map((p) => ({ p, v: rankValue(p, key) })).filter((x): x is { p: Project; v: number } => x.v !== null && x.v > 0);
+    const top = withValue.reduce((m, x) => Math.max(m, x.v), 0);
+    const ranked = withValue.filter((x) => x.v >= top * LEADER_FLOOR).sort((a, b) => b.v - a.v || a.p.name.localeCompare(b.p.name));
+    for (const x of ranked) out.push({ project: x.p, key, value: x.v, basis: "value" });
+    const placed = new Set(ranked.map((x) => x.p.id));
+    pool = pool.filter((p) => !placed.has(p.id));
+  }
+  const curated = pool.filter((p) => p.leaderRank !== null).sort((a, b) => (a.leaderRank as number) - (b.leaderRank as number) || a.name.localeCompare(b.name));
+  for (const p of curated) out.push({ project: p, key: null, value: null, basis: "curated" });
+  const rest = pool.filter((p) => p.leaderRank === null).sort((a, b) => a.name.localeCompare(b.name));
+  for (const p of rest) out.push({ project: p, key: null, value: null, basis: "unranked" });
+  return out;
+}
+
+/** The leaders a sector card names: the top `n` placed by a value or by curated rank, never filler listed by name. */
+export function topLeaders(sector: string, projects: readonly Project[], n = 3): RankedLeader[] {
+  return rankLeaders(sector, projects).filter((l) => l.basis !== "unranked").slice(0, n);
+}
+
+export interface SectorMetricTotal {
+  id: MetricId;
+  /** Sum over the sector's active projects for usd and NEAR metrics; null for counts and rates, which overlap or do not add. */
+  total: number | null;
+  /** The largest single value and its project, shown where a sum would mislead. */
+  top: { project: Project; value: number } | null;
+  tracked: number;
+  applies: number;
+}
+
+/** A sector metric's total and coverage over the same set the leaders use. */
+export function sectorMetricTotal(sector: string, projects: readonly Project[], id: MetricId): SectorMetricTotal {
+  const set = sectorProjects(sector, projects);
+  const cov = coverageWhereApplies(set, id);
+  const unit = METRIC_DEFS[id].unit;
+  let total: number | null = null;
+  let top: SectorMetricTotal["top"] = null;
+  for (const p of set) {
+    const v = rankValue(p, id);
+    if (v === null) continue;
+    if (unit === "usd" || unit === "near") total = (total ?? 0) + v;
+    if (!top || v > top.value) top = { project: p, value: v };
+  }
+  return { id, total, top, tracked: cov.tracked, applies: cov.applies };
 }

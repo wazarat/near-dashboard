@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import metaJson from "../src/data/generated/meta.json";
 import { toProject } from "../src/lib/parse";
-import { applies, coverageWhereApplies, isMeasured, metricOf, projectMetrics, SECTOR_METRICS, sectorDef, valueState } from "../src/lib/sector-metrics";
+import projectsJson from "../src/data/generated/projects.json";
+import { applies, coverageWhereApplies, fmtMetricValue, isMeasured, metricLabel, metricOf, projectMetrics, rankLeaders, SECTOR_METRICS, sectorDef, sectorMetricTotal, topLeaders, valueState } from "../src/lib/sector-metrics";
 import { isStaleAt } from "../src/lib/freshness";
 import type { Project } from "../src/lib/types";
 
@@ -95,5 +96,84 @@ describe("applicability by how projects earn", () => {
     expect(has("Bridges & Interoperability", "volume")).toBe(true);
     expect(has("Bridges & Interoperability", "volume", { volume: null })).toBe(false);
     expect(has("DEXs & Liquidity", "volume", { volume: null })).toBe(true);
+  });
+});
+
+describe("one leader ranking rule (docs/SECTOR-METRICS.md, section 1)", () => {
+  const extra = (values: Record<string, number>) => ({ extra: { values, asOf: {}, from: {} } });
+  const names = (sector: string, list: Project[]) => rankLeaders(sector, list).map((l) => l.project.name);
+
+  it("sorts by the headline, then curated rank, then name, and leaves inactive projects out", () => {
+    const list = [
+      mk("Curated1", "DEXs & Liquidity", "Mainnet", { leaderRank: 1 }),
+      mk("Big", "DEXs & Liquidity", "Mainnet", { volume: 1_000_000, leaderRank: 2 }),
+      mk("Mid", "DEXs & Liquidity", "Mainnet", { volume: 50_000 }),
+      mk("Dead", "DEXs & Liquidity", "Defunct", { volume: 9_000_000, leaderRank: 3 }),
+      mk("Asleep", "DEXs & Liquidity", "Inactive", { volume: 8_000_000 }),
+      mk("Zed", "DEXs & Liquidity"),
+      mk("Alpha", "DEXs & Liquidity"),
+      mk("Wallet", "Wallets & Custody", "Mainnet", { volume: 5 }),
+    ];
+    expect(names("DEXs & Liquidity", list)).toEqual(["Big", "Mid", "Curated1", "Alpha", "Zed"]);
+    expect(rankLeaders("DEXs & Liquidity", list).map((l) => l.basis)).toEqual(["value", "value", "curated", "unranked", "unranked"]);
+    // A card names only projects placed by a value or by curated rank.
+    expect(topLeaders("DEXs & Liquidity", list).map((l) => l.project.name)).toEqual(["Big", "Mid", "Curated1"]);
+  });
+
+  it("drops values under 1% of the top one back to curated order", () => {
+    const list = [
+      mk("Top", "DEXs & Liquidity", "Mainnet", { volume: 1_000_000 }),
+      mk("Tiny", "DEXs & Liquidity", "Mainnet", { volume: 100 }),
+      mk("Router", "DEXs & Liquidity", "Mainnet", { leaderRank: 1 }),
+      mk("Edge", "DEXs & Liquidity", "Mainnet", { volume: 10_000 }),
+    ];
+    expect(names("DEXs & Liquidity", list)).toEqual(["Top", "Edge", "Router", "Tiny"]);
+  });
+
+  it("ranks an unmeasured sector by its ranking facts in order, then curated rank", () => {
+    const list = [
+      mk("HOT", "Wallets & Custody", "Mainnet", { leaderRank: 1, live: { signers7d: 1_000_000 } as Project["live"] }),
+      mk("Meteor", "Wallets & Custody", "Mainnet", { leaderRank: 2 }),
+      mk("Trust", "Wallets & Custody", "Mainnet", extra({ referralVolume: 26_000_000 })),
+    ];
+    expect(names("Wallets & Custody", list)).toEqual(["Trust", "HOT", "Meteor"]);
+    expect(rankLeaders("Wallets & Custody", list).map((l) => l.key)).toEqual(["referralVolume", "signers7d", null]);
+    const ex = [mk("Bitget", "Exchanges & On/Off-Ramps", "Mainnet", { leaderRank: 2, ...extra({}) }), mk("Binance", "Exchanges & On/Off-Ramps", "Mainnet", { leaderRank: 1, live: { cexReserves: 500 } as Project["live"] })];
+    expect(names("Exchanges & On/Off-Ramps", ex)).toEqual(["Binance", "Bitget"]);
+    // No ranking fact: curated order.
+    expect(names("Data & Analytics", [mk("B", "Data & Analytics", "Mainnet", { leaderRank: 2 }), mk("A", "Data & Analytics", "Mainnet", { leaderRank: 1 })])).toEqual(["A", "B"]);
+  });
+
+  it("takes totals and leaders from the same set, so an inactive project is in neither", () => {
+    const list = [mk("Dew", "Yield & Asset Management", "Mainnet", { tvl: 250_000 }), mk("Aurora+", "Yield & Asset Management", "Inactive", { tvl: 2_300_000, leaderRank: 1 })];
+    expect(names("Yield & Asset Management", list)).toEqual(["Dew"]);
+    expect(sectorMetricTotal("Yield & Asset Management", list, "tvl")).toMatchObject({ total: 250_000, tracked: 1, applies: 1 });
+    // Counts overlap across projects, so they carry the top value rather than a sum.
+    const memes = [mk("BD", "Memecoins & Community", "Mainnet", { token: "BD", ...extra({ tokenHolders: 286_000 }) }), mk("SZ", "Memecoins & Community", "Mainnet", { token: "SZ", ...extra({ tokenHolders: 11_000 }) })];
+    const t = sectorMetricTotal("Memecoins & Community", memes, "tokenHolders");
+    expect(t.total).toBeNull();
+    expect(t.top?.project.name).toBe("BD");
+  });
+
+  it("reads a bridge's volume as 30d volume and NFTs and AI agents by signers", () => {
+    expect(metricLabel("Bridges & Interoperability", "volume")).toBe("30d volume");
+    expect(metricLabel("DEXs & Liquidity", "volume")).toBe("30d DEX volume");
+    expect(sectorDef("NFTs, Gaming & Collectibles").headline).toBe("signers7d");
+    expect(sectorDef("AI Agents").headline).toBe("signers7d");
+    expect(sectorDef("NFTs, Gaming & Collectibles").metrics).toContain("tokenHolders");
+    expect(sectorDef("Validators & Node Operators").rankBy).toEqual(["validatorStake"]);
+    expect(sectorDef("Security, Risk & Compliance").rankBy).toEqual(["auditedProjects"]);
+    expect(sectorDef("Ecosystem, Funding & Education").rankBy).toEqual(["fundingDisclosed"]);
+    expect(fmtMetricValue("validatorStake", 51_900_000)).toBe("51.9M NEAR");
+    expect(fmtMetricValue("tvl", null)).toBe("Not tracked");
+  });
+});
+
+describe("leaders on the built data", () => {
+  const all = projectsJson as unknown as Project[];
+  it("puts Rhea Finance first in DEXs and keeps Spin out of Perps", () => {
+    expect(rankLeaders("DEXs & Liquidity", all)[0].project.name).toBe("Rhea Finance");
+    expect(rankLeaders("Perps, Options & Derivatives", all).map((l) => l.project.name)).not.toContain("Spin");
+    expect(rankLeaders("Yield & Asset Management", all).map((l) => l.project.name)).not.toContain("Aurora+");
   });
 });

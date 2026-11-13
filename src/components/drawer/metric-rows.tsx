@@ -3,9 +3,9 @@
 import type { ReactNode } from "react";
 import { ChangeCell } from "@/components/atlas/change-cell";
 import { InfoTip } from "@/components/ui/info-tip";
-import { fmtDate, fmtInt, fmtPct, fmtUsd, fmtUsdFull } from "@/lib/format";
+import { fmtDate, fmtUsd } from "@/lib/format";
 import { isStale } from "@/lib/freshness";
-import { CROSS_SECTOR_FACTS, METRIC_DEFS, projectMetrics, sectorDef, type MetricValue, revenueFromIntents } from "@/lib/sector-metrics";
+import { CROSS_SECTOR_FACTS, fmtMetricValue, INFLATED_HOLDERS, INFLATED_HOLDERS_NOTE, METRIC_DEFS, metricLabel, projectMetrics, sectorDef, type MetricValue, revenueFromIntents } from "@/lib/sector-metrics";
 import type { MetricSource, NumericMetricKey, Project } from "@/lib/types";
 
 const DAILY = new Set<string>(["tvl", "volume", "fees", "revenue"]);
@@ -23,9 +23,7 @@ function Row({ label, info, children }: { label: string; info: string; children:
 }
 
 function fmt(m: MetricValue): string {
-  const v = m.value as number;
-  const unit = METRIC_DEFS[m.id].unit;
-  return unit === "usd" ? fmtUsdFull(v) : unit === "pct" ? fmtPct(v, 1) : fmtInt(v);
+  return fmtMetricValue(m.id, m.value as number, true);
 }
 
 /** Where a value came from and how old it is: daily figures carry their 30-day change; a snapshot value older than three days shows its date (accuracy rule 4). */
@@ -59,6 +57,12 @@ function Value({ p, m }: { p: Project; m: MetricValue }) {
           <span className="tabular">{fmt(m)}</span>
           <Provenance p={p} m={m} />
           {m.id === "revenue" && revenueFromIntents(p) && <span className="ml-2 text-xs text-ink-300">from NEAR Intents app fees</span>}
+          {m.id === "tokenHolders" && INFLATED_HOLDERS.has(p.id) && (
+            <span className="ml-2 inline-flex items-center gap-1 text-xs text-ink-300">
+              mostly app-created accounts
+              <InfoTip label="Why holders are inflated">{INFLATED_HOLDERS_NOTE}</InfoTip>
+            </span>
+          )}
           {m.id === "tvl" && (p.tvlNear !== null || p.tvlAurora !== null) && p.tvlNear !== p.tvl && (
             <span className="ml-2 text-xs text-ink-300">
               NEAR {fmtUsd(p.tvlNear)} · Aurora {fmtUsd(p.tvlAurora)}
@@ -101,7 +105,7 @@ export function MetricRows({ p }: { p: Project }) {
   return (
     <>
       {rows.map((m, i) => (
-        <Row key={m.id} label={METRIC_DEFS[m.id].label} info={`${i === 0 && def.measured ? `The headline metric for ${p.sector}. ` : ""}${METRIC_DEFS[m.id].info}${i === 0 && def.note ? ` ${def.note}` : ""}`}>
+        <Row key={m.id} label={metricLabel(p.sector, m.id)} info={`${i === 0 && def.measured ? `The headline metric for ${p.sector}. ` : ""}${METRIC_DEFS[m.id].info}${i === 0 && def.note ? ` ${def.note}` : ""}`}>
           <Value p={p} m={m} />
         </Row>
       ))}

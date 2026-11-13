@@ -6,6 +6,7 @@
  *
  * Run with: npm run data   (also runs as part of `npm run rebuild` before `next build`)
  */
+import { auditedProjectsCount, fundingDisclosedFor } from "../src/lib/research-facts";
 import fs from "node:fs";
 import path from "node:path";
 import { daysBetween, dateRange, utcToday, type DateStr } from "../src/lib/dates";
@@ -299,6 +300,21 @@ function main() {
     .map((r, i) => toRound(r, i + 2, resolver))
     .sort((a, b) => (a.date ?? "9999").localeCompare(b.date ?? "9999"));
   const investors = aggregateInvestors(rounds);
+  // Facts for the security and ecosystem sectors from the research files (docs/SECTOR-METRICS.md, section 3).
+  for (const p of projects) {
+    const facts: Array<[string, number | null]> = [
+      ["auditedProjects", auditedProjectsCount(p, projects)],
+      ["fundingDisclosed", fundingDisclosedFor(p, investors)],
+    ];
+    for (const [id, v] of facts) {
+      // A firm no project names is left untracked rather than shown as a zero the research did not report.
+      if (v === null || v === 0) continue;
+      p.extra ??= { values: {}, asOf: {}, from: {} };
+      p.extra.values[id] = v;
+      p.extra.asOf[id] = snapshotAsOf;
+      p.extra.from[id] = "snapshot";
+    }
+  }
   const insights = parseMemoInsights(fs.readFileSync(memoFile, "utf8"));
 
   // Series + chain files.
