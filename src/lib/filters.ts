@@ -21,7 +21,7 @@ export const ALIGNS = ["date", "days"] as const;
 export type Align = (typeof ALIGNS)[number];
 
 /**
- * Legacy listings (status "Unknown (legacy 2021-23 listing)", 620 rows from the 2021 to 2023 AwesomeNEAR
+ * Legacy listings (status "Unknown (legacy 2021-23 listing)", 591 rows from the 2021 to 2023 AwesomeNEAR
  * directory) are hidden by default (owner, 2026-11-12). Each card whose numbers they change has its own
  * "Include legacy listings" switch; the `legacy` URL key lists the cards that include them
  * (`?legacy=kpi,sectors`). None of them carries a TVL, volume, fee or revenue figure, so only counts move.

@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { DataFreshness } from "@/components/atlas/data-freshness";
-import { meta } from "@/lib/data";
+import { meta, projects } from "@/lib/data";
 import { SIBLING_ATLAS_URL } from "@/lib/env";
 import { fmtUsdFull } from "@/lib/format";
+
+/** Directory-only listings whose status is still unverified (validators with a live pool were promoted on 2026-11-13). */
+const LEGACY_LISTINGS = projects.filter((p) => p.statusGroup === "Legacy listing").length;
 
 const LINK = "underline-offset-2 hover:text-ink-50 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60";
 
@@ -62,7 +65,7 @@ export function SiteFooter() {
                 not that the project is unaudited.
               </p>
               <p>
-                <strong className="font-medium text-ink-50">Status.</strong> 620 listings come only from the 2021 to 2023 AwesomeNEAR directory, which marks everything active, so
+                <strong className="font-medium text-ink-50">Status.</strong> {LEGACY_LISTINGS.toLocaleString("en-US")} listings come only from the 2021 to 2023 AwesomeNEAR directory, which marks everything active, so
                 they read &ldquo;Legacy listing, status unverified&rdquo;. They are left out of every card by default; a card whose counts they change has its own &ldquo;Include legacy&rdquo; switch. &ldquo;Defunct&rdquo; marks protocols whose DefiLlama page no longer resolves.
               </p>
               <p>

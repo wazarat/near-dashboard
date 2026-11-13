@@ -10,7 +10,7 @@ const LEGACY_COUNT = allProjects.filter((p) => p.statusGroup === LEGACY_GROUP).l
 export const LEGACY_HELP = `${LEGACY_COUNT.toLocaleString("en-US")} legacy listings come only from the 2021 to 2023 AwesomeNEAR directory, which marks every listing active, so their real status is unknown. None carries a TVL, volume, fee or revenue figure. They are left out by default; this switch brings them back into this card only.`;
 
 /**
- * "Include legacy (620)" for one card (src/lib/filters.ts, LEGACY_CARDS). It sits in the card's
+ * "Include legacy (591)" for one card (src/lib/filters.ts, LEGACY_CARDS). It sits in the card's
  * actions like the range control and changes that card and nothing else; the choice lives in the
  * `legacy` URL key. `label` names the card for assistive tech.
  */
