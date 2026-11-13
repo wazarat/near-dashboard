@@ -25,6 +25,13 @@ function main() {
   const findings: Array<Finding | null> = [
     // NEAR daily transactions from two independent sources.
     crossCheck("NEAR daily transactions", { label: "NearBlocks", series: chain.nearblocks.txns ?? [] }, { label: "BigQuery", series: chain.bigquery.transactions ?? [] }),
+    // Every Overview headline that has a second independent source, same days, at most 10% apart.
+    crossCheck("NEAR daily active accounts", { label: "NearBlocks", series: chain.nearblocks.activeAccounts ?? [] }, { label: "BigQuery", series: chain.bigquery.active_accounts ?? [] }),
+    crossCheck("Aurora daily transactions", { label: "Aurora Blockscout", series: (chain.aurora.txns ?? []).filter(([, v]) => v > 0) }, { label: "BigQuery receipts to aurora", series: chain.bigquery.auroraCalls ?? [] }),
+    crossCheck("NEAR price", { label: "NearBlocks", series: chain.nearblocks.price ?? [] }, { label: "DefiLlama coins", series: chain.price.llama ?? [] }),
+    // New accounts are not a headline, and the two sources count different things (BigQuery counts every
+    // CREATE_ACCOUNT action, sub-accounts included), so a gap is listed for review, never a failure.
+    ...[crossCheck("NEAR new accounts", { label: "NearBlocks", series: chain.nearblocks.newAccounts ?? [] }, { label: "BigQuery CREATE_ACCOUNT", series: chain.bigquery.new_accounts ?? [] })].map((f) => (f ? { ...f, severity: "review" as const, message: `${f.message} Different definitions, listed for review.` } : f)),
     gasFeeOutage("Aurora", chain.aurora.gasFees ?? [], chain.aurora.txns ?? []),
     gasFeeOutage("NEAR", chain.near.gasFees ?? [], chain.nearblocks.txns ?? []),
     ...hackReview(),

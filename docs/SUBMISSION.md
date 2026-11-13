@@ -1,34 +1,101 @@
 # NEAR Hackathon submission pack
 
-Track: `thesis` (Investment Thesis). Repository: https://github.com/wazarat/near-dashboard. Live: https://near-dashboard-puce.vercel.app
+- Track: `thesis` (Investment Thesis).
+- Repository: https://github.com/wazarat/near-dashboard (public, MIT).
+- Live: https://near-dashboard-puce.vercel.app
 
-## Project description (for the submission form, 20 to 2000 characters)
+## In two sentences
 
-NEAR Ecosystem Atlas maps 1,088 projects across NEAR and Aurora with researched traction, funding and security, then tracks the ecosystem every day from free sources: DefiLlama per-protocol and chain history, NearBlocks daily chain activity, the NEAR BigQuery public dataset for function calls, contracts called and distinct signers, and the NEAR Intents Explorer API for 1Click swap volume, routes, assets and referrals. Every chart shows its takeaway, its source and a table view; the thesis charts also show the exact SQL or API call and transform behind them.
+NEAR Ecosystem Atlas maps 1,088 NEAR and Aurora projects and tracks them daily from free sources: the NEAR BigQuery public dataset, the NEAR Intents Explorer API, NearBlocks, DefiLlama and the chain explorers. It tests whether cross-chain volume through NEAR Intents leads real NEAR network usage better than the NEAR price does, with every chart showing the query behind it and every number in THESIS.md rebuilt by one command.
 
-The investment thesis it tests is that cross-chain volume through NEAR Intents is a better leading indicator of real NEAR network usage than the token price. The repo computes the answer rather than asserting it: weekly lead-lag cross-correlations at lags of −8 to +8 weeks, an out-of-sample forecasting check with a fixed cutoff, and robustness variants (capped spikes, usage without Intents settlement receipts, daily data, Explorer versus DefiLlama volume). THESIS.md and the /thesis page are generated from the same JSON by `npm run rebuild`, which needs no network or secrets, so judges can rebuild every number from the committed raw files. The current result, its evidence for and against, the confounders (incident, incentive programs, fee switch, ETF listing) and what would change the conclusion are all stated in THESIS.md.
+## The thesis result in one sentence
 
-NEAR's role: NEAR Intents is the object of study and the NEAR BigQuery public dataset and NearBlocks are the usage ground truth; the daily GitHub Action keeps both current with Workload Identity Federation and cost-guarded queries.
+As of the Nov 12, 2026 data, the claim is **partly supported**:
+- Intents volume is the stronger positive lead for the two contract-level BigQuery series, function calls and contracts called, with none going to price.
+- Neither predictor leads the chain-level counts (transactions, active and new accounts).
+- With the largest 5% of Intents days removed, the edge goes to price. The capped version of the same check keeps it with Intents.
 
-## 60-second demo script
+THESIS.md always carries the current figures.
 
-1. (0:00) Open the live site on the Overview. "1,088 projects, 24 sectors. NEAR-native projects are 60% of the list but hold 97% of TVL." Point at the KPI tiles and the native vs imported bars.
-2. (0:10) Switch metric to Volume. "NEAR Intents is 92% of 30-day DEX volume; that skew is why the charts default to log scale." Hover the treemap.
-3. (0:18) Open the Intents page. "Daily 1Click swap volume from the Explorer API next to DefiLlama's all-channel series, with the share, routes and referrals." Scroll routes.
-4. (0:30) Open the Thesis page. Read the verdict badge and headline. Click the Query tab on the lead-lag chart: "Every chart shows the SQL or API call behind it."
-5. (0:42) Show the robustness table and the evidence-against column. "The result is honest: the edge appears in contract-level usage, not in the chain-level counts."
-6. (0:50) Show the terminal: `npm run rebuild` finishing with the strict data checks and THESIS.md regenerated. "No network, no secrets, same numbers."
-7. (0:57) Back to the repo README. End.
+## Checklist against HACKATHON.md and the track brief
+
+| Requirement | Status | Where |
+|---|---|---|
+| Repository public by 2026-11-14 23:59 UTC | Done | GitHub API returns 200 for the repository |
+| License file | Done | `LICENSE` (MIT) |
+| Code written in the hackathon window (from 2026-10-19) | Done | First commit 2026-11-08; the README's Disclosure section covers what was ported from the Robinhood Chain atlas |
+| README covers the product, the problem and "do X, see Y" steps | Done | `README.md`: thesis, Try it, Pages |
+| README lists third-party libraries | Done | `README.md`, Libraries |
+| README discloses AI-generated code | **Left out on purpose** | HACKATHON.md asks for it; it was left out by the owner's decision. Known gap |
+| SQL against `crypto_near_mainnet_us` for active accounts, transactions and contract usage, each filtered on `block_date` | Done | `queries/daily_chain.sql`, `queries/daily_receipts.sql`, `queries/daily_gas.sql` |
+| NEAR Intents Explorer API pull, with its key kept in the environment | Done | `scripts/fetch/intents.ts`, `.env.example`, Actions secret |
+| One command rebuilds every chart from raw data | Done | `npm run rebuild`; `npm run verify:rebuild` proves a fresh clone matches byte for byte |
+| Each chart shows its query and one plain sentence | Done | The "How this is calculated" block on every chart on Overview and Intents; the Query tab on Thesis |
+| THESIS.md has the claim, evidence for, evidence against, and what would change my mind | Done | `THESIS.md`, generated by `scripts/thesis.ts` |
+| Never invent numbers; say what cannot be computed | Done | THESIS.md, "Metrics that could not be computed" |
+| Cost note (NEAR pays storage, users pay queries) | Done | `README.md`, Sources |
+| Hosted demo kept up to Nov 18, ideally Nov 25 | Done while Vercel stays up | Live URL above |
+| No secrets committed | Done | `.env*` (except `.env.example`), `CLAUDE.md` and `.claude/` are gitignored |
+| Demo post on X with a video, "built at NEAR HACKATHON", tagging @NEARProtocol and #NEARHackathon | **You, by hand** | Draft below |
+| Submission form | **You, by hand** | Fields below |
+
+## What only you can do
+
+1. **Record the video.** Record about 90 seconds following the script below; a screen recording is enough.
+2. **Post on X yourself.** Use the draft below, with the video attached.
+3. **Submit the form.** Fill these fields:
+   - project name;
+   - team lead name;
+   - contact email;
+   - team size;
+   - tracks: `thesis`;
+   - your NEAR mainnet payout account (you create it; nobody else can);
+   - the repository link;
+   - the X post link as the demo link;
+   - the description below;
+   - the consent box.
+
+   The form takes one submission per repository, and mistakes go through https://nearhackathon.com/request-changes. Do not commit the payload.
+4. **Optional.** Label the unmatched NEAR Intents referral tags in `data/intents-referrals.csv`, and confirm or reject the candidates in `docs/FEE-ACCOUNTS-REVIEW.md`.
+
+## Project description (for the form, 20 to 2000 characters)
+
+NEAR Ecosystem Atlas maps 1,088 projects across NEAR and Aurora with researched traction, funding and security, then tracks the ecosystem every day from free sources:
+- the NEAR BigQuery public dataset for transactions, function calls, contracts called and gas burnt per contract;
+- the NEAR Intents Explorer API for 1Click swap volume, routes, referrals and app fees;
+- NearBlocks;
+- DefiLlama;
+- the Aurora explorer.
+
+Every chart has a "How this is calculated" block with its SQL file or API call and one plain sentence on what it shows.
+
+The thesis it tests is that cross-chain volume through NEAR Intents is a better leading indicator of real NEAR network usage than the NEAR price. The repository computes the answer rather than asserting it:
+- weekly lead and lag correlations at minus 8 to plus 8 weeks;
+- an out-of-sample forecast with a fixed cutoff;
+- robustness checks that cap or remove the largest days, use daily data, and take Intents settlement receipts out of usage.
+
+THESIS.md and the /thesis page come from the same generated JSON. `npm run rebuild` needs no network or secrets, so anyone can rebuild every number from the committed raw files. The result is reported as it falls, including the evidence against it.
+
+NEAR's role: NEAR Intents is the object of study, and the NEAR BigQuery public dataset and NearBlocks are the ground truth for usage. A daily GitHub Action keeps both current with keyless Google Cloud auth and cost-capped queries.
+
+## 90-second demo script
+
+1. **(0:00) Overview.** Open the live site. "An independent map of 1,088 NEAR and Aurora projects, refreshed daily." Point at the KPI tiles and read one coverage line: "Tracked for X of Y where it applies, so a wallet without fees is never counted as a gap."
+2. **(0:12) Chain over time.** Pick All. "Six panels for NEAR and Aurora. Aurora's transaction history comes from BigQuery receipts to the aurora account, which match the Aurora explorer within 1%." Open its How this is calculated block and scroll to the SQL file.
+3. **(0:27) Chain activity.** Expand the card and drag the zoom handles. "NearBlocks since 2020, with the BigQuery overlay for the last year."
+4. **(0:37) Intents.** Open the Intents page. "1Click swap volume from the Explorer API beside DefiLlama's all-channel series." Scroll to the apps table: "volume, swaps and app fees per app, by referral tag."
+5. **(0:52) Thesis.** Open the Thesis page. Read the verdict badge. Open the Query tab on the lead and lag chart: "The exact SQL and the transform behind it."
+6. **(1:05) Robustness and evidence against.** "With the biggest Intents days removed, the edge goes to price, and that is listed as evidence against."
+7. **(1:15) Reproduce.** In a terminal, run `npm run rebuild`, then `git diff --stat THESIS.md`: "No network, no secrets, no change."
+8. **(1:25) Close.** Show THESIS.md on GitHub, then end.
 
 ## Draft X post (post it yourself)
 
-Built at NEAR HACKATHON: NEAR Ecosystem Atlas, an independent map of 1,088 NEAR and Aurora projects with daily history, chain activity from the NEAR BigQuery public dataset and NEAR Intents swap volume. It tests one thesis: is Intents volume a better leading indicator of real usage than price? The data says: partly supported so far. The edge shows up in contract-level usage (function calls and contracts called), not in chain-level counts, and every test, including the evidence against, is in THESIS.md. Every chart shows its query; `npm run rebuild` reproduces THESIS.md from committed raw files.
+Built at NEAR HACKATHON: NEAR Ecosystem Atlas, an independent map of 1,088 NEAR and Aurora projects with daily chain data from the NEAR BigQuery public dataset and NEAR Intents swap volume from the Explorer API.
+
+It tests one thesis: is Intents volume a better leading indicator of real usage than price? So far, partly. The edge shows up in contract-level usage, not in chain-level counts, and every test, including the evidence against, is in THESIS.md. Every chart shows its query; `npm run rebuild` reproduces it all.
 
 Live: https://near-dashboard-puce.vercel.app
 Repo: https://github.com/wazarat/near-dashboard
 
 @NEARProtocol #NEARHackathon @NearLegion @NearBuilders
-
-## Submission fields the human decides
-
-Project name, team lead name, contact email, team size, tracks (`thesis`, optionally `open`), NEAR payout account, repository link, demo post link, description (above), consent. The API accepts one submission per repository; mistakes go through https://nearhackathon.com/request-changes.

@@ -25,6 +25,7 @@ import * as intents from "./fetch/intents";
 import * as nearblocks from "./fetch/nearblocks";
 import * as price from "./fetch/price";
 import { log, setVerbose } from "./lib/log";
+import { runSource } from "./lib/run-source";
 import { HISTORY } from "./lib/paths";
 import { readJson, writeJsonStable } from "./lib/store";
 
@@ -129,35 +130,12 @@ async function main() {
     if (args.only.size && !args.only.has(s.id)) continue;
     const st = meta.perSource[s.id];
     ran.add(s.id);
-    st.lastAttempt = isoNow();
-    st.error = null;
-    st.skipped = null;
-    st.notes = [];
-    const started = Date.now();
     process.stdout.write(`  ${s.id.padEnd(12)} `);
-    try {
-      const r = await s.run(ctx);
-      st.ms = Date.now() - started;
-      st.rows = r.rows;
-      st.calls = r.calls;
-      st.bytes = r.bytes ?? 0;
-      st.notes = r.notes;
-      const sk = r.notes.find((n) => n.startsWith("skipped:"));
-      if (sk) {
-        st.skipped = sk.replace(/^skipped:\s*/, "");
-        log(`skipped (${st.skipped})`);
-      } else {
-        st.lastSuccess = isoNow();
-        ok += 1;
-        log(`ok  ${String(r.rows).padStart(7)} rows  ${String(r.calls).padStart(4)} calls  ${(st.ms / 1000).toFixed(1)}s${r.bytes ? `  ${(r.bytes / 1e9).toFixed(2)} GB` : ""}`);
-      }
-      for (const n of r.notes) if (!n.startsWith("skipped:")) log(`${"".padEnd(15)}· ${n}`);
-    } catch (e) {
-      st.ms = Date.now() - started;
-      st.error = (e as Error).message.slice(0, 300);
-      failed += 1;
-      log(`FAILED  ${st.error}`);
-    }
+    const out = await runSource(s, ctx, st);
+    if (out.kind === "ok") ok += 1;
+    if (out.kind === "failed") failed += 1;
+    log(out.line);
+    for (const n of st.notes) if (!n.startsWith("skipped:")) log(`${"".padEnd(15)}· ${n}`);
     save();
   }
   if (!args.dryRun) {
