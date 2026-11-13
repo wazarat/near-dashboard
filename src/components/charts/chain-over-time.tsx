@@ -77,12 +77,21 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
       const { start, from } = dataStart(d, v);
       return { dates: d.slice(start), values: v.slice(start), from };
     };
+    // Aurora has no daily revenue series, and a series that is zero or blank on every day in view (Aurora's
+    // protocol fees since late September 2026) says nothing, so the panel shows NEAR alone at full height.
+    const chainsFor = (p: (typeof PANELS)[number]): Chain[] => {
+      if (p.key === "revenue") return ["near"];
+      const { values } = panelData("aurora", p.key, p.kind);
+      return values.some((v) => v !== null && v !== 0) ? ["near", "aurora"] : ["near"];
+    };
     return (
       <>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {PANELS.map((p) => (
-            <div key={p.key} className="rounded-lg border border-ink-700/40 p-2">
-              {(p.key === "revenue" ? (["near"] as Chain[]) : (["near", "aurora"] as Chain[])).map((chain) => {
+          {PANELS.map((p) => {
+            const chains = chainsFor(p);
+            return (
+            <div key={p.key} className="rounded-lg border border-ink-700/40 p-2" data-panel={p.key} data-chains={chains.join(" ")}>
+              {chains.map((chain) => {
                 const { dates, values, from } = panelData(chain, p.key, p.kind);
                 const level = p.kind === "line";
                 const stats = level ? rangeStats(dates, values, { minStart: MIN_USD_START }) : null;
@@ -100,7 +109,7 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
                       values={values}
                       kind={p.kind}
                       primaryLabel={`${CHAIN_LABEL[chain]} ${p.label}`}
-                      height={p.key === "revenue" ? nearHeight + auroraHeight + 28 : chain === "near" ? nearHeight : auroraHeight}
+                      height={chains.length === 1 ? nearHeight + auroraHeight + 28 : chain === "near" ? nearHeight : auroraHeight}
                       color={CHAIN_COLOR[chain]}
                       format={p.count ? fmtCompact : fmtUsd}
                       yDomain={level && !frame.startAtZero ? fittedDomain(values) : undefined}
@@ -113,8 +122,14 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
                   </div>
                 );
               })}
+              {chains.length === 1 && p.key !== "revenue" && (
+                <p className="mt-1 text-label text-ink-300" data-testid="aurora-hidden">
+                  Aurora reports no {p.label.toLowerCase()} over this range
+                </p>
+              )}
             </div>
-          ))}
+            );
+          })}
         </div>
         <RangeBrush dates={levelDates} preview={sliceTail(chainData.near.tvl, levelN)} color="var(--chain-near)" />
         <p className="mt-2 text-xs text-ink-300">
@@ -133,7 +148,7 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
       subtitle={subtitle}
       scope="whole-chain"
       level
-      info="DefiLlama chain-level series. Default chain TVL (excludes liquid staking and bridges), and daily DEX volume, protocol fees and protocol revenue summed across every protocol on the chain. Gas fees are the chain's own gas from DefiLlama's chain fee summary, which the protocol sum leaves out. Transactions come from NearBlocks for NEAR. Aurora's come from receipts to the aurora account in the NEAR BigQuery public dataset, which match Aurora Blockscout's daily transactions within about 1%, with Blockscout for any later day; that history starts on Nov 8, 2025, so the Aurora panel starts there. A panel whose data starts after the range does is clipped to its first day and says so. A day a source reports as 0 where that cannot be true (gas fees, transactions) is drawn as a gap, not a dip. TVL keeps at least 90 days in view; flows follow this card's range control and exclude the current partial day."
+      info="DefiLlama chain-level series. Default chain TVL (excludes liquid staking and bridges), and daily DEX volume, protocol fees and protocol revenue summed across every protocol on the chain. Gas fees are the chain's own gas from DefiLlama's chain fee summary, which the protocol sum leaves out. Transactions come from NearBlocks for NEAR. Aurora's come from receipts to the aurora account in the NEAR BigQuery public dataset, which match Aurora Blockscout's daily transactions within about 1%, with Blockscout for any later day; that history starts on Nov 8, 2025, so the Aurora panel starts there. A panel whose data starts after the range does is clipped to its first day and says so. An Aurora series that is zero or blank on every day in the range, such as protocol fees since late September 2026, is left out of its panel, which then shows NEAR alone. A day a source reports as 0 where that cannot be true (gas fees, transactions) is drawn as a gap, not a dip. TVL keeps at least 90 days in view; flows follow this card's range control and exclude the current partial day."
       actions={<RangeControl value={range} onChange={onRangeChange} ariaLabel="Chain over time range" />}
       source="DefiLlama chain TVL, the NEAR and Aurora DEX, fees and revenue overviews and chain fee summaries, NearBlocks and Aurora Blockscout transactions, daily"
       footer={<TvlNote />}

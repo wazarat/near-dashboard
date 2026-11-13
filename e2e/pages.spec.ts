@@ -673,6 +673,19 @@ test("KPI tiles count the projects in each sum and list them in the info pop-up"
   await expect(tile("30d DEX volume without NEAR Intents")).toContainText(/NEAR Intents \$[\d.]+[KMB] left out/);
 });
 
+test("Chain over time leaves out an Aurora series with no data in the range", async ({ page }) => {
+  await page.goto("/");
+  const card = page.locator('[data-chart-card="Chain over time"]');
+  await expect(card.locator("[data-panel]")).toHaveCount(6, { timeout: 15_000 });
+  await expect(card.locator('[data-panel="revenue"]')).toHaveAttribute("data-chains", "near");
+  for (const panel of await card.locator("[data-panel]").all()) {
+    const key = await panel.getAttribute("data-panel");
+    const alone = (await panel.getAttribute("data-chains")) === "near";
+    // A NEAR-only panel other than revenue says why Aurora is missing; a two-chain panel does not.
+    await expect(panel.getByTestId("aurora-hidden")).toHaveCount(alone && key !== "revenue" ? 1 : 0);
+  }
+});
+
 test("KPI tiles use the short coverage text and the range line sits under its chart", async ({ page }, info) => {
   await page.goto("/");
   const subs = page.getByTestId("kpi-sub");
