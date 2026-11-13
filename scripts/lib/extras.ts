@@ -84,6 +84,15 @@ export function loadExtras(projects: Project[], mapRowsOf: Map<string, MapRow[]>
   }
 
   const part = (asOf: string | undefined, values: LivePart["values"] | undefined): LivePart[] => (asOf && values && Object.keys(values).length ? [{ values, asOf }] : []);
+  /** Pool APYs are dated by the yields read; supplied, borrowed, utilization and borrow APY by the day /lendBorrow last answered. */
+  const LEND_KEYS = new Set(["utilization", "borrowApy"]);
+  const yieldParts = (values: LivePart["values"] | undefined): LivePart[] => {
+    if (!values || !yields) return [];
+    const lendAsOf = yields.lendAsOf ?? yields.asOf;
+    const pool = Object.fromEntries(Object.entries(values).filter(([k]) => !LEND_KEYS.has(k))) as LivePart["values"];
+    const lend = Object.fromEntries(Object.entries(values).filter(([k]) => LEND_KEYS.has(k))) as LivePart["values"];
+    return [...part(yields.asOf, pool), ...part(lendAsOf, lend)];
+  };
 
   return {
     countedOn: st.countedOn,
@@ -97,7 +106,7 @@ export function loadExtras(projects: Project[], mapRowsOf: Map<string, MapRow[]>
     partsFor(p: Project): LivePart[] {
       return [
         ...part(stable?.asOf, st.values.get(p.name)),
-        ...part(yields?.asOf, yv.get(p.name)),
+        ...yieldParts(yv.get(p.name)),
         ...part(gecko?.asOf, gv.get(p.name)),
         ...part(tokens?.asOf, tv.get(p.name)),
         ...(holderParts.get(p.name) ?? []),

@@ -33,6 +33,8 @@ export interface YieldPoolSnap {
 export interface YieldsFile {
   asOf: string;
   pools: YieldPoolSnap[];
+  /** The day the lending fields (supplied, borrowed, borrow APY) were last read. Older than asOf when /lendBorrow failed and the last good values were kept. */
+  lendAsOf?: string;
 }
 
 export interface HackSnap {

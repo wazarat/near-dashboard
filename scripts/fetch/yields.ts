@@ -6,7 +6,7 @@
 import path from "node:path";
 import type { YieldPoolSnap, YieldsFile } from "../../src/lib/extra-types";
 import { HISTORY } from "../lib/paths";
-import { writeJsonStable } from "../lib/store";
+import { readJson, writeJsonStable } from "../lib/store";
 import type { Ctx, RunResult } from "./context";
 import { createClient } from "./http";
 
@@ -50,12 +50,39 @@ export function parseYields(pools: { data?: RawPool[] }, lend: RawLend[]): Yield
     .sort((a, b) => a.pool.localeCompare(b.pool));
 }
 
+/**
+ * When /lendBorrow cannot be read, each pool keeps the lending fields of the last good file, and `lendAsOf` stays
+ * that file's date, so the site shows those figures with their date instead of dropping them or calling them current.
+ */
+export function keepLastLend(parsed: YieldPoolSnap[], prev: YieldsFile | null): { pools: YieldPoolSnap[]; lendAsOf: string | null } {
+  if (!prev) return { pools: parsed, lendAsOf: null };
+  const old = new Map(prev.pools.map((p) => [p.pool, p]));
+  const pools = parsed.map((p) => {
+    const o = old.get(p.pool);
+    return o ? { ...p, totalSupplyUsd: o.totalSupplyUsd, totalBorrowUsd: o.totalBorrowUsd, apyBaseBorrow: o.apyBaseBorrow } : p;
+  });
+  return { pools, lendAsOf: prev.lendAsOf ?? prev.asOf };
+}
+
 export async function run(ctx: Ctx): Promise<RunResult> {
   const client = createClient({ name: "yields", minIntervalMs: 1000, timeoutMs: 180_000 });
   const pools = await client.getJson<{ data?: RawPool[] }>("https://yields.llama.fi/pools");
-  const lend = await client.getJson<RawLend[]>("https://yields.llama.fi/lendBorrow");
-  const parsed = parseYields(pools, lend);
-  const file: YieldsFile = { asOf: ctx.today, pools: parsed };
+  const notes: string[] = [];
+  let lend: RawLend[] | null = null;
+  try {
+    lend = await client.getJson<RawLend[]>("https://yields.llama.fi/lendBorrow");
+  } catch (e) {
+    notes.push(`lendBorrow failed, kept the last good lending figures: ${(e as Error).message.split("\n")[0].slice(0, 120)}`);
+  }
+  let parsed = parseYields(pools, lend ?? []);
+  let lendAsOf: string = ctx.today;
+  if (!lend) {
+    const kept = keepLastLend(parsed, readJson<YieldsFile | null>(FILE, null));
+    parsed = kept.pools;
+    lendAsOf = kept.lendAsOf ?? ctx.today;
+  }
+  const file: YieldsFile = { asOf: ctx.today, pools: parsed, ...(lendAsOf !== ctx.today ? { lendAsOf } : {}) };
   if (!ctx.dryRun) writeJsonStable(FILE, file);
-  return { rows: parsed.length, calls: client.stats().calls, notes: [`${parsed.length} pools on NEAR and Aurora, ${parsed.filter((p) => p.totalSupplyUsd !== null).length} lending markets`] };
+  notes.unshift(`${parsed.length} pools on NEAR and Aurora, ${parsed.filter((p) => p.totalSupplyUsd !== null).length} lending markets${lendAsOf !== ctx.today ? ` (lending figures from ${lendAsOf})` : ""}`);
+  return { rows: parsed.length, calls: client.stats().calls, notes };
 }
