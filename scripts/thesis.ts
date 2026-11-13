@@ -16,6 +16,7 @@ import { BQ_BACKFILL_MAX_DEFAULT } from "./fetch/bigquery";
 import { readDaily as readIntentsDaily } from "./fetch/intents";
 import { HISTORY, OUT, ROOT } from "./lib/paths";
 import { readJson } from "./lib/store";
+import { readTablesUsedInput, tablesUsedMarkdown } from "./lib/tables-used";
 import { SPECS, sqlSpec } from "../src/lib/query-specs";
 
 const MAX_LAG = 8;
@@ -467,6 +468,7 @@ function main() {
       return `- **${v.label}** (${v.intentsWins} for Intents, ${v.priceWins} for price). ${v.description} ${cells.join("; ")}.`;
     })
     .join("\n");
+  const tablesUsed = tablesUsedMarkdown(readTablesUsedInput(ROOT));
   const sourceRows = USAGE.map((u) => `| ${u.label} | ${u.source} | ${usageWindows[u.key].ref} | ${usageWindows[u.key].start ?? "n/a"} | ${usageWindows[u.key].end ?? "n/a"} | ${usageWindows[u.key].weeks} |`).join("\n");
   const checked = USAGE.filter((u) => crossCheck[u.key]);
   const crossLines = checked
@@ -515,6 +517,7 @@ function main() {
     oosTable: oosRows,
     robustnessTable: robRows,
     sourceTable: sourceRows,
+    tablesUsed,
     explorerStatement,
     explorerConclusion: explorerTest.conclusion,
     explorerTable: explorerRows || "| n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a |",
@@ -524,13 +527,17 @@ function main() {
     changeMyMind: changeMyMind.map((l) => `- ${l}`).join("\n"),
     gaps: gaps.map((l) => `- ${l}`).join("\n"),
   };
+  // A function as the replacement, so "$" in a generated value (amounts in USD) is never read as a pattern.
   const md = tpl.replace(/\{\{(\w+)\}\}/g, (_, k: string) => fill[k] ?? `{{${k}}}`);
   fs.writeFileSync(mdFile, md);
   // README.md carries the same as-of date between markers, so the front page never claims fresher data than the files hold.
   const readmeFile = path.join(ROOT, "README.md");
   if (fs.existsSync(readmeFile)) {
     const readme = fs.readFileSync(readmeFile, "utf8");
-    const next = readme.replace(/<!-- data-as-of -->[\s\S]*?<!-- \/data-as-of -->/, `<!-- data-as-of -->Data as of ${end}, the last complete UTC day in the committed raw files.<!-- /data-as-of -->`);
+    const next = readme
+      .replace(/<!-- data-as-of -->[\s\S]*?<!-- \/data-as-of -->/, () => `<!-- data-as-of -->Data as of ${end}, the last complete UTC day in the committed raw files.<!-- /data-as-of -->`)
+      // The same "Tables used" block as THESIS.md, so the two cannot drift.
+      .replace(/<!-- tables-used -->[\s\S]*?<!-- \/tables-used -->/, () => `<!-- tables-used -->\n${tablesUsed}\n<!-- /tables-used -->`);
     if (next !== readme) fs.writeFileSync(readmeFile, next);
   }
   console.log(`  thesis: ${weeklyDates.length} weeks ${start}..${end}, cutoff ${cutoff}; lead-lag wins Intents ${iw} / price ${pw} / ties ${ties}; OOS wins Intents ${oiw} / price ${opw}; robustness ${riw}/${rpw}; verdict: ${supported}`);

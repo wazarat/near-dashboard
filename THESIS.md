@@ -8,6 +8,80 @@ Cross-chain volume settled through NEAR Intents is a better leading indicator of
 
 **Result as of 2026-11-12: partly supported. Intents volume is the stronger positive lead for 2 of 5 usage series (0 for price, 3 inconclusive), and it wins 2 out-of-sample comparisons to price's 1, with the lead on 2 of 2 contract-level series (function calls, contracts called; 52 weeks) and on 0 of 3 chain-level counts (transactions, active accounts, new accounts; 100 weeks).**
 
+## Tables used
+
+Dataset `bigquery-public-data.crypto_near_mainnet_us`. All 3 queries filter on the `block_date` partition column with `WHERE block_date BETWEEN @start AND @end`; each job is dry-run first and runs with `maximumBytesBilled` set (`scripts/fetch/bigquery.ts`).
+
+| Table | Query | Columns read | Used for | Cached result dates | Last daily refresh (2026-11-13) | Backfills |
+|---|---|---|---|---|---|---|
+| `transactions` | `queries/daily_chain.sql` | `block_date` DATE, `signer_account_id` STRING, `receiver_account_id` STRING | daily transactions, active accounts (distinct signers) and distinct receivers; the thesis uses the first two | 2024-12-10 to 2026-11-12 (59 files in `data/raw/bigquery/`) | 0.10 GB | 37.90 GB for 2025-11-08 to 2026-11-07; 97.20 GB for 2024-12-10 to 2025-11-07 |
+| `execution_outcomes` | `queries/daily_gas.sql` | `block_date` DATE, `gas_burnt` FLOAT64, `tokens_burnt` FLOAT64, `executor_account_id` STRING | gas burnt per tracked account for the gas fee figures on the site; not used in the thesis | 2026-08-15 to 2026-11-12 (3 files in `data/raw/bigquery/`) | 18.50 GB | none |
+| `receipt_actions` | `queries/daily_receipts.sql` | `block_date` DATE, `signer_account_id` STRING, `action_kind` STRING, `receipt_receiver_account_id` STRING | daily function calls, contracts called, distinct signers, CREATE_ACCOUNT and DEPLOY_CONTRACT counts, and calls per tracked account; the thesis uses function calls and contracts called | 2025-11-08 to 2026-11-12 (35 files in `data/raw/bigquery/`) | 0.90 GB | 206.60 GB for 2025-11-08 to 2026-11-07 |
+
+- The last daily refresh (2026-11-13, 5 jobs, figures from `data/history/_meta.json perSource.bigquery (per query rounded to 0.1 GB)`) scanned 19.35 GB in total.
+- The backfill of 2025-11-08 to 2026-11-07 (run 2026-11-08, 54 jobs, figures from `logs/bigquery-backfill.log`) scanned 244.49 GB in total.
+- The backfill of 2024-12-10 to 2025-11-07 (run 2026-11-13, 24 jobs) scanned 97.20 GB in total.
+
+Bytes are the ones BigQuery reported for the jobs, kept in `data/history/bq-usage.json`; `npm run bq:estimate` dry-runs every query without reading data.
+
+### Sample query
+
+`queries/daily_chain.sql` as it ran for the first cached chunk, with `@start` and `@end` filled in:
+
+```sql
+-- Daily chain activity from signed transactions.
+-- Partition filter on block_date keeps the scan to the requested window.
+SELECT
+  block_date,
+  COUNT(*) AS transactions,
+  COUNT(DISTINCT signer_account_id) AS active_accounts,
+  COUNT(DISTINCT receiver_account_id) AS distinct_receivers
+FROM `bigquery-public-data.crypto_near_mainnet_us.transactions`
+WHERE block_date BETWEEN DATE '2024-12-10' AND DATE '2024-12-23'
+GROUP BY block_date
+ORDER BY block_date
+```
+
+Dry run: 5.97 GB (`logs/bigquery-backfill-2024-12-10_2025-11-07.log`). First three rows of its cached output, `data/raw/bigquery/daily_chain_2024-12-10_2024-12-23.csv`:
+
+| block_date | transactions | active_accounts | distinct_receivers |
+|---|---|---|---|
+| 2024-12-10 | 8979346 | 949143 | 3346365 |
+| 2024-12-11 | 8399830 | 938360 | 3337112 |
+| 2024-12-12 | 9551708 | 968516 | 3565046 |
+
+### NEAR Intents Explorer API
+
+One endpoint, read page by page. The JWT comes from the `NEAR_INTENTS_JWT` environment variable and is never written to a file or a log.
+
+```text
+GET https://explorer.near-intents.org/api/v0/transactions
+  ?numberOfTransactions=1000
+  &direction=next                 # older rows
+  &lastDepositAddress=<cursor>    # depositAddress of the last row of the previous page
+  &lastDepositMemo=<cursor>       # depositMemo of that row, omitted when null
+  &startTimestampUnix=<unix>      # optional window bounds
+  &endTimestampUnix=<unix>
+Authorization: Bearer $NEAR_INTENTS_JWT
+Rate limit: 1 request / 5 s, at most 1000 rows per page
+-> rows[].{depositAddress, depositMemo, status, createdAt, originAsset, destinationAsset,
+           amountInUsd, amountOutUsd, recipient, referral, appFees[].{recipient, fee}}
+```
+
+| Field | Used for |
+|---|---|
+| `createdAt` | UTC day of the swap |
+| `status` | only `SUCCESS` rows count as volume; `REFUNDED`, `FAILED` and `INCOMPLETE_DEPOSIT` give the rates |
+| `amountInUsd` | swap volume, summed per day |
+| `amountOutUsd` | volume on the destination side |
+| `originAsset`, `destinationAsset` | routes, chains and assets |
+| `referral` | volume per referring app |
+| `appFees[].recipient`, `appFees[].fee` | fee recipients and app fee rates |
+| `recipient` | kept only as a 16-character SHA-256 prefix, to count distinct recipients |
+| `depositAddress`, `depositMemo` | row identity and the paging cursor |
+
+Rows are aggregated per UTC day into `data/raw/intents/daily/YYYY-MM-DD.json` (`scripts/fetch/intents.ts`, `aggregateDay`). It covers 1Click swaps only.
+
 ## Data and method
 
 - Window: 2024-12-10 to 2026-11-12 (100 ISO weeks). Intents volume comes from DefiLlama's NEAR Intents adapter (all channels, daily, since 2024-12-10). Usage comes from the NEAR BigQuery public dataset (transactions and active accounts over the whole window; function calls and distinct contracts called over the last 52 weeks, 2025-11-08 to 2026-11-12) and from NearBlocks daily charts (new accounts), series by series as in the table below. Price is NearBlocks' daily NEAR price (DefiLlama coins as a cross-check).

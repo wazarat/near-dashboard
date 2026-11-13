@@ -8,6 +8,10 @@ Cross-chain volume settled through NEAR Intents is a better leading indicator of
 
 **Result as of {{asOf}}: {{headline}}**
 
+## Tables used
+
+{{tablesUsed}}
+
 ## Data and method
 
 - Window: {{windowStart}} to {{windowEnd}} ({{weeks}} ISO weeks). Intents volume comes from DefiLlama's NEAR Intents adapter (all channels, daily, since 2024-12-10). Usage comes from the NEAR BigQuery public dataset (transactions and active accounts over the whole window; function calls and distinct contracts called over the last {{bqWeeks}} weeks, {{bqStart}} to {{bqEnd}}) and from NearBlocks daily charts (new accounts), series by series as in the table below. Price is NearBlocks' daily NEAR price (DefiLlama coins as a cross-check).
