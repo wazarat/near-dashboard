@@ -103,3 +103,29 @@ jobs:
           git commit -m "data: refresh $(date -u +%Y-%m-%d)"
           git pull --rebase origin main
           git push origin HEAD:main
+
+      # Writes a SHA-256 fingerprint of the committed evidence and of the rebuilt outputs to NEAR mainnet
+      # (SocialDB, canhav-atlas/anchors/<date>), signed by a function-call key that can only call `set` on
+      # social.near. It never fails the job: a missing secret, a failed write or a low balance is recorded
+      # under `anchor` in data/history/_meta.json. See README, "Verify the evidence".
+      - name: Anchor the evidence on NEAR
+        continue-on-error: true
+        env:
+          NEAR_ANCHOR_ACCOUNT_ID: ${{ secrets.NEAR_ANCHOR_ACCOUNT_ID }}
+          NEAR_ANCHOR_PRIVATE_KEY: ${{ secrets.NEAR_ANCHOR_PRIVATE_KEY }}
+          NEAR_RPC_URL: ${{ vars.NEAR_RPC_URL }}
+        run: |
+          git config user.name "Wazarat Hussain"
+          git config user.email "wazarat100@gmail.com"
+          git pull --rebase origin main
+          npm run rebuild
+          DATE=$(date -u +%Y-%m-%d)
+          npm run anchor:write -- --date "$DATE" --soft
+          git add data/anchors data/history/_meta.json
+          if git diff --cached --quiet; then
+            echo "No anchor changes."
+            exit 0
+          fi
+          git commit -m "data: anchor $DATE"
+          git pull --rebase origin main
+          git push origin HEAD:main
