@@ -12,7 +12,7 @@ import { CAT } from "@/lib/colors";
 import { alignByFirstData, indexTo100, numericMetric, seriesFor } from "@/lib/compare";
 import type { Align } from "@/lib/filters";
 import { fmtDateShort, METRIC_LABEL } from "@/lib/format";
-import { RANGE_LONG, rangeDays, sliceTail, type Range } from "@/lib/ranges";
+import { RANGE_THE, rangeDays, sliceTail, type Range } from "@/lib/ranges";
 import type { MetricKey, Project, SeriesFile } from "@/lib/types";
 import { useSeries } from "@/lib/use-series";
 
@@ -82,7 +82,7 @@ export function CompareOverlay({ projects, metric, range, onRangeChange, align, 
   const takeaway = !file
     ? "Loading daily history."
     : empty
-      ? `No overlapping daily ${label.toLowerCase()} history for these projects over the ${RANGE_LONG[range]}.`
+      ? `No overlapping daily ${label.toLowerCase()} history for these projects over ${RANGE_THE[range]}.`
       : finish.length >= 2
         ? `${finish[0].p.name} ends at ${finish[0].v.toFixed(0)} against ${finish[finish.length - 1].p.name} at ${finish[finish.length - 1].v.toFixed(0)} (start = 100${align === "days" ? ", each on its own first day with data" : anchor ? `, anchored on ${fmtDateShort(anchor)}` : ""}).`
         : finish.length === 1

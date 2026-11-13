@@ -237,6 +237,18 @@ for (const url of ["/", "/intents/"]) {
   });
 }
 
+test("on All history, panels whose data starts later are clipped and labelled, and TVL never shows a change from near zero", async ({ page }) => {
+  await page.goto("/?cr=all&ar=all");
+  const cot = page.locator('[data-chart-card="Chain over time"]');
+  await expect(cot.getByTestId("range-stats").first()).toBeVisible({ timeout: 15_000 });
+  await expect(cot.getByTestId("panel-from").filter({ hasText: "Aurora, from Nov 8, 2025" })).toHaveCount(1);
+  await expect(page.getByText("covers the all history")).toHaveCount(0);
+  const stats = (await cot.getByTestId("range-stats").first().textContent()) ?? "";
+  const pct = Number((stats.match(/([+-][\d,.]+)%/)?.[1] ?? "0").replace(/,/g, ""));
+  expect(Math.abs(pct), stats).toBeLessThan(100_000);
+  await expect(page.locator('[data-chart-card="Chain activity"]').getByTestId("panel-from").first()).toBeVisible();
+});
+
 test("the expanded Chain over time stacks its notes below the panels and its range control works after a zoom", async ({ page }) => {
   await page.setViewportSize({ width: 1536, height: 1000 });
   await page.goto("/?expand=chain-over-time&cr=all");

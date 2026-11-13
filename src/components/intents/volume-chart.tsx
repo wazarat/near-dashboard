@@ -13,7 +13,7 @@ import type { Scale } from "@/lib/filters";
 import { fmtDate, fmtDateShort, fmtInt, fmtMonth, fmtPct, fmtUsd, fmtUsdFull } from "@/lib/format";
 import type { Series } from "@/lib/history-types";
 import type { IntentsSummary } from "@/lib/intents";
-import { rangeDays, RANGE_LONG, sliceTail, type Range } from "@/lib/ranges";
+import { rangeDays, RANGE_THE, sliceTail, type Range } from "@/lib/ranges";
 import { EXPLORER_COLOR, EXPLORER_LABEL, EXPLORER_QUERY, LLAMA_COLOR, LLAMA_LABEL, LLAMA_QUERY, TRANSFORM_QUERY } from "./labels";
 
 export interface VolumeRow {
@@ -88,7 +88,7 @@ export function VolumeChart({ data, range, onRangeChange, scale, onScaleChange }
     const llama30Sum = llama30.length ? llama30.reduce((a, [, v]) => a + v, 0) : null;
     const llama30Text = llama30Sum === null ? "DefiLlama has no 30-day total yet" : `DefiLlama's ${llama30.length < 30 ? `${llama30.length}-day` : "30-day"} total is ${fmtUsd(llama30Sum)}`;
     if (both.length === 0) {
-      return `DefiLlama shows ${fmtUsd(llamaWindow)} of NEAR Intents volume over the ${RANGE_LONG[range]}; no complete 1Click Explorer day overlaps it yet, so no share can be computed. ${llama30Text}.`;
+      return `DefiLlama shows ${fmtUsd(llamaWindow)} of NEAR Intents volume over ${RANGE_THE[range]}; no complete 1Click Explorer day overlaps it yet, so no share can be computed. ${llama30Text}.`;
     }
     const ex = both.reduce((a, r) => a + (r.explorer ?? 0), 0);
     const ll = both.reduce((a, r) => a + (r.llama ?? 0), 0);

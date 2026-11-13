@@ -5,6 +5,8 @@ import { parseTransactionsChart } from "../scripts/fetch/blockscout";
 import { parseFeeSummary } from "../scripts/fetch/defillama";
 import { parseCsv } from "../scripts/lib/csv";
 import { flowGaps, gasFeeGaps, txnGaps } from "../src/lib/chain-gaps";
+import { spliceHistory } from "../src/lib/chain-gaps";
+import { dataStart } from "../src/lib/chart-frame";
 
 const fixture = (...p: string[]) => path.join(__dirname, "fixtures", ...p);
 const rows = parseCsv(fs.readFileSync(fixture("chain-daily-2026-11-12.csv"), "utf8"));
@@ -60,5 +62,20 @@ describe("new chain parsers", () => {
     expect(s.find(([d]) => d === "2026-11-10")).toEqual(["2026-11-10", 0]);
     expect(s.map(([d]) => d)).toEqual([...s.map(([d]) => d)].sort());
     expect(parseTransactionsChart({ chart_data: [{ date: "bad", transactions_count: 1 }, { date: "2026-11-01", transactions_count: null }] })).toEqual([]);
+  });
+});
+
+describe("Aurora transaction history", () => {
+  it("uses BigQuery receipts to aurora through their last day, then Blockscout", () => {
+    const bq: Array<[string, number]> = [["2026-11-08", 6156], ["2026-11-09", 6044], ["2026-11-10", 6738]];
+    const bs: Array<[string, number]> = [["2026-11-09", 6055], ["2026-11-10", 0], ["2026-11-11", 7001]];
+    expect(spliceHistory(bq, bs)).toEqual([["2026-11-08", 6156], ["2026-11-09", 6044], ["2026-11-10", 6738], ["2026-11-11", 7001]]);
+    expect(spliceHistory([], bs)).toEqual(bs);
+  });
+  it("clips a panel to where its data starts and says from when", () => {
+    const dates = ["2020-07-21", "2020-07-22", "2025-11-08", "2025-11-09"];
+    expect(dataStart(dates, [null, null, 5, 6])).toEqual({ start: 2, from: "2025-11-08" });
+    expect(dataStart(dates, [null, null, null, null], [1, 2, 3, 4])).toEqual({ start: 0, from: null });
+    expect(dataStart(dates, [null, null, null, null])).toEqual({ start: 0, from: null });
   });
 });

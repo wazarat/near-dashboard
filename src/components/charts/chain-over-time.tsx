@@ -4,10 +4,10 @@ import { ChartCard, EmptyState, TvlNote } from "@/components/atlas/chart-card";
 import { frameHeight, type ChartFrame } from "@/components/atlas/chart-frame";
 import { RangeBrush } from "@/components/atlas/range-brush";
 import { RangeControl } from "@/components/atlas/range-control";
-import { brushSlice, fittedDomain, levelWindow, rangeStats } from "@/lib/chart-frame";
+import { brushSlice, fittedDomain, levelWindow, rangeStats, changePhrase, MIN_USD_START, dataStart } from "@/lib/chart-frame";
 import { chainData, meta, sql } from "@/lib/data";
-import { fmtCompact, fmtDateShort, fmtPctSigned, fmtUsd } from "@/lib/format";
-import { rangeDays, RANGE_LONG, sliceTail, type Range } from "@/lib/ranges";
+import { fmtCompact, fmtDateShort, fmtPctSigned, fmtUsd, fmtDate } from "@/lib/format";
+import { rangeDays, RANGE_LONG, RANGE_THE, sliceTail, type Range } from "@/lib/ranges";
 import type { ChainSeriesKey } from "@/lib/types";
 import type { Project } from "@/lib/types";
 import { MiniSeries } from "./mini-series";
@@ -47,11 +47,14 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
   const near = chainData.latest.near;
   const aurora = chainData.latest.aurora;
   const chg = (k: ChainSeriesKey) => near.change[k]?.[range === "7d" ? "d7" : range === "30d" ? "d30" : "d90"] ?? null;
+  // All history compares from the first day chain TVL reached $1M, not from its first near-zero day.
+  const allStats = range === "all" ? rangeStats(chainData.dates, chainData.near.tvl, { minStart: MIN_USD_START }) : null;
+  const tvlChange = allStats ? changePhrase(allStats, total, fmtPctSigned, fmtDate) : `${fmtPctSigned(chg("tvl"))} over ${RANGE_THE[range]}`;
   const takeaway =
     total === 0
       ? "Daily chain history appears after the first refresh run."
-      : `NEAR chain TVL ${fmtUsd(near.tvl)} (${fmtPctSigned(chg("tvl"))} over the ${RANGE_LONG[range]}), 30d volume ${fmtUsd(near.volume30d)}, 30d fees ${fmtUsd(near.fees30d)}; Aurora TVL ${fmtUsd(aurora.tvl)}.`;
-  const subtitle = total === 0 ? undefined : levelN !== flowN ? `TVL shown over ${levelN} days so the level has shape to read, flows follow the range control (${RANGE_LONG[range]})` : `Every panel covers the ${RANGE_LONG[range]}`;
+      : `NEAR chain TVL ${fmtUsd(near.tvl)} (${tvlChange}), 30d volume ${fmtUsd(near.volume30d)}, 30d fees ${fmtUsd(near.fees30d)}; Aurora TVL ${fmtUsd(aurora.tvl)}.`;
+  const subtitle = total === 0 ? undefined : levelN !== flowN ? `TVL shown over ${levelN} days so the level has shape to read, flows follow the range control (${RANGE_LONG[range]})` : `Every panel covers ${RANGE_THE[range]}`;
 
   const rows = levelDates.map((d, i) => {
     const r: Record<string, unknown> = { date: d };
@@ -68,10 +71,11 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
     const brushed = frame.brushRange !== null;
     const panelData = (chain: Chain, key: ChainSeriesKey, kind: "line" | "bar") => {
       const n = brushed || kind === "line" ? levelN : flowN;
-      return {
-        dates: brushSlice(sliceTail(chainData.dates, n), frame.brushRange),
-        values: brushSlice(sliceTail(chainData[chain][key], n), frame.brushRange),
-      };
+      const d = brushSlice(sliceTail(chainData.dates, n), frame.brushRange);
+      const v = brushSlice(sliceTail(chainData[chain][key], n), frame.brushRange);
+      // A series that starts later than the range is clipped to its first day and labelled, not squeezed into a spike.
+      const { start, from } = dataStart(d, v);
+      return { dates: d.slice(start), values: v.slice(start), from };
     };
     return (
       <>
@@ -79,14 +83,17 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
           {PANELS.map((p) => (
             <div key={p.key} className="rounded-lg border border-ink-700/40 p-2">
               {(p.key === "revenue" ? (["near"] as Chain[]) : (["near", "aurora"] as Chain[])).map((chain) => {
-                const { dates, values } = panelData(chain, p.key, p.kind);
+                const { dates, values, from } = panelData(chain, p.key, p.kind);
                 const level = p.kind === "line";
-                const stats = level ? rangeStats(dates, values) : null;
+                const stats = level ? rangeStats(dates, values, { minStart: MIN_USD_START }) : null;
                 return (
                   <div key={chain} className={chain === "aurora" ? "mt-2" : undefined}>
                     <div className="mb-1 flex items-center justify-between gap-2 text-xs">
                       <span className={chain === "near" ? "font-medium" : "sr-only"}>{p.label}</span>
-                      <span className="ml-auto text-ink-300">{CHAIN_LABEL[chain]}</span>
+                      <span className="ml-auto text-ink-300" data-testid={from ? "panel-from" : undefined}>
+                        {CHAIN_LABEL[chain]}
+                        {from ? `, from ${fmtDate(from)}` : ""}
+                      </span>
                     </div>
                     <MiniSeries
                       dates={dates}
@@ -100,7 +107,7 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
                     />
                     {stats && (
                       <p className="mt-1 text-label text-ink-300" data-testid="range-stats">
-                        Low {fmtUsd(stats.min)}, high {fmtUsd(stats.max)}, {fmtPctSigned(stats.change)} over {dates.length} days
+                        Low {fmtUsd(stats.min)}, high {fmtUsd(stats.max)}, {changePhrase(stats, dates.length, fmtPctSigned, fmtDate)}
                       </p>
                     )}
                   </div>
@@ -126,7 +133,7 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
       subtitle={subtitle}
       scope="whole-chain"
       level
-      info="DefiLlama chain-level series. Default chain TVL (excludes liquid staking and bridges), and daily DEX volume, protocol fees and protocol revenue summed across every protocol on the chain. Gas fees are the chain's own gas from DefiLlama's chain fee summary, which the protocol sum leaves out. Transactions come from NearBlocks for NEAR and Aurora Blockscout for Aurora. A day a source reports as 0 where that cannot be true (gas fees, transactions) is drawn as a gap, not a dip. TVL keeps at least 90 days in view; flows follow this card's range control and exclude the current partial day."
+      info="DefiLlama chain-level series. Default chain TVL (excludes liquid staking and bridges), and daily DEX volume, protocol fees and protocol revenue summed across every protocol on the chain. Gas fees are the chain's own gas from DefiLlama's chain fee summary, which the protocol sum leaves out. Transactions come from NearBlocks for NEAR. Aurora's come from receipts to the aurora account in the NEAR BigQuery public dataset, which match Aurora Blockscout's daily transactions within about 1%, with Blockscout for any later day; that history starts on Nov 8, 2025, so the Aurora panel starts there. A panel whose data starts after the range does is clipped to its first day and says so. A day a source reports as 0 where that cannot be true (gas fees, transactions) is drawn as a gap, not a dip. TVL keeps at least 90 days in view; flows follow this card's range control and exclude the current partial day."
       actions={<RangeControl value={range} onChange={onRangeChange} ariaLabel="Chain over time range" />}
       source="DefiLlama chain TVL, the NEAR and Aurora DEX, fees and revenue overviews and chain fee summaries, NearBlocks and Aurora Blockscout transactions, daily"
       footer={<TvlNote />}

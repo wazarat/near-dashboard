@@ -88,7 +88,7 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
       sub2: filteredView ? (allTvl && tvl !== null && tracked("tvl") > 0 ? `${fmtPct(tvl / allTvl)} of all summed TVL` : undefined) : chainTvl !== null ? `Chain TVL ${fmtUsd(chainTvl)}` : undefined,
       full: fmtUsdFull(tvl),
       empty: tracked("tvl") === 0,
-      info: `Sum of each protocol's TVL on NEAR and Aurora per DefiLlama. Double counts liquid staking and bridges; DefiLlama's default chain TVL excludes them (NEAR $174.9M, Aurora $3.8M on Nov 8, 2026). CEX reserves and borrowed funds are excluded. ${WHERE_HELP}`,
+      info: `Sum of each protocol's TVL on NEAR and Aurora per DefiLlama. Double counts liquid staking and bridges; DefiLlama's default chain TVL excludes them (NEAR $174.9M, Aurora $3.8M on Nov 8, 2026). CEX reserves and borrowed funds are excluded. TVL applies to DEXs, lending, liquid staking, yield, perps, RWA, bridges and prediction markets; launchpads and trading tools hold no deposits of their own. ${WHERE_HELP}`,
     },
     {
       label: "30d DEX volume",
@@ -97,7 +97,7 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
       full: fmtUsdFull(vol),
       empty: tracked("volume") === 0,
       sub2: "Including NEAR Intents",
-      info: `30-day DEX and bridge volume per DefiLlama, NEAR Intents included and counted once. NEAR Intents alone is about 92% of the chain total, so most charts default to a log scale. ${WHERE_HELP}`,
+      info: `30-day DEX and bridge volume per DefiLlama, NEAR Intents included and counted once. NEAR Intents alone is about 92% of the chain total, so most charts default to a log scale. Volume applies to DEXs, launchpads and trading tools, and to bridges only where they swap, which a DefiLlama volume listing shows. ${WHERE_HELP}`,
     },
     {
       label: "30d DEX volume without NEAR Intents",
@@ -113,7 +113,7 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
       sub: coverage("fees"),
       full: fmtUsdFull(fees),
       empty: tracked("fees") === 0,
-      info: `30-day fees paid by users per DefiLlama. The sum also takes in any project outside those sectors that reports fees, such as the NEAR chain's own row. ${WHERE_HELP}`,
+      info: `30-day fees paid by users per DefiLlama. The sum also takes in any project outside those sectors that reports fees, such as the NEAR chain's own row. Fees apply to DEXs, lending, liquid staking, yield, perps, launchpads, bridges, prediction markets and trading tools. Memecoins, AI agents, NFTs and games, social, DAOs and stablecoins earn offchain or have no protocol fee, so they are not counted as gaps. ${WHERE_HELP}`,
     },
     {
       label: "30d revenue",
@@ -121,7 +121,7 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
       sub: coverage("revenue"),
       full: fmtUsdFull(rev),
       empty: tracked("revenue") === 0,
-      info: `30-day protocol revenue per DefiLlama, the part of fees the protocol or its token keeps. ${WHERE_HELP}`,
+      info: `30-day protocol revenue per DefiLlama, the part of fees the protocol or its token keeps. Revenue applies only where the protocol keeps a share of fees, so Y counts projects with a DefiLlama fee listing, whose methodology says what the protocol keeps. ${WHERE_HELP}`,
     },
     {
       label: "Stablecoin supply",

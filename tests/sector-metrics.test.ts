@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import metaJson from "../src/data/generated/meta.json";
 import { toProject } from "../src/lib/parse";
-import { coverageWhereApplies, isMeasured, metricOf, projectMetrics, SECTOR_METRICS, sectorDef, valueState } from "../src/lib/sector-metrics";
+import { applies, coverageWhereApplies, isMeasured, metricOf, projectMetrics, SECTOR_METRICS, sectorDef, valueState } from "../src/lib/sector-metrics";
 import { isStaleAt } from "../src/lib/freshness";
 import type { Project } from "../src/lib/types";
 
@@ -45,7 +45,9 @@ describe("sector metric registry", () => {
     expect(valueState(dead, "volume")).toMatchObject({ state: "inactive", value: 50 });
     // Not-applicable rows never reach the project pop-up.
     const shown = (p: Project) => projectMetrics(p).filter((m) => m.state !== "not-applicable").map((m) => m.id);
-    expect(shown(mk("L", "Lending & Credit"))).toEqual(["totalDeposited", "borrowed", "tvl", "utilization", "borrowApy", "fees", "revenue"]);
+    // No fee listing, so revenue does not apply (the protocol's share of fees is unknown).
+    expect(shown(mk("L", "Lending & Credit"))).toEqual(["totalDeposited", "borrowed", "tvl", "utilization", "borrowApy", "fees"]);
+    expect(shown(mk("L2", "Lending & Credit", "Mainnet", { fees: 10 }))).toContain("revenue");
     // Token metrics only apply to a project with a token.
     expect(shown(mk("T", "Lending & Credit", "Mainnet", { token: "BRRR" }))).toContain("tokenHolders");
     // NEAR Intents' GeckoTerminal liquidity is a model, so it never shows (accuracy rule 6).
@@ -74,5 +76,24 @@ describe("sector metric registry", () => {
   it("calls a value older than three days old (accuracy rule 4)", () => {
     expect(isStaleAt("2026-11-08", "2026-11-11")).toBe(false);
     expect(isStaleAt("2026-11-07", "2026-11-11")).toBe(true);
+  });
+});
+
+describe("applicability by how projects earn", () => {
+  const has = (sector: string, id: Parameters<typeof applies>[1], extra: Partial<Project> = {}) => applies({ sector, token: "X", id: "p", extra: undefined, volume: 1, fees: 1, ...extra } as Project, id);
+  it("TVL applies to DEXs, lending, liquid staking, yield, perps, RWA, bridges and prediction markets only", () => {
+    for (const s of ["DEXs & Liquidity", "Lending & Credit", "Liquid Staking & Restaking", "Yield & Asset Management", "Perps, Options & Derivatives", "RWA & Tokenized Assets", "Bridges & Interoperability", "Prediction Markets"]) expect(has(s, "tvl"), s).toBe(true);
+    for (const s of ["Launchpads", "Trading Tools & Bots", "Memecoins & Community", "Wallets & Custody"]) expect(has(s, "tvl"), s).toBe(false);
+  });
+  it("fees apply to the fee-earning sectors and not to memecoins, AI agents, NFTs, social, DAOs or stablecoins", () => {
+    for (const s of ["DEXs & Liquidity", "Lending & Credit", "Liquid Staking & Restaking", "Yield & Asset Management", "Perps, Options & Derivatives", "Launchpads", "Bridges & Interoperability", "Prediction Markets", "Trading Tools & Bots"]) expect(has(s, "fees"), s).toBe(true);
+    for (const s of ["Memecoins & Community", "AI Agents", "NFTs, Gaming & Collectibles", "Social & Identity", "DAOs, Governance & Public Goods", "Stablecoins & Payments", "RWA & Tokenized Assets", "Infrastructure & Dev Tools"]) expect(has(s, "fees"), s).toBe(false);
+  });
+  it("revenue applies only with a fee listing, and bridge volume only where the bridge swaps", () => {
+    expect(has("DEXs & Liquidity", "revenue")).toBe(true);
+    expect(has("DEXs & Liquidity", "revenue", { fees: null })).toBe(false);
+    expect(has("Bridges & Interoperability", "volume")).toBe(true);
+    expect(has("Bridges & Interoperability", "volume", { volume: null })).toBe(false);
+    expect(has("DEXs & Liquidity", "volume", { volume: null })).toBe(true);
   });
 });

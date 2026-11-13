@@ -5,11 +5,11 @@ import { frameHeight, type ChartFrame } from "@/components/atlas/chart-frame";
 import { EstimateLabel } from "@/components/atlas/estimate-label";
 import { RangeBrush } from "@/components/atlas/range-brush";
 import { RangeControl } from "@/components/atlas/range-control";
-import { brushSlice } from "@/lib/chart-frame";
+import { brushSlice, dataStart } from "@/lib/chart-frame";
 import { chainData, sql } from "@/lib/data";
 import { SPECS } from "@/lib/query-specs";
-import { fmtCompact, fmtDateShort, fmtPct, fmtPctSigned } from "@/lib/format";
-import { rangeDays, RANGE_LONG, sliceTail, type Range } from "@/lib/ranges";
+import { fmtCompact, fmtDateShort, fmtPct, fmtPctSigned, fmtDate } from "@/lib/format";
+import { rangeDays, RANGE_THE, sliceTail, type Range } from "@/lib/ranges";
 import { selectionSeries, windowSum } from "@/lib/selection-series";
 import type { Project } from "@/lib/types";
 import { useSeries } from "@/lib/use-series";
@@ -42,7 +42,7 @@ export function ChainActivity({ range, onRangeChange, selection = null }: { rang
   const takeaway =
     total === 0
       ? "Chain activity appears after the first refresh run."
-      : `${fmtCompact(latest.txns)} transactions and ${fmtCompact(latest.activeAccounts)} active accounts on the last complete day (${fmtPctSigned(latest.activityChange.txns?.[key])} and ${fmtPctSigned(latest.activityChange.activeAccounts?.[key])} over the ${RANGE_LONG[range]}); ${bqDays ? `BigQuery covers the last ${bqDays} days and agrees with NearBlocks on transactions` : "BigQuery series not loaded yet"}.`;
+      : `${fmtCompact(latest.txns)} transactions and ${fmtCompact(latest.activeAccounts)} active accounts on the last complete day (${fmtPctSigned(latest.activityChange.txns?.[key])} and ${fmtPctSigned(latest.activityChange.activeAccounts?.[key])} over ${RANGE_THE[range]}); ${bqDays ? `BigQuery covers the last ${bqDays} days and agrees with NearBlocks on transactions` : "BigQuery series not loaded yet"}.`;
 
   const selCallsWindow = sel ? windowSum(windowDates.map((d) => selCalls.get(d) ?? null), n) : null;
   const chainCallsWindow = windowSum(sliceTail(bq.function_calls ?? [], n), n);
@@ -87,24 +87,33 @@ export function ChainActivity({ range, onRangeChange, selection = null }: { rang
           className="mb-2"
         />
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {panels.map((p) => (
-            <div key={p.label} className="rounded-lg border border-ink-700/40 p-2">
+          {panels.map((p) => {
+            // BigQuery-only panels start a year back; on a longer range they are clipped to their first day and labelled.
+            const { start, from } = p.bqOnly || p.pair ? dataStart(dates, p.nb, p.bq) : { start: 0, from: null };
+            return (
+              <div key={p.label} className="rounded-lg border border-ink-700/40 p-2">
               <div className="mb-1 flex items-start justify-between gap-2 text-xs">
                 <span className="font-medium">{p.label.includes("signers") ? <EstimateLabel note="Distinct signer accounts per day. People use several accounts and relayers hide the end user.">{p.label}</EstimateLabel> : p.label}</span>
+                {from && (
+                  <span className="shrink-0 text-ink-300" data-testid="panel-from">
+                    from {fmtDate(from)}
+                  </span>
+                )}
                 {selection && <span className="shrink-0 text-ink-300" data-testid="panel-scope">{p.selection ? "Selection" : "Whole chain"}</span>}
               </div>
               <MiniSeries
-                dates={dates}
-                values={p.nb}
+                dates={dates.slice(start)}
+                values={p.nb.slice(start)}
                 kind={p.kind}
                 primaryLabel={p.pair ? p.pair[0] : p.bqOnly ? "BigQuery" : "NearBlocks"}
                 height={height}
                 color={p.pair ? "var(--chain-aurora)" : p.bqOnly ? "var(--cat-1)" : "var(--series-usage)"}
                 format={(v) => fmtCompact(v)}
-                secondary={p.bq ? { values: p.bq, label: p.pair ? p.pair[1] : "BigQuery", color: p.pair ? "var(--series-intents)" : "var(--cat-1)" } : undefined}
+                secondary={p.bq ? { values: p.bq.slice(start), label: p.pair ? p.pair[1] : "BigQuery", color: p.pair ? "var(--series-intents)" : "var(--cat-1)" } : undefined}
               />
-            </div>
-          ))}
+              </div>
+            );
+          })}
         </div>
         <RangeBrush dates={windowDates} preview={sliceTail(nb.txns ?? [], n)} color="var(--series-usage)" />
         <p className="mt-2 text-xs text-ink-300">

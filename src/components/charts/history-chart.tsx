@@ -6,9 +6,9 @@ import { ChartTable, ChartTableToggle, type ChartView } from "@/components/atlas
 import { Segmented } from "@/components/ui/segmented";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { fittedDomain, levelWindow, rangeStats } from "@/lib/chart-frame";
+import { fittedDomain, levelWindow, rangeStats, changePhrase, MIN_USD_START } from "@/lib/chart-frame";
 import { NOT_TRACKED } from "@/lib/coverage";
-import { fmtCompact, fmtPctSigned, fmtUsd, METRIC_LABEL } from "@/lib/format";
+import { fmtCompact, fmtPctSigned, fmtUsd, METRIC_LABEL, fmtDate } from "@/lib/format";
 import { rangeDays, sliceTail, type Range } from "@/lib/ranges";
 import type { MetricKey, SeriesKey } from "@/lib/types";
 import { useSeries } from "@/lib/use-series";
@@ -46,7 +46,7 @@ export function HistoryChart({ projectId, range, onRangeChange, metric, height =
   const kind = level ? "line" : "bar";
   const label = level ? "TVL" : active === "calls" ? "Daily function calls" : `Daily ${METRIC_LABEL[active].replace("30d ", "")}`;
   const money = active !== "calls";
-  const stats = level ? rangeStats(dates, values) : null;
+  const stats = level ? rangeStats(dates, values, { minStart: MIN_USD_START }) : null;
 
   return (
     <div className="space-y-2">
@@ -83,7 +83,7 @@ export function HistoryChart({ projectId, range, onRangeChange, metric, height =
       )}
       {stats && view === "chart" && (
         <p className="text-label text-ink-300" data-testid="range-stats">
-          Low {fmtUsd(stats.min)}, high {fmtUsd(stats.max)}, {fmtPctSigned(stats.change)} over {dates.length} days
+          Low {fmtUsd(stats.min)}, high {fmtUsd(stats.max)}, {changePhrase(stats, dates.length, fmtPctSigned, fmtDate)}
         </p>
       )}
       <p className="text-xs text-ink-300">

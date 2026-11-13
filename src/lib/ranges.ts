@@ -5,6 +5,8 @@ export type Range = (typeof RANGES)[number];
 
 export const RANGE_LABEL: Record<Range, string> = { "7d": "7d", "30d": "30d", "90d": "90d", all: "All" };
 export const RANGE_LONG: Record<Range, string> = { "7d": "last 7 days", "30d": "last 30 days", "90d": "last 90 days", all: "all history" };
+/** The range as it reads after "over" or "covers": "the last 30 days", but "all history", never "the all history". */
+export const RANGE_THE: Record<Range, string> = { "7d": "the last 7 days", "30d": "the last 30 days", "90d": "the last 90 days", all: "all history" };
 
 export function rangeDays(range: Range, available: number): number {
   const n = range === "7d" ? 7 : range === "30d" ? 30 : range === "90d" ? 90 : available;

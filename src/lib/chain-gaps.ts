@@ -21,3 +21,17 @@ export function gasFeeGaps(fees: Values): Array<number | null> {
 export function flowGaps(values: Values, txns: Values): Array<number | null> {
   return values.map((v, i) => (v === 0 && (txns[i] === null || txns[i] === undefined || txns[i] === 0) ? null : v));
 }
+
+type Point = readonly [string, number];
+
+/**
+ * Aurora daily transactions: Aurora Blockscout returns only about the last 31 days, so the history comes from
+ * receipts to the aurora account in the NEAR BigQuery public dataset, which match Blockscout's daily
+ * transactions within about 1% where both exist. BigQuery is used through its last day and Blockscout after it.
+ */
+export function spliceHistory(history: ReadonlyArray<Point>, recent: ReadonlyArray<Point>): Array<[string, number]> {
+  const out = history.map(([d, v]) => [d, v] as [string, number]);
+  const last = out.length ? out[out.length - 1][0] : "";
+  for (const [d, v] of recent) if (d > last) out.push([d, v]);
+  return out;
+}

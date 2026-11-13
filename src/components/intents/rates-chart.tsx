@@ -11,7 +11,7 @@ import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/char
 import { Segmented } from "@/components/ui/segmented";
 import { fmtDate, fmtDateShort, fmtInt, fmtMonth, fmtPct } from "@/lib/format";
 import type { IntentsSummary } from "@/lib/intents";
-import { rangeDays, RANGE_LONG, sliceTail, type Range } from "@/lib/ranges";
+import { rangeDays, RANGE_THE, sliceTail, type Range } from "@/lib/ranges";
 import { EXPLORER_LABEL, EXPLORER_QUERY, TRANSFORM_QUERY } from "./labels";
 
 export interface RateRow {
@@ -119,7 +119,7 @@ export function RatesChart({ data, range, onRangeChange }: { data: IntentsSummar
       ) : (
         <div>
           <Legend className="mb-2" items={series.map((s) => ({ label: s.label, color: s.color, shape: "square" as const }))} />
-          <div style={{ height: frame.brush ? height + 32 : height }} className="w-full" role="img" aria-label={`Daily share of 1Click swap rows by status over the ${RANGE_LONG[range]}`}>
+          <div style={{ height: frame.brush ? height + 32 : height }} className="w-full" role="img" aria-label={`Daily share of 1Click swap rows by status over ${RANGE_THE[range]}`}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={rows} margin={{ top: 8, right: 8, bottom: frame.brush ? 4 : 0, left: 0 }} barCategoryGap={rows.length > 60 ? 0 : 2}>
                 <CartesianGrid vertical={false} stroke="var(--grid)" />

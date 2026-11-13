@@ -5,8 +5,8 @@ import { ChartCard, EmptyState, TvlNote } from "@/components/atlas/chart-card";
 import { frameHeight, type ChartFrame } from "@/components/atlas/chart-frame";
 import { RangeControl } from "@/components/atlas/range-control";
 import { Skeleton } from "@/components/ui/skeleton";
-import { brushSlice, fittedDomain, levelWindow, rangeStats } from "@/lib/chart-frame";
-import { fmtDateShort, fmtPct, fmtPctSigned, fmtUsd } from "@/lib/format";
+import { brushSlice, fittedDomain, levelWindow, rangeStats, changePhrase, MIN_USD_START } from "@/lib/chart-frame";
+import { fmtDateShort, fmtPct, fmtPctSigned, fmtUsd, fmtDate } from "@/lib/format";
 import { rangeDays, RANGE_LONG, sliceTail, type Range } from "@/lib/ranges";
 import { lastShare, selectionSeries, windowSum } from "@/lib/selection-series";
 import type { NumericMetricKey, Project } from "@/lib/types";
@@ -37,7 +37,7 @@ export function SelectionOverTime({ projects, range, onRangeChange }: { projects
   const tvl = sel?.metrics.tvl;
   const tvlNow = tvl ? [...tvl.values].reverse().find((v) => v !== null) ?? null : null;
   const share = tvl ? lastShare(tvl) : null;
-  const tvlStats = sel && tvl ? rangeStats(sliceTail(sel.dates, levelN), sliceTail(tvl.values, levelN)) : null;
+  const tvlStats = sel && tvl ? rangeStats(sliceTail(sel.dates, levelN), sliceTail(tvl.values, levelN), { minStart: MIN_USD_START }) : null;
   const flowLabel = `${flowN} day${flowN === 1 ? "" : "s"}`;
   const volume = sel ? windowSum(sel.metrics.volume.values, flowN) : null;
   const fees = sel ? windowSum(sel.metrics.fees.values, flowN) : null;
@@ -46,7 +46,7 @@ export function SelectionOverTime({ projects, range, onRangeChange }: { projects
     ? "Loading daily history."
     : sel.withAnyHistory === 0
       ? "No project in this selection has daily DefiLlama history."
-      : `The selection's summed TVL is ${fmtUsd(tvlNow)}${share !== null ? `, ${fmtPct(share)} of the summed TVL of every tracked project` : ""}${tvlStats ? ` (${fmtPctSigned(tvlStats.change)} over ${levelN} days)` : ""}; ${fmtUsd(volume)} of DEX volume and ${fmtUsd(fees)} of fees over the last ${flowLabel}.`;
+      : `The selection's summed TVL is ${fmtUsd(tvlNow)}${share !== null ? `, ${fmtPct(share)} of the summed TVL of every tracked project` : ""}${tvlStats && tvlStats.change !== null ? ` (${changePhrase(tvlStats, levelN, fmtPctSigned, fmtDate)})` : ""}; ${fmtUsd(volume)} of DEX volume and ${fmtUsd(fees)} of fees over the last ${flowLabel}.`;
   const subtitle = sel
     ? `Summed from DefiLlama history for ${sel.withAnyHistory} of ${projects.length} selected project${projects.length === 1 ? "" : "s"}. Per-project history covers the last ${total} days${levelN !== flowN ? `, and TVL keeps at least ${levelN} in view` : ""}.`
     : undefined;
@@ -74,7 +74,7 @@ export function SelectionOverTime({ projects, range, onRangeChange }: { projects
             const n = frame.brushRange !== null || level ? levelN : flowN;
             const dates = brushSlice(sliceTail(sel.dates, n), frame.brushRange);
             const values = brushSlice(sliceTail(sel.metrics[p.key].values, n), frame.brushRange);
-            const stats = level ? rangeStats(dates, values) : null;
+            const stats = level ? rangeStats(dates, values, { minStart: MIN_USD_START }) : null;
             const m = sel.metrics[p.key];
             return (
               <div key={p.key} className="rounded-lg border border-ink-700/40 p-2">
@@ -85,7 +85,7 @@ export function SelectionOverTime({ projects, range, onRangeChange }: { projects
                 <MiniSeries dates={dates} values={values} kind={p.kind} primaryLabel={`Selection ${p.label.toLowerCase()}`} height={height} color="var(--chain-near)" format={fmtUsd} yDomain={level && !frame.startAtZero ? fittedDomain(values) : undefined} />
                 {stats && (
                   <p className="mt-1 text-label text-ink-300" data-testid="range-stats">
-                    Low {fmtUsd(stats.min)}, high {fmtUsd(stats.max)}, {fmtPctSigned(stats.change)} over {dates.length} days
+                    Low {fmtUsd(stats.min)}, high {fmtUsd(stats.max)}, {changePhrase(stats, dates.length, fmtPctSigned, fmtDate)}
                   </p>
                 )}
                 {level && share !== null && <p className="text-label text-ink-300">{fmtPct(share)} of the summed TVL of every tracked project</p>}

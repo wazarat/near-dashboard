@@ -34,14 +34,20 @@ export interface RangeStats {
   max: number;
   first: number;
   last: number;
-  /** last / first - 1, or null when the first finite value is zero. */
+  /**
+   * last / start - 1. The start is the first point unless that point is too small to compare with (under 1% of the
+   * last value, or under `minStart`): then it is the first day the series reached that bar, given in `changeSince`,
+   * so a series that began near zero never reads as "+7,000,000%". null when no day reaches the bar.
+   */
   change: number | null;
+  /** The date the change is measured from, when it is not the first point. */
+  changeSince: string | null;
   minDate: string;
   maxDate: string;
 }
 
 /** Min, max, first, last and percent change over the visible points, ignoring blanks. null when nothing is finite. */
-export function rangeStats(dates: ReadonlyArray<string>, values: ReadonlyArray<number | null | undefined>): RangeStats | null {
+export function rangeStats(dates: ReadonlyArray<string>, values: ReadonlyArray<number | null | undefined>, opts: { minStart?: number } = {}): RangeStats | null {
   let first: number | null = null;
   let last: number | null = null;
   let min = Infinity;
@@ -63,7 +69,29 @@ export function rangeStats(dates: ReadonlyArray<string>, values: ReadonlyArray<n
     }
   }
   if (first === null || last === null) return null;
-  return { min, max, first, last, change: first === 0 ? null : last / first - 1, minDate, maxDate };
+  const bar = Math.max(Math.abs(last) * 0.01, opts.minStart ?? 0);
+  let change: number | null = null;
+  let changeSince: string | null = null;
+  if (first !== 0 && Math.abs(first) >= bar) change = last / first - 1;
+  else {
+    for (let i = 0; i < values.length; i++) {
+      const v = values[i];
+      if (v === null || v === undefined || !Number.isFinite(v) || v === 0 || Math.abs(v) < bar) continue;
+      change = last / v - 1;
+      changeSince = dates[i] ?? null;
+      break;
+    }
+  }
+  return { min, max, first, last, change, changeSince, minDate, maxDate };
+}
+
+/** A money level series is compared only from a start of at least $1M (and 1% of the last value). */
+export const MIN_USD_START = 1e6;
+
+/** "+80.7% over 2306 days", or "+80.7% since 2021-03-04" when the start had to move, or nothing when no day qualifies. */
+export function changePhrase(stats: RangeStats, days: number, fmtPct: (v: number | null) => string, fmtDay: (d: string) => string): string {
+  if (stats.change === null) return `over ${days} days`;
+  return stats.changeSince ? `${fmtPct(stats.change)} since ${fmtDay(stats.changeSince)}` : `${fmtPct(stats.change)} over ${days} days`;
 }
 
 /** Level series show at least 90 days so there is shape to read; All stays All. Never more than the data has. */
@@ -82,4 +110,16 @@ export function brushSlice<T>(arr: ReadonlyArray<T>, brush: [number, number] | n
   if (!brush) return [...arr];
   const [a, b] = brush;
   return arr.slice(Math.max(0, a), Math.min(arr.length, b + 1));
+}
+
+/**
+ * Where a panel's data starts within the range. A series that begins later than the range (Aurora transactions
+ * from BigQuery, the one-year BigQuery panels on an All-history axis) would otherwise be squeezed into a spike
+ * at the right edge; the panel clips its x axis to this index and labels it with `from`.
+ */
+export function dataStart(dates: ReadonlyArray<string>, ...series: Array<ReadonlyArray<number | null | undefined> | undefined>): { start: number; from: string | null } {
+  for (let i = 0; i < dates.length; i++) {
+    if (series.some((s) => s && s[i] !== null && s[i] !== undefined && Number.isFinite(s[i] as number))) return { start: i, from: i > 0 ? dates[i] : null };
+  }
+  return { start: 0, from: null };
 }

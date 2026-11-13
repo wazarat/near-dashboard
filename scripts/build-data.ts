@@ -14,7 +14,7 @@ import { mergeExtra, parseSeedRow, type LivePart, type SeedRow } from "../src/li
 import { loadExtras } from "./lib/extras";
 import type { ChainStatsFile } from "../src/lib/extra-types";
 import type { MetricId } from "../src/lib/sector-metrics";
-import { gasFeeGaps, txnGaps } from "../src/lib/chain-gaps";
+import { gasFeeGaps, txnGaps, spliceHistory } from "../src/lib/chain-gaps";
 import { alignSeries, applyLive, changes, computeLive, emptyLive, projectFlow, sparkDates, sumWindow, valueAt, windowEnd, type HistoryStore } from "../src/lib/live";
 import { parseMapRows, rowsByProject } from "../src/lib/mapping";
 import { aggregateInvestors, NameResolver, parseMemoInsights, toEvent, toLeader, toProject, toRound, uniqueSorted } from "../src/lib/parse";
@@ -127,7 +127,7 @@ function buildChain(chain: ChainHistory, end: DateStr): ChainData {
   return {
     dates,
     near: align(chain.near, chain.nearblocks.txns ?? []),
-    aurora: align(chain.aurora),
+    aurora: align({ ...chain.aurora, txns: spliceHistory(chain.bigquery.auroraCalls ?? [], chain.aurora.txns ?? []) }),
     nearblocks,
     bigquery,
     price,
@@ -156,7 +156,7 @@ function chainFactsOf(chain: ChainHistory | null, end: DateStr | null, stats: Ch
     windowEnd: end,
     statsAsOf: stats?.asOf ?? null,
     near: { gasFees30d: sum(chain?.near.gasFees), txns30d: sum(chain?.nearblocks.txns), volume30d: sum(chain?.near.volume), nodesOnline: stats?.near?.nodesOnline ?? null, totalTxns: stats?.near?.totalTxns ?? null, tps: stats?.near?.tps ?? null },
-    aurora: { gasFees30d: sum(chain?.aurora.gasFees), txns30d: sum(chain?.aurora.txns), volume30d: sum(chain?.aurora.volume), totalTxns: stats?.aurora?.totalTxns ?? null, totalAddresses: stats?.aurora?.totalAddresses ?? null, totalBlocks: stats?.aurora?.totalBlocks ?? null },
+    aurora: { gasFees30d: sum(chain?.aurora.gasFees), txns30d: sum(chain ? spliceHistory(chain.bigquery.auroraCalls ?? [], chain.aurora.txns ?? []) : undefined), volume30d: sum(chain?.aurora.volume), totalTxns: stats?.aurora?.totalTxns ?? null, totalAddresses: stats?.aurora?.totalAddresses ?? null, totalBlocks: stats?.aurora?.totalBlocks ?? null },
   };
 }
 

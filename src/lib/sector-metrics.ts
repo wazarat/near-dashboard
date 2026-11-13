@@ -101,16 +101,16 @@ export const SECTOR_METRICS: Record<string, SectorDef> = {
   "Bridges & Interoperability": M("volume", ["tvl", "fees", "revenue", "holdersRevenue", "supplySideRevenue", "dexVolume24h", "bridgeAggregatorVolume", "calls30d", "signers7d"]),
   "Lending & Credit": M("totalDeposited", ["borrowed", "tvl", "utilization", "borrowApy", "fees", "revenue", "tokenHolders", "tokenHoldersAurora"]),
   "Liquid Staking & Restaking": M("tvl", ["stakingApy", "tokenHolders", "ownStaking", "fees", "revenue"]),
-  Launchpads: M("tokensLaunched", ["volume", "tokenHolders", "fees", "tvl"]),
+  Launchpads: M("tokensLaunched", ["volume", "tokenHolders", "fees", "revenue"]),
   "Memecoins & Community": M("tokenHolders", ["tokenHoldersAurora", "tokenSupplyValue"]),
   "AI Agents": M("tokenHolders", ["signers7d", "calls30d"]),
   "NFTs, Gaming & Collectibles": M("tokenHolders", ["signers7d", "calls30d"]),
   "Stablecoins & Payments": M("stablecoinSupply", ["tokenHolders", "tokenHoldersAurora", "signers7d"]),
-  "Yield & Asset Management": M("tvl", ["bestPoolApy", "poolCount", "fees"]),
-  "RWA & Tokenized Assets": M("tvl", ["tokenHolders", "tokenSupplyValue", "fees"]),
-  "Perps, Options & Derivatives": M("tvl", ["calls30d"]),
-  "Prediction Markets": M("signers7d", ["tvl", "fees"]),
-  "Trading Tools & Bots": M("volume", ["tvl", "signers7d"], "Volume routed through a trading bot is counted again by the DEX it trades on."),
+  "Yield & Asset Management": M("tvl", ["bestPoolApy", "poolCount", "fees", "revenue"]),
+  "RWA & Tokenized Assets": M("tvl", ["tokenHolders", "tokenSupplyValue"]),
+  "Perps, Options & Derivatives": M("tvl", ["fees", "revenue", "calls30d"]),
+  "Prediction Markets": M("signers7d", ["tvl", "fees", "revenue"]),
+  "Trading Tools & Bots": M("volume", ["fees", "revenue", "signers7d"], "Volume routed through a trading bot is counted again by the DEX it trades on."),
   "Social & Identity": M("signers7d", ["calls30d"]),
   "DAOs, Governance & Public Goods": M("signers7d", ["calls30d"]),
   "Infrastructure & Dev Tools": U(),
@@ -185,8 +185,13 @@ const NO_LIQUIDITY = new Set(["near-intents"]);
  * Does the metric belong on this project at all? It must be one its sector uses; a token metric needs a
  * token; a figure counted on another row (a stablecoin listed under two names) belongs to that row.
  */
-export function applies(p: Pick<Project, "sector" | "token" | "id" | "extra">, id: MetricId): boolean {
+export function applies(p: Pick<Project, "sector" | "token" | "id" | "extra"> & Partial<Pick<Project, "volume" | "fees">>, id: MetricId): boolean {
   if (!sectorDef(p.sector).metrics.includes(id)) return false;
+  // A bridge carries DEX volume only when it swaps, which a DefiLlama volume listing shows.
+  if (id === "volume" && p.sector === "Bridges & Interoperability" && (p.volume ?? null) === null) return false;
+  // Revenue exists only where the protocol keeps a share of fees. A DefiLlama fee listing comes with its methodology,
+  // which says whether it does, so revenue applies to projects with a fee figure (or Intents app fees, counted as revenue).
+  if (id === "revenue" && (p.fees ?? null) === null && p.extra?.values.intentsAppFees === undefined) return false;
   if (TOKEN_METRICS.has(id) && !p.token) return false;
   if (id === "dexLiquidity" && NO_LIQUIDITY.has(p.id)) return false;
   if (p.extra?.countedOn?.[id]) return false;
