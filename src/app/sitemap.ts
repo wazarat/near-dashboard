@@ -6,7 +6,7 @@ import { NAV } from "@/lib/nav";
 export const dynamic = "force-static";
 
 /** Every tab is listed; the tab list is shared with the header (src/lib/nav.ts). */
-const ROUTES = [...NAV.map((n) => n.href), "/help-track/"];
+const ROUTES = [...NAV.map((n) => n.href), "/help-track/", "/about/"];
 
 /** Static sitemap for the export; URLs come from NEXT_PUBLIC_SITE_URL (standard section 12). */
 export default function sitemap(): MetadataRoute.Sitemap {

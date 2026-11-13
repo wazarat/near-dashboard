@@ -104,7 +104,7 @@ export function RatesChart({ data, range, onRangeChange }: { data: IntentsSummar
         </>
       }
       table={rateTable(rows, range)}
-      queries={[EXPLORER_QUERY, TRANSFORM_QUERY]}
+      method={{ sentence: "The share of 1Click swaps each day that succeeded, were refunded or failed.", queries: [EXPLORER_QUERY, TRANSFORM_QUERY] }}
       footer={
         <span>
           Rates are over every row the Explorer returned for the day, not just SUCCESS swaps. {partialDays > 0 ? `${partialDays} of ${rows.length} days shown are partial and can still change. ` : ""}

@@ -74,7 +74,7 @@ export function WeeklyChart({ data }: { data: IntentsSummary }) {
       info={`Bars show ${EXPLORER_LABEL} summed per ISO week (Monday start) over complete Explorer days only. The green line is the SUCCESS swap count per week on the right axis. The dashed line is ${LLAMA_LABEL} summed over the same days, drawn only where DefiLlama has a point for every day in the bucket. Weeks with fewer than 7 complete days are hatched.`}
       source={`${EXPLORER_LABEL} and ${LLAMA_LABEL}`}
       table={weekTable(rows)}
-      queries={[EXPLORER_QUERY, LLAMA_QUERY, TRANSFORM_QUERY]}
+      method={{ sentence: "Weekly sums of 1Click swap volume and swap counts, with DefiLlama's all-channel NEAR Intents volume for comparison.", queries: [EXPLORER_QUERY, LLAMA_QUERY, TRANSFORM_QUERY] }}
       footer={<span>Partial Explorer days are excluded before grouping, so a hatched week covers only the complete days it names. DefiLlama&apos;s value is summed over those same days, not the full calendar week.</span>}
     >
       {(frame: ChartFrame) => {

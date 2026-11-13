@@ -160,6 +160,12 @@ test("shared sector, investor and funding type links show a summary and one logi
   await expect(investor).not.toContainText("Portfolio (");
 });
 
+test("About is open to a logged-out reader and states the independence line", async ({ page }) => {
+  await page.goto("/about/");
+  await expect(page.getByTestId("independence")).toContainText("no affiliation to NEAR Foundation or Aurora", { timeout: 15_000 });
+  await expect(page.getByTestId("login-wall")).toHaveCount(0);
+});
+
 test("Help us track this is open to a logged-out reader", async ({ page }) => {
   await page.goto("/help-track/");
   await expect(page.getByTestId("help-track-group").first()).toBeVisible({ timeout: 15_000 });

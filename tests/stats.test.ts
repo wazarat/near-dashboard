@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Series } from "../src/lib/history-types";
-import { alignPairs, crossCorrelation, indexTo100, leadLag, logChanges, ols, outOfSample, pearson, subtractSeries, toWeekly, trimTop } from "../src/lib/stats";
+import { alignPairs, crossCorrelation, indexTo100, leadLag, logChanges, ols, outOfSample, pearson, subtractSeries, toWeekly, trimTop, dropTop } from "../src/lib/stats";
 
 /** Deterministic pseudo-random noise so the test is reproducible. */
 function noise(seed: number) {
@@ -70,6 +70,13 @@ describe("robustness helpers", () => {
     const t = trimTop(s, 0.9);
     expect(t.trimmed).toBe(2);
     expect(Math.max(...t.series.map(([, v]) => v))).toBe(t.cap);
+  });
+  it("dropTop leaves the biggest days out instead of capping them", () => {
+    const s: Series = Array.from({ length: 20 }, (_, i) => [day(i), i + 1]);
+    const t = dropTop(s, 0.9);
+    expect(t.dropped).toBe(2);
+    expect(t.series).toHaveLength(18);
+    expect(Math.max(...t.series.map(([, v]) => v))).toBe(t.cut);
   });
   it("subtractSeries and indexTo100", () => {
     expect(subtractSeries([["a", 10], ["b", 5]], [["a", 3]], [["b", 9]])).toEqual([["a", 7], ["b", 0]]);

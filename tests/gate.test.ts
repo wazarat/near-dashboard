@@ -14,7 +14,8 @@ describe("login wall rules", () => {
     expect(tabs.sort()).toEqual(NAV.map((n) => n.href).sort());
     expect(new Set(tabs).size).toBe(10);
     // The one public page outside the tabs is the Help us track this list.
-    expect(PUBLIC_PAGES_OUTSIDE_NAV).toEqual(["/help-track/"]);
+    expect(PUBLIC_PAGES_OUTSIDE_NAV).toEqual(["/help-track/", "/about/"]);
+    expect(isGatedPath("/about/")).toBe(false);
     expect(isGatedPath("/help-track/")).toBe(false);
   });
 

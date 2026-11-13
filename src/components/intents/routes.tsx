@@ -38,7 +38,7 @@ export function RoutesChart({ data }: { data: IntentsSummary }) {
       takeaway={takeaway}
       info={`Origin chain → destination chain of each SUCCESS swap, summed by amountInUsd over the Explorer's trailing 30 complete days, ${EXPLORER_LABEL}. Chain ids are the Explorer's asset prefixes (eth, tron, sol, btc, near, 1cs_v1 and so on). The hatched bar folds the long tail beyond the top 15 together with routes the per-day files already grouped as (other).`}
       table={bucketTable(rows, "Route", "Top routes by 1Click volume, Explorer API", "intents-routes.csv")}
-      queries={[EXPLORER_QUERY, TRANSFORM_QUERY]}
+      method={{ sentence: "The origin and destination chain pairs that carried the most successful 1Click swap volume over the range.", queries: [EXPLORER_QUERY, TRANSFORM_QUERY] }}
       footer={<span>Volume is amountInUsd of SUCCESS swaps only, over the {window}. Shares are of total volume in that window, including the (other) bucket.</span>}
     >
       <BucketBars rows={rows} color={EXPLORER_COLOR} hatchId="hatch-intents-routes" keyLabel="Route" ariaLabel="Top origin to destination chain routes by 1Click volume" emptyMessage="No complete Explorer days to rank routes from yet." />
@@ -68,7 +68,7 @@ export function ChainsCards({ data }: { data: IntentsSummary }) {
         takeaway={takeawayFor(origin, "from")}
         info={`Chain the deposit came from, by amountInUsd of SUCCESS swaps over the Explorer's trailing 30 complete days, ${EXPLORER_LABEL}. The hatched bar is everything beyond the top 12.`}
         table={bucketTable(origin, "Origin chain", "1Click volume by origin chain, Explorer API", "intents-origin-chains.csv")}
-        queries={[EXPLORER_QUERY, TRANSFORM_QUERY]}
+        method={{ sentence: "Successful 1Click swap volume by the chain the swap started on.", queries: [EXPLORER_QUERY, TRANSFORM_QUERY] }}
       >
         <BucketBars rows={origin} color="var(--cat-6)" hatchId="hatch-intents-origin-chains" keyLabel="Origin chain" ariaLabel="1Click volume by origin chain" emptyMessage="No complete Explorer days yet." />
       </ChartCard>
@@ -79,7 +79,7 @@ export function ChainsCards({ data }: { data: IntentsSummary }) {
         takeaway={takeawayFor(dest, "to")}
         info={`Chain the swap paid out on, by amountInUsd of SUCCESS swaps over the Explorer's trailing 30 complete days, ${EXPLORER_LABEL}. The hatched bar is everything beyond the top 12.`}
         table={bucketTable(dest, "Destination chain", "1Click volume by destination chain, Explorer API", "intents-destination-chains.csv")}
-        queries={[EXPLORER_QUERY, TRANSFORM_QUERY]}
+        method={{ sentence: "Successful 1Click swap volume by the chain the swap ended on.", queries: [EXPLORER_QUERY, TRANSFORM_QUERY] }}
       >
         <BucketBars rows={dest} color="var(--cat-7)" hatchId="hatch-intents-dest-chains" keyLabel="Destination chain" ariaLabel="1Click volume by destination chain" emptyMessage="No complete Explorer days yet." />
       </ChartCard>

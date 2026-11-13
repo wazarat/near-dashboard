@@ -227,6 +227,13 @@ export function outOfSample(x: Series, y: Series, cutoff: DateStr, maxLag: numbe
   return { lag, train: fit, testN: te.b.length, r2Oos: sst === 0 ? null : 1 - sse / sst, hitRate: hits / te.b.length, mae: mae / te.b.length, naiveMae: naiveMae / te.b.length };
 }
 
+/** Leave out the days above the given quantile from a daily flow altogether (the "largest days left out" variant). */
+export function dropTop(series: Series, quantile = 0.95): { series: Series; cut: number; dropped: number } {
+  const t = trimTop(series, quantile);
+  const out = series.filter(([, v]) => !(v > t.cap));
+  return { series: out, cut: t.cap, dropped: series.length - out.length };
+}
+
 /** Cap the largest values of a daily flow at the given quantile (for the "without the biggest days" robustness variant). */
 export function trimTop(series: Series, quantile = 0.95): { series: Series; cap: number; trimmed: number } {
   const vals = series.map(([, v]) => v).filter((v) => Number.isFinite(v)).sort((a, b) => a - b);

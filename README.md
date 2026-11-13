@@ -2,6 +2,10 @@
 
 Independent research by CanHav Research, built for NEAR Hackathon 2026. Track: `thesis` (Investment Thesis).
 
+**Thesis.** Cross-chain volume through NEAR Intents is a better leading indicator of real NEAR network usage than the NEAR token price. This repository tests that claim against the NEAR BigQuery public dataset, the NEAR Intents Explorer API and NearBlocks, and reports what the data says, including what cuts against it.
+
+<!-- data-as-of -->Data as of 2026-11-12, the last complete UTC day in the committed raw files.<!-- /data-as-of -->
+
 Live: https://near-dashboard-puce.vercel.app · Thesis: [`THESIS.md`](THESIS.md) · Submission notes: [`docs/SUBMISSION.md`](docs/SUBMISSION.md)
 
 An atlas of 1,088 projects across NEAR and Aurora with researched traction, funding and security, refreshed daily from free sources: DefiLlama (per-protocol and chain history), NearBlocks (daily chain activity since genesis), the NEAR BigQuery public dataset (function calls, contracts called, distinct signers, receipts to `aurora` and `intents.near`) and the NEAR Intents Explorer API (1Click swap volume, routes, assets, referrals). It tests one hypothesis, that cross-chain volume through NEAR Intents is a better leading indicator of real network usage than the token price, and reports what the data says, for and against, in `THESIS.md` and on `/thesis`.
@@ -87,6 +91,8 @@ The store is idempotent: a second refresh with the same upstream data changes no
 | NEAR Catalog `api.nearcatalog.xyz` | newly detected projects, contract account ids | no key |
 | NEAR BigQuery `bigquery-public-data.crypto_near_mainnet_us` | daily chain activity and per-account function calls and signers | your own GCP project; every query filters on `block_date`, dry-runs first, is capped by `maximumBytesBilled` (20 GB default) and the backfill stops at 300 GB; the 365-day backfill scanned 244 GB |
 | NEAR Intents Explorer API | 1Click swap rows | partner JWT, 1 request per 5 s, 1,000 rows per page; covers 1Click swaps only, from late May 2025 |
+
+Cost. NEAR pays to store the BigQuery public dataset; whoever runs a query pays the normal BigQuery query cost on their own Google Cloud project. This project's daily refresh scans about 1.3 GB (`daily_chain.sql` about 0.2 GB, `daily_receipts.sql` about 1.1 GB), and `npm run bq:estimate` dry-runs every query to print its cost without reading data. `npm run rebuild` needs no BigQuery access at all, since the query results are committed under `data/raw/bigquery/`.
 
 Deferred (paid): DefiLlama `/raises`, `/emissions` and `/summary/derivatives/*` (HTTP 402), Dune API, Token Terminal, Artemis, Nansen, Flipside API, RootData, CryptoRank, the X API. Consequences: no incentive or emissions data, no third-party raises feed, no X metrics.
 

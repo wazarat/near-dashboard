@@ -25,6 +25,7 @@ const PAGES: Array<{ name: string; url: string; expect: string }> = [
   { name: "investors", url: "/investors/?investor=dragonfly-capital", expect: "Portfolio (" },
   { name: "compare-empty", url: "/compare/", expect: "Liquid staking" },
   { name: "help-track", url: "/help-track/", expect: "Help us track this" },
+  { name: "about", url: "/about/", expect: "About and methodology" },
   { name: "compare-liquid-staking", url: "/compare/?compare=meta-pool,rhea-lst-rnear,linear-protocol&cm=fees", expect: "Meta Pool" },
 ];
 
@@ -218,6 +219,23 @@ test("a shared ?expand= link opens the dialog on load and level charts offer a F
   await axis.getByRole("radio", { name: "From zero" }).click();
   await expect(zeroTick.first()).toBeVisible();
 });
+
+for (const url of ["/", "/intents/"]) {
+  test(`every chart on ${url} has a How this is calculated block naming its SQL file or endpoint`, async ({ page }) => {
+    await page.goto(url);
+    const cards = page.locator("[data-chart-card]");
+    await expect(cards.first()).toBeVisible({ timeout: 15_000 });
+    // The insights card is text, not a chart.
+    const names = (await cards.evaluateAll((els) => els.map((e) => e.getAttribute("data-chart-card") ?? ""))).filter((n) => n !== "Insights");
+    expect(names.length).toBeGreaterThan(3);
+    for (const name of names) {
+      const block = page.locator(`[data-chart-card="${name}"] [data-how-calculated]`).first();
+      await expect(block, `${name} has no How this is calculated block`).toHaveCount(1);
+      await block.locator("summary").click();
+      await expect(block).toContainText(/queries\/[a-z_]+\.sql|https:\/\/|data\/[a-z-]+.*\.csv/);
+    }
+  });
+}
 
 test("the expanded Chain over time stacks its notes below the panels and its range control works after a zoom", async ({ page }) => {
   await page.setViewportSize({ width: 1536, height: 1000 });

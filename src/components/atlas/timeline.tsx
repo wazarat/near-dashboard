@@ -16,6 +16,7 @@ import { displayUrl, fmtEventDate, fmtInt, fmtMonth, fmtMonthYear, fmtUsd, fmtUs
 import { countByType, splitTimeline } from "@/lib/timeline";
 import type { EcosystemEvent, EventType } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { SPECS } from "@/lib/query-specs";
 
 interface Point {
   t: number;
@@ -153,6 +154,7 @@ export function Timeline({ events, defaultStart, title = "Timeline", id = "timel
   return (
     <ChartCard
       id={id}
+      method={{ sentence: "Dated ecosystem events from the research snapshot, each with its source link.", queries: [SPECS.events] }}
       title={title}
       takeaway={filtered && events.length === 0 ? "No recorded event is tagged with a project in this selection." : timelineTakeaway(events)}
       scope={filtered ? "filtered" : "whole-chain"}

@@ -12,6 +12,7 @@ import { MIN_SIZE_LABEL, MIN_SIZES, movers, type MinSize, type Mover } from "@/l
 import { changeLabel, rangeDays, sliceTail, type Range } from "@/lib/ranges";
 import type { NumericMetricKey, Project } from "@/lib/types";
 import { useSeries } from "@/lib/use-series";
+import { SPECS } from "@/lib/query-specs";
 
 interface Props {
   projects: Project[];
@@ -58,6 +59,7 @@ export function MoversPanel({ projects, metric, onMetricChange, range, onRangeCh
   return (
     <ChartCard
       id="movers"
+      method={{ sentence: "The projects whose figure rose or fell most over the chosen range, from DefiLlama daily history per protocol.", queries: [SPECS.llamaProtocolTvl, SPECS.llamaProtocolFlows, SPECS.movers] }}
       title={`Risers and fallers (${label})`}
       takeaway={takeaway}
       info={`Projects with daily DefiLlama history ranked by percentage change of ${METRIC_LABEL[m.metric].toLowerCase()} over the last ${label} against the window before it (TVL compares end values). The size filter hides tiny bases that would otherwise dominate.`}

@@ -5,6 +5,8 @@ import { InfoTip } from "@/components/ui/info-tip";
 import { meta, projects } from "@/lib/data";
 import { useFilters } from "@/lib/filters";
 import { fmtDate, fmtInt, fmtUsd } from "@/lib/format";
+import { SPECS } from "@/lib/query-specs";
+import { HowCalculated } from "@/components/atlas/how-calculated";
 
 /**
  * NEAR Intents volume per integrating app (docs/LIVE-DATA.md, requirement 6): the 1Click swaps that carried an
@@ -50,6 +52,10 @@ export function AppsCard() {
           })}
         </ul>
       </CardContent>
+      <HowCalculated
+        className="mx-4"
+        method={{ sentence: "NEAR Intents 1Click swap volume and swap counts over the last 30 complete days, per app in the atlas, through the referral tag each app sets on its swaps.", queries: [SPECS.intentsExplorer, SPECS.intentsDaily, SPECS.referralApps] }}
+      />
     </Card>
   );
 }

@@ -8,33 +8,14 @@ Cross-chain volume settled through NEAR Intents is a better leading indicator of
 
 **Result as of 2026-11-12: partly supported. Intents volume is the stronger positive lead for 2 of 5 usage series (0 for price, 3 inconclusive), and it wins 2 out-of-sample comparisons to price's 1, but the edge shows up in the contract-level series (function calls and contracts called, 52 weeks of BigQuery data) and not in the chain-level counts (transactions, active accounts, new accounts) over the full 100-week window, where neither predictor clears the noise band.**
 
-## How it was tested
+## Data and method
 
 - Window: 2024-12-10 to 2026-11-12 (100 ISO weeks). Intents volume comes from DefiLlama's NEAR Intents adapter (all channels, daily, since 2024-12-10). Usage comes from NearBlocks daily charts (transactions, active accounts, new accounts) over the whole window and from the NEAR BigQuery public dataset (function calls, distinct contracts called) over the last 52 weeks (2025-11-08 to 2026-11-12). Price is NearBlocks' daily NEAR price (DefiLlama coins as a cross-check).
 - All series are resampled to ISO weeks (flows summed, price and account counts as weekly totals or last values), converted to week-over-week log changes, and compared at lags of −8 to +8 weeks. A positive lag means the predictor moves first.
 - Out-of-sample: a one-variable regression of usage change on the lagged predictor change is fitted on weeks before 2026-05-01 (lag picked on the training window only) and scored on weeks from 2026-05-01 onward with out-of-sample R² (against the training mean) and the share of weeks where the predicted sign was right.
-- Robustness: the same tests with the largest 5% of Intents volume days capped, with receipts to `aurora` and `intents.near` removed from function calls, on daily instead of weekly data, and with the 1Click Explorer volume in place of DefiLlama's where the Explorer backfill covers it.
+- Robustness: the same tests with the largest 5% of Intents volume days capped, and again with those days removed, with receipts to `aurora` and `intents.near` removed from function calls, on daily instead of weekly data, and with the 1Click Explorer volume in place of DefiLlama's where the Explorer backfill covers it.
 
-## Evidence for
-
-- Function calls (BigQuery, 51 weeks): Intents volume leads by 7 weeks with r = 0.42; price leads by 2 weeks with r = 0.30.
-- Contracts called (BigQuery, 51 weeks): Intents volume leads by 2 weeks with r = 0.41; price leads by 3 weeks with r = 0.21 (inside the noise band).
-- Out of sample, Intents volume predicts new accounts changes after 2026-05-01 with R² = 0.02 and a 56% sign hit rate, against R² = -0.22 for price.
-- Out of sample, Intents volume predicts function calls changes after 2026-05-01 with R² = 0.15 and a 59% sign hit rate, against R² = -0.36 for price.
-
-## Evidence against
-
-- Transactions (NearBlocks, 99 weeks): inconclusive. Intents volume leads by 7 weeks with r = 0.07 (inside the noise band); price leads by 2 weeks with r = 0.13 (inside the noise band). Neither clears the ±0.20 noise band with a positive lead.
-- Transactions: Intents volume and usage move together in the same week (r = 0.27) more than with any lead, which reads as coincident, not leading.
-- Transactions: the strongest price relationship is inverse (r = -0.23 at 5 weeks): price rises precede lower transactions, not higher.
-- Active accounts (NearBlocks, 99 weeks): inconclusive. Intents volume leads by 1 week with r = 0.09 (inside the noise band); price leads by 6 weeks with r = 0.18 (inside the noise band). Neither clears the ±0.20 noise band with a positive lead.
-- New accounts (NearBlocks, 99 weeks): inconclusive. Intents volume leads by 3 weeks with r = 0.13 (inside the noise band); price leads by 3 weeks with r = 0.11 (inside the noise band). Neither clears the ±0.20 noise band with a positive lead.
-- New accounts: Intents volume and usage move together in the same week (r = 0.23) more than with any lead, which reads as coincident, not leading.
-- Out of sample, price predicts transactions changes better than Intents volume after 2026-05-01 (R² = 0.03 vs -0.04).
-- Out of sample, neither predictor beats the training mean for active accounts after 2026-05-01 (Intents R² = -0.01, price R² = -0.09).
-- Out of sample, neither predictor beats the training mean for contracts called after 2026-05-01 (Intents R² = -0.45, price R² = -4.44).
-
-## Lead-lag results (weekly log changes, strongest positive correlation at a positive lag)
+### Lead-lag results (weekly log changes, strongest positive correlation at a positive lag)
 
 | Usage series | Source | Intents volume leads by | r | Price leads by | r | Same-week r (Intents / price) | Weeks |
 |---|---|---|---|---|---|---|---|
@@ -46,7 +27,7 @@ Cross-chain volume settled through NEAR Intents is a better leading indicator of
 
 Correlations inside roughly ±0.20 are indistinguishable from noise at this sample size.
 
-## Out-of-sample results (fit before 2026-05-01, test from 2026-05-01)
+### Out-of-sample results (fit before 2026-05-01, test from 2026-05-01)
 
 | Usage series | Predictor | Lag chosen | Test weeks | Out-of-sample R² | Sign hit rate |
 |---|---|---|---|---|---|
@@ -61,15 +42,16 @@ Correlations inside roughly ±0.20 are indistinguishable from noise at this samp
 | Contracts called | Intents volume | 2 w | 27 | -0.45 | 56% |
 | Contracts called | NEAR price | 3 w | 27 | -4.44 | 33% |
 
-## Robustness
+### Robustness
 
 - **Weekly, all days** (2 for Intents, 0 for price). The headline test: weekly log changes, DefiLlama Intents volume, NearBlocks price. Transactions: Intents 0.07 @7 vs price 0.13 @2; Active accounts: Intents 0.09 @1 vs price 0.18 @6; New accounts: Intents 0.13 @3 vs price 0.11 @3; Function calls: Intents 0.42 @7 vs price 0.30 @2; Contracts called: Intents 0.41 @2 vs price 0.21 @3.
 - **Largest 5% of Intents days capped** (2 for Intents, 0 for price). The 36 biggest Intents volume days are capped at $145,432,171 before weekly resampling, to check that a few spikes do not drive the result. Transactions: Intents 0.06 @4 vs price 0.13 @2; Active accounts: Intents 0.07 @1 vs price 0.18 @6; New accounts: Intents 0.13 @3 vs price 0.11 @3; Function calls: Intents 0.47 @7 vs price 0.30 @2; Contracts called: Intents 0.35 @2 vs price 0.21 @3.
+- **Largest 5% of Intents days removed** (0 for Intents, 1 for price). The 36 biggest Intents volume days (above $145,432,171) are left out before weekly resampling; their weeks keep the remaining days, and weeks left with fewer than 4 days are dropped. Transactions: Intents 0.08 @6 vs price 0.13 @2; Active accounts: Intents 0.11 @3 vs price 0.18 @6; New accounts: Intents 0.12 @3 vs price 0.11 @3; Function calls: Intents 0.20 @7 vs price 0.30 @2; Contracts called: Intents 0.14 @4 vs price 0.21 @3.
 - **Function calls without aurora and intents.near receipts** (1 for Intents, 0 for price). Receipts to the aurora and intents.near accounts are subtracted from function calls, so the usage series cannot contain the Intents settlement itself. Function calls: Intents 0.42 @7 vs price 0.30 @2.
 - **Daily instead of weekly** (1 for Intents, 1 for price). Day-over-day log changes at lags of −8 to +8 days; noisier, but not dependent on the week boundary. Transactions: Intents 0.06 @7 vs price 0.04 @7; Active accounts: Intents 0.04 @1 vs price 0.04 @6; New accounts: Intents 0.05 @5 vs price 0.06 @4; Function calls: Intents 0.07 @7 vs price 0.16 @3; Contracts called: Intents 0.14 @3 vs price 0.11 @8.
 - **1Click Explorer volume instead of DefiLlama** (3 for Intents, 1 for price). The Explorer covers 1Click swaps only, from 2025-12-22; DefiLlama's adapter covers every channel. Transactions: Intents 0.52 @7 vs price 0.24 @2; Active accounts: Intents 0.30 @1 vs price 0.17 @7; New accounts: Intents 0.23 @7 vs price 0.10 @6; Function calls: Intents 0.64 @7 vs price 0.33 @2; Contracts called: Intents 0.25 @6 vs price 0.35 @1.
 
-## Confounders reported honestly
+### Confounders reported honestly
 
 - 2026-10-01, Incident: NEAR Intents Omni deposit/withdraw exploit (USDT on BSC, HOT Bridge treasury). A $3.8M loss and a service pause on Oct 1, 2026 depress Intents volume for reasons unrelated to demand. [source](https://thedefiant.io/news/security/near-intents-postmortem-links-3-8-million-exploit-to-deposit-bug)
 - 2026-06-11, Program: NEAR@3.33 incentive program tied to Confidential Intents TVL. A token drop tied to Confidential Intents TVL and a price floor creates incentive-driven volume and price moves at the same time. [source](https://onekey.so/blog/ecosystem/near-launches-a-new-incentive-airdrop-snapshot-planned-when-confidential-intents-tvl-reaches-70m-20260611225942/)
@@ -79,6 +61,29 @@ Correlations inside roughly ±0.20 are indistinguishable from noise at this samp
 - 2025-10-21, Governance: Halving upgrade (nearcore 2.9.0) cuts max inflation from 5 to 2.5 percent. A supply change that can move price independently of usage. [source](https://blog.nearone.org/announcement/2025/10/21/enhancing-near-tokenomics.html)
 - 2026-09-29, Listing: Bitwise NEAR ETF (NRR) begins trading on NYSE Arca. An ETF listing is a price event with no mechanical link to onchain usage. [source](https://crypto.news/bitwise-near-etf-goes-live-on-nyse-arca-will-near-price-benefit/)
 
+## Evidence for
+
+- Function calls (BigQuery, 51 weeks): Intents volume leads by 7 weeks with r = 0.42; price leads by 2 weeks with r = 0.30.
+- Contracts called (BigQuery, 51 weeks): Intents volume leads by 2 weeks with r = 0.41; price leads by 3 weeks with r = 0.21 (inside the noise band).
+- Out of sample, Intents volume predicts new accounts changes after 2026-05-01 with R² = 0.02 and a 56% sign hit rate, against R² = -0.22 for price.
+- Out of sample, Intents volume predicts function calls changes after 2026-05-01 with R² = 0.15 and a 59% sign hit rate, against R² = -0.36 for price.
+- Robustness, largest 5% of Intents days capped: Intents volume is the stronger positive lead for 2 usage series, price for 0.
+- Robustness, function calls without aurora and intents.near receipts: Intents volume is the stronger positive lead for 1 usage series, price for 0.
+- Robustness, 1Click Explorer volume instead of DefiLlama: Intents volume is the stronger positive lead for 3 usage series, price for 1.
+
+## Evidence against
+
+- Transactions (NearBlocks, 99 weeks): inconclusive. Intents volume leads by 7 weeks with r = 0.07 (inside the noise band); price leads by 2 weeks with r = 0.13 (inside the noise band). Neither clears the ±0.20 noise band with a positive lead.
+- Transactions: Intents volume and usage move together in the same week (r = 0.27) more than with any lead, which reads as coincident, not leading.
+- Transactions: the strongest price relationship is inverse (r = -0.23 at 5 weeks): price rises precede lower transactions, not higher.
+- Active accounts (NearBlocks, 99 weeks): inconclusive. Intents volume leads by 1 week with r = 0.09 (inside the noise band); price leads by 6 weeks with r = 0.18 (inside the noise band). Neither clears the ±0.20 noise band with a positive lead.
+- New accounts (NearBlocks, 99 weeks): inconclusive. Intents volume leads by 3 weeks with r = 0.13 (inside the noise band); price leads by 3 weeks with r = 0.11 (inside the noise band). Neither clears the ±0.20 noise band with a positive lead.
+- New accounts: Intents volume and usage move together in the same week (r = 0.23) more than with any lead, which reads as coincident, not leading.
+- Out of sample, price predicts transactions changes better than Intents volume after 2026-05-01 (R² = 0.03 vs -0.04).
+- Out of sample, neither predictor beats the training mean for active accounts after 2026-05-01 (Intents R² = -0.01, price R² = -0.09).
+- Out of sample, neither predictor beats the training mean for contracts called after 2026-05-01 (Intents R² = -0.45, price R² = -4.44).
+- Robustness, largest 5% of Intents days removed: Intents volume is the stronger positive lead for 0 usage series, price for 1.
+
 ## What would change my mind
 
 - If, when the daily refresh has added 12 more weeks, price's best positive-lag correlation exceeds Intents volume's by more than 0.10 on three or more of the five usage series, the claim is wrong. Conversely, the claim only becomes "supported" rather than "partly supported" once Intents volume clears the noise band with a positive lead on at least three series, including one chain-level count.
@@ -86,7 +91,7 @@ Correlations inside roughly ±0.20 are indistinguishable from noise at this samp
 - If removing receipts to aurora and intents.near from function calls (the "exAuroraIntents" variant) flips the winner, the apparent lead is just Intents settlement counting itself as usage.
 - If the 1Click Explorer series, once it covers the full window, disagrees in sign with the DefiLlama series at the chosen lag, the result depends on which Intents measure is used and should be marked unresolved.
 
-## Data gaps and metrics that could not be computed
+## Metrics that could not be computed
 
 - The NEAR Intents Explorer API covers 1Click swaps only and starts in late May 2025; the committed backfill covers 325 complete days from 2025-12-22 and is still running. Where both sources exist the Explorer reports a median 40% of DefiLlama's daily volume. Until the backfill completes, every Intents chart uses DefiLlama's series and labels the source.
 - BigQuery usage series (function calls, contracts called, distinct signers) cover 52 weeks only, to stay inside the 300 GB query budget; the NearBlocks series cover the whole window.

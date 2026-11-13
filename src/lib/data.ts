@@ -9,7 +9,9 @@ import projectsJson from "@/data/generated/projects.json";
 import roundsJson from "@/data/generated/rounds.json";
 import intentsJson from "@/data/generated/intents.json";
 import thesisJson from "@/data/generated/thesis.json";
+import queriesJson from "@/data/generated/queries.json";
 import type { NewlyDetected, Series } from "./history-types";
+import { sqlSpec, type QuerySpec, type SqlId } from "./query-specs";
 import type { IntentsSummary } from "./intents";
 import type { ThesisJson } from "./thesis-types";
 import type { ChainData, EcosystemEvent, Investor, Leader, MemoInsight, Meta, Project, Round, SeriesFile } from "./types";
@@ -24,6 +26,11 @@ export const meta = metaJson as unknown as Meta;
 export const chainData = chainJson as unknown as ChainData;
 export const intentsData = intentsJson as unknown as IntentsSummary & { llamaDaily: Series };
 export const thesisData = thesisJson as unknown as ThesisJson | { available: false; reason: string };
+/** The SQL file behind a BigQuery chart, as committed in queries/ (read at build time, never copied). */
+export function sql(id: SqlId, table?: string): QuerySpec {
+  const text = (queriesJson as Record<string, string>)[id];
+  return sqlSpec(id, text ?? `-- queries/${id}.sql was not found at build time`, table);
+}
 export const newlyDetected = newlyDetectedJson as unknown as { items: NewlyDetected[]; unmatchedCsv: string[]; unmatchedMap: string[] };
 
 /** 90-day per-project series are loaded lazily so the main bundle stays small. */

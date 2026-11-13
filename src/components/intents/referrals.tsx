@@ -37,7 +37,7 @@ export function ReferralsCards({ data }: { data: IntentsSummary }) {
         takeaway={shareTakeaway(referrals, "referral tag", "carried no referral tag", window)}
         info={`The referral field of each SUCCESS swap, summed by amountInUsd over the Explorer's trailing 30 complete days, ${EXPLORER_LABEL}. Integrators set this tag when they route through 1Click; the muted bar is rows with no tag. The hatched bar is everything beyond the top 12.`}
         table={bucketTable(referrals, "Referral", "1Click volume share by referral tag, Explorer API", "intents-referrals.csv")}
-        queries={[EXPLORER_QUERY, TRANSFORM_QUERY]}
+        method={{ sentence: "Successful 1Click swap volume by the referral tag the integrating app set on the swap.", queries: [EXPLORER_QUERY, TRANSFORM_QUERY] }}
         footer={<span>Bar labels show share of window volume, then USD. &ldquo;no referral tag&rdquo; is rows whose referral field was empty.</span>}
       >
         <BucketBars rows={referrals} color={EXPLORER_COLOR} hatchId="hatch-intents-referrals" keyLabel="Referral" ariaLabel="Share of 1Click volume by referral tag" emptyMessage="No complete Explorer days yet." />
@@ -49,7 +49,7 @@ export function ReferralsCards({ data }: { data: IntentsSummary }) {
         takeaway={shareTakeaway(appFees, "app-fee recipient", "paid no app fee", window)}
         info={`Accounts named in appFees[].recipient on each SUCCESS swap, summed by the swap's amountInUsd over the Explorer's trailing 30 complete days, ${EXPLORER_LABEL}. A swap with several fee recipients counts once per recipient, so shares can exceed 100% in total. The muted bar is rows with no app fee. The hatched bar is everything beyond the top 12.`}
         table={bucketTable(appFees, "App-fee recipient", "1Click volume share by app-fee recipient, Explorer API", "intents-app-fee-recipients.csv")}
-        queries={[EXPLORER_QUERY, TRANSFORM_QUERY]}
+        method={{ sentence: "Successful 1Click swap volume by the account named to receive the app fee.", queries: [EXPLORER_QUERY, TRANSFORM_QUERY] }}
         footer={<span>Bar labels show share of window volume, then USD. &ldquo;no app fee&rdquo; is rows whose appFees list was empty.</span>}
       >
         <BucketBars rows={appFees} color="var(--cat-7)" hatchId="hatch-intents-appfees" keyLabel="App-fee recipient" ariaLabel="Share of 1Click volume by app-fee recipient" emptyMessage="No complete Explorer days yet." />

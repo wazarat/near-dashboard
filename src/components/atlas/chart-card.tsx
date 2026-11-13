@@ -13,18 +13,15 @@ import { useAccess } from "@/lib/access";
 import { meta } from "@/lib/data";
 import { useActiveFilterCount, type LegacyCard, type Scale } from "@/lib/filters";
 import { points } from "@/lib/takeaways";
+import type { ChartMethod, QuerySpec } from "@/lib/query-specs";
 import { cn } from "@/lib/utils";
+import { HowCalculated, QueryList } from "./how-calculated";
 import { ChartFrameProvider, type ChartFrame } from "./chart-frame";
 import { ChartTable, ChartTableToggle, type ChartTableSpec, type ChartView } from "./chart-table";
 import { LegacySwitch, useLegacyOn } from "./legacy-switch";
 import { TakeawayList } from "./takeaway-list";
 
-export interface QuerySpec {
-  /** "sql" for BigQuery, "http" for an API call, "transform" for a pure function. */
-  kind: "sql" | "http" | "transform";
-  title: string;
-  code: string;
-}
+export type { QuerySpec } from "@/lib/query-specs";
 
 export type ChartScope = "filtered" | "whole-chain" | "selection";
 
@@ -53,6 +50,8 @@ interface ChartCardProps {
   table?: ChartTableSpec;
   /** When given, a Query tab shows the exact SQL, API call and transform behind the chart. */
   queries?: QuerySpec[];
+  /** One plain sentence on what the chart shows and the queries behind it, in a collapsed "How this is calculated" block. */
+  method?: ChartMethod;
   /** What the card responds to (standard section 4). */
   scope?: ChartScope;
   /** False for charts that live inside a pop-up; the expand dialog needs an id. */
@@ -96,7 +95,7 @@ export function ScopeNote({ scope = "filtered", className, legacy = false }: { s
   );
 }
 
-export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries, scope, expandable = true, level = false, subtitle, source, takeawayPlacement = "expanded", defaultView = "chart", legacyCard }: ChartCardProps) {
+export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries, method, scope, expandable = true, level = false, subtitle, source, takeawayPlacement = "expanded", defaultView = "chart", legacyCard }: ChartCardProps) {
   const legacy = useLegacyOn(legacyCard);
   const firstView: ChartView = defaultView === "table" && !table ? "chart" : defaultView;
   const [view, setView] = useState<ChartView>(firstView);
@@ -135,7 +134,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
     v === "table" && table ? (
       <ChartTable spec={table} />
     ) : v === "query" && queries ? (
-      <QueryView queries={queries} />
+      <QueryList queries={queries} />
     ) : (
       <ChartFrameProvider value={frame}>{typeof children === "function" ? children(frame) : children}</ChartFrameProvider>
     );
@@ -168,6 +167,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
       </CardHeader>
       <CardContent className="px-4">{body(view, inlineFrame)}</CardContent>
       {footer && <div className="px-4 text-xs text-ink-300">{footer}</div>}
+      {method && <HowCalculated method={method} className="mx-4" />}
 
       {canExpand && (
         <Dialog open={open} onOpenChange={(o) => !o && close()}>
@@ -185,6 +185,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
             <div>{open && body(dialogView, dialogFrame)}</div>
             {!inline && <TakeawayList takeaway={points(takeaway)} className="border-t border-ink-700/40 pt-3" />}
             {footer && <div className="text-xs text-ink-300">{footer}</div>}
+            {method && <HowCalculated method={method} />}
             <p className="text-label text-ink-300">
               {source ? `Source. ${/[.!?]$/.test(source) ? source : `${source}.`}` : info}
               {" Press Escape to close."}
@@ -193,24 +194,6 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
         </Dialog>
       )}
     </Card>
-  );
-}
-
-function QueryView({ queries }: { queries: QuerySpec[] }) {
-  return (
-    <div className="space-y-3">
-      {queries.map((q, i) => (
-        <div key={i}>
-          <div className="mb-1 flex items-center gap-2 text-xs text-ink-300">
-            <span className="font-mono text-label uppercase text-ink-300">{q.kind}</span>
-            <span>{q.title}</span>
-          </div>
-          <pre className="max-h-80 overflow-auto rounded-lg border border-ink-700/40 bg-ink-950/60 p-3 font-mono text-[11px] leading-relaxed text-ink-50">
-            <code>{q.code}</code>
-          </pre>
-        </div>
-      ))}
-    </div>
   );
 }
 

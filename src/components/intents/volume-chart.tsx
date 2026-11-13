@@ -121,7 +121,7 @@ export function VolumeChart({ data, range, onRangeChange, scale, onScaleChange }
       scale={scale}
       onScaleChange={onScaleChange}
       table={volumeTable(rows, range)}
-      queries={[EXPLORER_QUERY, LLAMA_QUERY, TRANSFORM_QUERY]}
+      method={{ sentence: "Daily USD volume of successful 1Click swaps from the NEAR Intents Explorer, next to DefiLlama's NEAR Intents volume across every channel.", queries: [EXPLORER_QUERY, LLAMA_QUERY, TRANSFORM_QUERY] }}
       footer={
         <span>
           Bars are {EXPLORER_LABEL}. Hatched bars are partial days, the day is still open or the backfill stopped inside it. The line is {LLAMA_LABEL}. The current UTC day is partial in both sources until it closes.

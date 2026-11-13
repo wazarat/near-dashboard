@@ -15,9 +15,9 @@
  */
 import { NAV } from "./nav";
 
-export const PUBLIC_PATHS = ["/", "/thesis/", "/compare/", "/help-track/"] as const;
+export const PUBLIC_PATHS = ["/", "/thesis/", "/compare/", "/help-track/", "/about/"] as const;
 /** Public pages that are not tabs (linked from the footer and from Not tracked info tips). */
-export const PUBLIC_PAGES_OUTSIDE_NAV = ["/help-track/"] as const;
+export const PUBLIC_PAGES_OUTSIDE_NAV = ["/help-track/", "/about/"] as const;
 export const GATED_PATHS = ["/sectors/", "/traction/", "/intents/", "/funding/", "/investors/", "/security/", "/explorer/"] as const;
 
 export type GatedAction = "compare-add" | "project-detail" | "sector-detail" | "investor-detail" | "funding-detail";

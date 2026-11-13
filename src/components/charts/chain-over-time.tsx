@@ -5,13 +5,14 @@ import { frameHeight, type ChartFrame } from "@/components/atlas/chart-frame";
 import { RangeBrush } from "@/components/atlas/range-brush";
 import { RangeControl } from "@/components/atlas/range-control";
 import { brushSlice, fittedDomain, levelWindow, rangeStats } from "@/lib/chart-frame";
-import { chainData, meta } from "@/lib/data";
+import { chainData, meta, sql } from "@/lib/data";
 import { fmtCompact, fmtDateShort, fmtPctSigned, fmtUsd } from "@/lib/format";
 import { rangeDays, RANGE_LONG, sliceTail, type Range } from "@/lib/ranges";
 import type { ChainSeriesKey } from "@/lib/types";
 import type { Project } from "@/lib/types";
 import { MiniSeries } from "./mini-series";
 import { SelectionOverTime } from "./selection-over-time";
+import { SPECS } from "@/lib/query-specs";
 
 const PANELS: Array<{ key: ChainSeriesKey; label: string; kind: "line" | "bar"; count?: boolean }> = [
   { key: "tvl", label: "Chain TVL", kind: "line" },
@@ -119,6 +120,7 @@ function ChainTotals({ range, onRangeChange }: { range: Range; onRangeChange: (r
   return (
     <ChartCard
       id="chain-over-time"
+      method={{ sentence: "Daily chain-wide TVL, DEX volume, protocol fees, gas fees, revenue and transactions for NEAR and Aurora.", queries: [SPECS.llamaChainTvl, SPECS.llamaChainFlows, SPECS.chainTxns, sql("daily_receipts", "receipt_actions"), SPECS.chainGaps] }}
       title="Chain over time"
       takeaway={takeaway}
       subtitle={subtitle}

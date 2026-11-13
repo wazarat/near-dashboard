@@ -8,12 +8,34 @@ Cross-chain volume settled through NEAR Intents is a better leading indicator of
 
 **Result as of {{asOf}}: {{headline}}**
 
-## How it was tested
+## Data and method
 
 - Window: {{windowStart}} to {{windowEnd}} ({{weeks}} ISO weeks). Intents volume comes from DefiLlama's NEAR Intents adapter (all channels, daily, since 2024-12-10). Usage comes from NearBlocks daily charts (transactions, active accounts, new accounts) over the whole window and from the NEAR BigQuery public dataset (function calls, distinct contracts called) over the last {{bqWeeks}} weeks ({{bqStart}} to {{bqEnd}}). Price is NearBlocks' daily NEAR price (DefiLlama coins as a cross-check).
 - All series are resampled to ISO weeks (flows summed, price and account counts as weekly totals or last values), converted to week-over-week log changes, and compared at lags of −{{maxLag}} to +{{maxLag}} weeks. A positive lag means the predictor moves first.
 - Out-of-sample: a one-variable regression of usage change on the lagged predictor change is fitted on weeks before {{cutoff}} (lag picked on the training window only) and scored on weeks from {{cutoff}} onward with out-of-sample R² (against the training mean) and the share of weeks where the predicted sign was right.
-- Robustness: the same tests with the largest 5% of Intents volume days capped, with receipts to `aurora` and `intents.near` removed from function calls, on daily instead of weekly data, and with the 1Click Explorer volume in place of DefiLlama's where the Explorer backfill covers it.
+- Robustness: the same tests with the largest 5% of Intents volume days capped, and again with those days removed, with receipts to `aurora` and `intents.near` removed from function calls, on daily instead of weekly data, and with the 1Click Explorer volume in place of DefiLlama's where the Explorer backfill covers it.
+
+### Lead-lag results (weekly log changes, strongest positive correlation at a positive lag)
+
+| Usage series | Source | Intents volume leads by | r | Price leads by | r | Same-week r (Intents / price) | Weeks |
+|---|---|---|---|---|---|---|---|
+{{leadLagTable}}
+
+Correlations inside roughly ±{{noiseBand}} are indistinguishable from noise at this sample size.
+
+### Out-of-sample results (fit before {{cutoff}}, test from {{cutoff}})
+
+| Usage series | Predictor | Lag chosen | Test weeks | Out-of-sample R² | Sign hit rate |
+|---|---|---|---|---|---|
+{{oosTable}}
+
+### Robustness
+
+{{robustnessTable}}
+
+### Confounders reported honestly
+
+{{confounders}}
 
 ## Evidence for
 
@@ -23,33 +45,11 @@ Cross-chain volume settled through NEAR Intents is a better leading indicator of
 
 {{evidenceAgainst}}
 
-## Lead-lag results (weekly log changes, strongest positive correlation at a positive lag)
-
-| Usage series | Source | Intents volume leads by | r | Price leads by | r | Same-week r (Intents / price) | Weeks |
-|---|---|---|---|---|---|---|---|
-{{leadLagTable}}
-
-Correlations inside roughly ±{{noiseBand}} are indistinguishable from noise at this sample size.
-
-## Out-of-sample results (fit before {{cutoff}}, test from {{cutoff}})
-
-| Usage series | Predictor | Lag chosen | Test weeks | Out-of-sample R² | Sign hit rate |
-|---|---|---|---|---|---|
-{{oosTable}}
-
-## Robustness
-
-{{robustnessTable}}
-
-## Confounders reported honestly
-
-{{confounders}}
-
 ## What would change my mind
 
 {{changeMyMind}}
 
-## Data gaps and metrics that could not be computed
+## Metrics that could not be computed
 
 {{gaps}}
 

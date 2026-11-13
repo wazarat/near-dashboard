@@ -93,7 +93,7 @@ jobs:
         run: |
           git config user.name "Wazarat Hussain"
           git config user.email "wazarat100@gmail.com"
-          git add data/history data/raw THESIS.md
+          git add data/history data/raw THESIS.md README.md
           if git diff --cached --quiet; then
             echo "No data changes."
             exit 0

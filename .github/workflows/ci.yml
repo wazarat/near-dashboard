@@ -27,6 +27,11 @@ jobs:
       - run: npm ci
       # The generated data is not committed; the type check and the tests read it.
       - run: npm run rebuild
+      # Reproducibility: a second rebuild changes nothing, and the committed THESIS.md and README.md match it.
+      - name: Rebuild is deterministic
+        run: |
+          npm run rebuild
+          git diff --exit-code -- THESIS.md README.md
       - run: npm run check:copy
       # Two-source and gas-fee checks over the committed history (src/lib/data-checks.ts).
       - run: npm run check:data

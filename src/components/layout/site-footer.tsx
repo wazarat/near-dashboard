@@ -86,6 +86,11 @@ export function SiteFooter() {
               </a>
             </li>
             <li>
+              <Link href="/about/" prefetch={false} className={LINK}>
+                About
+              </Link>
+            </li>
+            <li>
               <Link href="/help-track/" prefetch={false} className={LINK}>
                 Help us track this
               </Link>

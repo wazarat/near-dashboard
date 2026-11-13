@@ -12,6 +12,7 @@ import { lastShare, selectionSeries, windowSum } from "@/lib/selection-series";
 import type { NumericMetricKey, Project } from "@/lib/types";
 import { useSeries } from "@/lib/use-series";
 import { MiniSeries } from "./mini-series";
+import { SPECS } from "@/lib/query-specs";
 
 const PANELS: Array<{ key: NumericMetricKey; label: string; kind: "line" | "bar" }> = [
   { key: "tvl", label: "Summed TVL", kind: "line" },
@@ -102,6 +103,7 @@ export function SelectionOverTime({ projects, range, onRangeChange }: { projects
   return (
     <ChartCard
       id="chain-over-time"
+      method={{ sentence: "The selected projects' own TVL, DEX volume, fees and revenue, summed per day from DefiLlama history for each project.", queries: [SPECS.llamaProtocolTvl, SPECS.llamaProtocolFlows, SPECS.selectionSeries] }}
       title="Selection over time"
       takeaway={takeaway}
       subtitle={subtitle}

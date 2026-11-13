@@ -17,6 +17,7 @@ import { useFilters } from "@/lib/filters";
 import { fmtInt, fmtMetric, fmtPct, METRIC_LABEL } from "@/lib/format";
 import { concentration, nativeShare, topNShare } from "@/lib/metrics";
 import { TIMELINE_DEFAULT_START } from "@/lib/timeline";
+import { SPECS } from "@/lib/query-specs";
 
 export function OverviewView() {
   const { filtered, projectsFor, all, scale, rangeOf, setRange, state, setState, setFacet, openProject, activeCount } = useFilters();
@@ -88,6 +89,7 @@ export function OverviewView() {
       <div className="grid gap-4 xl:grid-cols-3">
         <ChartCard
           id="sectors"
+          method={{ sentence: "Each sector sized by the chosen metric for the selected projects and coloured by its share of NEAR-native projects.", queries: [SPECS.snapshotCsv, SPECS.llamaProtocolTvl, SPECS.llamaProtocolFlows, SPECS.treemap] }}
           className="xl:col-span-2"
           title={level.sector ? `${level.sector} by ${label}` : `Sectors by ${label}`}
           takeaway={treemapTakeaway}
@@ -113,6 +115,7 @@ export function OverviewView() {
       <div className="grid gap-4 xl:grid-cols-2">
         <ChartCard
           id="native-vs-imported"
+          method={{ sentence: "How many projects in each sector were built natively on NEAR, natively on Aurora, or came from another chain.", queries: [SPECS.snapshotCsv, SPECS.nativeShare] }}
           title="Native vs imported"
           takeaway={stackTakeaway}
           info="100% stacked bars. Each row splits one metric across the six Native Chain classifications from the research CSVs. Projects counts every row in the selection; TVL, 30d volume, 30d fees and 30d revenue use DefiLlama figures and only the projects that report one."
@@ -125,6 +128,7 @@ export function OverviewView() {
         </ChartCard>
         <ChartCard
           id="concentration"
+          method={{ sentence: "The share of the selection's total held by its largest projects, ranked from the biggest down.", queries: [SPECS.snapshotCsv, SPECS.llamaProtocolTvl, SPECS.llamaProtocolFlows, SPECS.concentration] }}
           title="Concentration curve"
           takeaway={curveTakeaway}
           info={`Projects with a DefiLlama value for ${METRIC_LABEL[cc]}, ranked largest first, plotted as cumulative share of the selection total. Markers show the top 3 and top 10. The log toggle applies to the rank axis.`}

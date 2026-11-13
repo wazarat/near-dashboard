@@ -23,7 +23,7 @@ import { EMPTY_INTENTS, summarizeIntents } from "../src/lib/intents";
 import { validate, type Expected } from "../src/lib/validate";
 import { readDaily as readIntentsDaily } from "./fetch/intents";
 import { dateFromName, findFile, findFileOrNull, readCsv, readCsvOrEmpty } from "./lib/csv";
-import { DATA, HISTORY, OUT } from "./lib/paths";
+import { DATA, HISTORY, OUT, QUERIES } from "./lib/paths";
 import { readJson } from "./lib/store";
 
 function label(d: DateStr): string {
@@ -450,6 +450,8 @@ function main() {
   write("meta.json", meta);
   write("series.json", series);
   write("chain.json", chain ?? emptyChain(asOf));
+  // The SQL behind every BigQuery chart, read from queries/*.sql so the page shows the file that runs.
+  write("queries.json", Object.fromEntries(fs.readdirSync(QUERIES).filter((f) => f.endsWith(".sql")).sort().map((f) => [f.replace(/\.sql$/, ""), fs.readFileSync(path.join(QUERIES, f), "utf8")])));
   write("newly-detected.json", { items: history?.meta.newlyDetected ?? [], unmatchedCsv, unmatchedMap: history?.meta.unmatchedMap ?? [] });
   // NEAR Intents (1Click) per-day aggregates with DefiLlama's NEAR Intents volume as the cross-check.
   const intentsDays = readIntentsDaily();

@@ -6,7 +6,8 @@ import { EstimateLabel } from "@/components/atlas/estimate-label";
 import { RangeBrush } from "@/components/atlas/range-brush";
 import { RangeControl } from "@/components/atlas/range-control";
 import { brushSlice } from "@/lib/chart-frame";
-import { chainData } from "@/lib/data";
+import { chainData, sql } from "@/lib/data";
+import { SPECS } from "@/lib/query-specs";
 import { fmtCompact, fmtDateShort, fmtPct, fmtPctSigned } from "@/lib/format";
 import { rangeDays, RANGE_LONG, sliceTail, type Range } from "@/lib/ranges";
 import { selectionSeries, windowSum } from "@/lib/selection-series";
@@ -14,21 +15,6 @@ import type { Project } from "@/lib/types";
 import { useSeries } from "@/lib/use-series";
 import { useMemo } from "react";
 import { MiniSeries } from "./mini-series";
-
-const BQ_DAILY_CHAIN = `SELECT block_date, COUNT(*) AS transactions, COUNT(DISTINCT signer_account_id) AS active_accounts, COUNT(DISTINCT receiver_account_id) AS distinct_receivers
-FROM \`bigquery-public-data.crypto_near_mainnet_us.transactions\`
-WHERE block_date BETWEEN @start AND @end GROUP BY block_date ORDER BY block_date`;
-
-const BQ_DAILY_RECEIPTS = /* copy-ok */ `-- one scan of receipt_actions: chain totals (account_id NULL) and per-receiver rows for tracked accounts
-SELECT block_date, account_id, COUNTIF(action_kind = 'FUNCTION_CALL') AS function_calls,
-  COUNT(DISTINCT IF(action_kind = 'FUNCTION_CALL', signer_account_id, NULL)) AS distinct_signers,
-  COUNT(DISTINCT IF(action_kind = 'FUNCTION_CALL', receipt_receiver_account_id, NULL)) AS contracts_called,
-  COUNTIF(action_kind = 'CREATE_ACCOUNT') AS new_accounts, COUNTIF(action_kind = 'DEPLOY_CONTRACT') AS contracts_deployed
-FROM (SELECT block_date, action_kind, signer_account_id, receipt_receiver_account_id,
-        IF(receipt_receiver_account_id IN UNNEST(@accounts), receipt_receiver_account_id, NULL) AS account_id
-      FROM \`bigquery-public-data.crypto_near_mainnet_us.receipt_actions\` WHERE block_date BETWEEN @start AND @end)
-GROUP BY GROUPING SETS ((block_date), (block_date, account_id))
-HAVING account_id IS NOT NULL OR GROUPING(account_id) = 1`;
 
 type Panel = { label: string; nb: Array<number | null>; bq?: Array<number | null>; kind: "line" | "bar"; bqOnly?: boolean; pair?: readonly ["aurora", "intents.near"]; /** The selection's own figure, in a filtered view; every other panel is then marked whole chain. */ selection?: boolean };
 
@@ -137,11 +123,7 @@ export function ChainActivity({ range, onRangeChange, selection = null }: { rang
       actions={<RangeControl value={range} onChange={onRangeChange} ariaLabel="Chain activity range" />}
       info="NearBlocks daily charts (transactions, active accounts, new accounts) since 2020 plus the NEAR BigQuery public dataset for the last year, which adds transactions, distinct signers, CREATE_ACCOUNT actions, FUNCTION_CALL receipts, distinct contracts called, and receipts to the aurora and intents.near accounts. Distinct signers are an estimate, since one person can use many accounts, and relayers or intents hide the end user."
       source="NearBlocks daily charts and the NEAR BigQuery public dataset (transactions and receipt_actions)"
-      queries={[
-        { kind: "sql", title: "queries/daily_chain.sql (transactions table)", code: BQ_DAILY_CHAIN },
-        { kind: "sql", title: "queries/daily_receipts.sql (receipt_actions table)", code: BQ_DAILY_RECEIPTS },
-        { kind: "http", title: "NearBlocks daily charts", code: "GET https://api.nearblocks.io/v1/charts  -> charts[].{date, txns, active_accounts, new_accounts, active_contracts, near_price, market_cap}" },
-      ]}
+      method={{ sentence: "Daily transactions, active accounts and new accounts on NEAR since 2020, with BigQuery function calls, contracts called and receipts to aurora and intents.near for the last year.", queries: [sql("daily_chain", "transactions"), sql("daily_receipts", "receipt_actions"), SPECS.nearblocks] }}
       table={{
         columns: [
           { key: "date", label: "Date" },

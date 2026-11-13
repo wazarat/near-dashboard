@@ -9,12 +9,13 @@ import path from "node:path";
 import { addDays, type DateStr } from "../src/lib/dates";
 import { emptyOverview, type ChainHistory, type HistoryMeta, type Series, type SeriesMap } from "../src/lib/history-types";
 import { windowEnd } from "../src/lib/live";
-import { indexTo100, leadLag, logChanges, outOfSample, subtractSeries, toWeekly, trimTop, type LeadLagSummary, type OosResult } from "../src/lib/stats";
+import { indexTo100, leadLag, logChanges, outOfSample, subtractSeries, toWeekly, trimTop, dropTop, type LeadLagSummary, type OosResult } from "../src/lib/stats";
 import type { Confounder, RobustnessVariant, ThesisJson, UsageKey, UsageMeta } from "../src/lib/thesis-types";
 import type { EcosystemEvent } from "../src/lib/types";
 import { readDaily as readIntentsDaily } from "./fetch/intents";
 import { HISTORY, OUT, ROOT } from "./lib/paths";
 import { readJson } from "./lib/store";
+import { SPECS, sqlSpec } from "../src/lib/query-specs";
 
 const MAX_LAG = 8;
 const USAGE: UsageMeta[] = [
@@ -26,14 +27,14 @@ const USAGE: UsageMeta[] = [
 ];
 
 const QUERIES: ThesisJson["queries"] = {
-  intentsLlama: { kind: "http", title: "DefiLlama NEAR Intents daily volume", code: "GET https://api.llama.fi/overview/dexs/near?excludeTotalDataChart=true\n-> totalDataChartBreakdown[][1][\"NEAR Intents\"]  (data/history/defillama/volume-near.json)" },
-  intentsExplorer: { kind: "http", title: "NEAR Intents Explorer API (1Click swaps only)", code: "GET https://explorer.near-intents.org/api/v0/transactions?numberOfTransactions=1000&direction=next&lastDepositAddress=…&lastDepositMemo=…\nAuthorization: Bearer $NEAR_INTENTS_JWT   (1 request / 5 s)\n-> per-day aggregates in data/raw/intents/daily/*.json: volume = Σ amountInUsd where status = SUCCESS" },
-  nearblocks: { kind: "http", title: "NearBlocks daily charts", code: "GET https://api.nearblocks.io/v1/charts\n-> charts[].{date, txns, active_accounts, new_accounts, near_price}  (data/history/chain.json → nearblocks)" },
-  dailyChain: { kind: "sql", title: "queries/daily_chain.sql", code: fs.readFileSync(path.join(ROOT, "queries", "daily_chain.sql"), "utf8") },
-  dailyReceipts: { kind: "sql", title: "queries/daily_receipts.sql", code: fs.readFileSync(path.join(ROOT, "queries", "daily_receipts.sql"), "utf8") },
-  weekly: { kind: "transform", title: "src/lib/stats.ts: toWeekly + logChanges", code: "weekly = ISO-week sums (flows) or last value (price); x_t = ln(weekly_t / weekly_{t-1}); weeks with < 4 days or the incomplete trailing week are dropped" },
-  leadLag: { kind: "transform", title: "src/lib/stats.ts: crossCorrelation", code: "for k in −8…+8: r_k = pearson(x_t, y_{t+k}) over all t where both exist; positive k = x leads y by k weeks; noise band ≈ 2/√n" },
-  oos: { kind: "transform", title: "src/lib/stats.ts: outOfSample", code: "lag k* = argmax_{k∈1…8} |corr(x_{t−k}, y_t)| on weeks < cutoff; fit y_t = a + b·x_{t−k*} on the same weeks;\nscore weeks ≥ cutoff: R²_oos = 1 − SSE(model)/SSE(train mean); hit rate = share of weeks with sign(forecast) = sign(actual)" },
+  intentsLlama: SPECS.intentsLlama,
+  intentsExplorer: SPECS.intentsExplorer,
+  nearblocks: SPECS.nearblocks,
+  dailyChain: sqlSpec("daily_chain", fs.readFileSync(path.join(ROOT, "queries", "daily_chain.sql"), "utf8")),
+  dailyReceipts: sqlSpec("daily_receipts", fs.readFileSync(path.join(ROOT, "queries", "daily_receipts.sql"), "utf8")),
+  weekly: SPECS.weekly,
+  leadLag: SPECS.leadLag,
+  oos: SPECS.oos,
 };
 
 function loadChain(): ChainHistory {
@@ -166,6 +167,8 @@ function main() {
   robustness.push(variant("base", "Weekly, all days", "The headline test: weekly log changes, DefiLlama Intents volume, NearBlocks price.", xIntents, xPrice, baseUsage));
   const trimmed = trimTop(intentsDaily, 0.95);
   robustness.push(variant("trimmed", "Largest 5% of Intents days capped", `The ${trimmed.trimmed} biggest Intents volume days are capped at $${Math.round(trimmed.cap).toLocaleString("en-US")} before weekly resampling, to check that a few spikes do not drive the result.`, logChanges(toWeekly(trimmed.series, "flow", end)), xPrice, baseUsage));
+  const dropped = dropTop(intentsDaily, 0.95);
+  robustness.push(variant("removed", "Largest 5% of Intents days removed", `The ${dropped.dropped} biggest Intents volume days (above $${Math.round(dropped.cut).toLocaleString("en-US")}) are left out before weekly resampling; their weeks keep the remaining days, and weeks left with fewer than 4 days are dropped.`, logChanges(toWeekly(dropped.series, "flow", end)), xPrice, baseUsage));
   const exUsage: Partial<Record<UsageKey, Series>> = { functionCalls: logChanges(toWeekly(subtractSeries(dailyRaw.functionCalls, clip(bq.auroraCalls ?? [], start, end), clip(bq.intentsCalls ?? [], start, end)), "flow", end)) };
   robustness.push(variant("exAuroraIntents", "Function calls without aurora and intents.near receipts", "Receipts to the aurora and intents.near accounts are subtracted from function calls, so the usage series cannot contain the Intents settlement itself.", xIntents, xPrice, exUsage));
   const dailyChanges = Object.fromEntries(USAGE.map((u) => [u.key, logChanges(dailyRaw[u.key])])) as Record<UsageKey, Series>;
@@ -244,6 +247,12 @@ function main() {
     } else {
       againstLines.push(`Out of sample, neither predictor beats the training mean for ${u.label.toLowerCase()} after ${cutoff} (Intents R² = ${fmtR(o.intents.r2Oos)}, price R² = ${fmtR(o.price.r2Oos)}).`);
     }
+  }
+  // Each robustness variant counts on the side it falls, so a check that cuts against the claim is listed as such.
+  for (const v of robustness.slice(1)) {
+    const line = `Robustness, ${v.label.charAt(0).toLowerCase()}${v.label.slice(1)}: Intents volume is the stronger positive lead for ${v.intentsWins} usage series, price for ${v.priceWins}.`;
+    if (v.intentsWins > v.priceWins) forLines.push(line);
+    else if (v.priceWins > v.intentsWins) againstLines.push(line);
   }
   const riw = robustness.slice(1).reduce((a, v) => a + v.intentsWins, 0);
   const rpw = robustness.slice(1).reduce((a, v) => a + v.priceWins, 0);
@@ -356,6 +365,13 @@ function main() {
   };
   const md = tpl.replace(/\{\{(\w+)\}\}/g, (_, k: string) => fill[k] ?? `{{${k}}}`);
   fs.writeFileSync(mdFile, md);
+  // README.md carries the same as-of date between markers, so the front page never claims fresher data than the files hold.
+  const readmeFile = path.join(ROOT, "README.md");
+  if (fs.existsSync(readmeFile)) {
+    const readme = fs.readFileSync(readmeFile, "utf8");
+    const next = readme.replace(/<!-- data-as-of -->[\s\S]*?<!-- \/data-as-of -->/, `<!-- data-as-of -->Data as of ${end}, the last complete UTC day in the committed raw files.<!-- /data-as-of -->`);
+    if (next !== readme) fs.writeFileSync(readmeFile, next);
+  }
   console.log(`  thesis: ${weeklyDates.length} weeks ${start}..${end}, cutoff ${cutoff}; lead-lag wins Intents ${iw} / price ${pw} / ties ${ties}; OOS wins Intents ${oiw} / price ${opw}; robustness ${riw}/${rpw}; verdict: ${supported}`);
   console.log(`  wrote THESIS.md and ${path.relative(ROOT, outFile)}\n`);
 }
