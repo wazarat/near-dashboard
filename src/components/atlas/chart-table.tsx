@@ -118,11 +118,9 @@ export function ChartTable({ spec }: { spec: ChartTableSpec }) {
   );
 }
 
-export function ChartTableToggle({ view, onChange, hasQuery }: { view: ChartView; onChange: (v: ChartView) => void; hasQuery?: boolean }) {
-  const options: Array<{ value: ChartView; label: string }> = [
-    { value: "chart", label: "Chart" },
-    { value: "table", label: "Table" },
-  ];
+export function ChartTableToggle({ view, onChange, hasQuery, hasTable = true }: { view: ChartView; onChange: (v: ChartView) => void; hasQuery?: boolean; hasTable?: boolean }) {
+  const options: Array<{ value: ChartView; label: string }> = [{ value: "chart", label: "Chart" }];
+  if (hasTable) options.push({ value: "table", label: "Table" });
   if (hasQuery) options.push({ value: "query", label: "Query" });
   const pathname = usePathname();
   const pick = (v: ChartView) => {

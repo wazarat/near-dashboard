@@ -100,7 +100,7 @@ export function OosChart({ data }: { data: ThesisJson }) {
       takeaway={takeaway}
       info={`For each usage series a one-variable regression of its weekly log change on the lagged log change of the predictor (Intents volume from DefiLlama, or NEAR price from NearBlocks) is fitted on weeks before ${fmtDate(cutoff)}; the lag is chosen on the training window only. It is then scored on weeks from ${fmtDate(cutoff)} onward. Out-of-sample R² is 1 − SSE(model) / SSE(training-mean forecast), where zero means no better than always predicting the training mean, negative means worse. The sign hit rate is the share of test weeks where the forecast had the right direction.`}
       table={table}
-      queries={pickQueries(data.queries, ["oos", "weekly"])}
+      queries={pickQueries(data.queries, ["oos", "weekly", "intentsLlama", "nearblocks", "dailyChain", "dailyReceipts"])}
       footer={clipped.length ? <span>Bars are cut off at R² = {fmtR(FLOOR)} for {clipped.join("; ")}. Exact values are in the table and tooltip.</span> : undefined}
     >
       {(frame: ChartFrame) => n === 0 ? (

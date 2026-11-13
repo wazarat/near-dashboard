@@ -8,6 +8,7 @@ import { SectorGrid, sectorCards, sectorCardTable } from "@/components/charts/se
 import { TierBySector, tierRows, tierTable } from "@/components/charts/tier-by-sector";
 import { useFilters } from "@/lib/filters";
 import { fmtInt, fmtMetric, fmtPct, METRIC_LABEL } from "@/lib/format";
+import { SPECS } from "@/lib/query-specs";
 
 export function SectorsView() {
   const { projectsFor, scale, state, setState, openSector, openProject } = useFilters();
@@ -61,6 +62,7 @@ export function SectorsView() {
     <div className="space-y-4">
       <ChartCard
         id="sector-bars"
+        method={{ sentence: "Every sector in the selection ranked by the chosen metric, summed over its projects.", queries: [SPECS.llamaProtocolTvl, SPECS.llamaProtocolFlows, SPECS.snapshotCsv, SPECS.sectorTotals] }}
         title={`Sectors by ${label}`}
         takeaway={barTakeaway}
         info={`All sectors in the current selection ranked by ${label}. Money metrics are summed from DefiLlama (blank rows excluded); project counts come from the research CSVs. Sectors with no data are hidden on the log scale. Click a bar or a sector name to open the sector pop-up.`}
@@ -76,6 +78,7 @@ export function SectorsView() {
 
       <ChartCard
         id="tier-by-sector"
+        method={{ sentence: "How many projects in each sector sit in each traction tier, where a tier is set by TVL, 30-day volume and 30-day fees.", queries: [SPECS.llamaProtocolTvl, SPECS.llamaProtocolFlows, SPECS.snapshotCsv, SPECS.tierCounts] }}
         title="Traction tier by sector"
         takeaway={tierTakeaway}
         info="Project counts per traction tier within each sector. Tiers come from the research CSVs. Tier 1 to 3 rank projects with measurable DefiLlama traction, Tracked negligible means a DefiLlama listing with every figure at zero, TBD means no listing yet so the tier is to be determined. Click a bar to open the sector pop-up."
@@ -87,6 +90,7 @@ export function SectorsView() {
 
       <ChartCard
         id="sector-cards"
+        method={{ sentence: "One card per sector with its project count, NEAR-native share, projects with measurable traction and the chosen metric.", queries: [SPECS.llamaProtocolTvl, SPECS.llamaProtocolFlows, SPECS.snapshotCsv, SPECS.sectorCards] }}
         title="Sector cards"
         takeaway={gridTakeaway}
         info={`One card per sector in the selection, with project count, NEAR-native share, projects with any measurable traction and the summed ${cardLabel}. Counts and the Native Chain classification come from the research CSVs; money metrics from DefiLlama. Ranked leaders come from the research leaders CSV and do not change with the filters.`}

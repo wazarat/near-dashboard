@@ -3,7 +3,9 @@ import fs from "node:fs";
 import path from "node:path";
 
 /** The login wall, logged out (docs/ATLAS-UI.md, section 3, Access; rules in src/lib/gate.ts). */
-const GATED = ["/sectors/", "/traction/", "/intents/", "/funding/", "/investors/", "/security/", "/explorer/"];
+const GATED = ["/funding/", "/investors/", "/security/"];
+/** The thesis evidence: open to everyone, checked route by route in logged-out.spec.ts. */
+const OPEN = ["/", "/thesis/", "/intents/", "/explorer/", "/sectors/", "/traction/"];
 const SHOTS = path.join(__dirname, "screenshots");
 fs.mkdirSync(SHOTS, { recursive: true });
 
@@ -27,7 +29,7 @@ async function noOverflow(page: Page) {
   expect(overflow, "no horizontal overflow").toBeLessThanOrEqual(1);
 }
 
-for (const open of ["/", "/thesis/"]) {
+for (const open of OPEN) {
   test(`${open} is public and the header offers Log in`, async ({ page }, info) => {
     const errors = await guard(page);
     await page.goto(open);
@@ -38,7 +40,7 @@ for (const open of ["/", "/thesis/"]) {
     await expect(page.getByTestId("login-wall")).toHaveCount(0);
     await expect(page.locator("[data-chart-card]").first()).toBeVisible({ timeout: 15_000 });
     await noOverflow(page);
-    await page.screenshot({ path: path.join(SHOTS, `wall-public${open === "/" ? "-overview" : "-thesis"}-${info.project.name}.png`) });
+    await page.screenshot({ path: path.join(SHOTS, `wall-public-${open === "/" ? "overview" : open.replace(/\//g, "")}-${info.project.name}.png`) });
     await page.getByTestId("header-login").click();
     await expect(page.getByTestId("login-dialog")).toBeVisible();
     if (open === "/") await page.screenshot({ path: path.join(SHOTS, `wall-header-login-${info.project.name}.png`) });
@@ -63,7 +65,7 @@ for (const route of GATED) {
     await expect(dialog.getByRole("button", { name: "Create free account" })).toBeVisible();
     await expect(page.getByTestId("login-wall").locator("[inert]")).toHaveCount(1);
     await expect(page).toHaveURL(new RegExp(`${route.replace(/\//g, "\\/")}\\?q=rhea`));
-    if (route === "/intents/") await page.screenshot({ path: path.join(SHOTS, `wall-gated-intents-${info.project.name}.png`) });
+    if (route === "/funding/") await page.screenshot({ path: path.join(SHOTS, `wall-gated-funding-${info.project.name}.png`) });
     // Esc closes the pop-up; the page stays blurred with a way back in.
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
@@ -74,14 +76,14 @@ for (const route of GATED) {
 }
 
 test("a detail link on a gated tab waits for login instead of opening over the wall", async ({ page }) => {
-  await page.goto("/traction/?project=near-intents");
+  await page.goto("/funding/?project=near-intents");
   await expect(page.getByTestId("login-dialog")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByTestId("project-modal")).toHaveCount(0);
   await expect(page).toHaveURL(/project=near-intents/);
 });
 
 test("an expanded chart link on a gated tab stays closed", async ({ page }) => {
-  await page.goto("/intents/?expand=intents-volume");
+  await page.goto("/funding/?expand=funding-rounds");
   await expect(page.getByTestId("login-dialog")).toBeVisible({ timeout: 15_000 });
   await expect(page.locator("[data-expanded-chart]")).toHaveCount(0);
 });

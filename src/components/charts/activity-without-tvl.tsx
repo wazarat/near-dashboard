@@ -4,7 +4,9 @@ import { useMemo } from "react";
 import { ChartCard, EmptyState } from "@/components/atlas/chart-card";
 import { DataTable } from "@/components/explorer/data-table";
 import { calls30Column, calls7Column, chainColumn, nameColumn, sectorColumn, signersColumn, tierColumn } from "@/components/explorer/project-columns";
+import { sql } from "@/lib/data";
 import { fmtInt } from "@/lib/format";
+import { SPECS } from "@/lib/query-specs";
 import type { Project } from "@/lib/types";
 
 /** Projects with onchain function calls but no TVL: activity the TVL lens misses. */
@@ -20,6 +22,7 @@ export function ActivityWithoutTvl({ projects, onOpen }: { projects: Project[]; 
   return (
     <ChartCard
       id="activity-without-tvl"
+      method={{ sentence: "Projects whose tracked NEAR accounts were called in the last 7 days but that report no TVL.", queries: [sql("daily_receipts", "receipt_actions"), SPECS.llamaProtocolTvl, SPECS.activityNoTvl] }}
       legacyCard="activity-without-tvl"
       title="Activity without TVL"
       takeaway={takeaway}

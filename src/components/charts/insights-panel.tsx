@@ -2,6 +2,8 @@
 
 import { useMemo } from "react";
 import { ScopeNote } from "@/components/atlas/chart-card";
+import { HowCalculated } from "@/components/atlas/how-calculated";
+import { SPECS } from "@/lib/query-specs";
 import { LegacySwitch, useLegacyOn } from "@/components/atlas/legacy-switch";
 import { MetricSegmented } from "@/components/atlas/chart-metric";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -41,8 +43,8 @@ export function InsightsPanel({ projects, metric, onMetricChange, total }: { pro
         </div>
         <p className="text-sm text-ink-300">Live sentences are recomputed from the {filteredView ? "current selection" : "full dataset"} for the chosen metric; analyst notes are fixed.</p>
       </CardHeader>
-      <CardContent className="px-4">
-        <Tabs defaultValue="live">
+      <CardContent className="px-4" data-chart-body>
+        <Tabs defaultValue="live" data-chart-mark>
           <TabsList className="h-8">
             <TabsTrigger value="live" className="h-6 px-2 text-xs">
               Live insights
@@ -76,6 +78,10 @@ export function InsightsPanel({ projects, metric, onMetricChange, total }: { pro
           </TabsContent>
         </Tabs>
       </CardContent>
+      <HowCalculated
+        className="mx-4"
+        method={{ sentence: "Sentences recomputed from the selected projects for the chosen metric, next to the fixed findings of the research memo.", queries: [SPECS.llamaProtocolTvl, SPECS.llamaProtocolFlows, SPECS.snapshotCsv, SPECS.insights] }}
+      />
     </Card>
   );
 }

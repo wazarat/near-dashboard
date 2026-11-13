@@ -7,6 +7,7 @@ import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/char
 import { CHAIN_COLOR, CHAIN_SHAPE } from "@/lib/colors";
 import type { Scale } from "@/lib/filters";
 import { fmtPct, fmtUsd, fmtUsdFull } from "@/lib/format";
+import { SPECS } from "@/lib/query-specs";
 import { NATIVE_CHAINS, type NativeChain, type Project } from "@/lib/types";
 
 interface Point {
@@ -76,6 +77,7 @@ export function BusinessModelScatter({ projects, scale, onScaleChange, onOpen }:
   return (
     <ChartCard
       id="business-model"
+      method={{ sentence: "Each project's 30-day fees against its 30-day revenue, so the share of fees it keeps can be read off the diagonals.", queries: [SPECS.llamaProtocolFlows, SPECS.llamaProtocolTvl, SPECS.captureRate] }}
       title="Business model, fees against revenue"
       takeaway={takeawayFor(plotted)}
       info="Each mark is a project with both 30-day fees and 30-day revenue on DefiLlama (research snapshot, refreshed daily once history exists). Diagonal lines mark 10%, 50% and 100% revenue capture, i.e. revenue divided by fees. Colour and shape both encode Native Chain; marker area tracks TVL. Axes are log by default because fees span several orders of magnitude."

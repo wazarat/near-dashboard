@@ -7,6 +7,7 @@ import { ChartCard, EmptyState, Legend } from "@/components/atlas/chart-card";
 import { TooltipFrame, TooltipRow, type TipProps } from "@/components/atlas/chart-tooltip";
 import { meta } from "@/lib/data";
 import { fmtPct } from "@/lib/format";
+import { SPECS } from "@/lib/query-specs";
 import type { Project } from "@/lib/types";
 
 interface Row {
@@ -46,6 +47,7 @@ export function ListedVsLive({ projects, onSelect }: { projects: Project[]; onSe
   return (
     <ChartCard
       id="listed-vs-live"
+      method={{ sentence: "For each place projects were found, how many are listed and how many show any measurable figure.", queries: [SPECS.llamaProtocolTvl, SPECS.llamaProtocolFlows, SPECS.snapshotCsv, SPECS.listedLive] }}
       legacyCard="listed-vs-live"
       title="Listed vs live by discovery source"
       takeaway={takeawayFor(rows)}

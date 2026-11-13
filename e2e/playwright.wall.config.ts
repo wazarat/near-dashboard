@@ -8,18 +8,22 @@ import path from "node:path";
  * rewrites .next, so run this suite and the others one at a time.
  *
  *   npm run e2e:wall
+ *   E2E_BASE_URL=https://near-dashboard-puce.vercel.app npm run e2e:wall     the no-cookie checks against a deployed site
  */
-const BASE = "http://127.0.0.1:3201";
+const LOCAL = "http://127.0.0.1:3201";
+/** E2E_BASE_URL points the logged-out checks at a deployed site (production after a deploy); no local server is built then. */
+const REMOTE = process.env.E2E_BASE_URL?.replace(/\/$/, "");
+const BASE = REMOTE ?? LOCAL;
 
 export default defineConfig({
   testDir: ".",
-  testMatch: /wall\.spec\.ts/,
+  testMatch: REMOTE ? /logged-out\.spec\.ts/ : /(wall|logged-out)\.spec\.ts/,
   outputDir: "./test-results-wall",
   timeout: 60_000,
   retries: 0,
   reporter: [["list"]],
   use: { baseURL: BASE, colorScheme: "dark" },
-  webServer: {
+  webServer: REMOTE ? undefined : {
     command: "sh -c 'export NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY= CLERK_SECRET_KEY= NEXT_PUBLIC_WALL_PREVIEW=logged-out; npm run rebuild >/dev/null && npx next build >/dev/null && npx next start -H 127.0.0.1 -p 3201'",
     cwd: path.resolve(__dirname, ".."),
     stdout: "ignore",

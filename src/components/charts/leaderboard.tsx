@@ -2,6 +2,9 @@
 
 import { useMemo } from "react";
 import { ScopeNote, TvlNote } from "@/components/atlas/chart-card";
+import { HowCalculated } from "@/components/atlas/how-calculated";
+import { sql } from "@/lib/data";
+import { SPECS } from "@/lib/query-specs";
 import { LegacySwitch, useLegacyOn } from "@/components/atlas/legacy-switch";
 import { MetricSegmented } from "@/components/atlas/chart-metric";
 import { RangeControl } from "@/components/atlas/range-control";
@@ -101,7 +104,7 @@ export function Leaderboard({ projects, metric, onMetricChange, range, onRangeCh
           {history} Sort any column; revenue capture is revenue divided by fees. Click a project to open it.
         </p>
       </CardHeader>
-      <CardContent className="px-0">
+      <CardContent className="px-0" data-chart-body>
         <DataTable
           key={`${cols}-${sortId}-${range}`}
           data={rows}
@@ -126,6 +129,10 @@ export function Leaderboard({ projects, metric, onMetricChange, range, onRangeCh
           }
         />
       </CardContent>
+      <HowCalculated
+        className="mx-4"
+        method={{ sentence: "Projects in the selection ranked by the chosen metric, with each project's own history for the change and trend columns.", queries: [SPECS.llamaProtocolTvl, SPECS.llamaProtocolFlows, sql("daily_receipts", "receipt_actions"), SPECS.snapshotCsv, SPECS.leaderboard] }}
+      />
     </Card>
   );
 }

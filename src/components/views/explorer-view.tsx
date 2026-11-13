@@ -34,6 +34,8 @@ import {
   xColumn,
 } from "@/components/explorer/project-columns";
 import { ScopeNote, TvlNote } from "@/components/atlas/chart-card";
+import { HowCalculated } from "@/components/atlas/how-calculated";
+import { SPECS } from "@/lib/query-specs";
 import { LegacySwitch } from "@/components/atlas/legacy-switch";
 import { MetricSegmented } from "@/components/atlas/chart-metric";
 import { SectorTreemap } from "@/components/charts/sector-treemap";
@@ -113,7 +115,7 @@ export function ExplorerView() {
   return (
     <div className="space-y-4">
       <NewlyDetectedCard />
-      <Card className="gap-3 py-4" data-testid="explorer-card">
+      <Card className="gap-3 py-4" data-testid="explorer-card" data-chart-card="Explorer">
         <CardHeader className="gap-3 px-4">
           <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
             <div className="min-w-[min(15rem,100%)] flex-1">
@@ -136,7 +138,7 @@ export function ExplorerView() {
           <ExplorerSearch count={filtered.length} />
         </CardHeader>
         {view === "map" ? (
-          <CardContent className="space-y-2 px-4" data-testid="explorer-map">
+          <CardContent className="space-y-2 px-4" data-testid="explorer-map" data-chart-body>
             <SectorTreemap
               projects={filtered}
               metric={tm}
@@ -153,7 +155,7 @@ export function ExplorerView() {
             )}
           </CardContent>
         ) : (
-          <CardContent className="px-0">
+          <CardContent className="px-0" data-chart-body>
             <DataTable
               data={filtered}
               columns={columns}
@@ -169,6 +171,10 @@ export function ExplorerView() {
             />
           </CardContent>
         )}
+        <HowCalculated
+          className="mx-4"
+          method={{ sentence: "Every project in the selection with its research columns and its DefiLlama figures, as a table or grouped by sector on a map.", queries: [SPECS.llamaProtocolTvl, SPECS.llamaProtocolFlows, SPECS.snapshotCsv, SPECS.explorerTable] }}
+        />
       </Card>
     </div>
   );

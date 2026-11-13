@@ -31,7 +31,7 @@ export function AppsCard() {
           {r.apps.length} apps in the atlas route {fmtUsd(r.apps.reduce((s, a) => s + a.usd, 0))} through 1Click over {r.days} days.
         </p>
       </CardHeader>
-      <CardContent className="px-4">
+      <CardContent className="px-4" data-chart-body>
         <div className="overflow-x-auto">
           <table className="w-full text-sm" data-testid="intents-apps">
             <thead>

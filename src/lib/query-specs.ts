@@ -135,6 +135,51 @@ Aurora: GET https://explorer.mainnet.aurora.dev/api/v2/stats/charts/transactions
     title: "src/lib/metrics.ts concentration",
     code: "sort projects by the metric, largest first; point k = share of the selection's total held by the top k projects",
   },
+  sectorTotals: {
+    kind: "transform",
+    title: "src/components/charts/sector-bars.tsx sectorBarRows",
+    code: "for each sector, the chosen metric summed over its projects in the selection (blank values left out), or the project count",
+  },
+  tierCounts: {
+    kind: "transform",
+    title: "src/components/charts/tier-by-sector.tsx tierRows",
+    code: /* copy-ok */ "per sector: count of projects in each traction tier\nTier 1: TVL >= $50M, 30d volume >= $500M or 30d fees >= $1M; Tier 2: $5M, $50M or $100K; Tier 3: any measurable activity\nTracked, negligible: listed on DefiLlama with every figure at zero; TBD: no listing",
+  },
+  sectorCards: {
+    kind: "transform",
+    title: "src/components/charts/sector-grid.tsx sectorCards",
+    code: "for each sector, project count, share with Native Chain = NEAR native, projects with any measurable traction, and the chosen metric summed\nranked leaders come from data/near-sector-leaders-2026-11-08.csv",
+  },
+  insights: {
+    kind: "transform",
+    title: "src/lib/insights.ts generateInsights + the research memo",
+    code: "live sentences are computed from the selection for the chosen metric (totals, leaders, concentration, native share)\nanalyst notes are the numbered findings of data/near-traction-funding-security-2026-11-08.md, shown as written",
+  },
+  leaderboard: {
+    kind: "transform",
+    title: "src/components/charts/leaderboard.tsx",
+    code: "projects in the selection ranked by the chosen metric, largest first (blank values last)\nchange and trend columns compare the last N days of each project's own daily history with the N days before",
+  },
+  captureRate: {
+    kind: "transform",
+    title: "src/components/charts/business-model-scatter.tsx",
+    code: "x = 30-day fees, y = 30-day revenue, both from DefiLlama, for projects that report both\ncapture rate = revenue / fees; marker area tracks TVL",
+  },
+  activityNoTvl: {
+    kind: "transform",
+    title: "scripts/fetch/bigquery.ts project activity + src/components/charts/activity-without-tvl.tsx",
+    code: "for each project, FUNCTION_CALL receipts and distinct signers over its tracked accounts (data/contracts.csv), summed over the last 7 and 30 days\nshown when the project has calls in the last 7 days and no TVL on DefiLlama",
+  },
+  listedLive: {
+    kind: "transform",
+    title: "src/components/charts/listed-vs-live.tsx",
+    code: "for each discovery source (the Discovered Via column of the research CSV), projects listed, and projects with any TVL, volume, fee or revenue figure on DefiLlama\na project found in several sources counts once in each",
+  },
+  explorerTable: {
+    kind: "transform",
+    title: "src/components/views/explorer-view.tsx",
+    code: "one row per project in the selection with every research column; the map groups the same rows by sector and sizes them by the chosen metric",
+  },
   events: {
     kind: "transform",
     title: "data/near-events-2026-11-08.csv + src/lib/timeline.ts",

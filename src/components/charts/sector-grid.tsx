@@ -105,7 +105,7 @@ export function SectorGrid({ projects, metric, onSelect, onOpen }: Props) {
   if (cards.length === 0) return <EmptyState />;
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-chart-mark>
       {cards.map((c) => (
         <div key={c.sector} className="card-lit flex flex-col rounded-xl border border-ink-700/60 bg-ink-900 p-4 text-sm" data-testid="sector-card">
           {/* The sector name is the way into the sector pop-up; the leaders below open their own projects. */}

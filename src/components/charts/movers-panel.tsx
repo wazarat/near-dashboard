@@ -95,7 +95,7 @@ export function MoversPanel({ projects, metric, onMetricChange, range, onRangeCh
       {!any ? (
         <EmptyState message={takeaway} />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2" data-chart-mark>
           <div>
             <h4 className="mb-1 text-xs font-semibold uppercase tracking-wide text-ink-300">Risers</h4>
             {m.risers.length ? <ul className="divide-y">{m.risers.map(row)}</ul> : <p className="text-xs text-ink-300">None</p>}

@@ -115,7 +115,7 @@ export function OverviewView() {
       <div className="grid gap-4 xl:grid-cols-2">
         <ChartCard
           id="native-vs-imported"
-          method={{ sentence: "How many projects in each sector were built natively on NEAR, natively on Aurora, or came from another chain.", queries: [SPECS.snapshotCsv, SPECS.nativeShare] }}
+          method={{ sentence: "How many projects in each sector were built natively on NEAR, natively on Aurora, or came from another chain.", queries: [SPECS.snapshotCsv, SPECS.llamaProtocolTvl, SPECS.llamaProtocolFlows, SPECS.nativeShare] }}
           title="Native vs imported"
           takeaway={stackTakeaway}
           info="100% stacked bars. Each row splits one metric across the six Native Chain classifications from the research CSVs. Projects counts every row in the selection; TVL, 30d volume, 30d fees and 30d revenue use DefiLlama figures and only the projects that report one."

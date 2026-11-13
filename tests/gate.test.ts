@@ -19,11 +19,12 @@ describe("login wall rules", () => {
     expect(isGatedPath("/help-track/")).toBe(false);
   });
 
-  it("leaves Overview, Thesis and Compare open and gates the other seven tabs", () => {
-    for (const p of ["/", "/thesis/", "/compare/"]) expect(isGatedPath(p)).toBe(false);
-    for (const p of ["/sectors/", "/traction/", "/intents/", "/funding/", "/investors/", "/security/", "/explorer/"]) expect(isGatedPath(p)).toBe(true);
-    expect(isGatedPath("/explorer")).toBe(true);
-    expect(isGatedPath("/intents/?expand=intents-volume")).toBe(true);
+  it("leaves the thesis evidence open (Overview, Thesis, Intents, Explorer, Sectors, Traction) and Compare, and gates Funding, Investors and Security", () => {
+    for (const p of ["/", "/thesis/", "/intents/", "/explorer/", "/sectors/", "/traction/", "/compare/"]) expect(isGatedPath(p)).toBe(false);
+    for (const p of ["/funding/", "/investors/", "/security/"]) expect(isGatedPath(p)).toBe(true);
+    expect(isGatedPath("/security")).toBe(true);
+    expect(isGatedPath("/funding/?fundingType=grant")).toBe(true);
+    expect(isGatedPath("/intents/?expand=intents-volume")).toBe(false);
     expect(isGatedPath("/thesis?expand=thesis-levels")).toBe(false);
     expect(isGatedPath("/nowhere/")).toBe(false);
   });
@@ -40,7 +41,8 @@ describe("login wall rules", () => {
     expect(allowed({ path: "/thesis/" }, false, true)).toBe(true);
     expect(allowed({ path: "/compare/" }, false, true)).toBe(true);
     expect(allowed({ path: "/help-track/" }, false, true)).toBe(true);
-    expect(allowed({ path: "/intents/" }, false, true)).toBe(false);
+    for (const p of ["/intents/", "/explorer/", "/sectors/", "/traction/", "/about/"]) expect(allowed({ path: p }, false, true)).toBe(true);
+    for (const p of ["/funding/", "/investors/", "/security/"]) expect(allowed({ path: p }, false, true)).toBe(false);
     for (const action of ["compare-add", "project-detail", "sector-detail", "investor-detail", "funding-detail"] as const) expect(allowed({ action }, false, true)).toBe(false);
     expect(PUBLIC_PROJECT_SECTIONS).toEqual(["header", "overview", "traction"]);
   });

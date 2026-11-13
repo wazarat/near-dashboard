@@ -69,7 +69,7 @@ export function RobustnessTable({ data }: { data: ThesisJson }) {
       takeaway={takeaway}
       info="The lead-lag test from Test 2 repeated under variants of the inputs. Intents volume with its largest days capped, function calls with receipts to aurora and intents.near removed, daily instead of weekly changes. Each cell shows each predictor's strongest positive correlation at a positive lag and the lag it occurs at; a predictor wins a series when its correlation is the larger one and clears the noise band. Sources are the same as above, DefiLlama, NearBlocks and the NEAR BigQuery public dataset."
       table={table}
-      queries={pickQueries(data.queries, ["weekly", "leadLag"])}
+      queries={pickQueries(data.queries, ["weekly", "leadLag", "intentsLlama", "intentsExplorer", "nearblocks", "dailyChain", "dailyReceipts"])}
       footer={<span>Lags are in weeks, or days for the daily variant. Base row first.</span>}
     >
       {variants.length === 0 ? (

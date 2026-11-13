@@ -107,7 +107,9 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
   // The expand dialog renders above the page, so on a walled page it stays closed until the reader logs in.
   const walled = !useAccess().can({ path: usePathname() });
   const open = canExpand && expand === id && !walled;
-  const hasQuery = Boolean(queries && queries.length);
+  // The Query tab shows the queries given directly, or the ones in the card's method.
+  const queryList = queries && queries.length ? queries : (method?.queries ?? []);
+  const hasQuery = queryList.length > 0;
   const inline = takeawayPlacement === "inline" || !canExpand;
   const startAtZero = !level || axis === "zero";
 
@@ -126,15 +128,15 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
       {actions}
       {level && v === "chart" && <Segmented value={axis} onChange={setAxis} options={AXIS_OPTIONS} ariaLabel="Y axis" />}
       {scale && onScaleChange && v === "chart" && <Segmented value={scale} onChange={onScaleChange} options={SCALE_OPTIONS} ariaLabel="Axis scale" />}
-      {(table || hasQuery) && <ChartTableToggle view={v} onChange={setV} hasQuery={hasQuery} />}
+      {(table || hasQuery) && <ChartTableToggle view={v} onChange={setV} hasQuery={hasQuery} hasTable={Boolean(table)} />}
     </>
   );
 
   const body = (v: ChartView, frame: ChartFrame) =>
     v === "table" && table ? (
       <ChartTable spec={table} />
-    ) : v === "query" && queries ? (
-      <QueryList queries={queries} />
+    ) : v === "query" && hasQuery ? (
+      <QueryList queries={queryList} />
     ) : (
       <ChartFrameProvider value={frame}>{typeof children === "function" ? children(frame) : children}</ChartFrameProvider>
     );
@@ -165,7 +167,9 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
           </div>
         </div>
       </CardHeader>
-      <CardContent className="px-4">{body(view, inlineFrame)}</CardContent>
+      <CardContent className="px-4" data-chart-body>
+        {body(view, inlineFrame)}
+      </CardContent>
       {footer && <div className="px-4 text-xs text-ink-300">{footer}</div>}
       {method && <HowCalculated method={method} className="mx-4" />}
 
@@ -199,7 +203,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
 
 export function EmptyState({ message = "No projects match the current filters.", className }: { message?: string; className?: string }) {
   return (
-    <div role="status" className={cn("flex h-40 items-center justify-center rounded-lg border border-dashed border-ink-700/60 px-4 text-center text-sm text-ink-300", className)}>
+    <div role="status" data-empty-state className={cn("flex h-40 items-center justify-center rounded-lg border border-dashed border-ink-700/60 px-4 text-center text-sm text-ink-300", className)}>
       {message}
     </div>
   );
