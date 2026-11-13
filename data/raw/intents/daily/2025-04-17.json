@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":2,"usd":0}},
+  "date": "2025-04-17",
+  "destinationAssets": {"USDT (native NEAR)":{"count":2,"usd":0}},
+  "destinationChains": {"near":{"count":2,"usd":0}},
+  "maxUsd": 0.01,
+  "medianUsd": 0.01,
+  "originAssets": {"arb:0xfd086b…":{"count":2,"usd":0}},
+  "originChains": {"arb":{"count":2,"usd":0}},
+  "p90Usd": 0.01,
+  "partial": false,
+  "referralFees": {},
+  "referrals": {"referral":{"count":2,"usd":0}},
+  "routes": {"arb>near":{"count":2,"usd":0}},
+  "rows": 2,
+  "sha256": "914d855af6e41b17794731c69d9bed28c4aa4a1a8b9c335b0232a6ffe7df81de",
+  "statuses": {"SUCCESS":2},
+  "successCount": 2,
+  "uniqueRecipients": 1,
+  "volumeOutUsd": 0,
+  "volumeUsd": 0
+}

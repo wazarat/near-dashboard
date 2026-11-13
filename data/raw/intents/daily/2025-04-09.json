@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":3,"usd":6}},
+  "date": "2025-04-09",
+  "destinationAssets": {"ETH":{"count":1,"usd":4},"SOL":{"count":1,"usd":1},"eth:0xa0b869…":{"count":1,"usd":1}},
+  "destinationChains": {"eth":{"count":2,"usd":5},"sol":{"count":1,"usd":1}},
+  "maxUsd": 3.9642,
+  "medianUsd": 1.4998,
+  "originAssets": {"SOL":{"count":1,"usd":4},"eth:0xa0b869…":{"count":1,"usd":1},"sol-5ce3bf3a….omft.near":{"count":1,"usd":1}},
+  "originChains": {"eth":{"count":1,"usd":1},"sol":{"count":2,"usd":5}},
+  "p90Usd": 1.4998,
+  "partial": false,
+  "referralFees": {},
+  "referrals": {"referral":{"count":2,"usd":2},"sweat-app":{"count":1,"usd":4}},
+  "routes": {"eth>sol":{"count":1,"usd":1},"sol>eth":{"count":2,"usd":5}},
+  "rows": 4,
+  "sha256": "6d7f25c9b2ddab56d37dc3fc15b1ed67c8e4e352ae8234f23ac6f7c38a5622ce",
+  "statuses": {"REFUNDED":1,"SUCCESS":3},
+  "successCount": 3,
+  "uniqueRecipients": 3,
+  "volumeOutUsd": 6,
+  "volumeUsd": 6
+}

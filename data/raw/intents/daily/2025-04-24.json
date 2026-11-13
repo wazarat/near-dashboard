@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":9,"usd":21}},
+  "date": "2025-04-24",
+  "destinationAssets": {"ETH":{"count":1,"usd":1},"USDT (native NEAR)":{"count":3,"usd":14},"sol-5ce3bf3a….omft.near":{"count":1,"usd":1},"sol-c800a4bd….omft.near":{"count":4,"usd":5}},
+  "destinationChains": {"eth":{"count":1,"usd":1},"near":{"count":3,"usd":14},"sol":{"count":5,"usd":6}},
+  "maxUsd": 10.105,
+  "medianUsd": 1.3,
+  "originAssets": {"ETH":{"count":1,"usd":1},"USDT (native NEAR)":{"count":3,"usd":4},"sol-c800a4bd….omft.near":{"count":2,"usd":4},"wNEAR":{"count":3,"usd":13}},
+  "originChains": {"eth":{"count":1,"usd":1},"near":{"count":6,"usd":17},"sol":{"count":2,"usd":4}},
+  "p90Usd": 2.4,
+  "partial": false,
+  "referralFees": {},
+  "referrals": {"(none)":{"count":6,"usd":9},"benevio-labs.near":{"count":1,"usd":10},"referral":{"count":2,"usd":2}},
+  "routes": {"eth>sol":{"count":1,"usd":1},"near>eth":{"count":1,"usd":1},"near>near":{"count":1,"usd":10},"near>sol":{"count":4,"usd":5},"sol>near":{"count":2,"usd":4}},
+  "rows": 11,
+  "sha256": "1e5cb4da154e1291bd0a1ac98c53830a009441c939ec457bf36d4e6845518367",
+  "statuses": {"FAILED":1,"REFUNDED":1,"SUCCESS":9},
+  "successCount": 9,
+  "uniqueRecipients": 5,
+  "volumeOutUsd": 21,
+  "volumeUsd": 21
+}

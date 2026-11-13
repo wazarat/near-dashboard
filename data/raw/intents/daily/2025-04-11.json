@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":6,"usd":27}},
+  "date": "2025-04-11",
+  "destinationAssets": {"ARB":{"count":3,"usd":21},"BSC":{"count":1,"usd":3},"USDC (native NEAR)":{"count":1,"usd":0},"USDT (native NEAR)":{"count":1,"usd":2}},
+  "destinationChains": {"arb":{"count":3,"usd":21},"bsc":{"count":1,"usd":3},"near":{"count":2,"usd":2}},
+  "maxUsd": 15.7581,
+  "medianUsd": 2.5486,
+  "originAssets": {"ARB":{"count":1,"usd":3},"BASE":{"count":4,"usd":23},"wNEAR":{"count":1,"usd":0}},
+  "originChains": {"arb":{"count":1,"usd":3},"base":{"count":4,"usd":23},"near":{"count":1,"usd":0}},
+  "p90Usd": 3.4207,
+  "partial": false,
+  "referralFees": {},
+  "referrals": {"benevio-labs.near":{"count":1,"usd":0},"referral":{"count":5,"usd":26}},
+  "routes": {"arb>bsc":{"count":1,"usd":3},"base>arb":{"count":3,"usd":21},"base>near":{"count":1,"usd":2},"near>near":{"count":1,"usd":0}},
+  "rows": 6,
+  "sha256": "83cbe3236167b024c3c67f05e3b6a256f9a0151715242e3b3509b7f592b9aedd",
+  "statuses": {"SUCCESS":6},
+  "successCount": 6,
+  "uniqueRecipients": 4,
+  "volumeOutUsd": 26,
+  "volumeUsd": 27
+}

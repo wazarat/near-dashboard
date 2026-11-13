@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":2,"usd":15}},
+  "date": "2025-03-30",
+  "destinationAssets": {"USDC (native NEAR)":{"count":2,"usd":15}},
+  "destinationChains": {"near":{"count":2,"usd":15}},
+  "maxUsd": 9.9791,
+  "medianUsd": 5.0055,
+  "originAssets": {"SOL":{"count":1,"usd":5},"ZEC":{"count":1,"usd":10}},
+  "originChains": {"sol":{"count":1,"usd":5},"zec":{"count":1,"usd":10}},
+  "p90Usd": 5.0055,
+  "partial": false,
+  "referralFees": {},
+  "referrals": {"tearpay.intear.near":{"count":2,"usd":15}},
+  "routes": {"sol>near":{"count":1,"usd":5},"zec>near":{"count":1,"usd":10}},
+  "rows": 2,
+  "sha256": "b966d07395cbf1f7d2764836231e2c5fde3cee7d629954ababe30239ef592f2c",
+  "statuses": {"SUCCESS":2},
+  "successCount": 2,
+  "uniqueRecipients": 2,
+  "volumeOutUsd": 15,
+  "volumeUsd": 15
+}

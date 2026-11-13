@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":1,"usd":13}},
+  "date": "2025-04-27",
+  "destinationAssets": {"BASE":{"count":1,"usd":13}},
+  "destinationChains": {"base":{"count":1,"usd":13}},
+  "maxUsd": 12.5716,
+  "medianUsd": 12.5716,
+  "originAssets": {"ETH":{"count":1,"usd":13}},
+  "originChains": {"eth":{"count":1,"usd":13}},
+  "p90Usd": 12.5716,
+  "partial": false,
+  "referralFees": {},
+  "referrals": {"referral":{"count":1,"usd":13}},
+  "routes": {"eth>base":{"count":1,"usd":13}},
+  "rows": 1,
+  "sha256": "8d7504ec8ee4f41cac704132726d0fbe88a5018ca6bc694d3b9f09afec48b20f",
+  "statuses": {"SUCCESS":1},
+  "successCount": 1,
+  "uniqueRecipients": 1,
+  "volumeOutUsd": 13,
+  "volumeUsd": 13
+}

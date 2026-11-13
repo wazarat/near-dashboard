@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":9,"usd":54}},
+  "date": "2025-04-28",
+  "destinationAssets": {"BTC":{"count":2,"usd":20},"SOL":{"count":1,"usd":9},"USDC (native NEAR)":{"count":1,"usd":18},"sol-c800a4bd….omft.near":{"count":1,"usd":1},"wNEAR":{"count":4,"usd":6}},
+  "destinationChains": {"btc":{"count":2,"usd":20},"near":{"count":5,"usd":24},"sol":{"count":2,"usd":10}},
+  "maxUsd": 17.8913,
+  "medianUsd": 1.9999,
+  "originAssets": {"BASE":{"count":1,"usd":9},"USDC (native NEAR)":{"count":1,"usd":1},"eth:0xa0b869…":{"count":1,"usd":10},"eth:0xdac17f…":{"count":1,"usd":10},"sol-5ce3bf3a….omft.near":{"count":4,"usd":6},"wNEAR":{"count":1,"usd":18}},
+  "originChains": {"base":{"count":1,"usd":9},"eth":{"count":2,"usd":20},"near":{"count":2,"usd":19},"sol":{"count":4,"usd":6}},
+  "p90Usd": 10,
+  "partial": false,
+  "referralFees": {},
+  "referrals": {"(none)":{"count":5,"usd":8},"benevio-labs.near":{"count":1,"usd":18},"referral":{"count":1,"usd":9},"swapkit":{"count":2,"usd":20}},
+  "routes": {"base>sol":{"count":1,"usd":9},"eth>btc":{"count":2,"usd":20},"near>near":{"count":1,"usd":18},"near>sol":{"count":1,"usd":1},"sol>near":{"count":4,"usd":6}},
+  "rows": 9,
+  "sha256": "946393eef942f0fc5b371bfbfaaa216ed104807a545a17bb0a7ff9d6ec4dc9de",
+  "statuses": {"SUCCESS":9},
+  "successCount": 9,
+  "uniqueRecipients": 5,
+  "volumeOutUsd": 55,
+  "volumeUsd": 54
+}

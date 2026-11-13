@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":6,"usd":47}},
+  "date": "2025-04-14",
+  "destinationAssets": {"ARB":{"count":1,"usd":10},"BASE":{"count":2,"usd":9},"BSC":{"count":1,"usd":10},"ETH":{"count":1,"usd":10},"SOL":{"count":1,"usd":7}},
+  "destinationChains": {"arb":{"count":1,"usd":10},"base":{"count":2,"usd":9},"bsc":{"count":1,"usd":10},"eth":{"count":1,"usd":10},"sol":{"count":1,"usd":7}},
+  "maxUsd": 10.0357,
+  "medianUsd": 7.4546,
+  "originAssets": {"BASE":{"count":3,"usd":30},"BSC":{"count":2,"usd":15},"ETH":{"count":1,"usd":2}},
+  "originChains": {"base":{"count":3,"usd":30},"bsc":{"count":2,"usd":15},"eth":{"count":1,"usd":2}},
+  "p90Usd": 10.0344,
+  "partial": false,
+  "referralFees": {},
+  "referrals": {"referral":{"count":6,"usd":47}},
+  "routes": {"base>arb":{"count":1,"usd":10},"base>bsc":{"count":1,"usd":10},"base>eth":{"count":1,"usd":10},"bsc>base":{"count":1,"usd":7},"bsc>sol":{"count":1,"usd":7},"eth>base":{"count":1,"usd":2}},
+  "rows": 7,
+  "sha256": "8c0fd027b953b1ed32f9e42682eafe53e976a7784b9ab6172621d5dfb9020bb3",
+  "statuses": {"FAILED":1,"SUCCESS":6},
+  "successCount": 6,
+  "uniqueRecipients": 4,
+  "volumeOutUsd": 47,
+  "volumeUsd": 47
+}
