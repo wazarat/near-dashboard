@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":17,"usd":28}},
+  "date": "2025-05-05",
+  "destinationAssets": {"ARB":{"count":1,"usd":1},"BERA":{"count":1,"usd":3},"SOL":{"count":1,"usd":5},"USDC (native NEAR)":{"count":1,"usd":1},"USDT (native NEAR)":{"count":1,"usd":1},"arb:0xfd086b…":{"count":4,"usd":5},"base:0x833589…":{"count":3,"usd":4},"eth:0xa0b869…":{"count":1,"usd":1},"eth:0xdac17f…":{"count":3,"usd":4},"wNEAR":{"count":1,"usd":2}},
+  "destinationChains": {"arb":{"count":5,"usd":6},"base":{"count":3,"usd":4},"bera":{"count":1,"usd":3},"eth":{"count":4,"usd":5},"near":{"count":3,"usd":5},"sol":{"count":1,"usd":5}},
+  "maxUsd": 5.4061,
+  "medianUsd": 1.2,
+  "originAssets": {"ARB":{"count":1,"usd":5},"SOL":{"count":2,"usd":2},"USDC (native NEAR)":{"count":2,"usd":2},"base:0x833589…":{"count":4,"usd":6},"eth:0x698250…":{"count":1,"usd":1},"eth:0xdac17f…":{"count":5,"usd":8},"sol-c800a4bd….omft.near":{"count":1,"usd":1},"wNEAR":{"count":1,"usd":1}},
+  "originChains": {"arb":{"count":1,"usd":5},"base":{"count":4,"usd":6},"eth":{"count":6,"usd":9},"near":{"count":3,"usd":4},"sol":{"count":3,"usd":4}},
+  "p90Usd": 2.3479,
+  "partial": false,
+  "referralFees": {},
+  "referrals": {"(none)":{"count":16,"usd":22},"referral":{"count":1,"usd":5}},
+  "routes": {"arb>sol":{"count":1,"usd":5},"base>eth":{"count":2,"usd":3},"base>near":{"count":2,"usd":4},"eth>arb":{"count":5,"usd":6},"eth>bera":{"count":1,"usd":3},"near>base":{"count":3,"usd":4},"sol>eth":{"count":2,"usd":2},"sol>near":{"count":1,"usd":1}},
+  "rows": 20,
+  "sha256": "9b7d878f76e8cd9b63a365597b78c3d5b3952472b607b434860a1601496d898d",
+  "statuses": {"FAILED":1,"REFUNDED":2,"SUCCESS":17},
+  "successCount": 17,
+  "uniqueRecipients": 9,
+  "volumeOutUsd": 27,
+  "volumeUsd": 28
+}

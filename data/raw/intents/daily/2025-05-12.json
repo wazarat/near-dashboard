@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":21,"usd":43}},
+  "date": "2025-05-12",
+  "destinationAssets": {"BASE":{"count":3,"usd":6},"BTC":{"count":2,"usd":2},"USDC (native NEAR)":{"count":4,"usd":8},"USDT (native NEAR)":{"count":2,"usd":10},"arb:0xaf88d0…":{"count":1,"usd":1},"base:0x833589…":{"count":1,"usd":2},"bsc:0x8ac76a…":{"count":1,"usd":1},"eth:0xa0b869…":{"count":1,"usd":2},"sol-5ce3bf3a….omft.near":{"count":5,"usd":8},"sol-c800a4bd….omft.near":{"count":1,"usd":2}},
+  "destinationChains": {"arb":{"count":1,"usd":1},"base":{"count":4,"usd":8},"bsc":{"count":1,"usd":1},"btc":{"count":2,"usd":2},"eth":{"count":1,"usd":2},"near":{"count":6,"usd":18},"sol":{"count":6,"usd":9}},
+  "maxUsd": 5.0016,
+  "medianUsd": 1.9999,
+  "originAssets": {"USDC (native NEAR)":{"count":9,"usd":14},"arb:0xaf88d0…":{"count":1,"usd":1},"base:0x833589…":{"count":2,"usd":2},"bsc:0x8ac76a…":{"count":1,"usd":1},"eth:0xa0b869…":{"count":1,"usd":4},"eth:0xdac17f…":{"count":3,"usd":6},"sol-5ce3bf3a….omft.near":{"count":1,"usd":2},"wNEAR":{"count":3,"usd":12}},
+  "originChains": {"arb":{"count":1,"usd":1},"base":{"count":2,"usd":2},"bsc":{"count":1,"usd":1},"eth":{"count":4,"usd":10},"near":{"count":12,"usd":26},"sol":{"count":1,"usd":2}},
+  "p90Usd": 3.9997,
+  "partial": false,
+  "referralFees": {},
+  "referrals": {"(none)":{"count":7,"usd":12},"benevio-labs.near":{"count":2,"usd":10},"referral":{"count":12,"usd":20}},
+  "routes": {"arb>near":{"count":1,"usd":1},"base>btc":{"count":2,"usd":2},"bsc>near":{"count":1,"usd":1},"eth>base":{"count":3,"usd":6},"eth>near":{"count":1,"usd":4},"near>arb":{"count":1,"usd":1},"near>base":{"count":1,"usd":2},"near>bsc":{"count":1,"usd":1},"near>eth":{"count":1,"usd":2},"near>near":{"count":2,"usd":10},"near>sol":{"count":6,"usd":9},"sol>near":{"count":1,"usd":2}},
+  "rows": 21,
+  "sha256": "823caa82872a32b3c109c6cd7d6e085a1effcc6abbfb5ccd3d1249c95b26ca0f",
+  "statuses": {"SUCCESS":21},
+  "successCount": 21,
+  "uniqueRecipients": 9,
+  "volumeOutUsd": 1149,
+  "volumeUsd": 43
+}

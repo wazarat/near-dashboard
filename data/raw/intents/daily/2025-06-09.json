@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":47,"usd":13701},"0x0891617fe27647731d6f1e764092b2f9f06130a0":{"count":5,"usd":42321},"df395f72caea1bb79dd9e52acf8c30c265e308b7117d74c9f8a73aa24aea17d3":{"count":1,"usd":96}},
+  "date": "2025-06-09",
+  "destinationAssets": {"ARB":{"count":1,"usd":3},"BASE":{"count":4,"usd":25},"BTC":{"count":7,"usd":0},"ETH":{"count":6,"usd":28},"SOL":{"count":3,"usd":51},"TRON":{"count":1,"usd":96},"USDC (native NEAR)":{"count":4,"usd":943},"USDT (native NEAR)":{"count":3,"usd":110},"arb:0xaf88d0…":{"count":1,"usd":34993},"arb:0xfd086b…":{"count":4,"usd":126},"base:0x833589…":{"count":14,"usd":19713},"eth:0xaaaaaa…":{"count":2,"usd":1},"sol-5ce3bf3a….omft.near":{"count":3,"usd":29}},
+  "destinationChains": {"arb":{"count":6,"usd":35121},"base":{"count":18,"usd":19738},"btc":{"count":7,"usd":0},"eth":{"count":8,"usd":29},"near":{"count":7,"usd":1053},"sol":{"count":6,"usd":81},"tron":{"count":1,"usd":96}},
+  "maxUsd": 34992.825,
+  "medianUsd": 1.5604,
+  "originAssets": {"ARB":{"count":3,"usd":1},"BASE":{"count":5,"usd":25},"BTC":{"count":3,"usd":0},"ETH":{"count":2,"usd":25},"SOL":{"count":2,"usd":17},"USDC (native NEAR)":{"count":3,"usd":12409},"USDT (native NEAR)":{"count":3,"usd":110},"arb:0xaf88d0…":{"count":5,"usd":7303},"arb:0xfd086b…":{"count":3,"usd":110},"base:0x833589…":{"count":3,"usd":22},"eth:0xa0b869…":{"count":2,"usd":35956},"sol-5ce3bf3a….omft.near":{"count":1,"usd":5},"tron-d28a265….omft.near":{"count":1,"usd":96},"wNEAR":{"count":17,"usd":38}},
+  "originChains": {"arb":{"count":11,"usd":7414},"base":{"count":8,"usd":47},"btc":{"count":3,"usd":0},"eth":{"count":4,"usd":35981},"near":{"count":23,"usd":12557},"sol":{"count":3,"usd":22},"tron":{"count":1,"usd":96}},
+  "p90Usd": 99.9777,
+  "partial": false,
+  "referralFees": {"kyberswap":21.16,"unity_wallet":0.96},
+  "referrals": {"(none)":{"count":25,"usd":291},"kyberswap":{"count":5,"usd":42321},"referral":{"count":20,"usd":13408},"unity_wallet":{"count":1,"usd":96},"yoloswap":{"count":2,"usd":1}},
+  "routes": {"arb>base":{"count":3,"usd":6365},"arb>eth":{"count":2,"usd":1},"arb>near":{"count":6,"usd":1048},"base>base":{"count":6,"usd":2},"base>eth":{"count":1,"usd":25},"base>sol":{"count":1,"usd":20},"btc>eth":{"count":3,"usd":0},"eth>arb":{"count":2,"usd":34996},"eth>base":{"count":2,"usd":985},"near>arb":{"count":3,"usd":110},"near>base":{"count":7,"usd":12385},"near>btc":{"count":7,"usd":0},"near>eth":{"count":2,"usd":3},"near>sol":{"count":4,"usd":59},"sol>arb":{"count":1,"usd":16},"sol>near":{"count":1,"usd":5},"sol>sol":{"count":1,"usd":2},"tron>tron":{"count":1,"usd":96}},
+  "rows": 53,
+  "sha256": "9a5183d3a6d567cc8ecbf2a267c1e3de177f79f695529b417de1feb6f74185eb",
+  "statuses": {"SUCCESS":53},
+  "successCount": 53,
+  "uniqueRecipients": 29,
+  "volumeOutUsd": 56093,
+  "volumeUsd": 56117
+}

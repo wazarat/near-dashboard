@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":31,"usd":113325},"0x0891617fe27647731d6f1e764092b2f9f06130a0":{"count":12,"usd":109949},"swapkit.near":{"count":27,"usd":250918},"thorswap.near":{"count":27,"usd":250918}},
+  "date": "2025-07-04",
+  "destinationAssets": {"ARB":{"count":1,"usd":1},"BTC":{"count":7,"usd":41443},"ETH":{"count":8,"usd":49213},"SOL":{"count":8,"usd":75582},"SWEAT":{"count":1,"usd":0},"USDC (native NEAR)":{"count":8,"usd":109187},"USDT (native NEAR)":{"count":2,"usd":135},"arb:0xaf88d0…":{"count":3,"usd":82},"arb:0xfd086b…":{"count":4,"usd":2967},"base:0x227d92…":{"count":1,"usd":0},"base:0x833589…":{"count":2,"usd":3051},"eth:0xb4b9dc…":{"count":2,"usd":1},"eth:0xdac17f…":{"count":7,"usd":132030},"sol-5ce3bf3a….omft.near":{"count":12,"usd":59451},"sol-c800a4bd….omft.near":{"count":4,"usd":1048}},
+  "destinationChains": {"arb":{"count":8,"usd":3050},"base":{"count":3,"usd":3051},"btc":{"count":7,"usd":41443},"eth":{"count":17,"usd":181243},"near":{"count":11,"usd":109323},"sol":{"count":24,"usd":136081}},
+  "maxUsd": 105986.538,
+  "medianUsd": 67.5638,
+  "originAssets": {"ARB":{"count":1,"usd":25059},"BASE":{"count":4,"usd":791},"BTC":{"count":9,"usd":275042},"ETH":{"count":10,"usd":14373},"SWEAT":{"count":2,"usd":0},"USDC (native NEAR)":{"count":10,"usd":3795},"USDT (native NEAR)":{"count":3,"usd":161},"XRP":{"count":1,"usd":22420},"ZEC":{"count":1,"usd":4},"arb:0xaf88d0…":{"count":3,"usd":102},"arb:0xfd086b…":{"count":3,"usd":136},"base:0x227d92…":{"count":2,"usd":1},"base:0x833589…":{"count":5,"usd":3299},"eth:0xa0b869…":{"count":5,"usd":3950},"eth:0xdac17f…":{"count":4,"usd":18811},"sol-5ce3bf3a….omft.near":{"count":5,"usd":106209},"wNEAR":{"count":2,"usd":41}},
+  "originChains": {"arb":{"count":7,"usd":25297},"base":{"count":11,"usd":4090},"btc":{"count":9,"usd":275042},"eth":{"count":19,"usd":37133},"near":{"count":17,"usd":3997},"sol":{"count":5,"usd":106209},"xrp":{"count":1,"usd":22420},"zec":{"count":1,"usd":4}},
+  "p90Usd": 22419.7796,
+  "partial": false,
+  "referralFees": {"kyberswap":271.67,"swapkit-thorswap":1379.39},
+  "referrals": {"(none)":{"count":15,"usd":888},"kyberswap":{"count":12,"usd":109949},"referral":{"count":11,"usd":112435},"swapkit-thorswap":{"count":27,"usd":250918},"sweat-app":{"count":5,"usd":1}},
+  "routes": {"arb>btc":{"count":1,"usd":25059},"arb>eth":{"count":1,"usd":0},"arb>near":{"count":5,"usd":237},"base>btc":{"count":2,"usd":870},"base>eth":{"count":3,"usd":81},"base>near":{"count":5,"usd":3099},"base>sol":{"count":1,"usd":40},"btc>eth":{"count":7,"usd":156001},"btc>sol":{"count":2,"usd":119042},"eth>arb":{"count":2,"usd":2833},"eth>btc":{"count":3,"usd":15510},"eth>eth":{"count":1,"usd":2509},"eth>sol":{"count":13,"usd":16282},"near>arb":{"count":4,"usd":211},"near>base":{"count":3,"usd":3051},"near>eth":{"count":2,"usd":18},"near>sol":{"count":8,"usd":718},"sol>arb":{"count":2,"usd":7},"sol>eth":{"count":2,"usd":215},"sol>near":{"count":1,"usd":105987},"xrp>eth":{"count":1,"usd":22420},"zec>btc":{"count":1,"usd":4}},
+  "rows": 73,
+  "sha256": "3e7c79896d08f9ed4aafb5a594c1b91053749fac0ccbbbcc3d753ce8c2b4050f",
+  "statuses": {"REFUNDED":3,"SUCCESS":70},
+  "successCount": 70,
+  "uniqueRecipients": 50,
+  "volumeOutUsd": 471845,
+  "volumeUsd": 474192
+}

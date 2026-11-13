@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":12,"usd":208},"03d77093caf9e01e9042cac2d6eb2c23f8ccd1ae7eb353d3ceba4302372d7214":{"count":2,"usd":35},"0x0891617fe27647731d6f1e764092b2f9f06130a0":{"count":1,"usd":1000},"85ccfb6a9e58bb6f179d69f8dccf850550ab19e8598139bd9d8a259d405520e0":{"count":1,"usd":10}},
+  "date": "2025-05-30",
+  "destinationAssets": {"BASE":{"count":1,"usd":0},"SOL":{"count":1,"usd":30},"USDC (native NEAR)":{"count":3,"usd":0},"USDT (native NEAR)":{"count":2,"usd":84},"arb:0xaf88d0…":{"count":1,"usd":1},"arb:0xfd086b…":{"count":2,"usd":84},"base:0x833589…":{"count":2,"usd":1000},"eth:0xa0b869…":{"count":1,"usd":18},"eth:0xdac17f…":{"count":2,"usd":15},"sol-c800a4bd….omft.near":{"count":1,"usd":20}},
+  "destinationChains": {"arb":{"count":3,"usd":85},"base":{"count":3,"usd":1000},"eth":{"count":3,"usd":33},"near":{"count":5,"usd":84},"sol":{"count":2,"usd":50}},
+  "maxUsd": 999.819,
+  "medianUsd": 10.4532,
+  "originAssets": {"BASE":{"count":1,"usd":0},"ETH":{"count":3,"usd":46},"USDC (native NEAR)":{"count":2,"usd":19},"USDT (native NEAR)":{"count":3,"usd":104},"arb:0xfd086b…":{"count":2,"usd":84},"base:0x833589…":{"count":1,"usd":0},"eth:0xa0b869…":{"count":1,"usd":1000},"wNEAR":{"count":3,"usd":0}},
+  "originChains": {"arb":{"count":2,"usd":84},"base":{"count":2,"usd":0},"eth":{"count":4,"usd":1045},"near":{"count":8,"usd":123}},
+  "p90Usd": 41.9978,
+  "partial": false,
+  "referralFees": {"(none)":0.57,"unity_wallet":0.35},
+  "referrals": {"(none)":{"count":10,"usd":1198},"referral":{"count":4,"usd":20},"unity_wallet":{"count":2,"usd":35}},
+  "routes": {"arb>near":{"count":2,"usd":84},"base>base":{"count":2,"usd":0},"eth>base":{"count":1,"usd":1000},"eth>eth":{"count":2,"usd":15},"eth>sol":{"count":1,"usd":30},"near>arb":{"count":3,"usd":85},"near>eth":{"count":1,"usd":18},"near>near":{"count":3,"usd":0},"near>sol":{"count":1,"usd":20}},
+  "rows": 33,
+  "sha256": "c78d06ef47b067270d539a79854fe968086c94f02fd0b7e90c77b4d5895c791d",
+  "statuses": {"REFUNDED":17,"SUCCESS":16},
+  "successCount": 16,
+  "uniqueRecipients": 13,
+  "volumeOutUsd": 1251,
+  "volumeUsd": 1253
+}

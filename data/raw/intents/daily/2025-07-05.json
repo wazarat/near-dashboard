@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":31,"usd":39969},"0x0891617fe27647731d6f1e764092b2f9f06130a0":{"count":11,"usd":116390},"df395f72caea1bb79dd9e52acf8c30c265e308b7117d74c9f8a73aa24aea17d3":{"count":2,"usd":550},"swapkit.near":{"count":59,"usd":1165243},"thorswap.near":{"count":59,"usd":1165243}},
+  "date": "2025-07-05",
+  "destinationAssets": {"BASE":{"count":5,"usd":14},"BTC":{"count":25,"usd":157112},"DOGE":{"count":1,"usd":5},"ETH":{"count":10,"usd":182771},"SOL":{"count":8,"usd":4296},"TRON":{"count":1,"usd":50},"USDC (native NEAR)":{"count":8,"usd":1391},"USDT (native NEAR)":{"count":4,"usd":162},"arb:0xaf88d0…":{"count":5,"usd":2352},"arb:0xfd086b…":{"count":2,"usd":135},"base:0x833589…":{"count":5,"usd":477},"eth.bridge.near":{"count":1,"usd":1},"eth:0x514910…":{"count":1,"usd":426},"eth:0xa0b869…":{"count":9,"usd":269073},"eth:0xdac17f…":{"count":7,"usd":587660},"sol-5ce3bf3a….omft.near":{"count":8,"usd":39598},"sol-c800a4bd….omft.near":{"count":3,"usd":76629}},
+  "destinationChains": {"arb":{"count":7,"usd":2486},"base":{"count":10,"usd":491},"btc":{"count":25,"usd":157112},"doge":{"count":1,"usd":5},"eth":{"count":27,"usd":1039930},"near":{"count":13,"usd":1554},"sol":{"count":19,"usd":120523},"tron":{"count":1,"usd":50}},
+  "maxUsd": 124734.8394,
+  "medianUsd": 199.9812,
+  "originAssets": {"BASE":{"count":3,"usd":7555},"BTC":{"count":24,"usd":1109535},"ETH":{"count":22,"usd":148143},"SOL":{"count":2,"usd":259},"USDC (native NEAR)":{"count":11,"usd":38249},"USDT (native NEAR)":{"count":2,"usd":135},"ZEC":{"count":4,"usd":3},"arb:0xaf88d0…":{"count":6,"usd":6098},"arb:0xfd086b…":{"count":7,"usd":945},"base:0x833589…":{"count":3,"usd":305},"eth:0xa0b869…":{"count":4,"usd":7734},"eth:0xdac17f…":{"count":2,"usd":2050},"sol-5ce3bf3a….omft.near":{"count":5,"usd":534},"sol-c800a4bd….omft.near":{"count":1,"usd":26},"tron-d28a265….omft.near":{"count":2,"usd":550},"wNEAR":{"count":5,"usd":31}},
+  "originChains": {"arb":{"count":13,"usd":7043},"base":{"count":6,"usd":7861},"btc":{"count":24,"usd":1109535},"eth":{"count":28,"usd":157928},"near":{"count":18,"usd":38415},"sol":{"count":8,"usd":819},"tron":{"count":2,"usd":550},"zec":{"count":4,"usd":3}},
+  "p90Usd": 32396.1,
+  "partial": false,
+  "referralFees": {"kyberswap":274.6,"swapkit-thorswap":6406.79,"unity_wallet":5.5},
+  "referrals": {"(none)":{"count":26,"usd":1899},"kyberswap":{"count":11,"usd":116390},"referral":{"count":5,"usd":38070},"swapkit-thorswap":{"count":59,"usd":1165243},"unity_wallet":{"count":2,"usd":550}},
+  "routes": {"arb>base":{"count":4,"usd":479},"arb>btc":{"count":2,"usd":5131},"arb>near":{"count":5,"usd":1262},"arb>sol":{"count":2,"usd":171},"base>base":{"count":1,"usd":6},"base>btc":{"count":1,"usd":100},"base>doge":{"count":1,"usd":5},"base>eth":{"count":3,"usd":7750},"btc>eth":{"count":21,"usd":1001509},"btc>sol":{"count":3,"usd":108026},"eth>arb":{"count":2,"usd":2230},"eth>base":{"count":1,"usd":5},"eth>btc":{"count":20,"usd":151671},"eth>eth":{"count":1,"usd":426},"eth>sol":{"count":4,"usd":3595},"near>arb":{"count":4,"usd":187},"near>base":{"count":4,"usd":2},"near>eth":{"count":1,"usd":29996},"near>sol":{"count":9,"usd":8231},"sol>arb":{"count":1,"usd":70},"sol>btc":{"count":2,"usd":210},"sol>eth":{"count":1,"usd":249},"sol>near":{"count":4,"usd":290},"tron>sol":{"count":1,"usd":500},"tron>tron":{"count":1,"usd":50},"zec>near":{"count":4,"usd":3}},
+  "rows": 104,
+  "sha256": "b5b3f33eb731f8798f4029b942acc2b42b69c84a10008571d8b6e5620e05a771",
+  "statuses": {"REFUNDED":1,"SUCCESS":103},
+  "successCount": 103,
+  "uniqueRecipients": 82,
+  "volumeOutUsd": 1313823,
+  "volumeUsd": 1322152
+}

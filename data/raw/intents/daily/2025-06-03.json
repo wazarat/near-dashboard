@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":38,"usd":41313},"03d77093caf9e01e9042cac2d6eb2c23f8ccd1ae7eb353d3ceba4302372d7214":{"count":4,"usd":14},"0x0891617fe27647731d6f1e764092b2f9f06130a0":{"count":4,"usd":459}},
+  "date": "2025-06-03",
+  "destinationAssets": {"ARB":{"count":9,"usd":394},"BASE":{"count":1,"usd":5},"ETH":{"count":2,"usd":62},"SOL":{"count":2,"usd":43},"USDC (native NEAR)":{"count":2,"usd":26},"USDT (native NEAR)":{"count":5,"usd":86},"arb:0xaf88d0…":{"count":8,"usd":20004},"arb:0xfd086b…":{"count":4,"usd":20188},"base:0x833589…":{"count":5,"usd":1},"sol-5ce3bf3a….omft.near":{"count":4,"usd":935},"sol-c800a4bd….omft.near":{"count":2,"usd":33},"wNEAR":{"count":2,"usd":7}},
+  "destinationChains": {"arb":{"count":21,"usd":40586},"base":{"count":6,"usd":7},"eth":{"count":2,"usd":62},"near":{"count":9,"usd":119},"sol":{"count":8,"usd":1011}},
+  "maxUsd": 20028.4184,
+  "medianUsd": 3.7664,
+  "originAssets": {"ARB":{"count":7,"usd":7},"BASE":{"count":7,"usd":448},"USDC (native NEAR)":{"count":6,"usd":20938},"USDT (native NEAR)":{"count":6,"usd":20195},"arb:0xaf88d0…":{"count":1,"usd":26},"arb:0xfd086b…":{"count":3,"usd":67},"base:0x833589…":{"count":8,"usd":2},"sol-c800a4bd….omft.near":{"count":1,"usd":19},"wNEAR":{"count":7,"usd":83}},
+  "originChains": {"arb":{"count":11,"usd":100},"base":{"count":15,"usd":450},"near":{"count":19,"usd":41216},"sol":{"count":1,"usd":19}},
+  "p90Usd": 100.1,
+  "partial": false,
+  "referralFees": {"(none)":0.69,"unity_wallet":0.14},
+  "referrals": {"(none)":{"count":18,"usd":1616},"referral":{"count":24,"usd":40156},"unity_wallet":{"count":4,"usd":14}},
+  "routes": {"arb>arb":{"count":6,"usd":2},"arb>base":{"count":1,"usd":5},"arb>eth":{"count":1,"usd":7},"arb>near":{"count":3,"usd":86},"base>arb":{"count":9,"usd":394},"base>base":{"count":5,"usd":1},"base>eth":{"count":1,"usd":56},"near>arb":{"count":6,"usd":40191},"near>near":{"count":5,"usd":14},"near>sol":{"count":8,"usd":1011},"sol>near":{"count":1,"usd":19}},
+  "rows": 49,
+  "sha256": "2016a44771c1770ea9adffbc59d70f288301789b3ab24583531b2dfe6ebfe472",
+  "statuses": {"REFUNDED":3,"SUCCESS":46},
+  "successCount": 46,
+  "uniqueRecipients": 21,
+  "volumeOutUsd": 41784,
+  "volumeUsd": 41786
+}

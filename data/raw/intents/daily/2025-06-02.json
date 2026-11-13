@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":27,"usd":4066},"0x0891617fe27647731d6f1e764092b2f9f06130a0":{"count":3,"usd":3201},"85ccfb6a9e58bb6f179d69f8dccf850550ab19e8598139bd9d8a259d405520e0":{"count":1,"usd":20}},
+  "date": "2025-06-02",
+  "destinationAssets": {"BASE":{"count":5,"usd":21},"ETH":{"count":3,"usd":3186},"SOL":{"count":1,"usd":30},"arb:0xaf88d0…":{"count":8,"usd":3904},"arb:0xfd086b…":{"count":2,"usd":66},"base:0x833589…":{"count":8,"usd":9},"eth:0xa0b869…":{"count":1,"usd":5},"eth:0xdac17f…":{"count":1,"usd":20},"sol-5ce3bf3a….omft.near":{"count":1,"usd":25},"sol-c800a4bd….omft.near":{"count":1,"usd":20}},
+  "destinationChains": {"arb":{"count":10,"usd":3970},"base":{"count":13,"usd":30},"eth":{"count":5,"usd":3212},"sol":{"count":3,"usd":76}},
+  "maxUsd": 3877.3705,
+  "medianUsd": 1.546,
+  "originAssets": {"ARB":{"count":1,"usd":15},"BASE":{"count":5,"usd":8},"ETH":{"count":1,"usd":20},"SOL":{"count":1,"usd":0},"USDC (native NEAR)":{"count":4,"usd":3934},"USDT (native NEAR)":{"count":3,"usd":86},"arb:0xaf88d0…":{"count":1,"usd":1503},"base:0x833589…":{"count":12,"usd":1689},"wNEAR":{"count":3,"usd":32}},
+  "originChains": {"arb":{"count":2,"usd":1519},"base":{"count":17,"usd":1697},"eth":{"count":1,"usd":20},"near":{"count":10,"usd":4051},"sol":{"count":1,"usd":0}},
+  "p90Usd": 39.9666,
+  "partial": false,
+  "referralFees": {"(none)":4.94},
+  "referrals": {"(none)":{"count":10,"usd":3389},"referral":{"count":21,"usd":3898}},
+  "routes": {"arb>base":{"count":1,"usd":15},"arb>eth":{"count":1,"usd":1503},"base>arb":{"count":6,"usd":1},"base>base":{"count":9,"usd":14},"base>eth":{"count":2,"usd":1683},"eth>eth":{"count":1,"usd":20},"near>arb":{"count":4,"usd":3969},"near>base":{"count":2,"usd":1},"near>eth":{"count":1,"usd":5},"near>sol":{"count":3,"usd":76},"sol>base":{"count":1,"usd":0}},
+  "rows": 39,
+  "sha256": "1c929107235ee07deb9eedcef92892a4339cb4836e62d19cc5a30edbdaf6fec7",
+  "statuses": {"REFUNDED":8,"SUCCESS":31},
+  "successCount": 31,
+  "uniqueRecipients": 12,
+  "volumeOutUsd": 7288,
+  "volumeUsd": 7287
+}

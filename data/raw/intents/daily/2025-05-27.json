@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":20,"usd":700},"0x0891617fe27647731d6f1e764092b2f9f06130a0":{"count":1,"usd":1617},"85ccfb6a9e58bb6f179d69f8dccf850550ab19e8598139bd9d8a259d405520e0":{"count":1,"usd":1}},
+  "date": "2025-05-27",
+  "destinationAssets": {"BASE":{"count":3,"usd":1},"SOL":{"count":3,"usd":63},"USDC (native NEAR)":{"count":4,"usd":267},"USDT (native NEAR)":{"count":3,"usd":111},"arb:0xfd086b…":{"count":2,"usd":85},"base:0x833589…":{"count":1,"usd":1617},"eth:0xa0b869…":{"count":2,"usd":88},"eth:0xdac17f…":{"count":1,"usd":9},"sol-5ce3bf3a….omft.near":{"count":1,"usd":25},"sol-c800a4bd….omft.near":{"count":2,"usd":52}},
+  "destinationChains": {"arb":{"count":2,"usd":85},"base":{"count":4,"usd":1618},"eth":{"count":3,"usd":97},"near":{"count":7,"usd":378},"sol":{"count":6,"usd":140}},
+  "maxUsd": 1616.999,
+  "medianUsd": 25.9923,
+  "originAssets": {"USDC (native NEAR)":{"count":2,"usd":112},"USDT (native NEAR)":{"count":4,"usd":137},"arb:0xaf88d0…":{"count":1,"usd":26},"arb:0xfd086b…":{"count":2,"usd":85},"base:0x833589…":{"count":2,"usd":241},"base:0x98d0ba…":{"count":3,"usd":1},"eth:0xa0b869…":{"count":2,"usd":1626},"eth:0xdac17f…":{"count":1,"usd":1},"sol-c800a4bd….omft.near":{"count":1,"usd":26},"wNEAR":{"count":4,"usd":63}},
+  "originChains": {"arb":{"count":3,"usd":111},"base":{"count":5,"usd":242},"eth":{"count":3,"usd":1627},"near":{"count":10,"usd":312},"sol":{"count":1,"usd":26}},
+  "p90Usd": 57.2,
+  "partial": false,
+  "referralFees": {"(none)":0.82},
+  "referrals": {"(none)":{"count":17,"usd":2076},"referral":{"count":5,"usd":242}},
+  "routes": {"arb>near":{"count":3,"usd":111},"base>base":{"count":3,"usd":1},"base>near":{"count":2,"usd":241},"eth>base":{"count":1,"usd":1617},"eth>eth":{"count":2,"usd":10},"near>arb":{"count":2,"usd":85},"near>eth":{"count":1,"usd":87},"near>near":{"count":1,"usd":0},"near>sol":{"count":6,"usd":140},"sol>near":{"count":1,"usd":26}},
+  "rows": 22,
+  "sha256": "f911257fa846fe99203d4e2094c987910fb38a96cb75383c7b1b317f5c331f4b",
+  "statuses": {"SUCCESS":22},
+  "successCount": 22,
+  "uniqueRecipients": 17,
+  "volumeOutUsd": 2316,
+  "volumeUsd": 2318
+}

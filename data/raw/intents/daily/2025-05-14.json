@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":18,"usd":96},"03d77093caf9e01e9042cac2d6eb2c23f8ccd1ae7eb353d3ceba4302372d7214":{"count":2,"usd":6},"85ccfb6a9e58bb6f179d69f8dccf850550ab19e8598139bd9d8a259d405520e0":{"count":3,"usd":6},"af26f794bd4b9d7469de4f396b16a37a627c84692f85fce46afa6de5b70026f4":{"count":1,"usd":2},"myrandomname.near":{"count":1,"usd":10}},
+  "date": "2025-05-14",
+  "destinationAssets": {"BASE":{"count":1,"usd":10},"BTC":{"count":2,"usd":13},"ETH":{"count":2,"usd":5},"SOL":{"count":2,"usd":12},"USDC (native NEAR)":{"count":3,"usd":6},"arb:0x912ce5…":{"count":1,"usd":10},"arb:0xaf88d0…":{"count":2,"usd":3},"base:0x833589…":{"count":5,"usd":52},"eth:0xa0b869…":{"count":1,"usd":2},"sol-5ce3bf3a….omft.near":{"count":1,"usd":2},"sol-c800a4bd….omft.near":{"count":4,"usd":3},"tron-d28a265….omft.near":{"count":1,"usd":3}},
+  "destinationChains": {"arb":{"count":3,"usd":13},"base":{"count":6,"usd":62},"btc":{"count":2,"usd":13},"eth":{"count":3,"usd":7},"near":{"count":3,"usd":6},"sol":{"count":7,"usd":18},"tron":{"count":1,"usd":3}},
+  "maxUsd": 26.5213,
+  "medianUsd": 2.6738,
+  "originAssets": {"BASE":{"count":1,"usd":9},"BTC":{"count":1,"usd":10},"DOGE":{"count":1,"usd":3},"ETH":{"count":1,"usd":3},"GNOSIS":{"count":2,"usd":19},"SOL":{"count":2,"usd":12},"USDC (native NEAR)":{"count":3,"usd":5},"arb:0xaf88d0…":{"count":3,"usd":7},"arb:0xfd086b…":{"count":1,"usd":4},"eth:0xa0b869…":{"count":1,"usd":10},"gnosis:0x2a22f9…":{"count":1,"usd":27},"sol-5ce3bf3a….omft.near":{"count":1,"usd":1},"sol-c800a4bd….omft.near":{"count":1,"usd":3},"token.v2.ref-finance.near":{"count":1,"usd":1},"wNEAR":{"count":5,"usd":7}},
+  "originChains": {"arb":{"count":4,"usd":11},"base":{"count":1,"usd":9},"btc":{"count":1,"usd":10},"doge":{"count":1,"usd":3},"eth":{"count":2,"usd":13},"gnosis":{"count":3,"usd":46},"near":{"count":9,"usd":13},"sol":{"count":4,"usd":16}},
+  "p90Usd": 10.0455,
+  "partial": false,
+  "referralFees": {"(none)":0.05,"swapkit":0.05,"unity_wallet":0.06},
+  "referrals": {"(none)":{"count":14,"usd":75},"referral":{"count":8,"usd":29},"swapkit":{"count":1,"usd":10},"unity_wallet":{"count":2,"usd":6}},
+  "routes": {"arb>base":{"count":2,"usd":6},"arb>near":{"count":2,"usd":4},"base>sol":{"count":1,"usd":9},"btc>arb":{"count":1,"usd":10},"doge>sol":{"count":1,"usd":3},"eth>btc":{"count":2,"usd":13},"gnosis>base":{"count":3,"usd":46},"near>arb":{"count":2,"usd":3},"near>eth":{"count":2,"usd":5},"near>sol":{"count":5,"usd":5},"sol>base":{"count":1,"usd":10},"sol>eth":{"count":1,"usd":2},"sol>near":{"count":1,"usd":1},"sol>tron":{"count":1,"usd":3}},
+  "rows": 33,
+  "sha256": "1c0905c65c54ce283c36772c96eac4e33e703bf689dc21b30d154e55f17852d1",
+  "statuses": {"REFUNDED":8,"SUCCESS":25},
+  "successCount": 25,
+  "uniqueRecipients": 17,
+  "volumeOutUsd": 120,
+  "volumeUsd": 120
+}

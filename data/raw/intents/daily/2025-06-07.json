@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":21,"usd":3504},"0x0891617fe27647731d6f1e764092b2f9f06130a0":{"count":7,"usd":1463},"85ccfb6a9e58bb6f179d69f8dccf850550ab19e8598139bd9d8a259d405520e0":{"count":1,"usd":101},"just-a-user.near":{"count":1,"usd":1}},
+  "date": "2025-06-07",
+  "destinationAssets": {"ARB":{"count":1,"usd":1197},"BERA":{"count":1,"usd":5},"ETH":{"count":3,"usd":157},"SOL":{"count":6,"usd":226},"USDC (native NEAR)":{"count":2,"usd":62},"USDT (native NEAR)":{"count":2,"usd":60},"arb:0xaf88d0…":{"count":4,"usd":2134},"arb:0xfd086b…":{"count":3,"usd":165},"base:0x833589…":{"count":1,"usd":0},"eth:0xa0b869…":{"count":2,"usd":1010},"eth:0xaaaaaa…":{"count":3,"usd":1},"sol-5ce3bf3a….omft.near":{"count":2,"usd":52}},
+  "destinationChains": {"arb":{"count":8,"usd":3496},"base":{"count":1,"usd":0},"bera":{"count":1,"usd":5},"eth":{"count":8,"usd":1168},"near":{"count":4,"usd":122},"sol":{"count":8,"usd":278}},
+  "maxUsd": 1833.195,
+  "medianUsd": 26.73,
+  "originAssets": {"ARB":{"count":4,"usd":1},"BASE":{"count":4,"usd":1353},"USDC (native NEAR)":{"count":6,"usd":3169},"USDT (native NEAR)":{"count":2,"usd":60},"arb:0xaf88d0…":{"count":1,"usd":26},"arb:0xfd086b…":{"count":3,"usd":161},"base:0x833589…":{"count":5,"usd":141},"sol-5ce3bf3a….omft.near":{"count":1,"usd":36},"wNEAR":{"count":4,"usd":121}},
+  "originChains": {"arb":{"count":8,"usd":188},"base":{"count":9,"usd":1494},"near":{"count":12,"usd":3350},"sol":{"count":1,"usd":36}},
+  "p90Usd": 199.952,
+  "partial": false,
+  "referralFees": {"(none)":0.7,"kyberswap":0.74,"referral":0.02},
+  "referrals": {"(none)":{"count":14,"usd":460},"kyberswap":{"count":7,"usd":1463},"referral":{"count":6,"usd":3144},"yoloswap":{"count":3,"usd":1}},
+  "routes": {"arb>base":{"count":1,"usd":0},"arb>eth":{"count":3,"usd":1},"arb>near":{"count":3,"usd":86},"arb>sol":{"count":1,"usd":101},"base>arb":{"count":3,"usd":1302},"base>bera":{"count":1,"usd":5},"base>eth":{"count":3,"usd":157},"base>sol":{"count":2,"usd":30},"near>arb":{"count":5,"usd":2194},"near>eth":{"count":2,"usd":1010},"near>sol":{"count":5,"usd":147},"sol>near":{"count":1,"usd":36}},
+  "rows": 30,
+  "sha256": "20fc58daf9bbb637e59b8cc17d074b0e80c1b3e2411ecf363d690f4fcc25d4d1",
+  "statuses": {"SUCCESS":30},
+  "successCount": 30,
+  "uniqueRecipients": 23,
+  "volumeOutUsd": 5065,
+  "volumeUsd": 5069
+}

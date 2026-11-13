@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":9,"usd":7389},"03d77093caf9e01e9042cac2d6eb2c23f8ccd1ae7eb353d3ceba4302372d7214":{"count":1,"usd":15}},
+  "date": "2025-05-24",
+  "destinationAssets": {"SOL":{"count":1,"usd":15},"USDC (native NEAR)":{"count":4,"usd":570},"USDT (native NEAR)":{"count":1,"usd":26},"eth:0xa0b869…":{"count":2,"usd":6740},"sol-c800a4bd….omft.near":{"count":2,"usd":52}},
+  "destinationChains": {"eth":{"count":2,"usd":6740},"near":{"count":5,"usd":596},"sol":{"count":3,"usd":67}},
+  "maxUsd": 6690.2649,
+  "medianUsd": 26,
+  "originAssets": {"BTC":{"count":1,"usd":15},"USDC (native NEAR)":{"count":2,"usd":6740},"USDT (native NEAR)":{"count":2,"usd":52},"base:0x833589…":{"count":2,"usd":298},"eth:0xa0b869…":{"count":2,"usd":272},"sol-c800a4bd….omft.near":{"count":1,"usd":26}},
+  "originChains": {"base":{"count":2,"usd":298},"btc":{"count":1,"usd":15},"eth":{"count":2,"usd":272},"near":{"count":4,"usd":6792},"sol":{"count":1,"usd":26}},
+  "p90Usd": 267.1948,
+  "partial": false,
+  "referralFees": {"unity_wallet":0.15},
+  "referrals": {"(none)":{"count":3,"usd":78},"referral":{"count":6,"usd":7311},"unity_wallet":{"count":1,"usd":15}},
+  "routes": {"base>near":{"count":2,"usd":298},"btc>sol":{"count":1,"usd":15},"eth>near":{"count":2,"usd":272},"near>eth":{"count":2,"usd":6740},"near>sol":{"count":2,"usd":52},"sol>near":{"count":1,"usd":26}},
+  "rows": 10,
+  "sha256": "140f3d94729d979839a2628b903bbece2c0e75033b52b0bf1d31603a7ed07e23",
+  "statuses": {"SUCCESS":10},
+  "successCount": 10,
+  "uniqueRecipients": 6,
+  "volumeOutUsd": 7403,
+  "volumeUsd": 7404
+}

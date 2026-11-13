@@ -1,0 +1,22 @@
+{
+  "appFeeRecipients": {"(none)":{"count":13,"usd":13878},"03d77093caf9e01e9042cac2d6eb2c23f8ccd1ae7eb353d3ceba4302372d7214":{"count":2,"usd":6},"85ccfb6a9e58bb6f179d69f8dccf850550ab19e8598139bd9d8a259d405520e0":{"count":4,"usd":6}},
+  "date": "2025-05-13",
+  "destinationAssets": {"BTC":{"count":3,"usd":32},"SOL":{"count":1,"usd":1},"USDC (native NEAR)":{"count":4,"usd":13834},"USDT (native NEAR)":{"count":1,"usd":5},"arb:0xaf88d0…":{"count":2,"usd":2},"eth:0xdac17f…":{"count":1,"usd":2},"nbtc.bridge.near":{"count":1,"usd":2},"sol-5ce3bf3a….omft.near":{"count":3,"usd":4},"sol-c800a4bd….omft.near":{"count":2,"usd":6},"wNEAR":{"count":1,"usd":2}},
+  "destinationChains": {"arb":{"count":2,"usd":2},"btc":{"count":3,"usd":32},"eth":{"count":1,"usd":2},"near":{"count":7,"usd":13843},"sol":{"count":6,"usd":11}},
+  "maxUsd": 13821.4447,
+  "medianUsd": 2,
+  "originAssets": {"BASE":{"count":1,"usd":10},"USDC (native NEAR)":{"count":4,"usd":5},"USDT (native NEAR)":{"count":1,"usd":1},"arb:0xaf88d0…":{"count":1,"usd":1},"base:0x833589…":{"count":1,"usd":20},"bsc:0x55d398…":{"count":1,"usd":3},"eth:0xdac17f…":{"count":2,"usd":4},"nbtc.bridge.near":{"count":1,"usd":2},"sol-5ce3bf3a….omft.near":{"count":3,"usd":13832},"sol-c800a4bd….omft.near":{"count":1,"usd":2},"wNEAR":{"count":3,"usd":10}},
+  "originChains": {"arb":{"count":1,"usd":1},"base":{"count":2,"usd":30},"bsc":{"count":1,"usd":3},"eth":{"count":2,"usd":4},"near":{"count":9,"usd":18},"sol":{"count":4,"usd":13834}},
+  "p90Usd": 9.8812,
+  "partial": false,
+  "referralFees": {"(none)":0.04,"unity_wallet":0.06},
+  "referrals": {"(none)":{"count":10,"usd":43},"benevio-labs.near":{"count":1,"usd":5},"referral":{"count":6,"usd":13836},"unity_wallet":{"count":2,"usd":6}},
+  "routes": {"arb>near":{"count":1,"usd":1},"base>btc":{"count":2,"usd":30},"bsc>sol":{"count":1,"usd":3},"eth>btc":{"count":1,"usd":2},"eth>near":{"count":1,"usd":2},"near>arb":{"count":2,"usd":2},"near>eth":{"count":1,"usd":2},"near>near":{"count":1,"usd":5},"near>sol":{"count":5,"usd":8},"sol>near":{"count":4,"usd":13834}},
+  "rows": 22,
+  "sha256": "2e2439e5529dd79077207a6f5d5fbaef1f1dc8599b7eee4b73b35f1c026c70c1",
+  "statuses": {"REFUNDED":3,"SUCCESS":19},
+  "successCount": 19,
+  "uniqueRecipients": 14,
+  "volumeOutUsd": 13890,
+  "volumeUsd": 13890
+}
