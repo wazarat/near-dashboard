@@ -132,6 +132,12 @@ export interface IntentsDay {
   destinationAssets: Record<string, { count: number; usd: number }>;
   referrals: Record<string, { count: number; usd: number }>;
   appFeeRecipients: Record<string, { count: number; usd: number }>;
+  /**
+   * App fees in USD per referral tag: amountInUsd × the swap's summed app fee (basis points) / 10,000, over
+   * successful swaps. Present only when every row of the day carries its fee rate (rows trimmed before Nov 13,
+   * 2026 kept only the fee recipients), so a day without it is not a day of zero fees.
+   */
+  referralFees?: Record<string, number>;
   /** True when the day may be incomplete (backfill cursor stopped inside it). */
   partial: boolean;
 }

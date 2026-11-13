@@ -40,8 +40,12 @@ export interface ApiRow {
   senders?: string[] | null;
 }
 
-/** Trimmed row kept on disk: [createdAtUnix, status, originAsset, destinationAsset, amountInUsd, amountOutUsd, recipientHash, referral, appFeeRecipients, depositAddress, depositMemo] */
-export type TrimRow = [number, string, string, string, number, number, string, string | null, string[], string, string | null];
+/**
+ * Trimmed row kept on disk: [createdAtUnix, status, originAsset, destinationAsset, amountInUsd, amountOutUsd, recipientHash,
+ * referral, appFeeRecipients, depositAddress, depositMemo, appFeeBps]. appFeeBps (the summed app fee in basis points, protocol buyback fee left out) was
+ * added on Nov 13, 2026; older rows on disk end at depositMemo.
+ */
+export type TrimRow = [number, string, string, string, number, number, string, string | null, string[], string, string | null, number?];
 
 function hash(s: string): string {
   return crypto.createHash("sha256").update(s).digest("hex").slice(0, 16);
@@ -51,6 +55,12 @@ function usd(v: string | number | null | undefined): number {
   const n = typeof v === "string" ? Number(v) : typeof v === "number" ? v : 0;
   return Number.isFinite(n) ? n : 0;
 }
+
+/**
+ * Fee recipients that are the protocol, not an app: since the Feb 2026 fee switch every swap pays about 1 basis
+ * point to buybacks.multisignature.near, which funds NEAR buybacks. It is left out of app fees.
+ */
+export const PROTOCOL_FEE_RECIPIENTS = new Set(["buybacks.multisignature.near"]);
 
 export function trimRow(r: ApiRow): TrimRow {
   const ts = typeof r.createdAtTimestamp === "number" ? r.createdAtTimestamp : Math.floor(Date.parse(r.createdAt) / 1000);
@@ -66,6 +76,7 @@ export function trimRow(r: ApiRow): TrimRow {
     Array.from(new Set((r.appFees ?? []).map((f) => f.recipient))),
     r.depositAddress,
     r.depositMemo ?? null,
+    (r.appFees ?? []).reduce((s, f) => s + (PROTOCOL_FEE_RECIPIENTS.has(f.recipient) || !Number.isFinite(f.fee) ? 0 : f.fee), 0),
   ];
 }
 
@@ -164,6 +175,9 @@ export function aggregateDay(date: DateStr, rows: TrimRow[], partial: boolean): 
   const destinationAssets: Record<string, { count: number; usd: number }> = {};
   const referrals: Record<string, { count: number; usd: number }> = {};
   const appFeeRecipients: Record<string, { count: number; usd: number }> = {};
+  const referralFees: Record<string, number> = {};
+  // App fees per referral need every row's fee rate; rows trimmed before the rate was kept have none.
+  const feesKnown = rows.length > 0 && rows.every((r) => typeof r[11] === "number");
   const recipients = new Set<string>();
   const sizes: number[] = [];
   let volumeUsd = 0;
@@ -188,6 +202,11 @@ export function aggregateDay(date: DateStr, rows: TrimRow[], partial: boolean): 
     tally(referrals, referral ?? "(none)", inUsd);
     if (fees.length) for (const f of fees) tally(appFeeRecipients, f, inUsd);
     else tally(appFeeRecipients, "(none)", inUsd);
+    const bps = r[11];
+    if (feesKnown && typeof bps === "number" && bps > 0) {
+      const key = referral ?? "(none)";
+      referralFees[key] = (referralFees[key] ?? 0) + (inUsd * bps) / 10_000;
+    }
   }
   sizes.sort((a, b) => a - b);
   return {
@@ -209,6 +228,7 @@ export function aggregateDay(date: DateStr, rows: TrimRow[], partial: boolean): 
     destinationAssets: roundMap(destinationAssets, 40),
     referrals: roundMap(referrals, 40),
     appFeeRecipients: roundMap(appFeeRecipients, 40),
+    ...(feesKnown ? { referralFees: Object.fromEntries(Object.entries(referralFees).map(([k, v]) => [k, Math.round(v * 100) / 100] as [string, number]).sort((a, b) => (a[0] < b[0] ? -1 : 1))) } : {}),
     partial,
   };
 }
@@ -302,7 +322,10 @@ export async function run(ctx: Ctx): Promise<RunResult> {
 
   // Phase A (every run): newest rows first, from "now" back to the start of yesterday so the last
   // two UTC days are complete. Stops early once a page is entirely older than that window.
-  const recentStart = toUnixDay(addDays(ctx.today, -1));
+  // INTENTS_REFETCH_DAYS widens this window to re-read whole days again (used once to add app fee rates to
+  // rows trimmed before they were kept); rows merge by deposit address, so a re-read never double counts.
+  const refetchDays = Math.max(1, Number(ctx.env.INTENTS_REFETCH_DAYS ?? 1) || 1);
+  const recentStart = toUnixDay(addDays(ctx.today, -refetchDays));
   let pageCursor: Page["cursor"] = null;
   let newest: number | null = null;
   while (calls < ctx.maxCalls) {

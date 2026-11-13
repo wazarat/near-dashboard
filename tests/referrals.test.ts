@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { sharedAccounts } from "../src/lib/data-checks";
-import { referralsByProject, referralTotals } from "../src/lib/referrals";
+import { referralsByProject, referralTotals, unmatchedReferrals, type ReferralDay } from "../src/lib/referrals";
 
 const day = (date: string, referrals: Record<string, { count: number; usd: number }>, partial = false) => ({ date, partial, referrals });
 
@@ -15,8 +15,8 @@ describe("NEAR Intents volume per app", () => {
     expect(t.days).toBe(2);
     expect(t.end).toBe("2026-11-02");
     expect(t.rows).toEqual([
-      { key: "swapkit", count: 3, usd: 300 },
-      { key: "lifi", count: 3, usd: 150 },
+      { key: "swapkit", count: 3, usd: 300, fees: null },
+      { key: "lifi", count: 3, usd: 150, fees: null },
     ]);
   });
   it("credits a project only through verified tags", () => {
@@ -25,8 +25,29 @@ describe("NEAR Intents volume per app", () => {
       { referral: "lifi", project: "LI.FI", verified: true },
       { referral: "swapkit", project: "SwapKit", verified: false },
     ]);
-    expect(m.get("LI.FI")).toEqual({ usd: 150, count: 3, tags: ["lifi"] });
+    expect(m.get("LI.FI")).toEqual({ usd: 150, count: 3, fees: null, tags: ["lifi"] });
     expect(m.has("SwapKit")).toBe(false);
+  });
+});
+
+describe("NEAR Intents app fees per app", () => {
+  const withFees: ReferralDay[] = [
+    { date: "2026-11-01", referrals: { lifi: { count: 2, usd: 100 } }, referralFees: { lifi: 0.5 } },
+    { date: "2026-11-02", referrals: { lifi: { count: 1, usd: 50 }, rango: { count: 1, usd: 10 } }, referralFees: { lifi: 0.25 } },
+  ];
+  it("sums fees when every day in the window carries them, and gives null otherwise", () => {
+    const t = referralTotals(withFees, 30);
+    expect(t.feeDays).toBe(2);
+    expect(t.rows.find((r) => r.key === "lifi")?.fees).toBeCloseTo(0.75, 9);
+    expect(t.rows.find((r) => r.key === "rango")?.fees).toBe(0);
+    const mixed = referralTotals([...withFees, { date: "2026-11-03", referrals: { lifi: { count: 1, usd: 1 } } }], 30);
+    expect(mixed.feeDays).toBe(2);
+    expect(mixed.rows.find((r) => r.key === "lifi")?.fees).toBeNull();
+  });
+  it("lists the largest tags no verified row maps, for labelling", () => {
+    const t = referralTotals(withFees, 30).rows;
+    expect(unmatchedReferrals(t, [{ referral: "lifi", project: "LI.FI", verified: true }]).map((r) => r.key)).toEqual(["rango"]);
+    expect(unmatchedReferrals(t, [{ referral: "lifi", project: "LI.FI", verified: false }]).map((r) => r.key)).toEqual(["lifi", "rango"]);
   });
 });
 

@@ -250,6 +250,11 @@ function main() {
   }
   const protoBySlug = new Map((history?.protocols ?? []).map((pr) => [pr.slug, pr]));
   const ex = loadExtras(projects, mapRowsOf, resolver);
+  if (ex.unmatchedReferrals.length) {
+    // The NEAR Intents referral tags with the most volume that no verified row of data/intents-referrals.csv maps yet.
+    console.log(`  intents referrals: ${ex.referrals.apps.length} apps matched; top ${ex.unmatchedReferrals.length} unmatched tags by 30d volume, for labelling in data/intents-referrals.csv`);
+    for (const t of ex.unmatchedReferrals) console.log(`    ${t.key}  $${Math.round(t.usd).toLocaleString("en-US")}  ${t.count} swaps${t.fees !== null ? `  $${Math.round(t.fees).toLocaleString("en-US")} app fees` : ""}`);
+  }
   for (const p of projects) {
     const lives: LivePart[] = [];
     if (history && end) {

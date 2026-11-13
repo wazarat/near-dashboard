@@ -1,5 +1,6 @@
 "use client";
 
+import { InfoTip } from "@/components/ui/info-tip";
 import { NONE } from "@/lib/coverage";
 import { NotTracked } from "@/components/atlas/not-tracked";
 import { ExternalLink } from "lucide-react";
@@ -154,5 +155,17 @@ export const signersColumn = h.accessor((p) => p.live?.signers7d ?? undefined, {
   cell: ({ getValue }) => <Count v={getValue()} />,
   sortUndefined: "last",
   meta: { align: "right", estimate: true },
+});
+export const gasGeneratedColumn = h.accessor((p) => p.extra?.values.gasGenerated ?? undefined, {
+  id: "gasGenerated",
+  header: () => (
+    <span className="inline-flex items-center gap-1">
+      30d gas fees generated
+      <InfoTip label="About gas fees generated">The 30% share of gas burnt on the project&apos;s mapped contracts that the protocol pays to them, over 30 days, from the NEAR BigQuery public dataset. Usage, not protocol income, so it is never added to fees.</InfoTip>
+    </span>
+  ),
+  cell: ({ getValue }) => <Usd v={getValue()} />,
+  sortUndefined: "last",
+  ...right,
 });
 export const cexReservesColumn = h.accessor((p) => p.live?.cexReserves ?? undefined, { id: "cexReserves", header: "CEX reserves on NEAR", cell: ({ getValue }) => <Usd v={getValue()} />, sortUndefined: "last", ...right });

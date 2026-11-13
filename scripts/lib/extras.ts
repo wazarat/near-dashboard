@@ -12,7 +12,8 @@ import type { NameResolver } from "../../src/lib/parse";
 import type { Project } from "../../src/lib/types";
 import { readCsvOrEmpty } from "./csv";
 import fs from "node:fs";
-import { referralsByProject, referralTotals, type ReferralDay, type ReferralMapRow } from "../../src/lib/referrals";
+import { gasTotals, type GasFile } from "../../src/lib/gas";
+import { referralsByProject, referralTotals, unmatchedReferrals, type ReferralDay, type ReferralMapRow } from "../../src/lib/referrals";
 import { DATA, HISTORY, RAW } from "./paths";
 import { readJson } from "./store";
 
@@ -83,6 +84,23 @@ export function loadExtras(projects: Project[], mapRowsOf: Map<string, MapRow[]>
     launchParts.set(project, [...(launchParts.get(project) ?? []), { values: { tokensLaunched: total }, asOf: last }]);
   }
 
+  /** Gas fees generated (the contracts' 30% share) and gas paid by users, per project over its mapped accounts. */
+  const gasFile = readJson<GasFile>(path.join(HISTORY, "bigquery", "gas.json"), {});
+  const prices = (readJson<{ nearblocks?: { price?: Array<[string, number]> } }>(path.join(HISTORY, "chain.json"), {}).nearblocks?.price ?? []).filter(([, v]) => Number.isFinite(v) && v > 0);
+  const accountsOf = new Map<string, string[]>();
+  for (const r of readCsvOrEmpty(path.join(DATA, "contracts.csv"))) {
+    const a = (r["Account ID"] ?? "").trim().toLowerCase();
+    const proj = (r["Project"] ?? "").trim();
+    if (a && proj) accountsOf.set(proj, [...(accountsOf.get(proj) ?? []), a]);
+  }
+  const gasParts = new Map<string, LivePart[]>();
+  if (Object.keys(gasFile).length && prices.length) {
+    for (const [proj, accts] of accountsOf) {
+      const t = gasTotals(gasFile, accts, prices);
+      if (t) gasParts.set(proj, [{ values: { gasGenerated: Math.round(t.generatedUsd), gasPaid: Math.round(t.paidUsd) }, asOf: t.end }]);
+    }
+  }
+
   const part = (asOf: string | undefined, values: LivePart["values"] | undefined): LivePart[] => (asOf && values && Object.keys(values).length ? [{ values, asOf }] : []);
   /** Pool APYs are dated by the yields read; supplied, borrowed, utilization and borrow APY by the day /lendBorrow last answered. */
   const LEND_KEYS = new Set(["utilization", "borrowApy"]);
@@ -101,8 +119,10 @@ export function loadExtras(projects: Project[], mapRowsOf: Map<string, MapRow[]>
     unmatchedHacks: hk.unmatched,
     stablecoinTotals: stable ? { ...stablecoinTotals(stable.coins), asOf: stable.asOf } : null,
     chainStats,
-    referrals: { days: refTotals.days, end: refTotals.end, apps: Array.from(refByProject.entries()).map(([project, v]) => ({ project, usd: Math.round(v.usd), count: v.count, tags: v.tags })).sort((a, b) => b.usd - a.usd) },
+    referrals: { days: refTotals.days, end: refTotals.end, feeDays: refTotals.feeDays, apps: Array.from(refByProject.entries()).map(([project, v]) => ({ project, usd: Math.round(v.usd), count: v.count, fees: v.fees === null ? null : Math.round(v.fees), tags: v.tags })).sort((a, b) => b.usd - a.usd) },
+    unmatchedReferrals: unmatchedReferrals(refTotals.rows, refMap, 50),
     gecko,
+    gasProjects: gasParts.size,
     partsFor(p: Project): LivePart[] {
       return [
         ...part(stable?.asOf, st.values.get(p.name)),
@@ -111,7 +131,19 @@ export function loadExtras(projects: Project[], mapRowsOf: Map<string, MapRow[]>
         ...part(tokens?.asOf, tv.get(p.name)),
         ...(holderParts.get(p.name) ?? []),
         ...(launchParts.get(p.name) ?? []),
-        ...(refTotals.end && refByProject.has(p.name) ? [{ values: { referralVolume: Math.round(refByProject.get(p.name)!.usd), referralSwaps: refByProject.get(p.name)!.count }, asOf: refTotals.end }] : []),
+        ...(gasParts.get(p.name) ?? []),
+        ...(refTotals.end && refByProject.has(p.name)
+          ? [
+              {
+                values: {
+                  referralVolume: Math.round(refByProject.get(p.name)!.usd),
+                  referralSwaps: refByProject.get(p.name)!.count,
+                  ...(refByProject.get(p.name)!.fees !== null ? { intentsAppFees: Math.round(refByProject.get(p.name)!.fees as number) } : {}),
+                },
+                asOf: refTotals.end,
+              },
+            ]
+          : []),
       ];
     },
   };

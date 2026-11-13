@@ -1,5 +1,7 @@
 name: Refresh data
 
+# BigQuery runs three scans: daily_chain, daily_receipts and daily_gas (gas burnt per tracked account, at most
+# 90 days back), each dry-run first and capped by maximumBytesBilled.
 # Pulls the latest day from every free source into data/history and data/raw, re-validates the
 # build, and commits the result. The push triggers the Vercel deploy. Daily runs fetch only the
 # recent Intents window; a backfill (manual run with the switch) continues the cursor.

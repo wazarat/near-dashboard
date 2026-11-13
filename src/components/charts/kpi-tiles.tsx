@@ -54,7 +54,14 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
   const tvl = sumMetric(projects, "tvl");
   const vol = sumMetric(projects, "volume");
   const fees = sumMetric(projects, "fees");
-  const rev = sumMetric(projects, "revenue");
+  // NEAR Intents app fees count as revenue only for projects DefiLlama reports no revenue for (marked on the tile).
+  const intentsRev = projects.reduce((a, p) => (!isInactive(p) && p.revenue === null && p.extra?.values.intentsAppFees !== undefined ? a + (p.extra.values.intentsAppFees ?? 0) : a), 0);
+  const revDl = sumMetric(projects, "revenue");
+  const rev = revDl === null && intentsRev === 0 ? null : (revDl ?? 0) + intentsRev;
+  // Gas fees generated: Y is every active project with at least one mapped contract account.
+  const withContracts = projects.filter((p) => !isInactive(p) && p.contracts.length > 0);
+  const gasTracked = withContracts.filter((p) => p.extra?.values.gasGenerated !== undefined);
+  const gasTotal = gasTracked.reduce((a, p) => a + (p.extra?.values.gasGenerated ?? 0), 0);
   const natTvl = nativeShare(projects, "tvl");
   const natFees = nativeShare(projects, "fees");
   const natCount = projects.filter((p) => p.chain === "NEAR native").length;
@@ -119,8 +126,9 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
       label: "30d revenue",
       value: fmtUsd(rev),
       sub: coverage("revenue"),
+      sub2: intentsRev > 0 ? `Includes ${fmtUsd(intentsRev)} of NEAR Intents app fees` : undefined,
       full: fmtUsdFull(rev),
-      empty: tracked("revenue") === 0,
+      empty: rev === null,
       info: `30-day protocol revenue per DefiLlama, the part of fees the protocol or its token keeps. Revenue applies only where the protocol keeps a share of fees, so Y counts projects with a DefiLlama fee listing, whose methodology says what the protocol keeps. ${WHERE_HELP}`,
     },
     {
@@ -139,6 +147,19 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
       empty: borrowed.total === null,
       info: `Outstanding loans on NEAR and Aurora lenders per DefiLlama's borrowed view, summed. Not part of TVL, which counts only what is still deposited. ${WHERE_HELP}`,
     },
+    ...(gasTracked.length
+      ? [
+          {
+            label: "Gas fees generated",
+            value: fmtUsd(gasTotal),
+            sub: `Tracked for ${gasTracked.length.toLocaleString("en-US")} of ${withContracts.length.toLocaleString("en-US")} projects with mapped contracts`,
+            sub2: "30 days, the contracts' 30% share",
+            full: fmtUsdFull(gasTotal),
+            empty: false,
+            info: "The protocol pays a contract 30% of the gas burnt when receipts execute on it. This sums that share over the last 30 days for every project with mapped contract accounts in data/contracts.csv, from execution outcomes in the NEAR BigQuery public dataset at each day's NEAR price. It measures how much the contracts are used, not what the protocol earns, so it is never added to fees or revenue. Y counts active projects with at least one mapped account.",
+          },
+        ]
+      : []),
     {
       label: "NEAR-native TVL share",
       value: fmtPct(natTvl),
@@ -154,7 +175,7 @@ export function KpiTiles({ projects, total }: { projects: Project[]; total: numb
         <ScopeNote legacy={legacy} />
         <LegacySwitch card="kpi" label="the KPI tiles" className="ml-auto" />
       </div>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+      <div className={cn("grid grid-cols-2 gap-3 md:grid-cols-3", tiles.length === 10 && "xl:grid-cols-5")}>
       {tiles.map((t) => (
         <div key={t.label} data-kpi={t.label} className={cn("card-lit rounded-xl border border-ink-700/60 bg-ink-900 px-4 py-3.5", t.empty && "border-ink-700/40")}>
           <div className="flex items-center justify-between gap-2">

@@ -34,6 +34,9 @@ export const METRIC_IDS = [
   "dexLiquidity",
   "referralVolume",
   "referralSwaps",
+  "intentsAppFees",
+  "gasGenerated",
+  "gasPaid",
   "calls30d",
   "signers7d",
   "tokensLaunched",
@@ -75,6 +78,9 @@ export const METRIC_DEFS: Record<MetricId, MetricDef> = {
   dexLiquidity: { id: "dexLiquidity", label: "Liquidity, top pools", unit: "usd", source: "GeckoTerminal", info: "Liquidity in the DEX's top pools (up to 20) per GeckoTerminal. Not shown for NEAR Intents, whose pools there are a model, not DEX liquidity." },
   referralVolume: { id: "referralVolume", label: "30d NEAR Intents volume routed", unit: "usd", source: "NEAR Intents Explorer", info: "1Click swap volume over the last 30 days that carried this app's referral tag, per the NEAR Intents Explorer API. Already counted inside NEAR Intents' own volume, so it is never added to the app's DEX volume." },
   referralSwaps: { id: "referralSwaps", label: "30d NEAR Intents swaps routed", unit: "count", source: "NEAR Intents Explorer", info: "1Click swaps over the last 30 days that carried this app's referral tag, per the NEAR Intents Explorer API." },
+  intentsAppFees: { id: "intentsAppFees", label: "30d NEAR Intents app fees", unit: "usd", source: "NEAR Intents Explorer", info: "App fees this app set on its 1Click swaps over the last 30 days, each successful swap's amountInUsd times its app fee in basis points, per the NEAR Intents Explorer API. The protocol's own buyback fee is left out. Counted as the project's revenue, marked as from NEAR Intents, only where DefiLlama reports no revenue for it, so it is never counted twice." },
+  gasGenerated: { id: "gasGenerated", label: "30d gas fees generated", unit: "usd", source: "NEAR BigQuery", info: "The protocol pays a contract 30% of the gas burnt when receipts execute on it. This is that 30% share over the last 30 days, summed over the project's mapped accounts from execution outcomes in the NEAR BigQuery public dataset and priced at each day's NEAR price. It measures usage of the contracts, not protocol income, so it is kept out of every fee and revenue total." },
+  gasPaid: { id: "gasPaid", label: "30d gas paid by users", unit: "usd", source: "NEAR BigQuery", info: "All the gas burnt executing receipts on the project's mapped accounts over the last 30 days, priced at each day's NEAR price, from execution outcomes in the NEAR BigQuery public dataset. 30% of it goes to the contracts, the rest is burnt. Usage, not income." },
   tokenSupplyValue: { id: "tokenSupplyValue", label: "Supply on NEAR × price", unit: "usd", source: "NearBlocks", info: "Token supply on NEAR multiplied by price, per NearBlocks. Not a market cap, since it counts minted supply, treasury included. Never shown for stablecoins." },
   calls30d: { id: "calls30d", label: "30d function calls", unit: "count", source: "NEAR BigQuery", info: "FUNCTION_CALL receipts to the project's tracked accounts over 30 days, from the NEAR BigQuery public dataset." },
   signers7d: { id: "signers7d", label: "7d signers", unit: "count", source: "NEAR BigQuery", info: "Distinct signer accounts calling the project's tracked accounts, summed per day over 7 days from the NEAR BigQuery public dataset. An estimate, since one person can use many accounts, and relayers or intents hide the end user." },
@@ -147,8 +153,10 @@ export function metricOf(p: Project, id: MetricId): number | null {
     case "tvl":
     case "volume":
     case "fees":
-    case "revenue":
       return p[id];
+    case "revenue":
+      // NEAR Intents app fees count as revenue only where DefiLlama has none, so nothing is counted twice.
+      return p.revenue ?? x.intentsAppFees ?? null;
     case "holdersRevenue":
       return p.live?.holdersRevenue ?? x.holdersRevenue ?? null;
     case "supplySideRevenue":
@@ -223,7 +231,12 @@ export function valueState(p: Project, id: MetricId): MetricValue {
  * tracked: NEAR Intents volume routed by the app's referral tag reaches wallets, aggregators, exchanges and
  * bridges alike.
  */
-export const CROSS_SECTOR_FACTS: readonly MetricId[] = ["referralVolume", "referralSwaps"];
+export const CROSS_SECTOR_FACTS: readonly MetricId[] = ["referralVolume", "referralSwaps", "intentsAppFees", "gasGenerated", "gasPaid"];
+
+/** True when a project's revenue figure is its NEAR Intents app fees rather than DefiLlama's revenue. */
+export function revenueFromIntents(p: Project): boolean {
+  return p.revenue === null && p.extra?.values.intentsAppFees !== undefined;
+}
 
 /** Every metric row the project shows, in the sector's order. not-applicable rows are left out. */
 export function projectMetrics(p: Project): MetricValue[] {

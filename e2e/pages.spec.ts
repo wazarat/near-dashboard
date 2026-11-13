@@ -120,9 +120,12 @@ test("Aurora's pop-up shows gas fees, transactions and DEX volume, never a flat 
 test("the Intents page lists apps by the volume their referral tag routes, each opening its project", async ({ page }) => {
   await page.goto("/intents/");
   const list = page.getByTestId("intents-apps");
-  await expect(list.locator("li").first()).toBeVisible({ timeout: 15_000 });
-  await expect(list.locator("li").first()).toContainText(/\$[\d.]+[KMB]? · [\d,]+ swaps/);
-  await list.locator("li button").first().click();
+  const first = list.locator("tbody tr").first();
+  await expect(first).toBeVisible({ timeout: 15_000 });
+  await expect(first.locator("td").nth(1)).toHaveText(/^\$[\d.]+[KMB]?$/);
+  await expect(first.locator("td").nth(2)).toHaveText(/^[\d,]+$/);
+  await expect(first.locator("td").nth(3)).toHaveText(/^(\$[\d.,]+[KMB]?|Not computed)$/);
+  await first.locator("button").click();
   const modal = page.getByTestId("project-modal");
   await expect(modal).toBeVisible();
   await expect(modal.getByTestId("metric-row").filter({ hasText: "30d NEAR Intents volume routed" })).toHaveCount(1);

@@ -5,7 +5,7 @@ import { ChangeCell } from "@/components/atlas/change-cell";
 import { InfoTip } from "@/components/ui/info-tip";
 import { fmtDate, fmtInt, fmtPct, fmtUsd, fmtUsdFull } from "@/lib/format";
 import { isStale } from "@/lib/freshness";
-import { CROSS_SECTOR_FACTS, METRIC_DEFS, projectMetrics, sectorDef, type MetricValue } from "@/lib/sector-metrics";
+import { CROSS_SECTOR_FACTS, METRIC_DEFS, projectMetrics, sectorDef, type MetricValue, revenueFromIntents } from "@/lib/sector-metrics";
 import type { MetricSource, NumericMetricKey, Project } from "@/lib/types";
 
 const DAILY = new Set<string>(["tvl", "volume", "fees", "revenue"]);
@@ -58,6 +58,7 @@ function Value({ p, m }: { p: Project; m: MetricValue }) {
         <>
           <span className="tabular">{fmt(m)}</span>
           <Provenance p={p} m={m} />
+          {m.id === "revenue" && revenueFromIntents(p) && <span className="ml-2 text-xs text-ink-300">from NEAR Intents app fees</span>}
           {m.id === "tvl" && (p.tvlNear !== null || p.tvlAurora !== null) && p.tvlNear !== p.tvl && (
             <span className="ml-2 text-xs text-ink-300">
               NEAR {fmtUsd(p.tvlNear)} · Aurora {fmtUsd(p.tvlAurora)}

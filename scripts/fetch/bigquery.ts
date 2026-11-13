@@ -25,7 +25,7 @@ export const WELL_KNOWN_RECEIVERS = ["aurora", "intents.near"];
 const RAW_DIR = path.join(RAW, "bigquery");
 
 export interface QueryJob {
-  id: "daily_chain" | "daily_receipts";
+  id: "daily_chain" | "daily_receipts" | "daily_gas";
   sql: string;
   params: Record<string, unknown>;
   start: DateStr;
@@ -84,6 +84,22 @@ export function factoryAccounts(): Map<string, string> {
   }
   return m;
 }
+
+/** Gas rows → account → [date, NEAR burnt, outcomes]. */
+export function gasRows(rows: Array<Record<string, unknown>>): Record<string, Array<[DateStr, number, number]>> {
+  const out: Record<string, Array<[DateStr, number, number]>> = {};
+  for (const r of rows) {
+    const d = String((r.block_date as { value?: string })?.value ?? r.block_date).slice(0, 10) as DateStr;
+    const a = String(r.account_id ?? "");
+    if (!a) continue;
+    (out[a] ??= []).push([d, Math.round(Number(r.near_burnt) * 1e6) / 1e6 || 0, Number(r.outcomes) || 0]);
+  }
+  for (const k of Object.keys(out)) out[k].sort((x, y) => (x[0] < y[0] ? -1 : 1));
+  return out;
+}
+
+/** Gas per project reaches back this many days at most, backfill included (about 0.2 GB a day of execution_outcomes). */
+export const GAS_DAYS = 90;
 
 /** A query parameter array cannot be empty (BigQuery cannot type it), so an unused placeholder stands in. */
 export const NO_FACTORY = "~no-factory~";
@@ -200,6 +216,23 @@ export async function run(ctx: Ctx): Promise<RunResult> {
       }
       if (!ctx.dryRun) cursors["daily_receipts"] = e;
     }
+    // 3. Gas burnt per tracked account (execution_outcomes), for gas fees generated per project. Its own cursor,
+    // and never more than GAS_DAYS back, even in a backfill, to stay inside the scan budget.
+    const gas = readJson<Record<string, Array<[DateStr, number, number]>>>(path.join(HISTORY, "bigquery", "gas.json"), {});
+    const gasFloor = addDays(end, -(GAS_DAYS - 1));
+    const gasStart = cursors["daily_gas"] && cursors["daily_gas"] >= gasFloor ? addDays(cursors["daily_gas"], -2) : gasFloor;
+    for (const [s, e] of chunks(gasStart, end, chunkDays)) {
+      const out = await runJob({ id: "daily_gas", sql: loadSql("daily_gas"), params: { accounts }, start: s, end: e });
+      rows += out.length;
+      persist("daily_gas", s, e, out, ["block_date", "account_id", "outcomes", "gas_burnt", "near_burnt"]);
+      for (const [a, pts] of Object.entries(gasRows(out))) {
+        const m = new Map<string, [number, number]>((gas[a] ?? []).map(([d, n, o]) => [d, [n, o]]));
+        for (const [d, n, o] of pts) if (d < ctx.today) m.set(d, [n, o]);
+        gas[a] = Array.from(m.entries()).map(([d, [n, o]]) => [d, n, o] as [DateStr, number, number]).filter(([d]) => d >= gasFloor).sort((x, y) => (x[0] < y[0] ? -1 : 1));
+      }
+      if (!ctx.dryRun) cursors["daily_gas"] = e;
+    }
+    if (!ctx.dryRun) writeJsonStable(path.join(HISTORY, "bigquery", "gas.json"), gas);
     if (!ctx.dryRun) {
       writeJsonStable(path.join(HISTORY, "bigquery", "receivers.json"), activity);
       writeJsonStable(path.join(HISTORY, "bigquery", "factory-launches.json"), launches);

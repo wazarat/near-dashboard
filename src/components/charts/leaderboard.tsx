@@ -8,6 +8,7 @@ import { RangeControl } from "@/components/atlas/range-control";
 import { DataTable, type ProjectColumnDef } from "@/components/explorer/data-table";
 import {
   calls30Column,
+  gasGeneratedColumn,
   calls7Column,
   captureColumn,
   chainColumn,
@@ -58,7 +59,7 @@ export function Leaderboard({ projects, metric, onMetricChange, range, onRangeCh
       case "momentum":
         return [name, chainColumn, tvlColumn, ...(m === "tvl" ? [] : [METRIC_COLUMN[m]]), changeColumn(metric, "d7"), changeColumn(metric, "d30"), changeColumn(metric, "d90", "sm"), sparkColumn(metric, range)];
       case "activity":
-        return [name, chainColumn, tierColumn, calls7Column, calls30Column, signersColumn];
+        return [name, chainColumn, tierColumn, calls7Column, calls30Column, signersColumn, gasGeneratedColumn];
       case "financials":
         return [name, chainColumn, tierColumn, feesColumn, revenueColumn, captureColumn];
       default:
