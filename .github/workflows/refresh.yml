@@ -53,6 +53,14 @@ jobs:
           workload_identity_provider: ${{ env.GCP_WIF_PROVIDER }}
           service_account: ${{ env.GCP_SA }}
 
+      # Dry runs only (no data read): bytes each query would scan over 1, 3 and 90 days, and the table columns.
+      # Written to data/history/bq-estimate.json. Never fails the refresh.
+      - name: BigQuery cost estimates
+        if: ${{ env.GCP_WIF_PROVIDER != '' && env.GCP_SA != '' }}
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: npm run bq:estimate || echo "bq:estimate failed, continuing"
+
       - name: Refresh history
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}

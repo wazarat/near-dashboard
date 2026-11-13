@@ -22,6 +22,7 @@
     "e2e:wall": "playwright test -c e2e/playwright.wall.config.ts",
     "e2e:auth": "playwright test -c e2e/playwright.auth.config.ts",
     "refresh": "tsx scripts/refresh.ts",
+    "bq:estimate": "tsx scripts/bq-estimate.ts",
     "review": "tsx scripts/review.ts",
     "seed:map": "tsx scripts/seed-defillama-map.ts",
     "seed:contracts": "tsx scripts/seed-contracts.ts",
