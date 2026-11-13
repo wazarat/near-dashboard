@@ -3,7 +3,10 @@
 -- data/contracts.csv) via GROUPING SETS. account_id is NULL on the chain-level rows.
 -- A CREATE_ACCOUNT for a sub-account of a tracked launchpad factory (Role factory in contracts.csv)
 -- is attributed to 'factory:<factory>', so its new_accounts column counts the tokens that factory
--- launched that day. Same columns read, so the scan costs the same.
+-- launched that day. A FUNCTION_CALL to any sub-account of a tracked suffix account (Role suffix, such as
+-- sputnik-dao.near, whose DAOs are its sub-accounts) is attributed to 'suffix:<account>', so its row counts the
+-- calls, signers and distinct sub-accounts (contracts_called) for all of them. Same columns read, so the scan
+-- costs the same.
 SELECT
   block_date,
   account_id,
@@ -22,6 +25,9 @@ FROM (
       IF(receipt_receiver_account_id IN UNNEST(@accounts), receipt_receiver_account_id, NULL),
       IF(action_kind = 'CREATE_ACCOUNT',
         (SELECT CONCAT('factory:', f) FROM UNNEST(@factories) AS f WHERE ENDS_WITH(receipt_receiver_account_id, CONCAT('.', f)) LIMIT 1),
+        NULL),
+      IF(action_kind = 'FUNCTION_CALL',
+        (SELECT CONCAT('suffix:', x) FROM UNNEST(@suffixes) AS x WHERE ENDS_WITH(receipt_receiver_account_id, CONCAT('.', x)) LIMIT 1),
         NULL)
     ) AS account_id
   FROM `bigquery-public-data.crypto_near_mainnet_us.receipt_actions`

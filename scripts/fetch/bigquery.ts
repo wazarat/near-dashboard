@@ -68,6 +68,24 @@ export function receiverRows(rows: Array<Record<string, unknown>>): Record<strin
   return out;
 }
 
+/**
+ * Per-project activity: the sum of its tracked accounts per day. Each account counts once per project, so one
+ * listed under two roles is not doubled. Signers are summed across accounts, so one signer calling two of a
+ * project's contracts on a day counts twice; an estimate, as the metric's info says.
+ */
+export function projectActivity(tracked: Map<string, string[]>, activity: Record<string, Array<[DateStr, number, number]>>): Record<string, Array<[DateStr, number, number]>> {
+  const perProject: Record<string, Array<[DateStr, number, number]>> = {};
+  for (const [p, accts] of tracked) {
+    const m = new Map<string, [number, number]>();
+    for (const a of new Set(accts)) for (const [d, c, g] of activity[a] ?? []) {
+      const cur = m.get(d) ?? [0, 0];
+      m.set(d, [cur[0] + c, cur[1] + g]);
+    }
+    if (m.size) perProject[p] = Array.from(m.entries()).map(([d, [c, g]]) => [d, c, g] as [DateStr, number, number]).sort((x, y) => (x[0] < y[0] ? -1 : 1));
+  }
+  return perProject;
+}
+
 /** Split [start, end] into chunks of at most `days` days. */
 export function chunks(start: DateStr, end: DateStr, days: number): Array<[DateStr, DateStr]> {
   const out: Array<[DateStr, DateStr]> = [];
@@ -152,6 +170,24 @@ export const GAS_DAYS = 90;
 
 /** A query parameter array cannot be empty (BigQuery cannot type it), so an unused placeholder stands in. */
 export const NO_FACTORY = "~no-factory~";
+export const NO_SUFFIX = "~no-suffix~";
+
+/** Accounts whose sub-accounts all count as the project's contracts (Role suffix in data/contracts.csv): account → project. */
+export function suffixAccounts(): Map<string, string> {
+  const m = new Map<string, string>();
+  for (const r of readCsvOrEmpty(path.join(DATA, "contracts.csv"))) {
+    if ((r["Role"] ?? "").trim() !== "suffix") continue;
+    const a = (r["Account ID"] ?? "").trim().toLowerCase();
+    const p = (r["Project"] ?? "").trim();
+    if (a && p) m.set(a, p);
+  }
+  return m;
+}
+
+/** The exact receiver list for the receipts and gas queries: every mapped account except suffix rows, which match by sub-account. */
+export function exactAccounts(rows: Array<Record<string, string | undefined>>): string[] {
+  return rows.filter((r) => (r["Role"] ?? "").trim() !== "suffix").map((r) => (r["Account ID"] ?? "").trim().toLowerCase()).filter(Boolean);
+}
 
 /** Factory rows from the receipts query → factory account → [date, sub-accounts created]. */
 export function factoryLaunches(rows: Array<Record<string, unknown>>): Record<string, Array<[DateStr, number]>> {
@@ -166,12 +202,14 @@ export function factoryLaunches(rows: Array<Record<string, unknown>>): Record<st
   return out;
 }
 
-function trackedAccounts(): Map<string, string[]> {
+/** Project → the keys its activity is summed over: exact accounts, and "suffix:<account>" for a suffix row. */
+export function trackedAccounts(): Map<string, string[]> {
   const m = new Map<string, string[]>();
   for (const r of readCsvOrEmpty(path.join(DATA, "contracts.csv"))) {
     const a = (r["Account ID"] ?? "").trim().toLowerCase();
     const p = (r["Project"] ?? "").trim();
-    if (a && p) m.set(p, [...(m.get(p) ?? []), a]);
+    const key = (r["Role"] ?? "").trim() === "suffix" ? `suffix:${a}` : a;
+    if (a && p && !(m.get(p) ?? []).includes(key)) m.set(p, [...(m.get(p) ?? []), key]);
   }
   return m;
 }
@@ -200,9 +238,11 @@ export async function run(ctx: Ctx): Promise<RunResult> {
   const end = windowEnd(addDays(ctx.today, -1), ctx.env.BQ_END); // last complete UTC day, or BQ_END for an older window
   const start = (id: string) => (ctx.mode === "backfill" || !cursors[id] ? (ctx.env.BQ_START as DateStr | undefined) ?? BQ_START_DEFAULT : addDays(cursors[id], -2));
   const tracked = trackedAccounts();
-  const accounts = Array.from(new Set([...WELL_KNOWN_RECEIVERS, ...Array.from(tracked.values()).flat()]));
+  const accounts = Array.from(new Set([...WELL_KNOWN_RECEIVERS, ...exactAccounts(readCsvOrEmpty(path.join(DATA, "contracts.csv")))]));
   const factories = factoryAccounts();
   const factoryList = factories.size ? Array.from(factories.keys()) : [NO_FACTORY];
+  const suffixes = suffixAccounts();
+  const suffixList = suffixes.size ? Array.from(suffixes.keys()) : [NO_SUFFIX];
 
   async function runJob(job: QueryJob): Promise<Array<Record<string, unknown>>> {
     const base = { query: job.sql, params: { ...job.params, start: job.start, end: job.end }, useLegacySql: false };
@@ -248,7 +288,7 @@ export async function run(ctx: Ctx): Promise<RunResult> {
     const launches = readJson<Record<string, Array<[DateStr, number]>>>(path.join(HISTORY, "bigquery", "factory-launches.json"), {});
     const receiptCols = ["function_calls", "distinct_signers", "contracts_called", "new_accounts", "contracts_deployed"];
     for (const [s, e] of wanted.has("daily_receipts") ? chunks(start("daily_receipts"), end, chunkDays) : []) {
-      const out = await runJob({ id: "daily_receipts", sql: loadSql("daily_receipts"), params: { accounts, factories: factoryList }, start: s, end: e });
+      const out = await runJob({ id: "daily_receipts", sql: loadSql("daily_receipts"), params: { accounts, factories: factoryList, suffixes: suffixList }, start: s, end: e });
       rows += out.length;
       persist("daily_receipts", s, e, out, ["block_date", "account_id", ...receiptCols]);
       const chainRows = out.filter((r) => r.account_id === null || r.account_id === undefined);
@@ -287,17 +327,7 @@ export async function run(ctx: Ctx): Promise<RunResult> {
     if (!ctx.dryRun && wanted.has("daily_receipts")) {
       writeJsonStable(path.join(HISTORY, "bigquery", "receivers.json"), activity);
       writeJsonStable(path.join(HISTORY, "bigquery", "factory-launches.json"), launches);
-      // Per-project activity = sum of its tracked accounts per day.
-      const perProject: Record<string, Array<[DateStr, number, number]>> = {};
-      for (const [p, accts] of tracked) {
-        const m = new Map<string, [number, number]>();
-        for (const a of accts) for (const [d, c, g] of activity[a] ?? []) {
-          const cur = m.get(d) ?? [0, 0];
-          m.set(d, [cur[0] + c, cur[1] + g]);
-        }
-        if (m.size) perProject[p] = Array.from(m.entries()).map(([d, [c, g]]) => [d, c, g] as [DateStr, number, number]).sort((x, y) => (x[0] < y[0] ? -1 : 1));
-      }
-      writeJsonStable(path.join(HISTORY, "bigquery", "project-activity.json"), perProject);
+      writeJsonStable(path.join(HISTORY, "bigquery", "project-activity.json"), projectActivity(tracked, activity));
       for (const a of WELL_KNOWN_RECEIVERS) {
         const key = a === "aurora" ? "auroraCalls" : "intentsCalls";
         const skey = a === "aurora" ? "auroraSigners" : "intentsSigners";

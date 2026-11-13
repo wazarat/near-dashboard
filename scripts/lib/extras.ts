@@ -81,15 +81,16 @@ export function loadExtras(projects: Project[], mapRowsOf: Map<string, MapRow[]>
 
   /** Tokens launched in the last 30 days per launchpad, from its factory's sub-accounts (BigQuery). */
   const launchParts = new Map<string, LivePart[]>();
+  // The series only has days with a launch, so the window ends on the last day the receipts query covered, not on
+  // the last launch; a factory with no launch in the window reads zero. Before the first run there is no window.
+  const receiptsEnd = readJson<{ cursors?: { bigquery?: Record<string, string> } }>(path.join(HISTORY, "_meta.json"), {}).cursors?.bigquery?.daily_receipts;
   for (const r of readCsvOrEmpty(path.join(DATA, "contracts.csv"))) {
-    if ((r["Role"] ?? "").trim() !== "factory") continue;
-    const s = launches[(r["Account ID"] ?? "").trim().toLowerCase()];
-    if (!s?.length) continue;
-    const last = s[s.length - 1][0];
-    const from = new Date(Date.parse(`${last}T00:00:00Z`) - 29 * 86_400_000).toISOString().slice(0, 10);
-    const total = s.filter(([d]) => d >= from).reduce((a, [, n]) => a + n, 0);
+    if ((r["Role"] ?? "").trim() !== "factory" || !receiptsEnd) continue;
+    const s = launches[(r["Account ID"] ?? "").trim().toLowerCase()] ?? [];
+    const from = new Date(Date.parse(`${receiptsEnd}T00:00:00Z`) - 29 * 86_400_000).toISOString().slice(0, 10);
+    const total = s.filter(([d]) => d >= from && d <= receiptsEnd).reduce((a, [, n]) => a + n, 0);
     const project = (r["Project"] ?? "").trim();
-    launchParts.set(project, [...(launchParts.get(project) ?? []), { values: { tokensLaunched: total }, asOf: last }]);
+    launchParts.set(project, [...(launchParts.get(project) ?? []), { values: { tokensLaunched: total }, asOf: receiptsEnd }]);
   }
 
   /** Gas fees generated (the contracts' 30% share) and gas paid by users, per project over its mapped accounts. */
@@ -99,7 +100,9 @@ export function loadExtras(projects: Project[], mapRowsOf: Map<string, MapRow[]>
   for (const r of readCsvOrEmpty(path.join(DATA, "contracts.csv"))) {
     const a = (r["Account ID"] ?? "").trim().toLowerCase();
     const proj = (r["Project"] ?? "").trim();
-    if (a && proj) accountsOf.set(proj, [...(accountsOf.get(proj) ?? []), a]);
+    // An account listed under two roles (core and token, say) counts once; a suffix row has no gas of its own here.
+    if (!a || !proj || (r["Role"] ?? "").trim() === "suffix" || (accountsOf.get(proj) ?? []).includes(a)) continue;
+    accountsOf.set(proj, [...(accountsOf.get(proj) ?? []), a]);
   }
   const gasParts = new Map<string, LivePart[]>();
   if (Object.keys(gasFile).length && prices.length) {

@@ -13,7 +13,7 @@ import { readCsvOrEmpty } from "./lib/csv";
 import { DATA, HISTORY, QUERIES } from "./lib/paths";
 import { readJson, writeJsonStable } from "./lib/store";
 import type { ChainHistory, SeriesMap } from "../src/lib/history-types";
-import { NO_FACTORY, WELL_KNOWN_RECEIVERS, factoryAccounts } from "./fetch/bigquery";
+import { NO_FACTORY, NO_SUFFIX, WELL_KNOWN_RECEIVERS, exactAccounts, factoryAccounts, suffixAccounts } from "./fetch/bigquery";
 
 const DATASET = "bigquery-public-data.crypto_near_mainnet_us";
 const TABLES = ["transactions", "receipt_actions", "execution_outcomes"];
@@ -27,9 +27,10 @@ async function main() {
   const { BigQuery } = await import("@google-cloud/bigquery");
   const bq = new BigQuery({ projectId: project });
   const end = addDays(new Date().toISOString().slice(0, 10) as DateStr, -1);
-  const accounts = Array.from(new Set([...WELL_KNOWN_RECEIVERS, ...readCsvOrEmpty(path.join(DATA, "contracts.csv")).map((r) => (r["Account ID"] ?? "").trim().toLowerCase()).filter(Boolean)]));
+  const accounts = Array.from(new Set([...WELL_KNOWN_RECEIVERS, ...exactAccounts(readCsvOrEmpty(path.join(DATA, "contracts.csv")))]));
   const factories = factoryAccounts();
-  const params = { accounts, factories: factories.size ? Array.from(factories.keys()) : [NO_FACTORY] };
+  const suffixes = suffixAccounts();
+  const params = { accounts, factories: factories.size ? Array.from(factories.keys()) : [NO_FACTORY], suffixes: suffixes.size ? Array.from(suffixes.keys()) : [NO_SUFFIX] };
 
   const out: { asOf: string; end: string; accounts: number; queries: Record<string, Record<string, number | string>>; columns: Record<string, Array<[string, string]> | string>; uncovered: Record<string, { start: DateStr; end: DateStr; gb?: number; error?: string }> } = { asOf: new Date().toISOString(), end, accounts: accounts.length, queries: {}, columns: {}, uncovered: {} };
 

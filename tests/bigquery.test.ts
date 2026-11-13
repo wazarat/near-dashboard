@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { chunks, loadSql, receiverRows, rowsToSeries } from "../scripts/fetch/bigquery";
+import { chunks, loadSql, receiverRows, rowsToSeries, exactAccounts, projectActivity } from "../scripts/fetch/bigquery";
 
 describe("bigquery helpers", () => {
   it("every saved query filters on block_date with the start/end parameters", () => {
@@ -84,5 +84,30 @@ describe("older backfill windows", () => {
     expect(u.backfills).toHaveLength(1);
     expect(u.backfills[0].bytes).toBe(97);
     expect(u.daily?.bytes).toBe(6);
+  });
+});
+
+describe("suffix accounts and per-project activity", () => {
+  it("leaves suffix rows out of the exact receiver list", () => {
+    const rows = [
+      { Project: "AstroDAO", "Account ID": "sputnik-dao.near", Role: "core" },
+      { Project: "AstroDAO", "Account ID": "sputnik-dao.near", Role: "suffix" },
+      { Project: "POTLOCK", "Account ID": "v1.potfactory.potlock.near", Role: "suffix" },
+    ];
+    expect(exactAccounts(rows)).toEqual(["sputnik-dao.near"]);
+  });
+  it("counts an account listed under two roles once, and sums suffix rows with exact ones", () => {
+    const tracked = new Map([
+      ["HOT", ["game.hot.tg", "game.hot.tg"]],
+      ["AstroDAO", ["sputnik-dao.near", "suffix:sputnik-dao.near"]],
+    ]);
+    const activity = {
+      "game.hot.tg": [["2026-11-12", 10, 4]],
+      "sputnik-dao.near": [["2026-11-12", 2, 1]],
+      "suffix:sputnik-dao.near": [["2026-11-12", 30, 9]],
+    } as unknown as Parameters<typeof projectActivity>[1];
+    const out = projectActivity(tracked, activity);
+    expect(out.HOT).toEqual([["2026-11-12", 10, 4]]);
+    expect(out.AstroDAO).toEqual([["2026-11-12", 32, 10]]);
   });
 });

@@ -1,6 +1,7 @@
 Project,Account ID,Role,Source,Verified
 Allstake,allstake.near,staking,known account,Yes
 AstroDAO,sputnik-dao.near,core,known account,Yes
+AstroDAO,sputnik-dao.near,suffix,"every DAO is a sub-account of the sputnik-dao.near factory; calls to any of them count, checked on NEAR RPC 2026-11-13",Yes
 Aurigami,1ab43204a195a0fd37edec621482afd3792ef90b.factory.bridge.near,catalog,nearcatalog aurigami,Yes
 Aurigami,0x09c9d464b58d96837f8d8b6f4d9fe4ad408d3a4f,token,live-metrics snapshot 2026-11-12,Yes
 Aurigami,1ab43204a195a0fd37edec621482afd3792ef90b.factory.bridge.near,token,live-metrics snapshot 2026-11-12,Yes
@@ -42,7 +43,9 @@ Meta Pool,meta-token.near,token,known account,Yes
 Meta Pool,mpdao-token.near,token,live-metrics snapshot 2026-11-12,Yes
 Moon Shot,moonshot.near,catalog,nearcatalog moon-shot,Yes
 Moon Shot,moonshot.near,core,live-metrics snapshot 2026-11-12,Yes
-NEAR House of Stake,venear.houseofstake.near,core,known account,Yes
+NEAR House of Stake,venear.dao,core,"veNEAR contract; get_config owner is hos-root.sputnik-dao.near, checked on NEAR RPC 2026-11-13",Yes
+NEAR House of Stake,venear.dao,suffix,"veNEAR lockup accounts are sub-accounts of venear.dao, checked on NEAR RPC 2026-11-13",Yes
+NEAR House of Stake,vote.dao,core,"voting contract; get_config names venear.dao and owner hos-root.sputnik-dao.near, checked on NEAR RPC 2026-11-13",Yes
 NEAR Intents,intents.near,core,known account,Yes
 NEAR Omni Bridge,omni.bridge.near,bridge,known account,Yes
 Near Social,db.social08.near,catalog,nearcatalog near-social,Yes
@@ -65,12 +68,17 @@ Octopus Network,f5cfbc74057c610c8ef151a439252680ac68c6dc.factory.bridge.near,tok
 opencann,opencann.near,catalog,nearcatalog opencann,Yes
 opencann,opencann.near,core,live-metrics snapshot 2026-11-12,Yes
 Orderly Network,asset-manager.orderly-network.near,core,known account,Yes
+Paras,marketplace.paras.near,core,"sub-account of paras.near (only paras.near can create it) with a deployed contract, checked on NEAR RPC 2026-11-13",Yes
+Paras,x.paras.near,core,"sub-account of paras.near (only paras.near can create it) with a deployed contract, checked on NEAR RPC 2026-11-13",Yes
 Phoenix Bonds,phoenix-bonds.near,token,defillama phoenix-bonds,Yes
 Pitchtalk,v1.pitchtalk.near,core,live-metrics snapshot 2026-11-12,Yes
 PlayEmber,embr.playember_reserve.near,catalog,nearcatalog playember,Yes
 PlayEmber,embr.playember_reserve.near,game,live-metrics snapshot 2026-11-12,Yes
 POTLOCK,donate.potlock.near,core,known account,Yes
 POTLOCK,potlock.near,core,live-metrics snapshot 2026-11-12,Yes
+POTLOCK,lists.potlock.near,core,"sub-account of potlock.near with a deployed contract, checked on NEAR RPC 2026-11-13",Yes
+POTLOCK,v1.potfactory.potlock.near,core,"pot factory; get_config owner is potlock.near, checked on NEAR RPC 2026-11-13",Yes
+POTLOCK,v1.potfactory.potlock.near,suffix,"each pot is a sub-account of the pot factory, checked on NEAR RPC 2026-11-13",Yes
 Public AI,token.publicailab.near,catalog,nearcatalog publicai,Yes
 Public AI,token.publicailab.near,token,live-metrics snapshot 2026-11-12,Yes
 Pumpopoly,token.pumpopoly.near,catalog,nearcatalog pumpopoly,Yes
