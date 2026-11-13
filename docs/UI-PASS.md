@@ -300,3 +300,20 @@ The rest of [`LIVE-DATA.md`](LIVE-DATA.md), sections 3 to 5, run without a pause
 - A 30-day distinct-signer count. The BigQuery history holds distinct signers per day, so the site keeps "7d signers", which is a sum of daily counts, and labels it an estimate.
 - Volume of tokens launched on each launchpad, which needs GeckoTerminal token pools matched to each factory.
 - The spec's count of 45 projects "tagged NEAR Intents". The dataset has no such tag, so referral tags are matched against every project instead.
+
+## Final sprint, Nov 13, 2026
+
+The sprint closed the thesis track's gaps and added three datasets. Every commit is on `main`.
+
+| Phase | What changed |
+|---|---|
+| 1. Track compliance | Every chart on Overview and Intents has a collapsed "How this is calculated" block with one plain sentence and its SQL file, endpoint or transform (`src/lib/query-specs.ts`). SQL is read from `queries/*.sql` at build time, which ended a stale copy in Chain activity. THESIS.md follows Claim, Data and method, Evidence for, Evidence against, What would change my mind, Metrics that could not be computed, How to reproduce. A largest-days-removed robustness check was added; it cuts against the claim and is listed as such. `npm run verify:rebuild` proves a fresh clone rebuilds 15 files byte for byte, and CI fails if a rebuild changes THESIS.md or README.md. The README gained the two-sentence thesis, the cost note and a generated data-as-of line. `/about` states the independence line. |
+| 2. Honest tiles | Applicability now follows how projects earn. TVL went from 34 of 107 to 31 of 76, fees from 11 of 84 to 10 of 103, DEX volume from 7 of 83 to 7 of 66, and revenue from 6 of 61 to 7 of 10. A money level series is compared only from a start of at least $1M and 1% of the last value, so chain TVL no longer reads +7,125,924%. Aurora transactions take their history from BigQuery receipts to `aurora` (within 1% of Blockscout), and panels whose data starts after the range are clipped and labelled. |
+| 3. Gas generated | `queries/daily_gas.sql` sums NEAR burnt per tracked account from `execution_outcomes`; its dry run was 0.21 GB a day, and it reaches back at most 90 days. Each project shows 30d gas paid by users and the contracts' 30% share, in the pop-up, a leaderboard column and an Overview tile, kept out of every fee total. |
+| 4. Intents app fees | Trimmed 1Click rows keep the app fee rate in basis points, with the protocol's 1 bps buyback fee to `buybacks.multisignature.near` left out. Each day sums amountInUsd × bps per referral, and 30d app fees show per app. They count as revenue, marked as from NEAR Intents, only where DefiLlama reports none. The last 35 days were re-read to add the rates. |
+| 5. Contracts | The `game` and `treasury` roles were added (treasury only from an evidence list). `docs/FEE-ACCOUNTS-REVIEW.md` lists fee-account candidates for 10 projects, all unused until confirmed. |
+| 6. Checks | `check:data` cross-checks every Overview headline that has a second source. A tested runner keeps a failed source's last good data. `docs/SUBMISSION.md` holds the checklist, the steps for the owner and the demo script. |
+
+Found during the sprint:
+- On Nov 13, DefiLlama's `yields.llama.fi/lendBorrow` began returning 404, and its replacement answers 402 (paid). Pool APYs still refresh; supplied, borrowed, utilization and borrow APY keep their last good values and show their date once stale.
+- NEAR new accounts differ by about 49% between NearBlocks and BigQuery CREATE_ACCOUNT, because BigQuery counts sub-accounts too. It is listed for review, not as a failure.

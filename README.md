@@ -49,6 +49,7 @@ npm start            # open http://localhost:3000
 | `/investors` | Investors by deals, portfolios, investor pop-up |
 | `/security` | Chain-level checklist for NEAR L1, NEAR Intents and Aurora, security facts by type and by sector (no per-project ratings), incidents as a sortable table |
 | `/explorer` | Every column with a column chooser and CSV download of the filtered view, a Map and Table switch (`?view=map` is the sector treemap of the same selection) and its own search box, plus the "Newly detected" review list |
+| `/about` | About and methodology: the track, every source, THESIS.md and the independence statement |
 | `/help-track` | Public list of projects whose metric applies but no free source covers yet, grouped by metric, each with a link to suggest a source |
 | `/compare` | Up to four projects: metric matrix with sector ranks, ratios, indexed overlay, side-by-side profiles |
 
