@@ -10,10 +10,14 @@ Cross-chain volume settled through NEAR Intents is a better leading indicator of
 
 ## Data and method
 
-- Window: {{windowStart}} to {{windowEnd}} ({{weeks}} ISO weeks). Intents volume comes from DefiLlama's NEAR Intents adapter (all channels, daily, since 2024-12-10). Usage comes from NearBlocks daily charts (transactions, active accounts, new accounts) over the whole window and from the NEAR BigQuery public dataset (function calls, distinct contracts called) over the last {{bqWeeks}} weeks ({{bqStart}} to {{bqEnd}}). Price is NearBlocks' daily NEAR price (DefiLlama coins as a cross-check).
+- Window: {{windowStart}} to {{windowEnd}} ({{weeks}} ISO weeks). Intents volume comes from DefiLlama's NEAR Intents adapter (all channels, daily, since 2024-12-10). Usage comes from the NEAR BigQuery public dataset (transactions and active accounts over the whole window; function calls and distinct contracts called over the last {{bqWeeks}} weeks, {{bqStart}} to {{bqEnd}}) and from NearBlocks daily charts (new accounts), series by series as in the table below. Price is NearBlocks' daily NEAR price (DefiLlama coins as a cross-check).
 - All series are resampled to ISO weeks (flows summed, price and account counts as weekly totals or last values), converted to week-over-week log changes, and compared at lags of −{{maxLag}} to +{{maxLag}} weeks. A positive lag means the predictor moves first.
 - Out-of-sample: a one-variable regression of usage change on the lagged predictor change is fitted on weeks before {{cutoff}} (lag picked on the training window only) and scored on weeks from {{cutoff}} onward with out-of-sample R² (against the training mean) and the share of weeks where the predicted sign was right.
 - Robustness: the same tests with the largest 5% of Intents volume days capped, and again with those days removed, with receipts to `aurora` and `intents.near` removed from function calls, on daily instead of weekly data, and with the 1Click Explorer volume in place of DefiLlama's where the Explorer backfill covers it.
+
+| Usage series | Source | Query or endpoint | From | To | Weeks |
+|---|---|---|---|---|---|
+{{sourceTable}}
 
 ### Lead-lag results (weekly log changes, strongest positive correlation at a positive lag)
 
@@ -32,6 +36,18 @@ Correlations inside roughly ±{{noiseBand}} are indistinguishable from noise at 
 ### Robustness
 
 {{robustnessTable}}
+
+### NearBlocks cross-check
+
+Transactions and active accounts are counted twice: from BigQuery (`queries/daily_chain.sql`, the rows used in every test above) and from NearBlocks daily charts, which stay as a check and do not enter the verdict.
+
+{{crossCheckLines}}
+
+The same lead-lag and out-of-sample tests on both sources:
+
+| Usage series | Source | Intents volume leads by | r | Price leads by | r | Out-of-sample R² (Intents / price) | Weeks |
+|---|---|---|---|---|---|---|---|
+{{crossCheckTable}}
 
 ### Confounders reported honestly
 

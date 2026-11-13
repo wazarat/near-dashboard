@@ -8,7 +8,34 @@ export interface UsageMeta {
   key: UsageKey;
   label: string;
   source: "NearBlocks" | "BigQuery";
+  /** "chain" for whole-chain counts (transactions, accounts), "contract" for receipt-level series (function calls, contracts). */
+  level: "chain" | "contract";
   kind: "flow" | "stock";
+}
+
+/** One usage series as the thesis reads it: where it comes from and the days it covers. */
+export interface UsageWindow {
+  source: UsageMeta["source"];
+  /** The SQL file or endpoint behind the series. */
+  ref: string;
+  start: DateStr | null;
+  end: DateStr | null;
+  weeks: number;
+}
+
+/** A BigQuery chain count against the same count from NearBlocks' daily charts. */
+export interface CrossCheck {
+  days: number;
+  /** Daily BigQuery / NearBlocks ratio. */
+  ratioMedian: number | null;
+  ratioMin: number | null;
+  ratioMax: number | null;
+  weeks: number;
+  /** ISO weeks (Monday) where the two weekly totals differ by more than 10%. */
+  flaggedWeeks: Array<{ week: DateStr; bigquery: number; nearblocks: number; ratio: number }>;
+  /** The same two tests run on the NearBlocks series, for comparison with the BigQuery rows. */
+  leadLag: PredictorPair<LeadLagSummary>;
+  oos: PredictorPair<OosResult>;
 }
 
 export interface PredictorPair<T> {
@@ -41,7 +68,10 @@ export interface ThesisJson {
   available: boolean;
   asOf: DateStr;
   window: { start: DateStr; end: DateStr; weeks: number };
+  /** Window of the BigQuery receipt series (function calls, contracts called), which is shorter than the thesis window. */
   bigqueryWindow: { start: DateStr | null; end: DateStr | null; weeks: number };
+  usageWindows: Partial<Record<UsageKey, UsageWindow>>;
+  crossCheck: Partial<Record<UsageKey, CrossCheck>>;
   cutoff: DateStr;
   maxLag: number;
   sources: { intents: string; price: string; usage: string[] };

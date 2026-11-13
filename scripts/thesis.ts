@@ -10,8 +10,9 @@ import { addDays, type DateStr } from "../src/lib/dates";
 import { emptyOverview, type ChainHistory, type HistoryMeta, type Series, type SeriesMap } from "../src/lib/history-types";
 import { windowEnd } from "../src/lib/live";
 import { indexTo100, leadLag, logChanges, outOfSample, subtractSeries, toWeekly, trimTop, dropTop, type LeadLagSummary, type OosResult } from "../src/lib/stats";
-import type { Confounder, RobustnessVariant, ThesisJson, UsageKey, UsageMeta } from "../src/lib/thesis-types";
+import type { Confounder, CrossCheck, RobustnessVariant, ThesisJson, UsageKey, UsageMeta, UsageWindow } from "../src/lib/thesis-types";
 import type { EcosystemEvent } from "../src/lib/types";
+import { BQ_BACKFILL_MAX_DEFAULT } from "./fetch/bigquery";
 import { readDaily as readIntentsDaily } from "./fetch/intents";
 import { HISTORY, OUT, ROOT } from "./lib/paths";
 import { readJson } from "./lib/store";
@@ -19,12 +20,27 @@ import { SPECS, sqlSpec } from "../src/lib/query-specs";
 
 const MAX_LAG = 8;
 const USAGE: UsageMeta[] = [
-  { key: "txns", label: "Transactions", source: "NearBlocks", kind: "flow" },
-  { key: "activeAccounts", label: "Active accounts", source: "NearBlocks", kind: "flow" },
-  { key: "newAccounts", label: "New accounts", source: "NearBlocks", kind: "flow" },
-  { key: "functionCalls", label: "Function calls", source: "BigQuery", kind: "flow" },
-  { key: "contractsCalled", label: "Contracts called", source: "BigQuery", kind: "flow" },
+  { key: "txns", label: "Transactions", source: "BigQuery", level: "chain", kind: "flow" },
+  { key: "activeAccounts", label: "Active accounts", source: "BigQuery", level: "chain", kind: "flow" },
+  { key: "newAccounts", label: "New accounts", source: "NearBlocks", level: "chain", kind: "flow" },
+  { key: "functionCalls", label: "Function calls", source: "BigQuery", level: "contract", kind: "flow" },
+  { key: "contractsCalled", label: "Contracts called", source: "BigQuery", level: "contract", kind: "flow" },
 ];
+/** Where each usage series is read from: the column in data/history/chain.json and the query or endpoint that fills it. */
+const USAGE_REF: Record<UsageKey, { store: "bigquery" | "nearblocks"; column: string; ref: string }> = {
+  txns: { store: "bigquery", column: "transactions", ref: "`queries/daily_chain.sql` (`transactions` table)" },
+  activeAccounts: { store: "bigquery", column: "active_accounts", ref: "`queries/daily_chain.sql` (`transactions` table, distinct signers)" },
+  newAccounts: { store: "nearblocks", column: "newAccounts", ref: "`GET https://api.nearblocks.io/v1/charts`" },
+  functionCalls: { store: "bigquery", column: "function_calls", ref: "`queries/daily_receipts.sql` (`receipt_actions` table)" },
+  contractsCalled: { store: "bigquery", column: "contracts_called", ref: "`queries/daily_receipts.sql` (`receipt_actions` table)" },
+};
+/** BigQuery chain counts that NearBlocks' daily charts also publish; NearBlocks stays as a labelled cross-check. */
+const CROSS_CHECK: Array<{ key: UsageKey; nearblocks: string }> = [
+  { key: "txns", nearblocks: "txns" },
+  { key: "activeAccounts", nearblocks: "activeAccounts" },
+];
+/** Weekly totals further apart than this are listed in the cross-check. */
+const CROSS_CHECK_FLAG = 0.1;
 
 const QUERIES: ThesisJson["queries"] = {
   intentsLlama: SPECS.intentsLlama,
@@ -71,6 +87,14 @@ function roundOos(o: OosResult): OosResult {
   return { ...o, train: o.train ? { ...o.train, a: r3(o.train.a) ?? 0, b: r3(o.train.b) ?? 0, r2: r3(o.train.r2) ?? 0 } : null, r2Oos: r3(o.r2Oos), hitRate: r3(o.hitRate), mae: r3(o.mae), naiveMae: r3(o.naiveMae) };
 }
 
+function r4(v: number | null | undefined): number | null {
+  return v === null || v === undefined || !Number.isFinite(v) ? null : Math.round(v * 10000) / 10000;
+}
+
+function fmtRatio(v: number | null | undefined): string {
+  return v === null || v === undefined ? "n/a" : v.toFixed(4);
+}
+
 function fmtR(v: number | null | undefined): string {
   return v === null || v === undefined ? "n/a" : v.toFixed(2);
 }
@@ -81,6 +105,7 @@ function pct(v: number | null | undefined): string {
 
 function main() {
   const meta = readJson<HistoryMeta | null>(path.join(HISTORY, "_meta.json"), null);
+  const uncoveredReceipts = readJson<{ uncovered?: Record<string, { start: DateStr; end: DateStr; gb?: number }> }>(path.join(HISTORY, "bq-estimate.json"), {}).uncovered?.daily_receipts;
   const chain = loadChain();
   const volumeNear = readJson<SeriesMap>(path.join(HISTORY, "defillama", "volume-near.json"), {});
   const intentsLlama = volumeNear["NEAR Intents"] ?? [];
@@ -89,8 +114,8 @@ function main() {
   const mdFile = path.join(ROOT, "THESIS.md");
   fs.mkdirSync(OUT, { recursive: true });
 
-  if (!meta?.lastRunDate || intentsLlama.length < 60 || !(chain.nearblocks.txns ?? []).length) {
-    const reason = "The thesis needs the committed history (DefiLlama NEAR Intents volume, NearBlocks daily charts). Run npm run refresh first.";
+  if (!meta?.lastRunDate || intentsLlama.length < 60 || !(chain.bigquery.transactions ?? []).length || !(chain.nearblocks.price ?? []).length) {
+    const reason = "The thesis needs the committed history (DefiLlama NEAR Intents volume, BigQuery daily chain counts, NearBlocks daily charts). Run npm run refresh first.";
     fs.writeFileSync(outFile, JSON.stringify({ available: false, reason }));
     console.log(`  thesis: unavailable (${reason})\n`);
     return;
@@ -102,13 +127,7 @@ function main() {
   const nb = chain.nearblocks;
   const bq = chain.bigquery;
 
-  const dailyRaw: Record<UsageKey, Series> = {
-    txns: clip(nb.txns ?? [], start, end),
-    activeAccounts: clip(nb.activeAccounts ?? [], start, end),
-    newAccounts: clip(nb.newAccounts ?? [], start, end),
-    functionCalls: clip(bq.function_calls ?? [], start, end),
-    contractsCalled: clip(bq.contracts_called ?? [], start, end),
-  };
+  const dailyRaw = Object.fromEntries(USAGE.map((u) => [u.key, clip((USAGE_REF[u.key].store === "bigquery" ? bq : nb)[USAGE_REF[u.key].column] ?? [], start, end)])) as Record<UsageKey, Series>;
   const priceDaily = clip(nb.price ?? [], start, end);
   const intentsDaily = clip(intentsLlama, start, end);
   const explorerDays = readIntentsDaily().filter((d) => !d.partial);
@@ -131,6 +150,32 @@ function main() {
     if (y.length < 12) continue;
     leadLagOut[u.key] = { intents: roundLL(leadLag(xIntents, y, MAX_LAG)), price: roundLL(leadLag(xPrice, y, MAX_LAG)) };
     oosOut[u.key] = { intents: roundOos(outOfSample(xIntents, y, cutoff, MAX_LAG)), price: roundOos(outOfSample(xPrice, y, cutoff, MAX_LAG)) };
+  }
+
+  // NearBlocks cross-check of the BigQuery chain counts: the daily ratio, the weeks whose totals differ by more
+  // than 10%, and the same two tests on the NearBlocks series. Reported, never used in the verdict.
+  const crossCheck: ThesisJson["crossCheck"] = {};
+  for (const c of CROSS_CHECK) {
+    const u = USAGE.find((m) => m.key === c.key)!;
+    const nbDaily = clip(nb[c.nearblocks] ?? [], start, end);
+    if (!nbDaily.length || !dailyRaw[c.key].length) continue;
+    const nbMap = new Map(nbDaily);
+    const ratios = dailyRaw[c.key].filter(([d]) => (nbMap.get(d) ?? 0) > 0).map(([d, v]) => v / (nbMap.get(d) as number)).sort((a, b) => a - b);
+    const wNb = toWeekly(nbDaily, u.kind, end);
+    const wNbMap = new Map(wNb);
+    const weeks = wUsage[c.key].filter(([d]) => (wNbMap.get(d) ?? 0) > 0).map(([d, v]) => ({ week: d, bigquery: v, nearblocks: wNbMap.get(d) as number, ratio: r4(v / (wNbMap.get(d) as number)) as number }));
+    const yNb = logChanges(wNb);
+    const check: CrossCheck = {
+      days: ratios.length,
+      ratioMedian: r4(ratios.length ? ratios[Math.floor(ratios.length / 2)] : null),
+      ratioMin: r4(ratios[0]),
+      ratioMax: r4(ratios.at(-1)),
+      weeks: weeks.length,
+      flaggedWeeks: weeks.filter((w) => Math.abs(w.ratio - 1) > CROSS_CHECK_FLAG),
+      leadLag: { intents: roundLL(leadLag(xIntents, yNb, MAX_LAG)), price: roundLL(leadLag(xPrice, yNb, MAX_LAG)) },
+      oos: { intents: roundOos(outOfSample(xIntents, yNb, cutoff, MAX_LAG)), price: roundOos(outOfSample(xPrice, yNb, cutoff, MAX_LAG)) },
+    };
+    crossCheck[c.key] = check;
   }
 
   // Test 4: robustness variants.
@@ -202,6 +247,9 @@ function main() {
   ].filter((c): c is Confounder => Boolean(c));
 
   const bqWeeks = wUsage.functionCalls.length;
+  const usageWindows = Object.fromEntries(USAGE.map((u) => [u.key, { source: u.source, ref: USAGE_REF[u.key].ref, start: dailyRaw[u.key][0]?.[0] ?? null, end: dailyRaw[u.key].at(-1)?.[0] ?? null, weeks: wUsage[u.key].length } satisfies UsageWindow])) as Record<UsageKey, UsageWindow>;
+  /** Intents wins of the lead-lag test per level, filled in the loop below. */
+  const levelWins: Record<UsageMeta["level"], number> = { chain: 0, contract: 0 };
   // Verdict from the computed tables. Only positive lead correlations outside the noise band count.
   let iw = 0;
   let pw = 0;
@@ -219,6 +267,7 @@ function main() {
     const describe = (name: string, p: typeof a) => (p && p.r !== null ? `${name} leads by ${wk(p.lag)} with r = ${fmtR(p.r)}${p.r > band ? "" : " (inside the noise band)"}` : `${name} has no positive lead at any lag`);
     if (w === "intents") {
       iw += 1;
+      levelWins[u.level] += 1;
       forLines.push(`${u.label} (${u.source}, ${ll.intents.n} weeks): ${describe("Intents volume", a)}; ${describe("price", b)}.`);
     } else if (w === "price") {
       pw += 1;
@@ -258,13 +307,17 @@ function main() {
   const rpw = robustness.slice(1).reduce((a, v) => a + v.priceWins, 0);
   const total = iw + pw + ties;
   const supported: ThesisJson["verdict"]["supported"] = iw >= 3 && pw === 0 && oiw >= opw ? "yes" : iw > pw && oiw >= opw ? "partly" : "no";
-  const bqKeys = USAGE.filter((u) => u.source === "BigQuery").map((u) => u.label.toLowerCase()).join(" and ");
-  const nbKeys = USAGE.filter((u) => u.source === "NearBlocks").map((u) => u.label.toLowerCase()).join(", ");
+  const tested = USAGE.filter((u) => leadLagOut[u.key]);
+  const levelLine = (level: UsageMeta["level"], name: string) => {
+    const of = tested.filter((u) => u.level === level);
+    const spans = Array.from(new Set(of.map((u) => wUsage[u.key].length))).sort((a, b) => a - b);
+    return `${levelWins[level]} of ${of.length} ${name} (${of.map((u) => u.label.toLowerCase()).join(", ")}; ${spans.join(" or ")} weeks)`;
+  };
   const headline =
     supported === "yes"
       ? `supported. Intents volume is the stronger positive lead for ${iw} of ${total} usage series with none going to price, and it wins ${oiw} of the out-of-sample comparisons (${opw} for price).`
       : supported === "partly"
-        ? `partly supported. Intents volume is the stronger positive lead for ${iw} of ${total} usage series (${pw} for price, ${ties} inconclusive), and it wins ${oiw} out-of-sample comparisons to price's ${opw}, but the edge shows up in the contract-level series (${bqKeys}, ${bqWeeks} weeks of BigQuery data) and not in the chain-level counts (${nbKeys}) over the full ${weeklyDates.length}-week window, where neither predictor clears the noise band.`
+        ? `partly supported. Intents volume is the stronger positive lead for ${iw} of ${total} usage series (${pw} for price, ${ties} inconclusive), and it wins ${oiw} out-of-sample comparisons to price's ${opw}, with the lead on ${levelLine("contract", "contract-level series")} and on ${levelLine("chain", "chain-level counts")}.`
         : `not supported by this data. Intents volume is the stronger positive lead for ${iw} of ${total} usage series, price for ${pw}, ${ties} inconclusive; out of sample Intents wins ${oiw} and price ${opw}.`;
   if (!forLines.length) forLines.push("No usage series showed Intents volume as the stronger lead in this window.");
   if (!againstLines.length) againstLines.push("No usage series showed price as the stronger lead in this window.");
@@ -276,7 +329,7 @@ function main() {
   ];
   const gaps = [
     `The NEAR Intents Explorer API covers 1Click swaps only and starts in late May 2025; the committed backfill covers ${explorerDays.length} complete days${explorerDays.length ? ` from ${explorerDays[0].date}` : ""}${meta.cursors.intents.backfillDone ? "" : " and is still running"}. Where both sources exist the Explorer reports a median ${ratioMedian === null ? "n/a" : (ratioMedian * 100).toFixed(0) + "%"} of DefiLlama's daily volume. Until the backfill completes, every Intents chart uses DefiLlama's series and labels the source.`,
-    `BigQuery usage series (function calls, contracts called, distinct signers) cover ${bqWeeks} weeks only, to stay inside the 300 GB query budget; the NearBlocks series cover the whole window.`,
+    `Function calls and contracts called (BigQuery \`receipt_actions\`) cover ${bqWeeks} weeks only${uncoveredReceipts?.gb !== undefined ? `: running \`queries/daily_receipts.sql\` over ${uncoveredReceipts.start} to ${uncoveredReceipts.end} would scan ${uncoveredReceipts.gb.toFixed(2)} GB by dry run, over the ${Math.round(BQ_BACKFILL_MAX_DEFAULT / 1e9)} GB backfill budget` : ""}. For the same reason new accounts come from NearBlocks' daily charts and not from CREATE_ACCOUNT receipts. Transactions and active accounts come from BigQuery for the whole window.`,
     `Distinct signers are an estimate of users: one person can hold many accounts, and relayers or intents hide the end user, so no "unique users" metric is claimed.`,
     `No incentive or emissions data is available from a free source (DefiLlama's emissions endpoint is paid), so wash-like or incentive-driven volume cannot be separated from organic volume; the confounders above are the known programs.`,
     `Weekly samples number ${xIntents.length}; correlations smaller than about ${fmtR(leadLagOut.txns?.intents.noiseBand)} cannot be told from noise.`,
@@ -289,7 +342,13 @@ function main() {
     bigqueryWindow: { start: dailyRaw.functionCalls[0]?.[0] ?? null, end: dailyRaw.functionCalls.at(-1)?.[0] ?? null, weeks: bqWeeks },
     cutoff,
     maxLag: MAX_LAG,
-    sources: { intents: "DefiLlama NEAR Intents adapter (all channels); 1Click Explorer where backfilled", price: "NearBlocks daily NEAR price", usage: ["NearBlocks daily charts", "NEAR BigQuery public dataset"] },
+    sources: {
+      intents: "DefiLlama NEAR Intents adapter (all channels); 1Click Explorer where backfilled",
+      price: "NearBlocks daily NEAR price",
+      usage: (["BigQuery", "NearBlocks"] as const).map((src) => `${src === "BigQuery" ? "NEAR BigQuery public dataset" : "NearBlocks daily charts"} (${USAGE.filter((u) => u.source === src).map((u) => u.label.toLowerCase()).join(", ")})`),
+    },
+    usageWindows,
+    crossCheck,
     usage: USAGE,
     weekly: {
       dates: weeklyDates,
@@ -341,6 +400,23 @@ function main() {
       return `- **${v.label}** (${v.intentsWins} for Intents, ${v.priceWins} for price). ${v.description} ${cells.join("; ")}.`;
     })
     .join("\n");
+  const sourceRows = USAGE.map((u) => `| ${u.label} | ${u.source} | ${usageWindows[u.key].ref} | ${usageWindows[u.key].start ?? "n/a"} | ${usageWindows[u.key].end ?? "n/a"} | ${usageWindows[u.key].weeks} |`).join("\n");
+  const checked = USAGE.filter((u) => crossCheck[u.key]);
+  const crossLines = checked
+    .map((u) => {
+      const c = crossCheck[u.key]!;
+      const flagged = c.flaggedWeeks.length ? `${c.flaggedWeeks.length} of ${c.weeks} (${c.flaggedWeeks.map((w) => `week of ${w.week}, ratio ${fmtRatio(w.ratio)}`).join("; ")})` : `none of ${c.weeks}`;
+      return `- ${u.label}: the median daily BigQuery / NearBlocks ratio is ${fmtRatio(c.ratioMedian)} over ${c.days} days (lowest ${fmtRatio(c.ratioMin)}, highest ${fmtRatio(c.ratioMax)}). Weeks where the two weekly totals differ by more than ${Math.round(CROSS_CHECK_FLAG * 100)}%: ${flagged}.`;
+    })
+    .join("\n");
+  const crossRows = checked
+    .flatMap((u) => {
+      const c = crossCheck[u.key]!;
+      const cell = (p: LeadLagSummary["bestPositiveLead"]) => (p ? `${p.lag} w | ${fmtR(p.r)}` : `none | n/a`);
+      const row = (src: string, ll: { intents: LeadLagSummary; price: LeadLagSummary }, o: { intents: OosResult; price: OosResult }) => `| ${u.label} | ${src} | ${cell(ll.intents.bestPositiveLead)} | ${cell(ll.price.bestPositiveLead)} | ${fmtR(o.intents.r2Oos)} / ${fmtR(o.price.r2Oos)} | ${ll.intents.n} |`;
+      return [row(`${u.source} (used)`, leadLagOut[u.key]!, oosOut[u.key]!), row("NearBlocks (check)", c.leadLag, c.oos)];
+    })
+    .join("\n");
   const confRows = confounders.map((c) => `- ${c.date}${c.monthOnly ? " (month only)" : ""}, ${c.kind}: ${c.title}. ${c.why}${c.sourceUrl ? ` [source](${c.sourceUrl})` : ""}`).join("\n") || "- No matching events in the events file.";
   const fill: Record<string, string> = {
     asOf: end,
@@ -359,6 +435,9 @@ function main() {
     noiseBand: fmtR(leadLagOut.txns?.intents.noiseBand),
     oosTable: oosRows,
     robustnessTable: robRows,
+    sourceTable: sourceRows,
+    crossCheckLines: crossLines || "- No NearBlocks series to compare with.",
+    crossCheckTable: crossRows,
     confounders: confRows,
     changeMyMind: changeMyMind.map((l) => `- ${l}`).join("\n"),
     gaps: gaps.map((l) => `- ${l}`).join("\n"),

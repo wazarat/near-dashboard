@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/atlas/chart-card";
 import { ClaimCard } from "@/components/thesis/claim-card";
 import { Confounders } from "@/components/thesis/confounders";
 import { CoverageStrip } from "@/components/thesis/coverage-strip";
+import { CrossCheckTable } from "@/components/thesis/cross-check-table";
 import { LeadLagChart } from "@/components/thesis/lead-lag-chart";
 import { LevelsChart } from "@/components/thesis/levels-chart";
 import { OosChart } from "@/components/thesis/oos-chart";
@@ -61,6 +62,10 @@ export function ThesisView() {
 
       <Section id="robustness" title="Does the result survive the obvious objections?" lede="Spikes, settlement counting itself as usage, and the week boundary.">
         <RobustnessTable data={data} />
+      </Section>
+
+      <Section id="cross-check" title="Do two sources agree on chain usage?" lede="Transactions and active accounts are counted from BigQuery and again from NearBlocks. Only the BigQuery rows enter the verdict.">
+        <CrossCheckTable data={data} />
       </Section>
 
       <Section id="coverage" title="Which Intents measure is this?" lede="Two sources exist for Intents volume; this is how much of one the other sees.">

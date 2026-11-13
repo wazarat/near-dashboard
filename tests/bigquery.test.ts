@@ -51,3 +51,38 @@ describe("launchpad factories in the receipts scan", () => {
     expect(NO_FACTORY).not.toMatch(/\./);
   });
 });
+
+describe("older backfill windows", () => {
+  it("BQ_QUERIES picks the queries to run and rejects unknown names", async () => {
+    const { selectedQueries } = await import("../scripts/fetch/bigquery");
+    expect(Array.from(selectedQueries(undefined))).toEqual(["daily_chain", "daily_receipts", "daily_gas"]);
+    expect(Array.from(selectedQueries("daily_chain"))).toEqual(["daily_chain"]);
+    expect(Array.from(selectedQueries(" daily_chain , daily_gas "))).toEqual(["daily_chain", "daily_gas"]);
+    expect(() => selectedQueries("daily_chian")).toThrow(/Unknown query/);
+  });
+  it("BQ_END can only bring the window end earlier than yesterday", async () => {
+    const { windowEnd } = await import("../scripts/fetch/bigquery");
+    expect(windowEnd("2026-11-12", undefined)).toBe("2026-11-12");
+    expect(windowEnd("2026-11-12", "2025-11-07")).toBe("2025-11-07");
+    expect(windowEnd("2026-11-12", "2027-01-01")).toBe("2026-11-12");
+    expect(windowEnd("2026-11-12", "not a date")).toBe("2026-11-12");
+  });
+  it("a cursor never moves backwards, so the next daily run does not rescan the gap", async () => {
+    const { laterDate } = await import("../scripts/fetch/bigquery");
+    expect(laterDate("2026-11-12", "2025-11-07")).toBe("2026-11-12");
+    expect(laterDate("2026-11-10", "2026-11-12")).toBe("2026-11-12");
+    expect(laterDate(undefined, "2025-11-07")).toBe("2025-11-07");
+  });
+  it("the usage ledger keeps the last daily run and one entry per backfill window", async () => {
+    const { recordUsage } = await import("../scripts/fetch/bigquery");
+    const run = (date: string, start: string, end: string, bytes: number) => ({ date, start, end, jobs: 1, bytes, perQuery: { daily_chain: bytes } });
+    let u = recordUsage({ daily: null, backfills: [] }, "daily", run("2026-11-13", "2026-11-10", "2026-11-12", 5));
+    u = recordUsage(u, "daily", run("2026-11-14", "2026-11-11", "2026-11-13", 6));
+    expect(u.daily?.bytes).toBe(6);
+    u = recordUsage(u, "backfill", run("2026-11-13", "2024-12-10", "2025-11-07", 90));
+    u = recordUsage(u, "backfill", run("2026-11-13", "2024-12-10", "2025-11-07", 97));
+    expect(u.backfills).toHaveLength(1);
+    expect(u.backfills[0].bytes).toBe(97);
+    expect(u.daily?.bytes).toBe(6);
+  });
+});

@@ -78,6 +78,7 @@ export const CHART_IDS = [
   "sector-cards",
   "sectors",
   "thesis-coverage",
+  "thesis-cross-check",
   "thesis-lead-lag",
   "thesis-levels",
   "thesis-oos",

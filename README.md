@@ -74,6 +74,8 @@ data/history/defillama/protocols.json        trimmed listing of every protocol o
 data/history/defillama/tvl-{near,aurora}.json                         slug -> [date, usd]
 data/history/defillama/{volume,fees,revenue,holders-revenue,supply-side-revenue,aggregators}-{near,aurora}.json   display name -> [date, usd]
 data/history/bigquery/{receivers,project-activity}.json   per-account and per-project [date, calls, signers]
+data/history/bq-usage.json                   BigQuery bytes scanned by the last daily refresh and by each backfill window, per query
+data/history/bq-estimate.json                dry-run bytes of every query over 1, 3 and 90 days, and the table columns
 data/raw/bigquery/*.csv                      query results, one file per query and 14-day window
 data/raw/intents/daily/YYYY-MM-DD.json       committed per-day aggregates of 1Click swaps (volume, statuses, routes, assets, referrals, row count, hash)
 data/raw/intents/days/YYYY-MM-DD.json.gz     trimmed swap rows (gitignored; regenerable from the API)
@@ -115,7 +117,7 @@ A missing secret skips that source and records the reason in `data/history/_meta
 
 ## Thesis method in one paragraph
 
-Weekly ISO-week series of Intents volume (DefiLlama, all channels, since 2024-12-10; the 1Click Explorer series where backfilled), NEAR price (NearBlocks) and five usage series (transactions, active accounts, new accounts from NearBlocks; function calls and contracts called from BigQuery) are turned into week-over-week log changes. Lead-lag cross-correlations at −8 to +8 weeks say which predictor moves first; a one-variable regression fitted before 2026-05-01 and scored after it says which predicts better out of sample; robustness variants cap spikes, remove Intents settlement receipts from usage, use daily data and swap in the Explorer series. Only positive lead correlations outside the ±2/√n noise band count as evidence. `scripts/thesis.ts` computes all of it and renders `THESIS.md` from `docs/templates/THESIS.template.md`, so the page and the document cannot drift.
+Weekly ISO-week series of Intents volume (DefiLlama, all channels, since 2024-12-10; the 1Click Explorer series where backfilled), NEAR price (NearBlocks) and five usage series (transactions and active accounts from BigQuery over the whole window, with NearBlocks kept as a cross-check; new accounts from NearBlocks; function calls and contracts called from BigQuery over its shorter receipt window) are turned into week-over-week log changes. Lead-lag cross-correlations at −8 to +8 weeks say which predictor moves first; a one-variable regression fitted before 2026-05-01 and scored after it says which predicts better out of sample; robustness variants cap spikes, remove Intents settlement receipts from usage, use daily data and swap in the Explorer series. Only positive lead correlations outside the ±2/√n noise band count as evidence. `scripts/thesis.ts` computes all of it and renders `THESIS.md` from `docs/templates/THESIS.template.md`, so the page and the document cannot drift.
 
 ## Disclosure
 

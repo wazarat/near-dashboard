@@ -39,7 +39,7 @@ export function ClaimCard({ data }: { data: ThesisJson }) {
             {fmtDate(window.start)} to {fmtDate(window.end)} ({window.weeks} ISO weeks)
             {bigqueryWindow.start && bigqueryWindow.end && (
               <span className="block text-xs text-ink-300">
-                BigQuery series {fmtDate(bigqueryWindow.start)} to {fmtDate(bigqueryWindow.end)} ({bigqueryWindow.weeks} weeks)
+                BigQuery receipt series {fmtDate(bigqueryWindow.start)} to {fmtDate(bigqueryWindow.end)} ({bigqueryWindow.weeks} weeks)
               </span>
             )}
           </Fact>

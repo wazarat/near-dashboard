@@ -1,6 +1,6 @@
 /**
  * BigQuery cost estimates, with no data read: dry runs every query in queries/*.sql over a 1-day, a 3-day and
- * a 90-day window ending yesterday, and reads the column list of the tables they use from INFORMATION_SCHEMA
+ * a 90-day window ending yesterday, dry runs the receipts query over the part of the thesis window it has not covered, and reads the column list of the tables they use from INFORMATION_SCHEMA
  * (a metadata query, capped by maximumBytesBilled). Writes data/history/bq-estimate.json, which the daily
  * refresh commits, so the numbers can be read without a local Google login.
  *
@@ -11,7 +11,8 @@ import path from "node:path";
 import { addDays, type DateStr } from "../src/lib/dates";
 import { readCsvOrEmpty } from "./lib/csv";
 import { DATA, HISTORY, QUERIES } from "./lib/paths";
-import { writeJsonStable } from "./lib/store";
+import { readJson, writeJsonStable } from "./lib/store";
+import type { ChainHistory, SeriesMap } from "../src/lib/history-types";
 import { NO_FACTORY, WELL_KNOWN_RECEIVERS, factoryAccounts } from "./fetch/bigquery";
 
 const DATASET = "bigquery-public-data.crypto_near_mainnet_us";
@@ -30,7 +31,23 @@ async function main() {
   const factories = factoryAccounts();
   const params = { accounts, factories: factories.size ? Array.from(factories.keys()) : [NO_FACTORY] };
 
-  const out: { asOf: string; end: string; accounts: number; queries: Record<string, Record<string, number | string>>; columns: Record<string, Array<[string, string]> | string> } = { asOf: new Date().toISOString(), end, accounts: accounts.length, queries: {}, columns: {} };
+  const out: { asOf: string; end: string; accounts: number; queries: Record<string, Record<string, number | string>>; columns: Record<string, Array<[string, string]> | string>; uncovered: Record<string, { start: DateStr; end: DateStr; gb?: number; error?: string }> } = { asOf: new Date().toISOString(), end, accounts: accounts.length, queries: {}, columns: {}, uncovered: {} };
+
+  // The part of the thesis window (from DefiLlama's first NEAR Intents day) that the receipts query has not been
+  // run over, and what running it there would scan. THESIS.md quotes it as the reason those series start later.
+  const intentsLlama = readJson<SeriesMap>(path.join(HISTORY, "defillama", "volume-near.json"), {})["NEAR Intents"] ?? [];
+  const thesisStart = intentsLlama.find(([, v]) => v > 0)?.[0];
+  const receiptsStart = readJson<Partial<ChainHistory>>(path.join(HISTORY, "chain.json"), {}).bigquery?.function_calls?.[0]?.[0];
+  if (thesisStart && receiptsStart && thesisStart < receiptsStart) {
+    const gap = { start: thesisStart, end: addDays(receiptsStart, -1) };
+    try {
+      const [job] = await bq.createQueryJob({ query: fs.readFileSync(path.join(QUERIES, "daily_receipts.sql"), "utf8"), params: { ...params, ...gap }, useLegacySql: false, dryRun: true });
+      out.uncovered.daily_receipts = { ...gap, gb: Math.round((Number(job.metadata?.statistics?.totalBytesProcessed ?? 0) / 1e9) * 100) / 100 };
+    } catch (e) {
+      out.uncovered.daily_receipts = { ...gap, error: (e as Error).message.slice(0, 300) };
+    }
+    console.log("uncovered daily_receipts", JSON.stringify(out.uncovered.daily_receipts));
+  }
 
   for (const file of fs.readdirSync(QUERIES).filter((f) => f.endsWith(".sql")).sort()) {
     const id = file.replace(/\.sql$/, "");

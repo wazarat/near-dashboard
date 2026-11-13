@@ -22,6 +22,8 @@ interface SeriesDef {
   indexed: Array<number | null>;
   raw: Array<number | null>;
   source: string;
+  /** Usage series only: whole-chain counts or receipt-level series. */
+  level?: "chain" | "contract";
 }
 type Row = { date: string } & Partial<Record<SeriesKey, number | null>>;
 
@@ -52,7 +54,7 @@ export function LevelsChart({ data, scale, onScaleChange }: Props) {
     for (const u of usage) {
       const idx = weekly.indexed.series[u.key];
       const raw = weekly.series[u.key];
-      if (idx && raw) out.push({ key: u.key, label: u.label, color: USAGE_COLOR[u.key], indexed: idx, raw, source: u.source });
+      if (idx && raw) out.push({ key: u.key, label: u.label, color: USAGE_COLOR[u.key], indexed: idx, raw, source: u.source, level: u.level });
     }
     return out;
   }, [weekly, usage]);
@@ -76,13 +78,13 @@ export function LevelsChart({ data, scale, onScaleChange }: Props) {
   const takeaway = useMemo(() => {
     if (!weekly.dates.length) return "No weekly rows yet.";
     const ends = series.map((s) => ({ ...s, end: lastValue(s.indexed) }));
-    const bySource = (src: string) => ends.filter((s) => s.source === src && s.end !== null && s.key !== "intentsVolume" && s.key !== "price");
+    const byLevel = (level: "chain" | "contract") => ends.filter((s) => s.level === level && s.end !== null);
     const intents = ends.find((s) => s.key === "intentsVolume")?.end ?? null;
     const price = ends.find((s) => s.key === "price")?.end ?? null;
-    const nb = bySource("NearBlocks").map((s) => `${s.label.toLowerCase()} ${fmtTimes((s.end as number) / 100)}`);
-    const bq = bySource("BigQuery").map((s) => `${s.label.toLowerCase()} ${fmtTimes((s.end as number) / 100)}`);
+    const nb = byLevel("chain").map((s) => `${s.label.toLowerCase()} ${fmtTimes((s.end as number) / 100)}`);
+    const bq = byLevel("contract").map((s) => `${s.label.toLowerCase()} ${fmtTimes((s.end as number) / 100)}`);
     const head = `Since the week of ${fmtDate(weekly.dates[0])} Intents volume is ${fmtTimes(intents === null ? null : intents / 100)} its first week while ${joinList([...nb, `price ${fmtTimes(price === null ? null : price / 100)}`])}`;
-    const tail = bq.length && bigqueryWindow.start ? `; ${joinList(bq)} are indexed to their own first BigQuery week (${fmtDate(bigqueryWindow.start)})` : "";
+    const tail = bq.length && bigqueryWindow.start ? `; ${joinList(bq)} are indexed to their own first week of BigQuery receipt data (${fmtDate(bigqueryWindow.start)})` : "";
     return `${head}${tail}.`;
   }, [series, weekly.dates, bigqueryWindow.start]);
 
@@ -118,7 +120,7 @@ export function LevelsChart({ data, scale, onScaleChange }: Props) {
       id="thesis-levels"
       title="Test 1 · Levels, indexed to 100"
       takeaway={takeaway}
-      info={`Weekly sums (flows) or last values (price) over ${window.weeks} ISO weeks, each divided by its first positive week and multiplied by 100 so series of very different size share one axis. Intents volume is DefiLlama's NEAR Intents adapter; price and the chain-level counts are NearBlocks daily charts; function calls and contracts called are the NEAR BigQuery public dataset and only exist for its ${bigqueryWindow.weeks}-week window. A log axis keeps the small movers readable next to Intents volume.`}
+      info={`Weekly sums (flows) or last values (price) over ${window.weeks} ISO weeks, each divided by its first positive week and multiplied by 100 so series of very different size share one axis. Intents volume is DefiLlama's NEAR Intents adapter; price and new accounts are NearBlocks daily charts; transactions and active accounts are the transactions table of the NEAR BigQuery public dataset over the whole window; function calls and contracts called are its receipt_actions table and only exist for ${bigqueryWindow.weeks} weeks. A log axis keeps the small movers readable next to Intents volume.`}
       scale={scale}
       onScaleChange={onScaleChange}
       table={table}
