@@ -24,6 +24,23 @@ import { DATA } from "./lib/paths";
 
 type Row = { Project: string; "Account ID": string; Role: string; Source: string; Verified: string };
 
+/**
+ * Roles in data/contracts.csv. token, core, factory, game and treasury come from this script; staking, bridge and
+ * catalog are older rows from scripts/seed-contracts.ts and the hand-kept list.
+ * - token: the project's own token contract (the snapshot's token columns decide the owner).
+ * - core: a known contract of the project.
+ * - game: a known contract of a project in NFTs, Gaming & Collectibles (its game or collection contract).
+ * - factory: a launchpad factory whose sub-accounts are launched tokens (FACTORIES, with evidence).
+ * - treasury: a treasury or fee account, only from TREASURIES with evidence; never guessed from a name
+ *   (sputnik-dao.near, for one, is AstroDAO's DAO factory, not a treasury).
+ */
+export const CONTRACT_ROLES = ["token", "core", "game", "factory", "treasury", "staking", "bridge", "catalog"] as const;
+
+/** Treasury or fee accounts confirmed by the owner, with evidence. Candidates wait in docs/FEE-ACCOUNTS-REVIEW.md until confirmed. */
+const TREASURIES: Array<[project: string, account: string, evidence: string]> = [];
+
+const GAMING = "NFTs, Gaming & Collectibles";
+
 /** Launchpad factories, each with the evidence that its sub-accounts are launched tokens. */
 const FACTORIES: Array<[project: string, account: string, evidence: string]> = [["Meme Cooking", "meme-cooking.near", "JAMBO is jambo-1679.meme-cooking.near"]];
 
@@ -73,7 +90,7 @@ async function main() {
 
   const ownerOf = new Map<string, string>();
   for (const r of rows) if (!ownerOf.has(r["Account ID"])) ownerOf.set(r["Account ID"], r.Project);
-  const have = new Set(rows.map((r) => `${r.Project}|${r["Account ID"]}|${r.Role}`));
+  const have = new Set(rows.map((r) => `${r.Project}|${r["Account ID"]}`));
   const add = (project: string, account: string, role: string, source: string) => {
     const a = norm(account);
     if (!a || !project) return;
@@ -86,7 +103,7 @@ async function main() {
       conflicts.push(`skipped ${a} for ${project}: already mapped to ${owner}`);
       return;
     }
-    const key = `${project}|${a}|${role}`;
+    const key = `${project}|${a}`;
     if (have.has(key)) return;
     rows.push({ Project: project, "Account ID": a, Role: role, Source: source, Verified: "" });
     have.add(key);
@@ -97,9 +114,16 @@ async function main() {
   for (const r of metrics) {
     const project = (r["Project/Company Name"] ?? "").trim();
     for (const col of ["Token Contract (NEAR)", "Token Contract (Aurora)"]) if ((r[col] ?? "").trim()) add(project, r[col] as string, "token", "live-metrics snapshot 2026-11-12");
-    for (const a of (r["Known Contracts"] ?? "").split(/[\s,;]+/).filter(Boolean)) add(project, a, tokenOwner.get(norm(a)) === project ? "token" : "core", "live-metrics snapshot 2026-11-12");
+    const knownRole = (r["Sector/Category"] ?? "").trim() === GAMING ? "game" : "core";
+    for (const a of (r["Known Contracts"] ?? "").split(/[\s,;]+/).filter(Boolean)) add(project, a, tokenOwner.get(norm(a)) === project ? "token" : knownRole, "live-metrics snapshot 2026-11-12");
   }
   for (const [project, account, evidence] of FACTORIES) add(project, account, "factory", `factory, ${evidence}`);
+  for (const [project, account, evidence] of TREASURIES) add(project, account, "treasury", `treasury, ${evidence}`);
+  // Known contracts seeded as core before the game role existed take it when their project is a gaming project.
+  const gamingProjects = new Set(metrics.filter((r) => (r["Sector/Category"] ?? "").trim() === GAMING).map((r) => (r["Project/Company Name"] ?? "").trim()));
+  for (const r of rows) if (r.Role === "core" && gamingProjects.has(r.Project) && r.Source.startsWith("live-metrics snapshot")) r.Role = "game";
+  const unknownRoles = rows.filter((r) => !(CONTRACT_ROLES as readonly string[]).includes(r.Role));
+  if (unknownRoles.length) console.log(`\nrows with a role outside ${CONTRACT_ROLES.join(", ")}:\n${unknownRoles.map((r) => `  ${r.Project} ${r["Account ID"]} ${r.Role}`).join("\n")}`);
 
   // 3. Verify every row not yet verified: the account must exist on NearBlocks or Aurora Blockscout.
   const nb = createClient({ name: "nearblocks", minIntervalMs: (process.env.NEARBLOCKS_API_KEY ?? "").trim() ? 1500 : 10_500, timeoutMs: 60_000, headers: nearblocksHeaders(process.env) });

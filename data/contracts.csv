@@ -68,14 +68,14 @@ Orderly Network,asset-manager.orderly-network.near,core,known account,Yes
 Phoenix Bonds,phoenix-bonds.near,token,defillama phoenix-bonds,Yes
 Pitchtalk,v1.pitchtalk.near,core,live-metrics snapshot 2026-11-12,Yes
 PlayEmber,embr.playember_reserve.near,catalog,nearcatalog playember,Yes
-PlayEmber,embr.playember_reserve.near,core,live-metrics snapshot 2026-11-12,Yes
+PlayEmber,embr.playember_reserve.near,game,live-metrics snapshot 2026-11-12,Yes
 POTLOCK,donate.potlock.near,core,known account,Yes
 POTLOCK,potlock.near,core,live-metrics snapshot 2026-11-12,Yes
 Public AI,token.publicailab.near,catalog,nearcatalog publicai,Yes
 Public AI,token.publicailab.near,token,live-metrics snapshot 2026-11-12,Yes
 Pumpopoly,token.pumpopoly.near,catalog,nearcatalog pumpopoly,Yes
-Pumpopoly,nft.pumpopoly.near,core,live-metrics snapshot 2026-11-12,Yes
-Pumpopoly,world.pumpopoly.near,core,live-metrics snapshot 2026-11-12,Yes
+Pumpopoly,nft.pumpopoly.near,game,live-metrics snapshot 2026-11-12,Yes
+Pumpopoly,world.pumpopoly.near,game,live-metrics snapshot 2026-11-12,Yes
 Pumpopoly,token.pumpopoly.near,token,live-metrics snapshot 2026-11-12,Yes
 Rainbow Bridge,factory.bridge.near,bridge,known account,Yes
 Rainbow Bridge,factory.bridge.near,core,live-metrics snapshot 2026-11-12,Yes
@@ -90,19 +90,19 @@ Rhea LST (rNEAR),rnear.rhealab.near,staking,known account,Yes
 Sender AI (Sender Wallet),token.sendertge.near,catalog,nearcatalog sender-wallet,Yes
 Sender AI (Sender Wallet),token.sendertge.near,token,live-metrics snapshot 2026-11-12,Yes
 ShardDog,mint.sharddog.near,catalog,nearcatalog sharddog,Yes
-ShardDog,mint.sharddog.near,core,live-metrics snapshot 2026-11-12,Yes
+ShardDog,mint.sharddog.near,game,live-metrics snapshot 2026-11-12,Yes
 Shitzu,token.0xshitzu.near,token,known account,Yes
-SWEAT (Sweat Economy),community.sweat,core,live-metrics snapshot 2026-11-12,Yes
-SWEAT (Sweat Economy),deposits.grow.sweat,core,live-metrics snapshot 2026-11-12,Yes
-SWEAT (Sweat Economy),distributions.grow.sweat,core,live-metrics snapshot 2026-11-12,Yes
-SWEAT (Sweat Economy),grow.sweat,core,live-metrics snapshot 2026-11-12,Yes
-SWEAT (Sweat Economy),oracle.sweat,core,live-metrics snapshot 2026-11-12,Yes
-SWEAT (Sweat Economy),tge-lockup.sweat,core,live-metrics snapshot 2026-11-12,No
+SWEAT (Sweat Economy),community.sweat,game,live-metrics snapshot 2026-11-12,Yes
+SWEAT (Sweat Economy),deposits.grow.sweat,game,live-metrics snapshot 2026-11-12,Yes
+SWEAT (Sweat Economy),distributions.grow.sweat,game,live-metrics snapshot 2026-11-12,Yes
+SWEAT (Sweat Economy),grow.sweat,game,live-metrics snapshot 2026-11-12,Yes
+SWEAT (Sweat Economy),oracle.sweat,game,live-metrics snapshot 2026-11-12,Yes
+SWEAT (Sweat Economy),tge-lockup.sweat,game,live-metrics snapshot 2026-11-12,No
 SWEAT (Sweat Economy),token.sweat,token,known account,Yes
 Templar Protocol,templar.near,core,known account,Yes
 Trisolaris,0xfa94348467f64d5a457f75f8bc40495d33c65abb,token,live-metrics snapshot 2026-11-12,Yes
 UniFat,unifat.near,catalog,nearcatalog unifat,Yes
-UniFat,unifat.near,core,live-metrics snapshot 2026-11-12,Yes
+UniFat,unifat.near,game,live-metrics snapshot 2026-11-12,Yes
 USDC,17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1,token,known account,Yes
 USDT,usdt.tether-token.near,token,known account,Yes
 Veax,veax.near,core,known account,Yes
