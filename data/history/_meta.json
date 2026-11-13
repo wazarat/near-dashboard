@@ -1,5 +1,5 @@
 {
-  "cursors": {"bigquery":{"daily_chain":"2026-11-12","daily_receipts":"2026-11-12"},"intents":{"backfillDone":false,"lastDepositAddress":"t1axTSuknPFHUysDkicaYtsaj4wxpQQfw6f","lastDepositMemo":null,"newestCreatedAt":"2026-11-13T11:23:18.000Z","oldestCreatedAt":"2026-10-20T16:46:25.000Z"},"llamaMissing":{}},
+  "cursors": {"bigquery":{"daily_chain":"2026-11-12","daily_receipts":"2026-11-12"},"intents":{"backfillDone":false,"lastDepositAddress":"0xF035ac00B8466F9505E9569705d468B98DbF6b78","lastDepositMemo":null,"newestCreatedAt":"2026-11-13T11:23:18.000Z","oldestCreatedAt":"2025-12-21T01:30:48.000Z"},"llamaMissing":{}},
   "lastRun": "2026-11-13T11:27:02.014Z",
   "lastRunDate": "2026-11-13",
   "mode": "daily",
