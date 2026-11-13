@@ -9,7 +9,7 @@ export type DailyPoint = [date: DateStr, value: number];
 export type Series = DailyPoint[];
 export type SeriesMap = Record<string, Series>;
 
-export const SOURCE_IDS = ["defillama", "nearblocks", "catalog", "price", "intents", "bigquery", "blockscout", "stablecoins", "yields", "hacks", "geckoterminal", "holders"] as const;
+export const SOURCE_IDS = ["defillama", "nearblocks", "catalog", "price", "intents", "bigquery", "blockscout", "stablecoins", "yields", "hacks", "geckoterminal", "holders", "validators"] as const;
 export type SourceId = (typeof SOURCE_IDS)[number];
 
 export interface SourceStatus {

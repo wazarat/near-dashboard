@@ -1,0 +1,38 @@
+Project,Pool,Verified,Note
+01No.de,01node.poolv1.near,Yes,in the current validator set (epoch 4967)
+AstroStakers,astro-stakers.poolv1.near,Yes,in the current validator set (epoch 4967)
+Bison Trails,bisontrails.poolv1.near,Yes,in the current validator set (epoch 4967)
+Bison Trails,bisontrails2.poolv1.near,Yes,in the current validator set (epoch 4967)
+Blockdaemon,blockdaemon.poolv1.near,Yes,in the current validator set (epoch 4967)
+Blockdaemon,eno-blockdaemon0.pool.near,No,"in the set, but the eno- prefix may be a client pool run by Blockdaemon; confirm before counting"
+Buildlinks,buildlinks.poolv1.near,Yes,in the current validator set (epoch 4967)
+Chorus One,chorusone.poolv1.near,Yes,in the current validator set (epoch 4967)
+Cryptium Labs,cryptium.poolv1.near,Yes,in the current validator set (epoch 4967)
+Cunum Staking,cunum.poolv1.near,Yes,in the current validator set (epoch 4967)
+D1 Ventures,d1.poolv1.near,No,"in the set; owner not confirmed as D1 Ventures"
+Dragonfly Capital,dragonfly.poolv1.near,Yes,in the current validator set (epoch 4967)
+DSRV Labs,dsrvlabs.poolv1.near,Yes,in the current validator set (epoch 4967)
+Everstake,everstake.poolv1.near,Yes,in the current validator set (epoch 4967)
+Figment,figment.poolv1.near,Yes,in the current validator set (epoch 4967)
+Figment,ledgerbyfigment.poolv1.near,Yes,"in the current validator set (epoch 4967); Ledger's pool, operated by Figment"
+Foundry,foundry.poolv1.near,Yes,in the current validator set (epoch 4967)
+HashQuark,hashquark.poolv1.near,Yes,in the current validator set (epoch 4967)
+INOTEL,inotel.poolv1.near,Yes,in the current validator set (epoch 4967)
+Lavender.Five Nodes,lavenderfive.poolv1.near,Yes,in the current validator set (epoch 4967)
+NEARFans,nearfans.poolv1.near,Yes,in the current validator set (epoch 4967)
+NEARFans,near-fans.poolv1.near,No,"in the set; may be a different operator from nearfans.poolv1.near"
+Nodeasy,nodeasy.poolv1.near,Yes,in the current validator set (epoch 4967)
+Open Shards Alliance,openshards.poolv1.near,Yes,in the current validator set (epoch 4967)
+P2P Validator,p2p-org.poolv1.near,Yes,in the current validator set (epoch 4967)
+P2P Validator,p2pstaking.poolv1.near,No,"in the set; owner not confirmed as P2P"
+Polkachu,polkachu.poolv1.near,Yes,in the current validator set (epoch 4967)
+Sharp Darts,sharpdarts.poolv1.near,Yes,in the current validator set (epoch 4967)
+Spark Pool,sparkpool.poolv1.near,Yes,in the current validator set (epoch 4967)
+Spectrum Staking,spectrum.poolv1.near,Yes,in the current validator set (epoch 4967)
+Staked,staked.poolv1.near,Yes,in the current validator set (epoch 4967)
+StakeSabai,stakesabai.poolv1.near,Yes,in the current validator set (epoch 4967)
+Stakes and Stone,stakesstone.poolv1.near,No,"in the set; owner not confirmed as Stakes and Stone"
+Stakin,stakin.poolv1.near,Yes,in the current validator set (epoch 4967)
+Twinstake,twinstake.poolv1.near,Yes,in the current validator set (epoch 4967)
+Twinstake,svrn-twinstake.poolv1.near,No,"in the set; SVRN's pool run by Twinstake, so the stake may belong with SVRN"
+Zavodil,zavodil.poolv1.near,Yes,in the current validator set (epoch 4967)

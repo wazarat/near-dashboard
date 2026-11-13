@@ -18,6 +18,7 @@ import * as geckoterminal from "./fetch/geckoterminal";
 import * as hacks from "./fetch/hacks";
 import * as holders from "./fetch/holders";
 import * as stablecoins from "./fetch/stablecoins";
+import * as validators from "./fetch/validators";
 import * as yields from "./fetch/yields";
 import * as catalog from "./fetch/catalog";
 import * as defillama from "./fetch/defillama";
@@ -34,6 +35,7 @@ const SOURCES: Source[] = [
   { id: "nearblocks", run: nearblocks.run },
   { id: "blockscout", run: blockscout.run },
   { id: "stablecoins", run: stablecoins.run },
+  { id: "validators", run: (ctx) => validators.run(ctx) },
   { id: "yields", run: yields.run },
   { id: "hacks", run: hacks.run },
   { id: "geckoterminal", run: geckoterminal.run },

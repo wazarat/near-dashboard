@@ -13,6 +13,7 @@ import type { Project } from "../../src/lib/types";
 import { readCsvOrEmpty } from "./csv";
 import fs from "node:fs";
 import { gasTotals, type GasFile } from "../../src/lib/gas";
+import { stakeByProject, type ValidatorsFile } from "../../src/lib/validators";
 import { referralsByProject, referralTotals, unmatchedReferrals, type ReferralDay, type ReferralMapRow } from "../../src/lib/referrals";
 import { DATA, HISTORY, RAW } from "./paths";
 import { readJson } from "./store";
@@ -38,6 +39,13 @@ export function loadExtras(projects: Project[], mapRowsOf: Map<string, MapRow[]>
   const hacks = readJson<HacksFile | null>(path.join(EXTRA, "hacks.json"), null);
   const holders = readJson<HoldersFile | null>(path.join(EXTRA, "holders.json"), null);
   const chainStats = readJson<ChainStatsFile | null>(path.join(EXTRA, "chain-stats.json"), null);
+  const validators = readJson<ValidatorsFile | null>(path.join(EXTRA, "validators.json"), null);
+  const stakeOf = validators
+    ? stakeByProject(
+        validators.pools,
+        readCsvOrEmpty(path.join(DATA, "validator-pools.csv")).map((r) => ({ project: (r["Project"] ?? "").trim(), pool: (r["Pool"] ?? "").trim(), verified: yes(r["Verified"]) })),
+      )
+    : new Map<string, number>();
   const launches = readJson<Record<string, Array<[string, number]>>>(path.join(HISTORY, "bigquery", "factory-launches.json"), {});
   // NEAR Intents volume per app: the last 30 complete Explorer days, through the verified rows of data/intents-referrals.csv.
   const rawDir = path.join(RAW, "intents", "daily");
@@ -132,6 +140,7 @@ export function loadExtras(projects: Project[], mapRowsOf: Map<string, MapRow[]>
         ...(holderParts.get(p.name) ?? []),
         ...(launchParts.get(p.name) ?? []),
         ...(gasParts.get(p.name) ?? []),
+        ...(validators && stakeOf.has(p.name) ? [{ values: { validatorStake: stakeOf.get(p.name) as number }, asOf: validators.asOf }] : []),
         ...(refTotals.end && refByProject.has(p.name)
           ? [
               {
