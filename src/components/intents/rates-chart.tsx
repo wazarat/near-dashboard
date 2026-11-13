@@ -28,7 +28,7 @@ export interface RateRow {
 
 const STATUS = [
   { key: "success", label: "SUCCESS", color: "var(--status-good)" },
-  { key: "refunded", label: "REFUNDED", color: "var(--status-warning)" },
+  { key: "refunded", label: "REFUNDED", color: "var(--status-inactive)" },
   { key: "failed", label: "FAILED + INCOMPLETE_DEPOSIT", color: "var(--status-critical)" },
   { key: "other", label: "pending / other statuses", color: "var(--tier-none)" },
 ] as const;

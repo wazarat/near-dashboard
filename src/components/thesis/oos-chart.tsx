@@ -121,7 +121,7 @@ export function OosChart({ data }: { data: ThesisJson }) {
                 <CartesianGrid horizontal={false} stroke={CHART.grid} />
                 <XAxis type="number" domain={[domainMin, domainMax]} allowDataOverflow tickFormatter={(v: number) => fmtR(v)} tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
                 <YAxis type="category" dataKey="label" width={axis.width} tick={axis.tick} tickLine={false} axisLine={false} />
-                <ReferenceLine x={0} stroke={CHART.axis} strokeWidth={1.5} label={{ value: "training-mean forecast", position: "top", fontSize: 10, fill: CHART.muted }} />
+                <ReferenceLine x={0} stroke={CHART.axis} strokeWidth={1.5} label={{ value: "training-mean forecast", position: "top", fontSize: 10, fill: "var(--ink-muted)" }} />
                 <Tooltip cursor={{ fill: "var(--accent)", opacity: 0.4 }} content={<OosTip />} />
                 <Bar dataKey="intents" name={INTENTS_LABEL} fill={CHART.intents} isAnimationActive={false} maxBarSize={14} />
                 <Bar dataKey="price" name={PRICE_LABEL} fill={CHART.price} isAnimationActive={false} maxBarSize={14} />

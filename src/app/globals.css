@@ -169,11 +169,14 @@
   --radius: 0.5rem;
 
   /*
-   * Chart palette, built from the brand hues plus neutrals (section 1, Chart
-   * colours). Slots alternate light and dark steps so every adjacent pair
-   * passes the colour-vision validator (dataviz skill, adjacent pairs,
-   * both themes); the lightness-band and chroma checks fail by design of the
-   * three-hue brand constraint, so marker shapes stay the second encoding.
+   * Chart palette, built from the brand hues plus a muted violet scale for the
+   * neutral categories (section 1, Chart colours). Slots alternate light and
+   * dark steps so every adjacent pair passes the colour-vision validator
+   * (dataviz skill, adjacent pairs, both themes); the lightness-band and chroma
+   * checks fail by design of the three-hue brand constraint, so marker shapes
+   * stay the second encoding. No data mark is grey: --mute-1..3 and
+   * --chart-muted are dusty violets kept apart from --chart-2, --chart-5 and
+   * --neon-400 by lightness and chroma. Text, axes and grid stay on the ink scale.
    */
   --chart-1: #3d7bff;
   --chart-2: #c4b5fd;
@@ -182,9 +185,13 @@
   --chart-5: #8b5cf6;
   --chart-6: #22d3ee;
   --chart-7: #1d4ed8;
-  --chart-8: #a8aebf;
-  --chart-not-disclosed: #3a4255;
-  --chart-not-researched: #3a4255;
+  --mute-1: #74659f;
+  --mute-2: #3d2f66;
+  --mute-3: #ece4fd;
+  --chart-muted: #a29cc2;
+  --chart-8: var(--mute-1);
+  --chart-not-disclosed: var(--mute-2);
+  --chart-not-researched: var(--mute-2);
   --seq-1: #1e3a8a;
   --seq-2: #1d4ed8;
   --seq-3: #2563eb;
@@ -238,9 +245,13 @@
   --chart-5: #5b21b6;
   --chart-6: #22d3ee;
   --chart-7: #1e3a8a;
-  --chart-8: #6b7164;
-  --chart-not-disclosed: #b6b9b3;
-  --chart-not-researched: #b6b9b3;
+  --mute-1: #9282c4;
+  --mute-2: #dfd9ee;
+  --mute-3: #3f3468;
+  --chart-muted: #5d5089;
+  --chart-8: var(--mute-1);
+  --chart-not-disclosed: var(--mute-2);
+  --chart-not-researched: var(--mute-2);
   --seq-1: #dbe7ff;
   --seq-2: #b3ccff;
   --seq-3: #7fa9ff;
@@ -273,7 +284,8 @@
   --tier-2: var(--seq-4);
   --tier-3: var(--seq-3);
   --tier-negligible: var(--seq-2);
-  --tier-none: var(--ink-500);
+  --tier-none: var(--mute-1);
+  --tier-na: var(--mute-2);
   --event-incident: var(--rose-400);
   --event-milestone: var(--chart-1);
   --event-integration: var(--chart-3);
@@ -288,6 +300,8 @@
   --series-usage: var(--signal-400);
   --status-good: var(--signal-400);
   --status-warning: var(--ink-200);
+  /* The data colour for inactive, refunded and watch states; --status-warning stays the ink used for warning text and borders. */
+  --status-inactive: var(--mute-3);
   --status-serious: var(--rose-400);
   --status-critical: var(--rose-400);
 }

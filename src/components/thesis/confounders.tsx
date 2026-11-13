@@ -6,7 +6,7 @@ import type { Confounder } from "@/lib/thesis-types";
 import type { EventType } from "@/lib/types";
 
 function kindColor(kind: string): string {
-  return (EVENT_COLOR as Record<string, string>)[kind as EventType] ?? "var(--cat-notdisclosed)";
+  return (EVENT_COLOR as Record<string, string>)[kind as EventType] ?? "var(--mute-1)";
 }
 
 export function Confounders({ items }: { items: Confounder[] }) {

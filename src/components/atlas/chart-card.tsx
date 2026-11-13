@@ -215,7 +215,7 @@ export function Legend({ items, className }: { items: { label: string; color: st
       {items.map((it) => (
         <li key={it.label} className="inline-flex items-center gap-1.5">
           {it.shape === "hatch" ? (
-            <span aria-hidden="true" className="inline-block size-2.5 rounded-[2px] border border-ink-400/60" style={{ backgroundImage: "repeating-linear-gradient(45deg, var(--ink-muted) 0 1px, transparent 1px 3px)" }} />
+            <span aria-hidden="true" className="inline-block size-2.5 rounded-[2px] border border-ink-400/60" style={{ backgroundImage: "repeating-linear-gradient(45deg, var(--chart-muted) 0 1px, transparent 1px 3px)" }} />
           ) : it.shape === "line" ? (
             <span aria-hidden="true" className="inline-block h-0.5 w-3" style={{ backgroundColor: it.color }} />
           ) : (
@@ -246,7 +246,7 @@ export function HatchDefs({ id = "hatch-other" }: { id?: string }) {
     <defs>
       <pattern id={id} patternUnits="userSpaceOnUse" width={6} height={6} patternTransform="rotate(45)">
         <rect width={6} height={6} fill="var(--surface-chart)" />
-        <line x1={0} y1={0} x2={0} y2={6} stroke="var(--ink-muted)" strokeWidth={1.5} />
+        <line x1={0} y1={0} x2={0} y2={6} stroke="var(--chart-muted)" strokeWidth={1.5} />
       </pattern>
     </defs>
   );

@@ -148,7 +148,7 @@ export function LevelsChart({ data, scale, onScaleChange }: Props) {
                   <CartesianGrid vertical={false} stroke={CHART.grid} />
                   <XAxis dataKey="date" tickFormatter={fmtMonth} tickLine={false} axisLine={false} minTickGap={40} />
                   <YAxis scale={scale === "log" ? "log" : "linear"} domain={["auto", "auto"]} tickFormatter={(v: number) => (v >= 1000 ? `${Math.round(v / 1000)}k` : fmtNum(v, v < 1 ? 1 : 0))} width={44} tickLine={false} axisLine={false} allowDataOverflow />
-                  <ReferenceLine y={100} stroke={CHART.axis} strokeDasharray="3 3" label={{ value: "100 = first week", position: "insideTopRight", fontSize: 10, fill: CHART.muted }} />
+                  <ReferenceLine y={100} stroke={CHART.axis} strokeDasharray="3 3" label={{ value: "100 = first week", position: "insideTopRight", fontSize: 10, fill: "var(--ink-muted)" }} />
                   <Tooltip cursor={{ stroke: CHART.axis }} content={<LevelsTip shown={shown} />} />
                   {shown.map((s) => (
                     <Line key={s.key} type="monotone" dataKey={s.key} name={s.label} stroke={s.color} strokeWidth={s.key === "intentsVolume" ? 2.25 : 1.75} dot={false} isAnimationActive={false} connectNulls={false} />

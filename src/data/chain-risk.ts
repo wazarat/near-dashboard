@@ -27,9 +27,9 @@ export interface ChainRiskEntity {
 /** Status colour and wording. The colour is never used alone: every status ships a glyph and its label. */
 export const CHAIN_RISK_STATUS_META: Record<ChainRiskStatus, { label: string; color: string; description: string }> = {
   good: { label: "Good", color: "var(--status-good)", description: "Mitigated, or a positive finding." },
-  watch: { label: "Watch", color: "var(--status-warning)", description: "Partial mitigation or an open question." },
+  watch: { label: "Watch", color: "var(--status-inactive)", description: "Partial mitigation or an open question." },
   serious: { label: "Serious", color: "var(--status-serious)", description: "Material risk as recorded in the memo." },
-  unknown: { label: "Unknown", color: "var(--risk-unknown)", description: "Not documented, or only unverified reports." },
+  unknown: { label: "Unknown", color: "var(--mute-2)", description: "Not documented, or only unverified reports." },
 };
 
 export const chainRisk: ChainRiskEntity[] = [

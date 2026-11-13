@@ -103,7 +103,7 @@ export function BucketBars({ rows, color, hatchId: hatchBase, ariaLabel, emptyMe
           <Tooltip cursor={{ fill: "var(--accent)", opacity: 0.4 }} content={<BucketTip keyLabel={keyLabel} />} />
           <Bar dataKey="usd" radius={[0, 4, 4, 0]} isAnimationActive={false} maxBarSize={18}>
             {rows.map((r) => (
-              <Cell key={r.key} fill={r.kind === "other" ? `url(#${hatchId})` : r.kind === "none" ? "var(--tier-none)" : color} stroke={r.kind === "other" ? "var(--ink-muted)" : undefined} strokeWidth={r.kind === "other" ? 1 : 0} />
+              <Cell key={r.key} fill={r.kind === "other" ? `url(#${hatchId})` : r.kind === "none" ? "var(--tier-none)" : color} stroke={r.kind === "other" ? "var(--chart-muted)" : undefined} strokeWidth={r.kind === "other" ? 1 : 0} />
             ))}
             <LabelList dataKey="caption" position="right" fontSize={10} fill="var(--ink-secondary)" />
           </Bar>

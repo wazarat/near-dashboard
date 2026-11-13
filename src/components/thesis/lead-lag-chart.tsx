@@ -33,7 +33,7 @@ function buildRows(intents: LeadLagSummary, price: LeadLagSummary, maxLag: numbe
   return out;
 }
 
-const BAND_FILL = "color-mix(in oklab, var(--ink-muted) 22%, transparent)";
+const BAND_FILL = "color-mix(in oklab, var(--chart-muted) 22%, transparent)";
 
 /** Test 2: cross-correlation of weekly log changes by lag, one small multiple per usage series. */
 export function LeadLagChart({ data }: { data: ThesisJson }) {

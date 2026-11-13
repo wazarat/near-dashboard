@@ -13,7 +13,7 @@ interface Props {
 }
 
 /** Tiny inline trend line: no axes, gaps at null, a dot on the last value. */
-export function SparkLine({ points, width = 80, height = 20, stroke = "var(--ink-secondary)", label, className }: Props) {
+export function SparkLine({ points, width = 80, height = 20, stroke = "var(--chart-muted)", label, className }: Props) {
   if (points === null || points === undefined) return <Skeleton className={className} style={{ width, height }} aria-label={`${label} loading`} />;
   const vals = points.filter((v): v is number => v !== null && Number.isFinite(v));
   if (vals.length < 2) return <NotTracked />;

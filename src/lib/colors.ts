@@ -37,7 +37,7 @@ export const TIER_COLOR: Record<Tier, string> = {
   "Tier 3 - Emerging": "var(--tier-3)",
   "Tracked, negligible": "var(--tier-negligible)",
   "Not tracked": "var(--tier-none)",
-  "Not applicable": "var(--ink-700)",
+  "Not applicable": "var(--tier-na)",
 };
 
 export const TIER_SHORT: Record<Tier, string> = {
@@ -62,7 +62,7 @@ export const STATUS_COLOR: Record<StatusGroup, string> = {
   Mainnet: "var(--status-good)",
   Testnet: "var(--cat-2)",
   Building: "var(--cat-3)",
-  Inactive: "var(--status-warning)",
+  Inactive: "var(--status-inactive)",
   "Legacy listing": "var(--cat-notresearched)",
   Defunct: "var(--status-critical)",
   Unknown: "var(--cat-notdisclosed)",
@@ -104,11 +104,12 @@ export const SEQ = ["var(--seq-1)", "var(--seq-2)", "var(--seq-3)", "var(--seq-4
 
 /**
  * The same sequential ramp as --seq-1..6 in globals.css, as hex per theme, for
- * code that must know a fill's luminance (treemap labels). Keep both in step.
+ * code that must know a fill's luminance (treemap labels). Keep both in step;
+ * `none` is --mute-1 (--tier-none) in each theme.
  */
 export const SEQ_HEX = {
-  dark: { seq: ["#1e3a8a", "#1d4ed8", "#2563eb", "#3d7bff", "#8fb3ff", "#bdd2ff"], none: "#3a4255", textDark: "#05060a", textLight: "#eef0f7" },
-  light: { seq: ["#dbe7ff", "#b3ccff", "#7fa9ff", "#3d7bff", "#2563eb", "#1e40af"], none: "#b6b9b3", textDark: "#0c1500", textLight: "#f5f5f7" },
+  dark: { seq: ["#1e3a8a", "#1d4ed8", "#2563eb", "#3d7bff", "#8fb3ff", "#bdd2ff"], none: "#74659f", textDark: "#05060a", textLight: "#eef0f7" },
+  light: { seq: ["#dbe7ff", "#b3ccff", "#7fa9ff", "#3d7bff", "#2563eb", "#1e40af"], none: "#9282c4", textDark: "#0c1500", textLight: "#f5f5f7" },
 } as const satisfies Record<"dark" | "light", { seq: string[]; none: string; textDark: string; textLight: string }>;
 
 export function seqColor(t: number | null): string {
@@ -120,7 +121,7 @@ export function seqColor(t: number | null): string {
 export const CHART = {
   grid: "var(--grid)",
   axis: "var(--axis)",
-  muted: "var(--ink-muted)",
+  muted: "var(--chart-muted)",
   secondary: "var(--ink-secondary)",
   surface: "var(--surface-chart)",
   background: "var(--background)",

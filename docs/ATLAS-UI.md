@@ -19,7 +19,7 @@ Source of truth is the CanHav design system (claude.ai design system artifact "C
 - **Logo.** A two-line lockup (amended 2026-11-09, owner request). The CanHav `mark.svg` sits on the left at the height of both lines, about 44px. Line one is "CanHav Research" in `display`; line two is the atlas name ("Robinhood Chain Atlas") in `ink-300` followed by a "Beta" tag, an `electric-500` hairline pill with `electric-300` uppercase text at 10px. The favicon is the canhav.com "ch." icon (`src/app/icon.png`, `apple-icon.png`, `favicon.ico`). Do not use any chain's logo or brand assets, and keep the "Independent research by CanHav Research, not affiliated with ..." line.
 
 ### Chart colours
-The design system has no data-visualisation palette, so keep a separate chart palette. Build it from the brand hues (electric, neon, signal) plus neutrals, keep one fixed colour per category across every chart, and re-run the existing colour-vision validator in both themes. Keep the second encoding (marker shape) where colour alone fails.
+The design system has no data-visualisation palette, so keep a separate chart palette. Build it from the brand hues (electric, neon, signal), give neutral categories (not tracked, not applicable, not disclosed, other, inactive) a muted violet scale instead of grey, keep one fixed colour per category across every chart, and re-run the existing colour-vision validator in both themes. Keep the second encoding (marker shape) where colour alone fails.
 
 ## 2. Voice and copy
 

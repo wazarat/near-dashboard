@@ -147,7 +147,7 @@ function QuarterTip({ active, payload, mode }: TipProps<Row> & { mode: Mode }) {
   const r = payload[0].payload;
   return (
     <TooltipFrame title={r.quarter}>
-      {ROUND_BUCKETS.map((b, i) => ((r[b] as number) > 0 ? <TooltipRow key={b} label={b} color={b === "Other" ? "var(--ink-muted)" : CAT[i % CAT.length]} value={mode === "count" ? fmtInt(r[b] as number) : fmtUsd(r[b] as number)} /> : null))}
+      {ROUND_BUCKETS.map((b, i) => ((r[b] as number) > 0 ? <TooltipRow key={b} label={b} color={b === "Other" ? "var(--chart-muted)" : CAT[i % CAT.length]} value={mode === "count" ? fmtInt(r[b] as number) : fmtUsd(r[b] as number)} /> : null))}
       <TooltipRow label="Rounds (incl. undisclosed)" value={fmtInt(r.rounds)} />
       <TooltipRow label="Disclosed USD" value={r.usd > 0 ? fmtUsd(r.usd) : "none"} />
     </TooltipFrame>
