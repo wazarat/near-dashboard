@@ -12,9 +12,8 @@ import { SPECS } from "@/lib/query-specs";
 
 export function SectorsView() {
   const { projectsFor, scale, state, setState, openSector, openProject } = useFilters();
-  const { sb, sg } = state;
+  const { sb } = state;
   const label = METRIC_LABEL[sb].toLowerCase();
-  const cardLabel = METRIC_LABEL[sg].toLowerCase();
   // Each card follows its own legacy-listing switch.
   const barProjects = projectsFor("sector-bars");
   const tierProjects = projectsFor("tier-by-sector");
@@ -47,7 +46,7 @@ export function SectorsView() {
     return `${base}; the ${t1} Tier 1 leader${t1 === 1 ? "" : "s"} sit${t1 === 1 ? "s" : ""} in ${t1Sectors.length} sector${t1Sectors.length === 1 ? "" : "s"}, most in ${lead.sector} (${lead["Tier 1 - Leader"]}).`;
   }, [tiers, tierProjects.length]);
 
-  const cards = useMemo(() => sectorCards(cardProjects, sg), [cardProjects, sg]);
+  const cards = useMemo(() => sectorCards(cardProjects), [cardProjects]);
   const gridTakeaway = useMemo(() => {
     if (cardProjects.length === 0) return "No projects match the current filters.";
     const sized = cards.filter((c) => c.count >= 5 && c.nativeShare !== null);
@@ -90,16 +89,14 @@ export function SectorsView() {
 
       <ChartCard
         id="sector-cards"
-        method={{ sentence: "One card per sector with its project count, NEAR-native share, projects with measurable traction and the chosen metric.", queries: [SPECS.llamaProtocolTvl, SPECS.llamaProtocolFlows, SPECS.snapshotCsv, SPECS.sectorCards] }}
+        method={{ sentence: "One card per sector with its project count, NEAR-native share and top three leaders, ranked by the sector's headline metric where it has one and otherwise by research rank.", queries: [SPECS.snapshotCsv, SPECS.sectorCards] }}
         title="Sector cards"
         takeaway={gridTakeaway}
-        info={`One card per sector in the selection, with project count, NEAR-native share, projects with any measurable traction and the summed ${cardLabel}. Counts and the Native Chain classification come from the research CSVs; money metrics from DefiLlama. Ranked leaders come from the research leaders CSV and do not change with the filters.`}
-        actions={<MetricSegmented value={sg} onChange={(m) => void setState({ sg: m })} ariaLabel="Sector cards metric" />}
-        footer={sg === "tvl" ? <TvlNote /> : undefined}
-        table={sectorCardTable(cards, sg)}
+        info="One card per sector, with project count and NEAR-native share. Leaders are ranked by the sector's headline metric where it has one, otherwise by research rank. Open a sector for its metrics."
+        table={sectorCardTable(cards)}
         legacyCard="sector-cards"
       >
-        <SectorGrid projects={cardProjects} metric={sg} onSelect={openSector} onOpen={openProject} />
+        <SectorGrid projects={cardProjects} onSelect={openSector} onOpen={openProject} />
       </ChartCard>
     </div>
   );

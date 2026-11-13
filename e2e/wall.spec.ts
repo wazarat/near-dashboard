@@ -155,7 +155,7 @@ test("shared sector, investor and funding type links show a summary and one logi
   const sector = page.getByTestId("sector-modal");
   await expect(sector.getByRole("heading", { name: "Lending & Credit" })).toBeVisible({ timeout: 15_000 });
   await expect(sector.getByTestId("login-panel")).toHaveCount(1);
-  await expect(sector).not.toContainText("Ranked leaders");
+  await expect(sector).not.toContainText("Sector leaders");
   await page.goto("/?investor=dragonfly-capital");
   const investor = page.getByTestId("investor-modal");
   await expect(investor.getByTestId("login-panel")).toHaveCount(1, { timeout: 15_000 });

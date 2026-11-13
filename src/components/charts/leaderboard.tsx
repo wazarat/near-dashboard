@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { ScopeNote, TvlNote } from "@/components/atlas/chart-card";
 import { HowCalculated } from "@/components/atlas/how-calculated";
 import { sql } from "@/lib/data";
+import { isInactive } from "@/lib/sector-metrics";
 import { SPECS } from "@/lib/query-specs";
 import { LegacySwitch, useLegacyOn } from "@/components/atlas/legacy-switch";
 import { MetricSegmented } from "@/components/atlas/chart-metric";
@@ -53,7 +54,11 @@ interface Props {
 
 /** Sortable table of every project with a value for the chart's own metric, with four swappable column sets. */
 export function Leaderboard({ projects, metric, onMetricChange, range, onRangeChange, cols, onColsChange, onOpen }: Props) {
-  const rows = useMemo(() => (metric === "count" ? projects.filter((p) => p.hasTraction) : projects.filter((p) => p[metric] !== null)), [projects, metric]);
+  // The same rule as the sector leaders (src/lib/sector-metrics.ts rankLeaders): Defunct and Inactive projects keep
+  // their last value in their own pop-up but are never ranked.
+  const reporting = useMemo(() => (metric === "count" ? projects.filter((p) => p.hasTraction) : projects.filter((p) => p[metric] !== null)), [projects, metric]);
+  const rows = useMemo(() => reporting.filter((p) => !isInactive(p)), [reporting]);
+  const leftOut = reporting.length - rows.length;
   const m = numeric(metric);
 
   const columns = useMemo<ProjectColumnDef[]>(() => {
@@ -79,6 +84,7 @@ export function Leaderboard({ projects, metric, onMetricChange, range, onRangeCh
     metric === "count"
       ? `${rows.length} of ${projects.length} projects report at least one onchain metric (TVL, volume, fees or revenue).`
       : `${rows.length} of ${projects.length} projects report ${METRIC_LABEL[metric]}.`;
+  const inactiveNote = leftOut > 0 ? ` ${leftOut} defunct or inactive project${leftOut === 1 ? " is" : "s are"} left out of the ranking.` : "";
   const history =
     liveCount > 0
       ? ` ${liveCount} refresh daily and show change and trend for ${METRIC_LABEL[m]}.`
@@ -101,6 +107,7 @@ export function Leaderboard({ projects, metric, onMetricChange, range, onRangeCh
         </div>
         <p className="text-sm text-ink-300">
           {description}
+          {inactiveNote}
           {history} Sort any column; revenue capture is revenue divided by fees. Click a project to open it.
         </p>
       </CardHeader>

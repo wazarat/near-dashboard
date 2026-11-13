@@ -148,7 +148,7 @@ Aurora: GET https://explorer.mainnet.aurora.dev/api/v2/stats/charts/transactions
   sectorCards: {
     kind: "transform",
     title: "src/components/charts/sector-grid.tsx sectorCards",
-    code: "for each sector, project count, share with Native Chain = NEAR native, projects with any measurable traction, and the chosen metric summed\nranked leaders come from data/near-sector-leaders-2026-11-08.csv",
+    code: "for each sector, project count and share with Native Chain = NEAR native, ordered by project count\nleaders come from src/lib/sector-metrics.ts rankLeaders over the same filtered set, leaving Defunct and Inactive projects out\n  1. projects whose headline metric (or ranking fact) is at least 1% of the sector's top value, highest first\n  2. then research rank from data/near-sector-leaders-2026-11-08.csv",
   },
   insights: {
     kind: "transform",
@@ -158,7 +158,7 @@ Aurora: GET https://explorer.mainnet.aurora.dev/api/v2/stats/charts/transactions
   leaderboard: {
     kind: "transform",
     title: "src/components/charts/leaderboard.tsx",
-    code: "projects in the selection ranked by the chosen metric, largest first (blank values last)\nchange and trend columns compare the last N days of each project's own daily history with the N days before",
+    code: "projects in the selection ranked by the chosen metric, largest first (blank values last), Defunct and Inactive projects left out\nchange and trend columns compare the last N days of each project's own daily history with the N days before",
   },
   captureRate: {
     kind: "transform",

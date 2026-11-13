@@ -10,7 +10,7 @@ const PAGES: Array<{ name: string; url: string; expect: string }> = [
   { name: "overview", url: "/", expect: "Sectors by" },
   { name: "overview-tvl-log", url: "/?tm=tvl&cc=fees&scale=log", expect: "Concentration curve" },
   { name: "overview-modal", url: "/?project=near-intents", expect: "Similar projects" },
-  { name: "sectors-modal", url: "/sectors/?sectorDrawer=Lending+%26+Credit", expect: "Ranked leaders" },
+  { name: "sectors-modal", url: "/sectors/?sectorDrawer=Lending+%26+Credit", expect: "Sector leaders" },
   { name: "sectors", url: "/sectors/", expect: "Sectors by" },
   { name: "traction", url: "/traction/", expect: "Leaderboard" },
   { name: "traction-fees-momentum", url: "/traction/?lb=fees&cols=momentum", expect: "Leaderboard" },
@@ -770,8 +770,8 @@ test("project detail is a centred modal on desktop and a full sheet on a phone, 
 test("a project opened from the sector modal replaces it instead of stacking", async ({ page }) => {
   await page.goto("/sectors/?sectorDrawer=Lending+%26+Credit");
   const sector = page.getByTestId("sector-modal");
-  await expect(sector).toContainText("Ranked leaders", { timeout: 15_000 });
-  await sector.locator("ul button").first().click();
+  await expect(sector).toContainText("Sector leaders", { timeout: 15_000 });
+  await sector.getByTestId("sector-leader").locator("button").first().click();
   await expect(page).toHaveURL(/project=/);
   await expect(page).not.toHaveURL(/sectorDrawer=/);
   await expect(page.getByTestId("project-modal")).toBeVisible();
@@ -787,6 +787,34 @@ test("a project opened from the investor modal replaces it instead of stacking",
   await expect(page).not.toHaveURL(/investor=/);
   await expect(page.getByTestId("project-modal")).toBeVisible();
   await expect(page.getByRole("dialog")).toHaveCount(1);
+});
+
+test("sector cards carry counts and three leader names only (docs/SECTOR-METRICS.md, section 1b)", async ({ page }) => {
+  await page.goto("/sectors/");
+  const card = page.getByTestId("sector-card").filter({ hasText: "DEXs & Liquidity" });
+  await expect(card).toBeVisible({ timeout: 15_000 });
+  await expect(card.locator("dt")).toHaveText(["Projects", "NEAR-native"]);
+  await expect(card.locator("dd").nth(1)).toHaveText(/^\d+ \(\d+%\)$/);
+  const names = card.getByTestId("sector-leaders").locator("li");
+  await expect(names).toHaveCount(3);
+  // Names only: no value, rank or dollar figure beside a leader.
+  for (const t of await names.allInnerTexts()) expect(t).not.toMatch(/\$|\d+\.\s/);
+  await expect(names.first()).toHaveText("Rhea Finance");
+  await expect(card).not.toContainText("With traction");
+  await expect(card).not.toContainText("tracked for");
+  const perps = page.getByTestId("sector-card").filter({ hasText: "Perps, Options & Derivatives" });
+  await expect(perps.getByTestId("sector-leaders")).not.toContainText("Spin");
+});
+
+test("the Lending pop-up carries total deposited and the lending metrics, and no DEX volume", async ({ page }) => {
+  await page.goto("/sectors/?sectorDrawer=Lending+%26+Credit");
+  const sector = page.getByTestId("sector-modal");
+  await expect(sector.getByTestId("sector-headline")).toContainText("Total deposited", { timeout: 15_000 });
+  await expect(sector.getByTestId("sector-headline")).toContainText(/Tracked for \d+ of \d+ where it applies/);
+  const rows = sector.getByTestId("sector-metric-row");
+  for (const id of ["borrowed", "tvl", "utilization", "borrowApy"]) await expect(rows.and(page.locator(`[data-metric="${id}"]`))).toHaveCount(1);
+  await expect(sector).not.toContainText("DEX volume");
+  await expect(sector.getByTestId("sector-leader").first()).toContainText("Rhea Lend");
 });
 
 test("the sector modal follows the active filters and says so", async ({ page }) => {
