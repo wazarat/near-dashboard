@@ -3,6 +3,7 @@ import { DataFreshness } from "@/components/atlas/data-freshness";
 import { meta, projects } from "@/lib/data";
 import { SIBLING_ATLAS_URL } from "@/lib/env";
 import { fmtUsdFull } from "@/lib/format";
+import { MethodologyDetails } from "./methodology-details";
 
 /** Directory-only listings whose status is still unverified (validators with a live pool were promoted on 2026-11-13). */
 const LEGACY_LISTINGS = projects.filter((p) => p.statusGroup === "Legacy listing").length;
@@ -17,10 +18,7 @@ export function SiteFooter() {
   return (
     <footer className="mt-16 border-t border-ink-700/40">
       <div className="mx-auto w-full max-w-atlas px-5 py-10 sm:px-6 lg:px-8">
-        <section id="methodology" aria-labelledby="methodology-title" className="text-sm text-ink-300">
-          <h2 id="methodology-title" className="text-title">
-            Methodology
-          </h2>
+        <MethodologyDetails>
           <div className="mt-4 grid gap-6 md:grid-cols-2">
             <div className="space-y-3">
               <p>
@@ -79,7 +77,7 @@ export function SiteFooter() {
               </p>
             </div>
           </div>
-        </section>
+        </MethodologyDetails>
 
         <div className="mt-10 flex flex-col gap-6 border-t border-ink-700/40 pt-6 text-label text-ink-300 md:flex-row md:items-start md:justify-between">
           <div className="max-w-2xl space-y-2">

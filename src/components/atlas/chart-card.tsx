@@ -1,6 +1,6 @@
 "use client";
 
-import { Maximize2 } from "lucide-react";
+import { ChevronDown, Maximize2 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { parseAsString, useQueryState } from "nuqs";
 import { useMemo, useState, type ReactNode } from "react";
@@ -64,6 +64,8 @@ interface ChartCardProps {
   source?: string;
   /** The view the card and its expanded copy open on. A card of records (the timeline) opens on its table. */
   defaultView?: ChartView;
+  /** A card that folds to its title row, like a dropdown (the Overview timeline). Closed unless `defaultOpen`. */
+  collapsible?: { defaultOpen?: boolean };
   /** A card whose counts legacy listings change: shows its "Include legacy" switch and says when it includes them. */
   legacyCard?: LegacyCard;
 }
@@ -95,7 +97,11 @@ export function ScopeNote({ scope = "filtered", className, legacy = false }: { s
   );
 }
 
-export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries, method, scope, expandable = true, level = false, subtitle, source, takeawayPlacement = "expanded", defaultView = "chart", legacyCard }: ChartCardProps) {
+export function ChartCard({ title, takeaway, info, children, className, actions, scale, onScaleChange, footer, id, table, queries, method, scope, expandable = true, level = false, subtitle, source, takeawayPlacement = "expanded", defaultView = "chart", legacyCard, collapsible }: ChartCardProps) {
+  // A collapsible card shows only its title row until opened; the state is the reader's, kept out of the URL.
+  const [shown, setShown] = useState(collapsible?.defaultOpen ?? false);
+  const isOpen = !collapsible || shown;
+  const bodyId = `${id ?? title.replace(/\W+/g, "-").toLowerCase()}-body`;
   const legacy = useLegacyOn(legacyCard);
   const firstView: ChartView = defaultView === "table" && !table ? "chart" : defaultView;
   const [view, setView] = useState<ChartView>(firstView);
@@ -149,7 +155,23 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
           <div className="min-w-[min(15rem,100%)] flex-1">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
               <span className="flex items-center gap-1">
-                <h3 className="text-sm font-semibold leading-tight">{title}</h3>
+                {collapsible ? (
+                  <h3 className="text-sm font-semibold leading-tight">
+                    <button
+                      type="button"
+                      aria-expanded={isOpen}
+                      aria-controls={bodyId}
+                      onClick={() => setShown((v) => !v)}
+                      className="inline-flex items-center gap-1 rounded-sm text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60"
+                    >
+                      <ChevronDown aria-hidden="true" className={cn("size-4 shrink-0 text-ink-300 transition-transform", !isOpen && "-rotate-90")} />
+                      <span className="sr-only">{isOpen ? "Hide " : "Show "}</span>
+                      {title}
+                    </button>
+                  </h3>
+                ) : (
+                  <h3 className="text-sm font-semibold leading-tight">{title}</h3>
+                )}
                 <InfoTip label={`About ${title}`}>{info}</InfoTip>
               </span>
               <ScopeNote scope={scope} legacy={legacy} />
@@ -157,7 +179,7 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
             {inline && <p className="mt-1 text-sm text-ink-300">{takeaway}</p>}
             {subtitle && <p className="mt-1 text-label text-ink-300">{subtitle}</p>}
           </div>
-          <div className="flex max-w-full flex-wrap items-center gap-2">
+          <div className={cn("flex max-w-full flex-wrap items-center gap-2", !isOpen && "hidden")}>
             {controls(view, setView)}
             {canExpand && (
               <Button variant="ghost" size="icon-sm" aria-label={`Expand ${title}`} title="Expand" onClick={() => void setExpand(id ?? null)}>
@@ -167,11 +189,15 @@ export function ChartCard({ title, takeaway, info, children, className, actions,
           </div>
         </div>
       </CardHeader>
-      <CardContent className="px-4" data-chart-body>
-        {body(view, inlineFrame)}
-      </CardContent>
-      {footer && <div className="px-4 text-xs text-ink-300">{footer}</div>}
-      {method && <HowCalculated method={method} className="mx-4" />}
+      {isOpen && (
+        <>
+          <CardContent id={bodyId} className="px-4" data-chart-body>
+            {body(view, inlineFrame)}
+          </CardContent>
+          {footer && <div className="px-4 text-xs text-ink-300">{footer}</div>}
+          {method && <HowCalculated method={method} className="mx-4" />}
+        </>
+      )}
 
       {canExpand && (
         <Dialog open={open} onOpenChange={(o) => !o && close()}>

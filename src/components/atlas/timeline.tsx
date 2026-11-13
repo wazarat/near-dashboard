@@ -162,6 +162,7 @@ export function Timeline({ events, defaultStart, title = "Timeline", id = "timel
       source="Research events CSV (data/near-events-*.csv), every row with its source link"
       table={table}
       defaultView="table"
+      collapsible={{ defaultOpen: false }}
     >
       {(frame: ChartFrame) => (
         <div>

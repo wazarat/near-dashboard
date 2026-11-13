@@ -51,6 +51,14 @@ for (const p of PAGES) {
   });
 }
 
+/** The Overview timeline is a dropdown, closed on load; this opens it. */
+async function openTimeline(page: Page) {
+  const toggle = page.locator('[data-chart-card="Timeline"] h3 button[aria-expanded]');
+  await expect(toggle).toBeVisible({ timeout: 15_000 });
+  if ((await toggle.getAttribute("aria-expanded")) !== "true") await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+}
+
 test("the tabs sit in the header row from 1360px and drop to their own row below it", async ({ page }) => {
   const rows = async () =>
     page.evaluate(() => {
@@ -232,6 +240,9 @@ for (const url of ["/", "/intents/"]) {
     const names = (await cards.evaluateAll((els) => els.map((e) => e.getAttribute("data-chart-card") ?? ""))).filter((n) => n !== "Insights");
     expect(names.length).toBeGreaterThan(3);
     for (const name of names) {
+      // A dropdown card (the Overview timeline) shows its block once opened.
+      const closed = page.locator(`[data-chart-card="${name}"] h3 button[aria-expanded="false"]`);
+      if (await closed.count()) await closed.click();
       const block = page.locator(`[data-chart-card="${name}"] [data-how-calculated]`).first();
       await expect(block, `${name} has no How this is calculated block`).toHaveCount(1);
       await block.locator("summary").click();
@@ -359,6 +370,7 @@ test("the explorer search writes the same q as the filter bar and its count foll
 
 test("the timeline opens on its table, and its chart opens on 2024 with earlier events one click away", async ({ page }) => {
   await page.goto("/");
+  await openTimeline(page);
   const card = page.locator('[data-chart-card="Timeline"]');
   const views = card.getByRole("tablist", { name: "View as" });
   await expect(views.getByRole("tab", { name: "Table" })).toHaveAttribute("aria-selected", "true", { timeout: 15_000 });
@@ -370,7 +382,18 @@ test("the timeline opens on its table, and its chart opens on 2024 with earlier 
   const label = await toggle.textContent();
   const earlier = Number(label?.match(/\((\d+)\)/)?.[1]);
   expect(earlier).toBeGreaterThan(0);
-  const markersBefore = await card.locator(".recharts-scatter-symbol").count();
+  // The chart draws its markers over a few frames; read the count once it stops changing.
+  const markers = card.locator(".recharts-scatter-symbol");
+  let last = -1;
+  await expect
+    .poll(async () => {
+      const n = await markers.count();
+      const settled = n > 0 && n === last;
+      last = n;
+      return settled;
+    }, { intervals: [250, 250, 250, 500, 500, 1000] })
+    .toBe(true);
+  const markersBefore = await markers.count();
   await toggle.click();
   await expect(card.getByRole("button", { name: /Hide events before/ })).toBeVisible();
   await expect.poll(() => card.locator(".recharts-scatter-symbol").count()).toBe(markersBefore + earlier);
@@ -379,6 +402,7 @@ test("the timeline opens on its table, and its chart opens on 2024 with earlier 
 test("a timeline row opens the event pop-up with its source, kept in the URL", async ({ page }, info) => {
   const errors = await collectErrors(page);
   await page.goto("/");
+  await openTimeline(page);
   const card = page.locator('[data-chart-card="Timeline"]');
   const first = card.locator("tbody tr").first();
   await expect(first).toBeVisible({ timeout: 15_000 });
@@ -620,6 +644,7 @@ test("with a filter every Overview card follows it, the chain cards switching to
   await page.goto("/");
   const chainStats = await page.locator('[data-chart-card="Chain over time"]').getByTestId("range-stats").first().textContent({ timeout: 15_000 });
   const timeline = page.locator('[data-chart-card="Timeline"]');
+  await openTimeline(page);
   await expect(timeline.locator("tbody tr").first()).toBeVisible();
   const allRows = await timeline.locator("tbody tr").count();
 
@@ -643,6 +668,7 @@ test("with a filter every Overview card follows it, the chain cards switching to
   await expect(activity.getByTestId("panel-scope").filter({ hasText: "Whole chain" })).toHaveCount(5);
 
   // The timeline keeps only events tagged with a selected project.
+  await openTimeline(page);
   await expect(timeline.locator("[data-scope]")).toHaveText("1 filter active");
   const rows = await timeline.locator("tbody tr").count();
   expect(rows).toBeGreaterThan(0);
@@ -653,6 +679,28 @@ test("with a filter every Overview card follows it, the chain cards switching to
   await page.goto("/");
   await expect(page.locator('[data-chart-card="Chain over time"]')).toBeVisible({ timeout: 15_000 });
   expect(errors, errors.join("\n")).toEqual([]);
+});
+
+test("the Overview timeline and the Methodology section are dropdowns, closed until opened", async ({ page }) => {
+  await page.goto("/");
+  const card = page.locator('[data-chart-card="Timeline"]');
+  const toggle = card.locator("h3 button[aria-expanded]");
+  await expect(toggle).toHaveAttribute("aria-expanded", "false", { timeout: 15_000 });
+  await expect(card.locator("tbody tr")).toHaveCount(0);
+  await toggle.click();
+  await expect(card.locator("tbody tr").first()).toBeVisible();
+  await toggle.click();
+  await expect(card.locator("tbody tr")).toHaveCount(0);
+  const methodology = page.locator("details#methodology");
+  await expect(methodology).not.toHaveAttribute("open", "");
+  await expect(methodology.getByText("Coverage terms.")).toBeHidden();
+  // The footer link to the section opens it.
+  await page.locator('footer a[href="#methodology"]').click();
+  await expect(methodology).toHaveAttribute("open", "");
+  await expect(methodology.getByText("Coverage terms.")).toBeVisible();
+  // A shared link to the section opens it on load.
+  await page.goto("/about/#methodology");
+  await expect(page.locator("details#methodology")).toHaveAttribute("open", "", { timeout: 15_000 });
 });
 
 test("KPI tiles count the projects in each sum and list them in the info pop-up", async ({ page }) => {
