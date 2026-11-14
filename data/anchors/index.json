@@ -1,3 +1,4 @@
 {
-  "2026-11-13": {"account":"canhav.near","blockHeight":224403936,"commit":"a2cdbde042513e75747639c12b5407835db17a41","inputs":"3f4f741298f443c427336ad50c18763eb300a45f131a74e16b1bb3b7b469cedc","outputs":"d344ea1ea4c06b69b561cf0a23189c44c8254904abcb0a3b76d5cf67302cfdf6","txHash":"DKMUvfZ9LMmsESJnqgGgA5ZXRBoteDM57Gy3Dhx87tTv","verdict":"Partly supported"}
+  "2026-11-13": {"account":"canhav.near","blockHeight":224403936,"commit":"a2cdbde042513e75747639c12b5407835db17a41","inputs":"3f4f741298f443c427336ad50c18763eb300a45f131a74e16b1bb3b7b469cedc","outputs":"d344ea1ea4c06b69b561cf0a23189c44c8254904abcb0a3b76d5cf67302cfdf6","txHash":"DKMUvfZ9LMmsESJnqgGgA5ZXRBoteDM57Gy3Dhx87tTv","verdict":"Partly supported"},
+  "2026-11-14": {"account":"canhav.near","blockHeight":224504003,"commit":"354bacdb4166e8a256f7853465b2a8e89579d3ba","inputs":"685d2c4ced1bd9c35697ff06db212126b5bb9955f18ad23b5307d67c0d8e6e27","outputs":"6ce563073e3635210c63db64924873d1859a0babd1e05a569912599cc7a5f11b","txHash":"DdjaSMJrUet6XL6XpzRxkdoAA3jJdXKsXZzzVp5ZpAGt","verdict":"Partly supported"}
 }

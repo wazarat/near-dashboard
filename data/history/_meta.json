@@ -1,4 +1,5 @@
 {
+  "anchor": {"allowanceNear":"0.2491","date":"2026-11-14","reason":null,"status":"written","storageNear":"0.2307","txHash":"DdjaSMJrUet6XL6XpzRxkdoAA3jJdXKsXZzzVp5ZpAGt","warning":null},
   "cursors": {"bigquery":{"daily_chain":"2026-11-13","daily_gas":"2026-11-13","daily_receipts":"2026-11-13"},"intents":{"backfillDone":true,"lastDepositAddress":"0xb40B5134EF6B46b3c2A49C3BAD4d6e20618C6384","lastDepositMemo":null,"newestCreatedAt":"2026-11-14T10:49:38.000Z","oldestCreatedAt":"2025-03-27T08:56:14.000Z"},"llamaMissing":{}},
   "lastRun": "2026-11-14T10:53:14.324Z",
   "lastRunDate": "2026-11-14",
