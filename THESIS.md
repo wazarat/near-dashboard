@@ -20,6 +20,9 @@ Every pre-registered test below, as computed by this rebuild. "not computed" tes
 | A2 | Intents adds information beyond price | Model with Intents lowers test MSE with Clark-West p < 0.1 on at least two series | 2 of 5 series | pass |
 | A3 | Reverse direction (Granger) | Reported both ways; flagged when usage leads Intents and not the reverse | Intents predicts usage on 1 series, usage predicts Intents on 0, usage alone leads on 0 | pass |
 | A4 | Verdict gate | Significant on three or more series including one chain-level count, and A2 passing | Verdict partly supported | fail |
+| B1 | Intents leads app usage, not raw chain counts | Pass when Intents volume leads transactions excluding the top 10 receivers significantly (block bootstrap, Benjamini-Hochberg at q = 0.10), or with an r at least 0.10 above its lead on total transactions. Fail when it has no positive lead on either the excluding-top-10 or the top-10-only series. | The daily counts of transactions to the top 10 receivers are not in the committed BigQuery files, so this test was not run. | not computed |
+| B2 | Buyback coverage of issuance | Monthly holders revenue in USD over the USD value of the net NEAR supply increase, from March 2026 (the first full month after the fee switch). Pass when the ratio's trend is positive with the slope's 90% interval above zero. Fail when it is flat or falling, or below 20% in each of the last three months. | Daily NEAR total supply from the BigQuery blocks table is not in the committed files, so the net supply increase, and with it the coverage ratio, could not be computed. | not computed |
+| B4 | Distribution concentration | Per month, the Herfindahl-Hirschman index of 1Click volume by referral, top-1 and top-5 share and the number of referrals over $1M, with unlabeled referral as its own bucket and excluded. Pass (broadening) when the index trends down and top-1 share stays under 40% in each of the last three months. Fail when the index trends up or top-1 share goes over 40%. | Distribution does not pass as broadening because the top referral's share reached 40% or more in 2026-10 with unlabeled volume as a bucket, or in 2026-08, 2026-09, 2026-10 with it excluded. Referral concentration (HHI) trends slope -290 a month (90% interval -381 to -200, 19 points) with unlabeled volume as a bucket and slope -385 a month (90% interval -504 to -266, 19 points) without it; in 2026-10 the top referral took 40% (50% of labeled volume). | fail |
 
 ### Pre-registered tests
 
@@ -45,13 +48,15 @@ A test that cannot be computed from free data is recorded under "Metrics that co
 
 ## Tables used
 
-Dataset `bigquery-public-data.crypto_near_mainnet_us`. All 3 queries filter on the `block_date` partition column with `WHERE block_date BETWEEN @start AND @end`; each job is dry-run first and runs with `maximumBytesBilled` set (`scripts/fetch/bigquery.ts`).
+Dataset `bigquery-public-data.crypto_near_mainnet_us`. All 5 queries filter on the `block_date` partition column with `WHERE block_date BETWEEN @start AND @end`; each job is dry-run first and runs with `maximumBytesBilled` set (`scripts/fetch/bigquery.ts`).
 
 | Table | Query | Columns read | Used for | Cached result dates | Last daily refresh (2026-11-14) | Backfills |
 |---|---|---|---|---|---|---|
 | `transactions` | `queries/daily_chain.sql` | `block_date` DATE, `signer_account_id` STRING, `receiver_account_id` STRING | daily transactions, active accounts (distinct signers) and distinct receivers; the thesis uses the first two | 2024-12-10 to 2026-11-13 (60 files in `data/raw/bigquery/`) | 0.20 GB | 37.90 GB for 2025-11-08 to 2026-11-07; 97.20 GB for 2024-12-10 to 2025-11-07 |
 | `execution_outcomes` | `queries/daily_gas.sql` | `block_date` DATE, `gas_burnt` FLOAT64, `tokens_burnt` FLOAT64, `executor_account_id` STRING | gas burnt per tracked account for the gas fee figures on the site; not used in the thesis | 2026-08-15 to 2026-11-13 (4 files in `data/raw/bigquery/`) | 0.85 GB | none |
 | `receipt_actions` | `queries/daily_receipts.sql` | `block_date` DATE, `signer_account_id` STRING, `action_kind` STRING, `receipt_receiver_account_id` STRING | daily function calls, contracts called, distinct signers, CREATE_ACCOUNT and DEPLOY_CONTRACT counts, and calls per tracked account; the thesis uses function calls and contracts called | 2025-11-08 to 2026-11-13 (42 files in `data/raw/bigquery/`) | 1.21 GB | 206.60 GB for 2025-11-08 to 2026-11-07; 13.32 GB for 2026-10-07 to 2026-11-12 |
+| `transactions` | `queries/daily_top_receivers.sql` | `block_date` DATE, `receiver_account_id` STRING | daily transactions to those 10 accounts and to every other receiver (thesis test B1) | none | n/a | none |
+| `transactions` | `queries/top_receivers.sql` | `block_date` DATE, `receiver_account_id` STRING | the 10 receiver accounts with the most transactions over one complete month, saved to data/top-receivers.csv (thesis test B1) | none | n/a | none |
 
 - The last daily refresh (2026-11-14, 3 jobs) scanned 2.26 GB in total.
 - The backfill of 2025-11-08 to 2026-11-07 (run 2026-11-08, 54 jobs, figures from `logs/bigquery-backfill.log`) scanned 244.49 GB in total.
@@ -265,7 +270,31 @@ The same lead-lag and out-of-sample tests on both sources:
 
 Five related angles, each with the rule set before it was computed. Failed tests are also listed under Evidence against.
 
+#### B1. Intents leads app usage, not raw chain counts
 
+- **Rule.** Pass when Intents volume leads transactions excluding the top 10 receivers significantly (block bootstrap, Benjamini-Hochberg at q = 0.10), or with an r at least 0.10 above its lead on total transactions. Fail when it has no positive lead on either the excluding-top-10 or the top-10-only series.
+- **Result.** The daily counts of transactions to the top 10 receivers are not in the committed BigQuery files, so this test was not run.
+- **Status.** not computed
+- **Source.** `queries/top_receivers.sql`, `queries/daily_top_receivers.sql`
+
+#### B2. Buyback coverage of issuance
+
+- **Rule.** Monthly holders revenue in USD over the USD value of the net NEAR supply increase, from March 2026 (the first full month after the fee switch). Pass when the ratio's trend is positive with the slope's 90% interval above zero. Fail when it is flat or falling, or below 20% in each of the last three months.
+- **Result.** Daily NEAR total supply from the BigQuery blocks table is not in the committed files, so the net supply increase, and with it the coverage ratio, could not be computed.
+- **Status.** not computed
+- Holders revenue alone: NEAR Intents reports $7,318,449 from 2026-03 to the last complete month.
+- **Source.** `GET https://api.llama.fi/summary/fees/near-intents?dataType=dailyHoldersRevenue`, `GET https://api.nearblocks.io/v1/charts`
+
+#### B4. Distribution concentration
+
+- **Rule.** Per month, the Herfindahl-Hirschman index of 1Click volume by referral, top-1 and top-5 share and the number of referrals over $1M, with unlabeled referral as its own bucket and excluded. Pass (broadening) when the index trends down and top-1 share stays under 40% in each of the last three months. Fail when the index trends up or top-1 share goes over 40%.
+- **Result.** Distribution does not pass as broadening because the top referral's share reached 40% or more in 2026-10 with unlabeled volume as a bucket, or in 2026-08, 2026-09, 2026-10 with it excluded. Referral concentration (HHI) trends slope -290 a month (90% interval -381 to -200, 19 points) with unlabeled volume as a bucket and slope -385 a month (90% interval -504 to -266, 19 points) without it; in 2026-10 the top referral took 40% (50% of labeled volume).
+- **Status.** fail
+- With unlabeled as a bucket: 2025-04 HHI 6393, top-1 77% (referral), top-5 100%, 0 over $1M; 2025-05 HHI 5167, top-1 59% (referral), top-5 100%, 0 over $1M; 2025-06 HHI 8483, top-1 92% (swapkit), top-5 100%, 2 over $1M; 2025-07 HHI 4500, top-1 62% (swapkit-thorswap), top-5 98%, 3 over $1M; 2025-08 HHI 5796, top-1 75% (swapkit), top-5 98%, 5 over $1M; 2025-09 HHI 6954, top-1 83% (swapkit), top-5 96%, 6 over $1M; 2025-10 HHI 2831, top-1 47% (swapkit), top-5 90%, 10 over $1M; 2025-11 HHI 2748, top-1 42% (swapkit), top-5 95%, 13 over $1M; 2025-12 HHI 2553, top-1 43% (swapkit), top-5 91%, 17 over $1M; 2026-01 HHI 2528, top-1 38% (swapkit), top-5 90%, 21 over $1M; 2026-02 HHI 2171, top-1 40% (swapkit), top-5 88%, 24 over $1M; 2026-03 HHI 2734, top-1 48% (swapkit), top-5 84%, 20 over $1M; 2026-04 HHI 2637, top-1 48% (swapkit), top-5 83%, 27 over $1M; 2026-05 HHI 1891, top-1 29% (new.intents-referral.near), top-5 79%, 28 over $1M; 2026-06 HHI 1852, top-1 34% (swapkit), top-5 79%, 31 over $1M; 2026-07 HHI 1983, top-1 34% (swapkit), top-5 83%, 26 over $1M; 2026-08 HHI 2009, top-1 36% (swapkit), top-5 86%, 30 over $1M; 2026-09 HHI 1941, top-1 36% (swapkit), top-5 83%, 40 over $1M; 2026-10 HHI 2144, top-1 40% (swapkit), top-5 79%, 39 over $1M.
+- Unlabeled excluded: 2025-04 HHI 9355, top-1 97% (referral), top-5 100%; 2025-05 HHI 9967, top-1 100% (referral), top-5 100%; 2025-06 HHI 8562, top-1 92% (swapkit), top-5 100%; 2025-07 HHI 4600, top-1 63% (swapkit-thorswap), top-5 99%; 2025-08 HHI 6091, top-1 77% (swapkit), top-5 99%; 2025-09 HHI 7523, top-1 87% (swapkit), top-5 98%; 2025-10 HHI 3123, top-1 50% (swapkit), top-5 95%; 2025-11 HHI 2818, top-1 43% (swapkit), top-5 96%; 2025-12 HHI 2645, top-1 44% (swapkit), top-5 93%; 2026-01 HHI 2619, top-1 39% (swapkit), top-5 92%; 2026-02 HHI 2288, top-1 41% (swapkit), top-5 90%; 2026-03 HHI 2928, top-1 50% (swapkit), top-5 87%; 2026-04 HHI 2777, top-1 49% (swapkit), top-5 85%; 2026-05 HHI 2087, top-1 31% (new.intents-referral.near), top-5 84%; 2026-06 HHI 2080, top-1 36% (swapkit), top-5 83%; 2026-07 HHI 2331, top-1 38% (swapkit), top-5 87%; 2026-08 HHI 2451, top-1 42% (swapkit), top-5 88%; 2026-09 HHI 2406, top-1 44% (swapkit), top-5 82%; 2026-10 HHI 2722, top-1 50% (swapkit), top-5 77%.
+- Rule result per variant: fail with unlabeled as a bucket, fail with it excluded; the test passes only when both pass.
+- The Explorer day files keep the 40 largest referrals of each day and fold the rest into one tail bucket. The tail stays in the total but is not counted as a referral, so the index is a lower bound by at most the tail's own concentration, and a referral over $1M cannot hide in it unless it stays outside the daily top 40 every day.
+- **Source.** `GET https://explorer.near-intents.org/api/v0/transactions`, `scripts/fetch/intents.ts aggregateDay (data/raw/intents/daily/YYYY-MM-DD.json)`
 
 ### Confounders reported honestly
 
@@ -305,6 +334,7 @@ Five related angles, each with the rule set before it was computed. Failed tests
 - New accounts: Intents volume's best lead (3 weeks, r = 0.13, 90% interval -0.07 to 0.38) has a block-bootstrap p-value of 0.621, 0.801 after Benjamini-Hochberg, not significant at q = 0.1.
 - Function calls: Intents volume's best lead (7 weeks, r = 0.42, 90% interval 0.20 to 0.73) has a block-bootstrap p-value of 0.026, 0.157 after Benjamini-Hochberg, not significant at q = 0.1.
 - Contracts called: Intents volume's best lead (2 weeks, r = 0.42, 90% interval -0.04 to 0.57) has a block-bootstrap p-value of 0.032, 0.157 after Benjamini-Hochberg, not significant at q = 0.1.
+- B4, distribution concentration: Distribution does not pass as broadening because the top referral's share reached 40% or more in 2026-10 with unlabeled volume as a bucket, or in 2026-08, 2026-09, 2026-10 with it excluded. Referral concentration (HHI) trends slope -290 a month (90% interval -381 to -200, 19 points) with unlabeled volume as a bucket and slope -385 a month (90% interval -504 to -266, 19 points) without it; in 2026-10 the top referral took 40% (50% of labeled volume).
 
 ## What would change my mind
 
@@ -320,6 +350,8 @@ Five related angles, each with the rule set before it was computed. Failed tests
 - Distinct signers are an estimate of users: one person can hold many accounts, and relayers or intents hide the end user, so no "unique users" metric is claimed.
 - No incentive or emissions data is available from a free source (DefiLlama's emissions endpoint is paid), so wash-like or incentive-driven volume cannot be separated from organic volume; the confounders above are the known programs.
 - Weekly samples number 99; correlations smaller than about 0.20 cannot be told from noise, which is why significance now comes from the block bootstrap instead.
+- B1, Intents leads app usage, not raw chain counts: The daily counts of transactions to the top 10 receivers are not in the committed BigQuery files, so this test was not run.
+- B2, Buyback coverage of issuance: Daily NEAR total supply from the BigQuery blocks table is not in the committed files, so the net supply increase, and with it the coverage ratio, could not be computed.
 
 ## How to reproduce
 

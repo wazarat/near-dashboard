@@ -201,6 +201,15 @@ export async function fetchOverview(client: HttpClient, chain: LlamaChain, kind:
 }
 
 /** The combined protocol snapshot (TVL listing + overviews on both chains) used for mapping. */
+/** The two endpoints the buyback coverage test reads: `/summary/fees/<slug>?dataType=dailyHoldersRevenue`. */
+export const HOLDERS_REVENUE_SUMMARIES: Record<string, string> = { "NEAR Intents": "near-intents", NEAR: "near" };
+
+export async function fetchHoldersRevenueSummaries(client: HttpClient): Promise<SeriesMap> {
+  const out: SeriesMap = {};
+  for (const [name, slug] of Object.entries(HOLDERS_REVENUE_SUMMARIES)) out[name] = parseFeeSummary(await client.getJson(`${BASE}/summary/fees/${slug}?dataType=dailyHoldersRevenue`));
+  return out;
+}
+
 export async function fetchAllProtocols(client: HttpClient): Promise<LlamaProtocolSnap[]> {
   const base = await fetchProtocols(client);
   const extra: Array<{ list: OverviewProtocol[]; kind: "dexs" | "fees" | "aggregators" }> = [];
@@ -272,6 +281,16 @@ export async function run(ctx: Ctx): Promise<RunResult> {
       chain[c].gasFees = upsertSeries(chain[c].gasFees ?? [], parseFeeSummary(summary), { today: ctx.today, revisionDays: 7 });
     } catch (e) {
       notes.push(`${c} gas fee summary failed: ${(e as Error).message}`);
+    }
+    // Holders revenue summaries for the buyback coverage test (thesis B2): NEAR Intents across all its chains and the NEAR chain.
+    if (c === "near") {
+      try {
+        const series = await fetchHoldersRevenueSummaries(client);
+        if (!ctx.dryRun) writeJsonStable(path.join(DIR, "holders-revenue-summary.json"), mergeMap(readSeriesFile("holders-revenue-summary"), series, ctx.today));
+        rows += Object.keys(series).length;
+      } catch (e) {
+        notes.push(`holders revenue summary failed: ${(e as Error).message}`);
+      }
     }
     // Chain TVL (DefiLlama default view, excludes liquid staking and bridges).
     chain[c].tvl = upsertSeries(chain[c].tvl, parseChainTvl(await client.getJson(`${BASE}/v2/historicalChainTvl/${CHAIN_KEY[c]}`)), { today: ctx.today, allowToday: true });

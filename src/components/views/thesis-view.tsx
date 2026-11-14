@@ -12,6 +12,7 @@ import { ExplorerTest } from "@/components/thesis/explorer-test";
 import { LeadLagChart } from "@/components/thesis/lead-lag-chart";
 import { LevelsChart } from "@/components/thesis/levels-chart";
 import { OosChart } from "@/components/thesis/oos-chart";
+import { RelatedTestCard } from "@/components/thesis/related-test-card";
 import { ReproduceCard } from "@/components/thesis/reproduce-card";
 import { ResultsTable } from "@/components/thesis/results-table";
 import { BeyondPriceCard, GrangerCard, SignificanceCard } from "@/components/thesis/rigor-cards";
@@ -93,6 +94,14 @@ export function ThesisView() {
 
       <Section id="coverage" title="Which Intents measure is this?" lede="Two sources exist for Intents volume; this is how much of one the other sees.">
         <CoverageStrip data={data} />
+      </Section>
+
+      <Section id="related" title="Related tests" lede="Five angles on the same question, each judged by a rule set before it was computed. A failed test also appears under Evidence against.">
+        <div className="space-y-8">
+          {data.related.map((t) => (
+            <RelatedTestCard key={t.id} test={t} />
+          ))}
+        </div>
       </Section>
 
       <Section id="confounders" title="What else moved these series?">

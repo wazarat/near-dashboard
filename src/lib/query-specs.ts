@@ -13,7 +13,7 @@ export interface QuerySpec {
 }
 
 /** The SQL files in queries/, by file name without the extension. */
-export type SqlId = "daily_chain" | "daily_receipts" | "daily_gas";
+export type SqlId = "daily_chain" | "daily_receipts" | "daily_gas" | "top_receivers" | "daily_top_receivers" | "daily_supply";
 
 export function sqlSpec(id: SqlId, text: string, table?: string): QuerySpec {
   return { kind: "sql", title: `queries/${id}.sql${table ? ` (${table} table)` : ""}`, code: text.trim() };

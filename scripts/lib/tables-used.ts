@@ -20,6 +20,9 @@ const USED_FOR: Record<string, string> = {
   daily_chain: "daily transactions, active accounts (distinct signers) and distinct receivers; the thesis uses the first two",
   daily_receipts: "daily function calls, contracts called, distinct signers, CREATE_ACCOUNT and DEPLOY_CONTRACT counts, and calls per tracked account; the thesis uses function calls and contracts called",
   daily_gas: "gas burnt per tracked account for the gas fee figures on the site; not used in the thesis",
+  top_receivers: "the 10 receiver accounts with the most transactions over one complete month, saved to data/top-receivers.csv (thesis test B1)",
+  daily_top_receivers: "daily transactions to those 10 accounts and to every other receiver (thesis test B1)",
+  daily_supply: "NEAR total supply at the last block of each day (thesis test B2)",
 };
 
 /** The Explorer fields the fetcher reads and what each one is for (scripts/fetch/intents.ts). */
