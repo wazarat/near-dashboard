@@ -8,6 +8,28 @@ Cross-chain volume settled through NEAR Intents is a better leading indicator of
 
 **Result as of 2026-11-13: partly supported. Intents volume is the stronger positive lead for 2 of 5 usage series (0 for price, 3 inconclusive), and it wins 2 out-of-sample comparisons to price's 1, with the lead on 2 of 2 contract-level series (function calls, contracts called; 52 weeks) and on 0 of 3 chain-level counts (transactions, active accounts, new accounts; 100 weeks).**
 
+## Pre-registered tests
+
+Set on 2026-11-14 before any of these tests was computed; the commit that added this section comes before the code that runs them. Rules are copied from the test brief and are not changed after the results are known.
+
+### Part A, rigor for the headline claim
+
+- **A1. Significance instead of a fixed noise band.** For each usage series and each predictor (Intents volume, NEAR price), the p-value of the best positive-lag correlation comes from a moving-block bootstrap (block length 4 weeks, 2,000 resamples, fixed seed), with the search over lags 1 to 8 done inside each resample so the p-value accounts for picking the best lag. Benjamini-Hochberg is applied across all series and both predictors at q = 0.10. Reported per pair: r, p, adjusted significance and a 90% bootstrap interval. The ±0.20 band stays as a secondary note.
+- **A2. Does Intents add information beyond price?** Nested out-of-sample comparison with the current split (train before 2026-05-01, test after). Model 1 regresses the usage change on lagged price changes; Model 2 adds lagged Intents changes at the lag chosen on training data. Reported: test-period mean squared error of both models and the Clark-West statistic with its p-value. **Pass:** Model 2 lowers test MSE with Clark-West p < 0.10 for at least two series.
+- **A3. Reverse direction.** For each series, Granger F-tests at lags 1 to 4 weeks for Intents → usage and usage → Intents, both p-values reported. If usage → Intents is significant and Intents → usage is not, the result says plainly that usage may lead Intents rather than the reverse.
+- **A4. Verdict rule.** "Supported" needs A1 significance after Benjamini-Hochberg for Intents volume on at least three usage series, including one chain-level count, plus A2 passing.
+
+### Part B, related tests
+
+- **B1. Intents leads app usage, not raw chain counts.** The lead-lag, significance and out-of-sample tests rerun on daily transactions excluding the top 10 receiver accounts (picked over one recent complete month) and on the top 10 only. **Pass:** Intents leads the excluding-top-10 series significantly, or clearly better than it leads total transactions. **Fail:** no lead on either series.
+- **B2. Buyback coverage of issuance.** Monthly coverage ratio = holders revenue in USD divided by the USD value of the net NEAR supply increase, priced at the daily NEAR price, from the fee switch (late February 2026) onward. **Pass:** the coverage ratio has a positive trend with the slope's 90% interval above zero. **Fail:** flat or falling, or below 20% in each of the last three months.
+- **B3. Where fees land, by layer.** Monthly share of total fees across L1 gas, Intents protocol revenue, Intents supply side (solvers) and app fees. **Pass:** L1 gas share falls while the Intents layers rise, with a negative 90% slope interval on the L1 gas share. **Fail:** L1 gas share stable or rising.
+- **B4. Distribution concentration.** Per month, the Herfindahl-Hirschman index of referral volume, top-1 and top-5 share and the number of referrals over $1M, with unlabeled referral as its own bucket and excluded. **Pass (broadening):** the index has a negative trend and top-1 share stays under 40% in the last three months. **Fail:** the index trends up or top-1 share goes over 40%.
+- **B5. Ecosystem breadth.** Weekly share of chain function calls going to a fixed group (intents.near, aurora, HOT game.hot.tg, SWEAT .sweat accounts) with the rest of the chain as the complement. **Pass (breadth growing):** the non-group share has a positive trend with a 90% slope interval above zero. **Fail:** flat or falling. A failure goes into Evidence against.
+- **B6. Privacy flows.** Monthly share of 1Click volume where either side is ZEC. **Pass:** the ZEC share holds or grows after the NEAR@3.33 incentive window ends. **Fail:** it falls back below its level before 2025-10-01.
+
+A test that cannot be computed from free data is recorded under "Metrics that could not be computed" with the reason.
+
 ## Tables used
 
 Dataset `bigquery-public-data.crypto_near_mainnet_us`. All 3 queries filter on the `block_date` partition column with `WHERE block_date BETWEEN @start AND @end`; each job is dry-run first and runs with `maximumBytesBilled` set (`scripts/fetch/bigquery.ts`).
