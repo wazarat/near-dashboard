@@ -1,4 +1,4 @@
 {
   "backfills": [{"bytes":244490000000,"date":"2026-11-08","end":"2026-11-07","jobs":54,"perQuery":{"daily_chain":37900000000,"daily_receipts":206600000000},"source":"logs/bigquery-backfill.log","start":"2025-11-08"},{"bytes":97201122351,"date":"2026-11-13","end":"2025-11-07","jobs":24,"perQuery":{"daily_chain":97201122351},"start":"2024-12-10"},{"bytes":13321650890,"date":"2026-11-13","end":"2026-11-12","jobs":6,"perQuery":{"daily_receipts":13321650890},"start":"2026-10-07"}],
-  "daily": {"bytes":19345463987,"date":"2026-11-13","end":"2026-11-12","jobs":5,"perQuery":{"daily_chain":100000000,"daily_gas":18500000000,"daily_receipts":900000000},"source":"data/history/_meta.json perSource.bigquery (per query rounded to 0.1 GB)","start":"2026-11-10"}
+  "daily": {"bytes":2259380944,"date":"2026-11-14","end":"2026-11-13","jobs":3,"perQuery":{"daily_chain":200135629,"daily_gas":853191499,"daily_receipts":1206053816},"start":"2026-11-11"}
 }

@@ -1,4 +1,4 @@
 {
-  "asOf": "2026-11-13",
-  "coins": [{"aurora":1376178,"id":"1","name":"Tether","near":39648512,"symbol":"USDT"},{"aurora":2464724,"id":"2","name":"USD Coin","near":91493899,"symbol":"USDC"},{"aurora":0,"id":"4","name":"Binance USD","near":102,"symbol":"BUSD"},{"aurora":51224,"id":"5","name":"Dai","near":787833,"symbol":"DAI"},{"aurora":0,"id":"6","name":"Frax","near":206035,"symbol":"FRAX"},{"aurora":null,"id":"7","name":"TrueUSD","near":509,"symbol":"TUSD"},{"aurora":1708,"id":"18","name":"Nexus USD","near":null,"symbol":"NUSD"},{"aurora":52805,"id":"54","name":"USN","near":70184,"symbol":"USN"},{"aurora":2057,"id":"153","name":"Binance Peg BUSD","near":null,"symbol":"BUSD"}]
+  "asOf": "2026-11-14",
+  "coins": [{"aurora":1376045,"id":"1","name":"Tether","near":39458397,"symbol":"USDT"},{"aurora":2464548,"id":"2","name":"USD Coin","near":92883703,"symbol":"USDC"},{"aurora":0,"id":"4","name":"Binance USD","near":102,"symbol":"BUSD"},{"aurora":51229,"id":"5","name":"Dai","near":787905,"symbol":"DAI"},{"aurora":0,"id":"6","name":"Frax","near":204666,"symbol":"FRAX"},{"aurora":null,"id":"7","name":"TrueUSD","near":509,"symbol":"TUSD"},{"aurora":1708,"id":"18","name":"Nexus USD","near":null,"symbol":"NUSD"},{"aurora":52678,"id":"54","name":"USN","near":70015,"symbol":"USN"},{"aurora":2063,"id":"153","name":"Binance Peg BUSD","near":null,"symbol":"BUSD"}]
 }
