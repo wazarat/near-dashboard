@@ -23,6 +23,9 @@ Every pre-registered test below, as computed by this rebuild. "not computed" tes
 | B1 | Intents leads app usage, not raw chain counts | Pass when Intents volume leads transactions excluding the top 10 receivers significantly (block bootstrap, Benjamini-Hochberg at q = 0.10), or with an r at least 0.10 above its lead on total transactions. Fail when it has no positive lead on either the excluding-top-10 or the top-10-only series. | The daily counts of transactions to the top 10 receivers are not in the committed BigQuery files, so this test was not run. | not computed |
 | B2 | Buyback coverage of issuance | Monthly holders revenue in USD over the USD value of the net NEAR supply increase, from March 2026 (the first full month after the fee switch). Pass when the ratio's trend is positive with the slope's 90% interval above zero. Fail when it is flat or falling, or below 20% in each of the last three months. | Daily NEAR total supply from the BigQuery blocks table is not in the committed files, so the net supply increase, and with it the coverage ratio, could not be computed. | not computed |
 | B4 | Distribution concentration | Per month, the Herfindahl-Hirschman index of 1Click volume by referral, top-1 and top-5 share and the number of referrals over $1M, with unlabeled referral as its own bucket and excluded. Pass (broadening) when the index trends down and top-1 share stays under 40% in each of the last three months. Fail when the index trends up or top-1 share goes over 40%. | Distribution does not pass as broadening because the top referral's share reached 40% or more in 2026-10 with unlabeled volume as a bucket, or in 2026-08, 2026-09, 2026-10 with it excluded. Referral concentration (HHI) trends slope -290 a month (90% interval -381 to -200, 19 points) with unlabeled volume as a bucket and slope -385 a month (90% interval -504 to -266, 19 points) without it; in 2026-10 the top referral took 40% (50% of labeled volume). | fail |
+| B3 | Where fees land, by layer | Monthly share of total fees across L1 gas, Intents protocol revenue and Intents supply side (solvers), with app fees shown where the Explorer keeps them. Pass when the L1 gas share falls with a negative 90% slope interval while the Intents layers rise. Fail when the L1 gas share is stable or rising. | L1 gas fell from 71% of fees in 2025-06 to 3% in 2026-10 while the Intents layers rose to 97%; the gas share's trend is slope -3.2 points a month (90% interval -4.5 to -2.0, 17 points), so fees land at the app layer. | pass |
+| B5 | Ecosystem breadth | Weekly share of chain function calls going to everything outside a fixed group (intents.near, aurora, HOT, SWEAT). Pass (breadth growing) when the non-group share has a positive trend with the 90% slope interval above zero. Fail when flat or falling. | The share of function calls outside intents.near, Aurora, HOT and SWEAT went from 82% in the week of 2025-11-10 to 65% in the week of 2026-11-02, a trend of slope -0.37 points a week (90% interval -0.52 to -0.22, 52 points), so breadth is not growing by the rule. | fail |
+| B6 | Privacy flows | Monthly share of 1Click volume where either side is ZEC. Pass when the ZEC share holds or grows after the NEAR@3.33 incentive window ends. Fail when it falls back below its level before 2025-10-01. | The ZEC share stays well above its level before 2025-10-01 (1.0% to 1.6% of 1Click volume) in the last three months (2026-08 6% to 12%, 2026-09 11% to 20%, 2026-10 14% to 23%), so the fail rule is not met. The pass rule asks about the weeks after the NEAR@3.33 incentive window ends, and the events file dates the program's start (2026-06-11) but not an end, so a pass cannot be dated. | inconclusive |
 
 ### Pre-registered tests
 
@@ -296,6 +299,37 @@ Five related angles, each with the rule set before it was computed. Failed tests
 - The Explorer day files keep the 40 largest referrals of each day and fold the rest into one tail bucket. The tail stays in the total but is not counted as a referral, so the index is a lower bound by at most the tail's own concentration, and a referral over $1M cannot hide in it unless it stays outside the daily top 40 every day.
 - **Source.** `GET https://explorer.near-intents.org/api/v0/transactions`, `scripts/fetch/intents.ts aggregateDay (data/raw/intents/daily/YYYY-MM-DD.json)`
 
+#### B3. Where fees land, by layer
+
+- **Rule.** Monthly share of total fees across L1 gas, Intents protocol revenue and Intents supply side (solvers), with app fees shown where the Explorer keeps them. Pass when the L1 gas share falls with a negative 90% slope interval while the Intents layers rise. Fail when the L1 gas share is stable or rising.
+- **Result.** L1 gas fell from 71% of fees in 2025-06 to 3% in 2026-10 while the Intents layers rose to 97%; the gas share's trend is slope -3.2 points a month (90% interval -4.5 to -2.0, 17 points), so fees land at the app layer.
+- **Status.** pass
+- Months: 2025-06 to 2026-10 (17). Intents protocol revenue and supply side are DefiLlama's NEAR Intents revenue and supply-side revenue, which add up to its fees; a negative month would count as zero (none in this window).
+- App fees come from the Explorer's per-row fee rates, kept only for 296 complete days (2025-03-27 to 2026-11-13): $19,893,846 against $22,046,530 of NEAR Intents fees and $2,364,367 of L1 gas on the same days. They are left out of the monthly shares and the rule.
+- Overlap: app fees are charged by distribution apps on top of the swap, and DefiLlama's NEAR Intents fees can include a platform's partner fees. In the months where every Explorer day keeps fee rates, Explorer app fees come to 100% of DefiLlama's NEAR Intents fees in 2025-06, 100% of DefiLlama's NEAR Intents fees in 2025-07, 101% of DefiLlama's NEAR Intents fees in 2025-08, 101% of DefiLlama's NEAR Intents fees in 2025-09, 100% of DefiLlama's NEAR Intents fees in 2025-10, 94% of DefiLlama's NEAR Intents fees in 2025-11, so DefiLlama's Intents fees already carry most app fees. Stacking app fees as a fourth layer would count them twice, so they are left out of the monthly shares and the rule.
+- Gas share trend measured on the monthly share (0 to 1) against the month index; 90% t interval, months treated as independent.
+- **Source.** `GET https://api.llama.fi/summary/fees/near?dataType=dailyFees`, `scripts/fetch/intents.ts aggregateDay (data/raw/intents/daily/YYYY-MM-DD.json)`
+
+#### B5. Ecosystem breadth
+
+- **Rule.** Weekly share of chain function calls going to everything outside a fixed group (intents.near, aurora, HOT, SWEAT). Pass (breadth growing) when the non-group share has a positive trend with the 90% slope interval above zero. Fail when flat or falling.
+- **Result.** The share of function calls outside intents.near, Aurora, HOT and SWEAT went from 82% in the week of 2025-11-10 to 65% in the week of 2026-11-02, a trend of slope -0.37 points a week (90% interval -0.52 to -0.22, 52 points), so breadth is not growing by the rule.
+- **Status.** fail
+- Group accounts used: `intents.near`, `aurora`, `game.hot.tg`, `token.sweat`. These are the accounts present in every committed receipts window; `oracle.sweat` and `distributions.grow.sweat` (SWEAT, mapped in data/contracts.csv) are tracked only in the latest windows and are left out so the group stays the same over all 52 weeks.
+- Function calls are FUNCTION_CALL receipt actions from `receipt_actions`; the complement is every other receiver on the chain.
+- Weeks are treated as independent for the 90% t interval; weekly shares are autocorrelated, so the interval is narrower than a block-robust one.
+- **Source.** `queries/daily_receipts.sql`
+
+#### B6. Privacy flows
+
+- **Rule.** Monthly share of 1Click volume where either side is ZEC. Pass when the ZEC share holds or grows after the NEAR@3.33 incentive window ends. Fail when it falls back below its level before 2025-10-01.
+- **Result.** The ZEC share stays well above its level before 2025-10-01 (1.0% to 1.6% of 1Click volume) in the last three months (2026-08 6% to 12%, 2026-09 11% to 20%, 2026-10 14% to 23%), so the fail rule is not met. The pass rule asks about the weeks after the NEAR@3.33 incentive window ends, and the events file dates the program's start (2026-06-11) but not an end, so a pass cannot be dated.
+- **Status.** inconclusive
+- Monthly ZEC share (lower to upper bound): 2025-04 0% to 0%, 2025-05 0% to 0%, 2025-06 0% to 0%, 2025-07 0% to 0%, 2025-08 0% to 0%, 2025-09 2% to 4%, 2025-10 24% to 41%, 2025-11 23% to 39%, 2025-12 11% to 22%, 2026-01 18% to 29%, 2026-02 11% to 19%, 2026-03 5% to 10%, 2026-04 6% to 13%, 2026-05 15% to 26%, 2026-06 9% to 15%, 2026-07 9% to 17%, 2026-08 6% to 12%, 2026-09 11% to 20%, 2026-10 14% to 23%.
+- The day files keep volume per origin asset and per destination asset but not the pair, and the raw rows are not committed. The lower bound is the larger of the ZEC-origin and ZEC-destination volume, the upper bound their sum (a swap with ZEC on both sides would be counted twice there). ZEC is the native asset (`ZEC`) and ZEC bridged to NEAR (`near:zec.omft.near`).
+- Confidential swaps cannot be identified from the Explorer API: no field in its rows marks a swap as confidential.
+- **Source.** `GET https://explorer.near-intents.org/api/v0/transactions`, `scripts/fetch/intents.ts aggregateDay (data/raw/intents/daily/YYYY-MM-DD.json)`
+
 ### Confounders reported honestly
 
 - 2026-10-01, Incident: NEAR Intents Omni deposit/withdraw exploit (USDT on BSC, HOT Bridge treasury). A $3.8M loss and a service pause on Oct 1, 2026 depress Intents volume for reasons unrelated to demand. [source](https://thedefiant.io/news/security/near-intents-postmortem-links-3-8-million-exploit-to-deposit-bug)
@@ -316,6 +350,7 @@ Five related angles, each with the rule set before it was computed. Failed tests
 - Robustness, function calls without aurora and intents.near receipts: Intents volume is the stronger positive lead for 1 usage series, price for 0.
 - Robustness, 1Click Explorer volume instead of DefiLlama: Intents volume is the stronger positive lead for 2 usage series, price for 0.
 - Adding lagged Intents volume to a price-only model lowers out-of-sample error with Clark-West p < 0.1 for 2 of 5 usage series (active accounts, function calls); the rule needs at least two.
+- B3, where fees land, by layer: L1 gas fell from 71% of fees in 2025-06 to 3% in 2026-10 while the Intents layers rose to 97%; the gas share's trend is slope -3.2 points a month (90% interval -4.5 to -2.0, 17 points), so fees land at the app layer.
 
 ## Evidence against
 
@@ -335,6 +370,7 @@ Five related angles, each with the rule set before it was computed. Failed tests
 - Function calls: Intents volume's best lead (7 weeks, r = 0.42, 90% interval 0.20 to 0.73) has a block-bootstrap p-value of 0.026, 0.157 after Benjamini-Hochberg, not significant at q = 0.1.
 - Contracts called: Intents volume's best lead (2 weeks, r = 0.42, 90% interval -0.04 to 0.57) has a block-bootstrap p-value of 0.032, 0.157 after Benjamini-Hochberg, not significant at q = 0.1.
 - B4, distribution concentration: Distribution does not pass as broadening because the top referral's share reached 40% or more in 2026-10 with unlabeled volume as a bucket, or in 2026-08, 2026-09, 2026-10 with it excluded. Referral concentration (HHI) trends slope -290 a month (90% interval -381 to -200, 19 points) with unlabeled volume as a bucket and slope -385 a month (90% interval -504 to -266, 19 points) without it; in 2026-10 the top referral took 40% (50% of labeled volume).
+- B5, ecosystem breadth: The share of function calls outside intents.near, Aurora, HOT and SWEAT went from 82% in the week of 2025-11-10 to 65% in the week of 2026-11-02, a trend of slope -0.37 points a week (90% interval -0.52 to -0.22, 52 points), so breadth is not growing by the rule.
 
 ## What would change my mind
 

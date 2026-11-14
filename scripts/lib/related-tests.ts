@@ -422,6 +422,5 @@ function b6(ctx: RelatedCtx): RelatedTest {
 }
 
 export function relatedTests(ctx: RelatedCtx): RelatedTest[] {
-  return [b1(ctx), b2(ctx), b4(ctx)];
-  void [b3, b5, b6];
+  return [b1(ctx), b2(ctx), b4(ctx), b3(ctx), b5(ctx), b6(ctx)];
 }
