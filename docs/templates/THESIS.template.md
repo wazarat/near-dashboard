@@ -8,18 +8,28 @@ Cross-chain volume settled through NEAR Intents is a better leading indicator of
 
 **Result as of {{asOf}}: {{headline}}**
 
-## Pre-registered tests
+Verdict rule: {{verdictRule}}
+
+### Test results
+
+Every pre-registered test below, as computed by this rebuild. "not computed" tests are listed with the reason under "Metrics that could not be computed".
+
+| Test | Name | Pre-registered rule | Result | Status |
+|---|---|---|---|---|
+{{resultsTable}}
+
+### Pre-registered tests
 
 Set on 2026-11-14 before any of these tests was computed; the commit that added this section comes before the code that runs them. Rules are copied from the test brief and are not changed after the results are known.
 
-### Part A, rigor for the headline claim
+#### Part A, rigor for the headline claim
 
 - **A1. Significance instead of a fixed noise band.** For each usage series and each predictor (Intents volume, NEAR price), the p-value of the best positive-lag correlation comes from a moving-block bootstrap (block length 4 weeks, 2,000 resamples, fixed seed), with the search over lags 1 to 8 done inside each resample so the p-value accounts for picking the best lag. Benjamini-Hochberg is applied across all series and both predictors at q = 0.10. Reported per pair: r, p, adjusted significance and a 90% bootstrap interval. The ±0.20 band stays as a secondary note.
 - **A2. Does Intents add information beyond price?** Nested out-of-sample comparison with the current split (train before 2026-05-01, test after). Model 1 regresses the usage change on lagged price changes; Model 2 adds lagged Intents changes at the lag chosen on training data. Reported: test-period mean squared error of both models and the Clark-West statistic with its p-value. **Pass:** Model 2 lowers test MSE with Clark-West p < 0.10 for at least two series.
 - **A3. Reverse direction.** For each series, Granger F-tests at lags 1 to 4 weeks for Intents → usage and usage → Intents, both p-values reported. If usage → Intents is significant and Intents → usage is not, the result says plainly that usage may lead Intents rather than the reverse.
 - **A4. Verdict rule.** "Supported" needs A1 significance after Benjamini-Hochberg for Intents volume on at least three usage series, including one chain-level count, plus A2 passing.
 
-### Part B, related tests
+#### Part B, related tests
 
 - **B1. Intents leads app usage, not raw chain counts.** The lead-lag, significance and out-of-sample tests rerun on daily transactions excluding the top 10 receiver accounts (picked over one recent complete month) and on the top 10 only. **Pass:** Intents leads the excluding-top-10 series significantly, or clearly better than it leads total transactions. **Fail:** no lead on either series.
 - **B2. Buyback coverage of issuance.** Monthly coverage ratio = holders revenue in USD divided by the USD value of the net NEAR supply increase, priced at the daily NEAR price, from the fee switch (late February 2026) onward. **Pass:** the coverage ratio has a positive trend with the slope's 90% interval above zero. **Fail:** flat or falling, or below 20% in each of the last three months.
@@ -63,6 +73,34 @@ Correlations inside roughly ±{{noiseBand}} are indistinguishable from noise at 
 
 {{robustnessTable}}
 
+### Significance of the best lead (A1)
+
+Moving-block bootstrap with blocks of {{bootBlock}} weeks, {{bootResamples}} resamples and seed {{bootSeed}}. Each resample searches lags 1 to 8 again, so the p-value pays for picking the best lag. The null breaks the link between predictor and usage by resampling the two separately. The 90% interval resamples them together and recomputes r at the chosen lag, since the maximum over lags is biased upward in every resample. Benjamini-Hochberg runs across every series and both predictors at q = {{bhQ}}. r here is computed on the weeks where all eight lags exist, so it can differ slightly from the lead-lag table above.
+
+| Usage series | Predictor | Best lag | r | 90% interval | p | Adjusted p | Significant | ±0.20 band | Weeks |
+|---|---|---|---|---|---|---|---|---|---|
+{{bootTable}}
+
+### Does Intents add information beyond price? (A2)
+
+Model 1 regresses the weekly usage change on the lagged price change; Model 2 adds the lagged Intents volume change. Both lags are picked on weeks before {{cutoff}} and the models are scored on the weeks after. MSE is shown times 1,000. Clark-West p is one-sided.
+
+| Usage series | Price lag | Intents lag | Train / test weeks | MSE, price only | MSE, with Intents | Clark-West | p | Pass |
+|---|---|---|---|---|---|---|---|---|
+{{cwTable}}
+
+{{cwStatement}}
+
+### Reverse direction, Granger both ways (A3)
+
+F-test p-values at lags 1 / 2 / 3 / 4 weeks. The summary p is the smallest of the four times four (Bonferroni), significant below 0.10.
+
+| Usage series | Intents → usage, p by lag | Summary p | Usage → Intents, p by lag | Summary p | Reading |
+|---|---|---|---|---|---|
+{{grangerTable}}
+
+{{grangerStatement}}
+
 ### Explorer-only test
 
 {{explorerStatement}}
@@ -86,6 +124,12 @@ The same lead-lag and out-of-sample tests on both sources:
 | Usage series | Source | Intents volume leads by | r | Price leads by | r | Out-of-sample R² (Intents / price) | Weeks |
 |---|---|---|---|---|---|---|---|
 {{crossCheckTable}}
+
+### Related tests
+
+Five related angles, each with the rule set before it was computed. Failed tests are also listed under Evidence against.
+
+{{relatedTests}}
 
 ### Confounders reported honestly
 

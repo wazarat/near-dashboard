@@ -10,7 +10,9 @@ import { addDays, type DateStr } from "../src/lib/dates";
 import { emptyOverview, type ChainHistory, type HistoryMeta, type Series, type SeriesMap } from "../src/lib/history-types";
 import { windowEnd } from "../src/lib/live";
 import { indexTo100, leadLag, logChanges, outOfSample, subtractSeries, toWeekly, trimTop, dropTop, type LeadLagSummary, type OosResult } from "../src/lib/stats";
-import type { Confounder, CrossCheck, ExplorerTest, ExplorerTestCell, RobustnessVariant, ThesisJson, UsageKey, UsageMeta, UsageWindow } from "../src/lib/thesis-types";
+import type { BootRow, Confounder, CrossCheck, ExplorerTest, ExplorerTestCell, ResultRow, Rigor, RobustnessVariant, ThesisJson, UsageKey, UsageMeta, UsageWindow } from "../src/lib/thesis-types";
+import { BH_Q, BOOT_BLOCK, BOOT_RESAMPLES, BOOT_SEED, SIG_P, benjaminiHochberg, blockBootstrapLead, clarkWest, granger, ruleA2, ruleA4 } from "../src/lib/thesis-tests";
+import { relatedTests } from "./lib/related-tests";
 import type { EcosystemEvent } from "../src/lib/types";
 import { BQ_BACKFILL_MAX_DEFAULT } from "./fetch/bigquery";
 import { readDaily as readIntentsDaily } from "./fetch/intents";
@@ -52,6 +54,20 @@ const QUERIES: ThesisJson["queries"] = {
   weekly: SPECS.weekly,
   leadLag: SPECS.leadLag,
   oos: SPECS.oos,
+  rigor: {
+    kind: "transform",
+    title: "src/lib/thesis-tests.ts blockBootstrapLead, benjaminiHochberg, clarkWest, granger",
+    code: `x, y        = weekly log changes (predictor, usage), aligned on ISO weeks
+rows        = for each week t, [x_t, y_t+1 ... y_t+8]
+r*          = max over lags 1..8 of corr(x_t, y_t+k)
+null        = 2,000 times, resample x rows and y rows separately in moving blocks of 4 weeks, recompute r* with the lag search
+p           = (1 + count(null r* >= observed r*)) / 2,001
+interval    = 5th and 95th percentile of corr at the chosen lag over paired block resamples
+BH          = Benjamini-Hochberg over 5 series x 2 predictors, q = 0.10
+Clark-West  = model 1 y_t ~ price_t-Lp, model 2 adds intents_t-Li (lags picked on weeks before the cutoff)
+              f_t = e1^2 - (e2^2 - (yhat1 - yhat2)^2), CW = mean(f) / se(f), one-sided normal p
+Granger     = F-test of x lags 1..p added to y lags 1..p, p = 1..4, summary p = min(p) x 4`,
+  },
 };
 
 function loadChain(): ChainHistory {
@@ -96,12 +112,46 @@ function fmtRatio(v: number | null | undefined): string {
   return v === null || v === undefined ? "n/a" : v.toFixed(4);
 }
 
+function fmtP(v: number | null | undefined): string {
+  return v === null || v === undefined ? "n/a" : v < 0.001 ? "< 0.001" : v.toFixed(3);
+}
+
 function fmtR(v: number | null | undefined): string {
   return v === null || v === undefined ? "n/a" : v.toFixed(2);
 }
 
 function pct(v: number | null | undefined): string {
   return v === null || v === undefined ? "n/a" : `${Math.round(v * 100)}%`;
+}
+
+/**
+ * Part A on one set of weekly changes: A1 block-bootstrap p-values with Benjamini-Hochberg across every series and
+ * both predictors, A2 the nested Clark-West comparison, A3 Granger both ways, A4 the verdict gate.
+ */
+function rigorOf(xi: Series, xp: Series, usage: Partial<Record<UsageKey, Series>>, cutoff: DateStr): Rigor {
+  const keys = USAGE.filter((u) => (usage[u.key]?.length ?? 0) >= 12).map((u) => u.key);
+  const raw = keys.flatMap((k) => [blockBootstrapLead(xi, usage[k]!, MAX_LAG), blockBootstrapLead(xp, usage[k]!, MAX_LAG)]);
+  const bh = benjaminiHochberg(raw.map((b) => b.p), BH_Q);
+  const row = (i: number): BootRow => {
+    const b = raw[i];
+    return { lag: b.lag, r: r3(b.r), p: r4(b.p), pAdj: r4(bh.adjusted[i]), significant: bh.significant[i] && (b.r ?? 0) > 0, ciLow: r3(b.ciLow), ciHigh: r3(b.ciHigh), n: b.n, outsideBand: (b.r ?? 0) > 0.2 };
+  };
+  const bootstrap: Rigor["bootstrap"] = {};
+  keys.forEach((k, j) => (bootstrap[k] = { intents: row(2 * j), price: row(2 * j + 1) }));
+  const cw: Rigor["clarkWest"] = {};
+  const gr: Rigor["granger"] = {};
+  for (const k of keys) {
+    const c = clarkWest(xi, xp, usage[k]!, cutoff, MAX_LAG);
+    cw[k] = { ...c, mse1: r4(c.mse1 === null ? null : c.mse1 * 1000), mse2: r4(c.mse2 === null ? null : c.mse2 * 1000), cw: r3(c.cw), p: r4(c.p) };
+    const fwd = granger(xi, usage[k]!, 4);
+    const rev = granger(usage[k]!, xi, 4);
+    const round = (g: typeof fwd) => ({ ...g, pByLag: g.pByLag.map((p) => r4(p)), pMin: r4(g.pMin) });
+    gr[k] = { forward: round(fwd), reverse: round(rev), usageLeads: rev.significant && !fwd.significant };
+  }
+  const a2Pass = ruleA2(Object.values(cw) as NonNullable<Rigor["clarkWest"][UsageKey]>[]);
+  const significantSeries = keys.filter((k) => bootstrap[k]!.intents.significant);
+  const levels = significantSeries.map((k) => USAGE.find((u) => u.key === k)!.level);
+  return { seed: BOOT_SEED, resamples: BOOT_RESAMPLES, block: BOOT_BLOCK, q: BH_Q, bootstrap, clarkWest: cw, a2Pass, granger: gr, significantSeries, a4Pass: ruleA4(levels, a2Pass) };
 }
 
 function main() {
@@ -311,10 +361,26 @@ function main() {
   const riw = robustness.slice(1).reduce((a, v) => a + v.intentsWins, 0);
   const rpw = robustness.slice(1).reduce((a, v) => a + v.priceWins, 0);
   const total = iw + pw + ties;
+  // Part A on the headline weeks.
+  const rigor = rigorOf(xIntents, xPrice, baseUsage, cutoff);
+  const labelOf = (k: UsageKey) => USAGE.find((u) => u.key === k)!.label;
+  for (const u of USAGE) {
+    const b = rigor.bootstrap[u.key];
+    if (!b) continue;
+    const i = b.intents;
+    const line = `${u.label}: Intents volume's best lead (${wk(i.lag)}, r = ${fmtR(i.r)}, 90% interval ${fmtR(i.ciLow)} to ${fmtR(i.ciHigh)}) has a block-bootstrap p-value of ${fmtP(i.p)}, ${fmtP(i.pAdj)} after Benjamini-Hochberg`;
+    if (i.significant) forLines.push(`${line}, significant at q = ${BH_Q}.`);
+    else againstLines.push(`${line}, not significant at q = ${BH_Q}.`);
+    const g = rigor.granger[u.key];
+    if (g?.usageLeads) againstLines.push(`${u.label}: usage changes Granger-predict Intents volume (p = ${fmtP(g.reverse.pMin)}) while Intents volume does not Granger-predict usage (p = ${fmtP(g.forward.pMin)}), so usage may lead Intents rather than the reverse.`);
+  }
+  const cwPassed = USAGE.filter((u) => rigor.clarkWest[u.key]?.pass).map((u) => u.label.toLowerCase());
+  (rigor.a2Pass ? forLines : againstLines).push(`Adding lagged Intents volume to a price-only model lowers out-of-sample error with Clark-West p < ${SIG_P} for ${cwPassed.length} of ${Object.keys(rigor.clarkWest).length} usage series${cwPassed.length ? ` (${cwPassed.join(", ")})` : ""}; the rule needs at least two.`);
   /** The verdict rule, shared by the headline and the Explorer-only test. */
-  const verdictOf = (lead: number, priceLead: number, oosWins: number, priceOosWins: number): ThesisJson["verdict"]["supported"] => (lead >= 3 && priceLead === 0 && oosWins >= priceOosWins ? "yes" : lead > priceLead && oosWins >= priceOosWins ? "partly" : "no");
+  const verdictOf = (lead: number, priceLead: number, oosWins: number, priceOosWins: number, gate: boolean): ThesisJson["verdict"]["supported"] => (lead >= 3 && priceLead === 0 && oosWins >= priceOosWins && gate ? "yes" : lead > priceLead && oosWins >= priceOosWins ? "partly" : "no");
   const verdictWord = (v: ThesisJson["verdict"]["supported"]) => (v === "yes" ? "supported" : v === "partly" ? "partly supported" : "not supported");
-  const supported = verdictOf(iw, pw, oiw, opw);
+  const supported = verdictOf(iw, pw, oiw, opw, rigor.a4Pass);
+  const verdictRule = `"Supported" needs Intents volume to be the stronger positive lead on three or more usage series with none for price, to win at least as many out-of-sample comparisons as price, to be significant after Benjamini-Hochberg (block bootstrap, q = ${BH_Q}) on at least three series including one chain-level count, and the nested Clark-West test to pass on at least two series. "Partly supported" needs more lead wins than price and at least as many out-of-sample wins. Anything else is "not supported".`;
 
   // Explorer-only test: both tests again with the track's named source, 1Click Explorer volume, as the predictor over
   // the weeks it covers, next to DefiLlama volume and price over those same weeks.
@@ -354,8 +420,9 @@ function main() {
       }
     }
     const n = Object.keys(results).length;
-    const e = { ...te, supported: verdictOf(te.leadWins, te.priceLeadWins, te.oosWins, te.priceOosWins) };
-    const l = { ...tl, supported: verdictOf(tl.leadWins, tl.priceLeadWins, tl.oosWins, tl.priceOosWins) };
+    const sameUsage = Object.fromEntries(USAGE.map((u) => [u.key, sameWeeks(baseUsage[u.key])])) as Record<UsageKey, Series>;
+    const e = { ...te, supported: verdictOf(te.leadWins, te.priceLeadWins, te.oosWins, te.priceOosWins, rigorOf(xExplorer, xp, sameUsage, cutoff).a4Pass) };
+    const l = { ...tl, supported: verdictOf(tl.leadWins, tl.priceLeadWins, tl.oosWins, tl.priceOosWins, rigorOf(xl, xp, sameUsage, cutoff).a4Pass) };
     // The conclusion holds when the Explorer verdict is at least as strong as the full-window one.
     const rank = { no: 0, partly: 1, yes: 2 } as const;
     const holds = rank[e.supported] >= rank[supported];
@@ -378,10 +445,29 @@ function main() {
       : supported === "partly"
         ? `partly supported. Intents volume is the stronger positive lead for ${iw} of ${total} usage series (${pw} for price, ${ties} inconclusive), and it wins ${oiw} out-of-sample comparisons to price's ${opw}, with the lead on ${levelLine("contract", "contract-level series")} and on ${levelLine("chain", "chain-level counts")}.`
         : `not supported by this data. Intents volume is the stronger positive lead for ${iw} of ${total} usage series, price for ${pw}, ${ties} inconclusive; out of sample Intents wins ${oiw} and price ${opw}.`;
+  const gateLine = ` After the block bootstrap and Benjamini-Hochberg, Intents volume is significant on ${rigor.significantSeries.length} of ${Object.keys(rigor.bootstrap).length} series${rigor.significantSeries.length ? ` (${rigor.significantSeries.map((k) => labelOf(k).toLowerCase()).join(", ")})` : ""}, and adding it to price lowers out-of-sample error significantly (Clark-West) on ${cwPassed.length}.`;
+  const headlineFull = headline + gateLine;
+
+  // Part B, the related tests, from the same committed files.
+  const related = relatedTests({ chain, start, end, cutoff, explorerDays, xIntents, xPrice, maxLag: MAX_LAG, txnsWeekly: baseUsage.txns, txnsIntentsR: leadLagOut.txns?.intents.bestPositiveLead?.r ?? null, events });
+  for (const t of related) {
+    const line = `${t.code}, ${t.title.charAt(0).toLowerCase()}${t.title.slice(1)}: ${t.result}`;
+    if (t.status === "pass") forLines.push(line);
+    else if (t.status === "fail") againstLines.push(line);
+  }
+  const statusWord = (ok: boolean) => (ok ? "pass" : "fail") as ResultRow["status"];
+  const results: ResultRow[] = [
+    { id: "significance", code: "A1", test: "Significance of the best lead", rule: `Block bootstrap p-value with the lag search in every resample, Benjamini-Hochberg at q = ${BH_Q} across ${Object.keys(rigor.bootstrap).length} series and both predictors; the verdict gate needs three or more series`, result: `Intents significant on ${rigor.significantSeries.length} series, price on ${USAGE.filter((u) => rigor.bootstrap[u.key]?.price.significant).length}`, status: statusWord(rigor.significantSeries.length >= 3) },
+    { id: "beyond-price", code: "A2", test: "Intents adds information beyond price", rule: `Model with Intents lowers test MSE with Clark-West p < ${SIG_P} on at least two series`, result: `${cwPassed.length} of ${Object.keys(rigor.clarkWest).length} series`, status: statusWord(rigor.a2Pass) },
+    { id: "granger", code: "A3", test: "Reverse direction (Granger)", rule: "Reported both ways; flagged when usage leads Intents and not the reverse", result: `Intents predicts usage on ${USAGE.filter((u) => rigor.granger[u.key]?.forward.significant).length} series, usage predicts Intents on ${USAGE.filter((u) => rigor.granger[u.key]?.reverse.significant).length}, usage alone leads on ${USAGE.filter((u) => rigor.granger[u.key]?.usageLeads).length}`, status: USAGE.some((u) => rigor.granger[u.key]?.usageLeads) ? "fail" : "pass" },
+    { id: "verdict-gate", code: "A4", test: "Verdict gate", rule: "Significant on three or more series including one chain-level count, and A2 passing", result: `Verdict ${supported === "yes" ? "supported" : supported === "partly" ? "partly supported" : "not supported"}`, status: statusWord(rigor.a4Pass) },
+    ...related.map((t) => ({ id: t.id, code: t.code, test: t.title, rule: t.rule, result: t.result, status: t.status })),
+  ];
+
   if (!forLines.length) forLines.push("No usage series showed Intents volume as the stronger lead in this window.");
   if (!againstLines.length) againstLines.push("No usage series showed price as the stronger lead in this window.");
   const changeMyMind = [
-    `If, when the daily refresh has added 12 more weeks, price's best positive-lag correlation exceeds Intents volume's by more than 0.10 on three or more of the five usage series, the claim is wrong. Conversely, the claim only becomes "supported" rather than "partly supported" once Intents volume clears the noise band with a positive lead on at least three series, including one chain-level count.`,
+    `If, when the daily refresh has added 12 more weeks, price's best positive-lag correlation exceeds Intents volume's by more than 0.10 on three or more of the five usage series, the claim is wrong. Conversely, the claim only becomes "supported" rather than "partly supported" once Intents volume is significant after Benjamini-Hochberg on at least three series, including one chain-level count, and adds out-of-sample information beyond price (Clark-West) on at least two.`,
     `If Intents volume's out-of-sample R² for transactions and active accounts falls below 0 (worse than the training mean) while price's stays above 0.10, the claim is wrong.`,
     `If removing receipts to aurora and intents.near from function calls (the "exAuroraIntents" variant) flips the winner, the apparent lead is just Intents settlement counting itself as usage.`,
     `If the 1Click Explorer series, once it covers the full window, disagrees in sign with the DefiLlama series at the chosen lag, the result depends on which Intents measure is used and should be marked unresolved.`,
@@ -391,7 +477,8 @@ function main() {
     `Function calls and contracts called (BigQuery \`receipt_actions\`) cover ${bqWeeks} weeks only${uncoveredReceipts?.gb !== undefined ? `: running \`queries/daily_receipts.sql\` over ${uncoveredReceipts.start} to ${uncoveredReceipts.end} would scan ${uncoveredReceipts.gb.toFixed(2)} GB by dry run, over the ${Math.round(BQ_BACKFILL_MAX_DEFAULT / 1e9)} GB backfill budget` : ""}. For the same reason new accounts come from NearBlocks' daily charts and not from CREATE_ACCOUNT receipts. Transactions and active accounts come from BigQuery for the whole window.`,
     `Distinct signers are an estimate of users: one person can hold many accounts, and relayers or intents hide the end user, so no "unique users" metric is claimed.`,
     `No incentive or emissions data is available from a free source (DefiLlama's emissions endpoint is paid), so wash-like or incentive-driven volume cannot be separated from organic volume; the confounders above are the known programs.`,
-    `Weekly samples number ${xIntents.length}; correlations smaller than about ${fmtR(leadLagOut.txns?.intents.noiseBand)} cannot be told from noise.`,
+    `Weekly samples number ${xIntents.length}; correlations smaller than about ${fmtR(leadLagOut.txns?.intents.noiseBand)} cannot be told from noise, which is why significance now comes from the block bootstrap instead.`,
+    ...related.filter((t) => t.status === "not computed").map((t) => `${t.code}, ${t.title}: ${t.result}`),
   ];
 
   const thesis: ThesisJson = {
@@ -441,8 +528,11 @@ function main() {
       explorerBackfillDone: meta.cursors.intents.backfillDone,
     },
     explorerTest,
+    rigor,
+    related,
+    results,
     confounders,
-    verdict: { baseIntentsWins: iw, basePriceWins: pw, baseTies: ties, oosIntentsWins: oiw, oosPriceWins: opw, robustnessIntentsWins: riw, robustnessPriceWins: rpw, supported, headline, evidenceFor: forLines, evidenceAgainst: againstLines, changeMyMind, gaps },
+    verdict: { baseIntentsWins: iw, basePriceWins: pw, baseTies: ties, oosIntentsWins: oiw, oosPriceWins: opw, robustnessIntentsWins: riw, robustnessPriceWins: rpw, supported, rule: verdictRule, headline: headlineFull, evidenceFor: forLines, evidenceAgainst: againstLines, changeMyMind, gaps },
     queries: QUERIES,
   };
   fs.writeFileSync(outFile, JSON.stringify(thesis));
@@ -504,7 +594,38 @@ function main() {
   const confRows = confounders.map((c) => `- ${c.date}${c.monthOnly ? " (month only)" : ""}, ${c.kind}: ${c.title}. ${c.why}${c.sourceUrl ? ` [source](${c.sourceUrl})` : ""}`).join("\n") || "- No matching events in the events file.";
   const fill: Record<string, string> = {
     asOf: end,
-    headline,
+    headline: headlineFull,
+    verdictRule,
+    resultsTable: results.map((r) => `| ${r.code} | ${r.test} | ${r.rule} | ${r.result} | ${r.status} |`).join("\n"),
+    bootTable: USAGE.filter((u) => rigor.bootstrap[u.key])
+      .flatMap((u) => (["intents", "price"] as const).map((p) => {
+        const b = rigor.bootstrap[u.key]![p];
+        return `| ${u.label} | ${p === "intents" ? "Intents volume" : "NEAR price"} | ${b.lag} w | ${fmtR(b.r)} | ${fmtR(b.ciLow)} to ${fmtR(b.ciHigh)} | ${fmtP(b.p)} | ${fmtP(b.pAdj)} | ${b.significant ? "yes" : "no"} | ${b.outsideBand ? "outside" : "inside"} | ${b.n} |`;
+      }))
+      .join("\n"),
+    bootSeed: String(BOOT_SEED),
+    bootResamples: BOOT_RESAMPLES.toLocaleString("en-US"),
+    bootBlock: String(BOOT_BLOCK),
+    bhQ: String(BH_Q),
+    cwTable: USAGE.filter((u) => rigor.clarkWest[u.key])
+      .map((u) => {
+        const c = rigor.clarkWest[u.key]!;
+        return `| ${u.label} | ${c.priceLag} w | ${c.intentsLag} w | ${c.trainN} / ${c.testN} | ${c.mse1 === null ? "n/a" : c.mse1.toFixed(3)} | ${c.mse2 === null ? "n/a" : c.mse2.toFixed(3)} | ${fmtR(c.cw)} | ${fmtP(c.p)} | ${c.pass ? "yes" : "no"} |`;
+      })
+      .join("\n"),
+    cwStatement: `Model 2 lowers test error with Clark-West p < ${SIG_P} on ${cwPassed.length} of ${Object.keys(rigor.clarkWest).length} series${cwPassed.length ? ` (${cwPassed.join(", ")})` : ""}, so A2 ${rigor.a2Pass ? "passes" : "fails"} (it needs two).`,
+    grangerTable: USAGE.filter((u) => rigor.granger[u.key])
+      .map((u) => {
+        const g = rigor.granger[u.key]!;
+        const ps = (xs: Array<number | null>) => xs.map((p) => fmtP(p)).join(" / ");
+        return `| ${u.label} | ${ps(g.forward.pByLag)} | ${fmtP(g.forward.pMin)} | ${ps(g.reverse.pByLag)} | ${fmtP(g.reverse.pMin)} | ${g.usageLeads ? "usage may lead Intents" : g.forward.significant && !g.reverse.significant ? "Intents leads usage" : g.forward.significant ? "both directions" : g.reverse.significant ? "both directions" : "neither"} |`;
+      })
+      .join("\n"),
+    grangerStatement: (() => {
+      const ul = USAGE.filter((u) => rigor.granger[u.key]?.usageLeads).map((u) => u.label.toLowerCase());
+      return ul.length ? `For ${ul.join(", ")}, usage changes predict later Intents volume while Intents volume does not predict usage, so usage may lead Intents rather than the reverse.` : "No series shows usage predicting Intents volume without Intents volume also predicting usage.";
+    })(),
+    relatedTests: related.map((t) => [`#### ${t.code}. ${t.title}`, "", `- **Rule.** ${t.rule}`, `- **Result.** ${t.result}`, `- **Status.** ${t.status}`, ...t.notes.map((n) => `- ${n}`), `- **Source.** ${t.queries.map((q) => `\`${q.title}\``).join(", ")}`].join("\n")).join("\n\n"),
     windowStart: start,
     windowEnd: end,
     weeks: String(weeklyDates.length),

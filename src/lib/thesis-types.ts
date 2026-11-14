@@ -1,5 +1,6 @@
 import type { DateStr } from "./dates";
 import type { LeadLagSummary, OosResult } from "./stats";
+import type { ClarkWestResult, GrangerResult, TestStatus } from "./thesis-tests";
 
 export const USAGE_KEYS = ["txns", "activeAccounts", "newAccounts", "functionCalls", "contractsCalled"] as const;
 export type UsageKey = (typeof USAGE_KEYS)[number];
@@ -87,6 +88,68 @@ export interface ExplorerTest {
   conclusion: string;
 }
 
+/** A1 for one usage series and one predictor: block-bootstrap p-value of the best positive-lag correlation. */
+export interface BootRow {
+  lag: number;
+  r: number | null;
+  p: number | null;
+  /** Benjamini-Hochberg adjusted p-value across all series and both predictors. */
+  pAdj: number | null;
+  significant: boolean;
+  ciLow: number | null;
+  ciHigh: number | null;
+  n: number;
+  /** Secondary note: r clears the old ±0.20 noise band. */
+  outsideBand: boolean;
+}
+
+/** Part A: significance, the nested out-of-sample comparison, Granger both ways and the verdict gate. */
+export interface Rigor {
+  seed: number;
+  resamples: number;
+  block: number;
+  q: number;
+  bootstrap: Partial<Record<UsageKey, PredictorPair<BootRow>>>;
+  clarkWest: Partial<Record<UsageKey, ClarkWestResult>>;
+  a2Pass: boolean;
+  granger: Partial<Record<UsageKey, { forward: GrangerResult; reverse: GrangerResult; usageLeads: boolean }>>;
+  /** Series where Intents is significant after Benjamini-Hochberg. */
+  significantSeries: UsageKey[];
+  a4Pass: boolean;
+}
+
+export interface ChartSeries {
+  key: string;
+  label: string;
+  values: Array<number | null>;
+}
+
+/** One related test (B1 to B6) as the /thesis card and THESIS.md section show it. */
+export interface RelatedTest {
+  id: string;
+  code: string;
+  title: string;
+  /** The pre-registered rule, in plain words. */
+  rule: string;
+  /** One plain sentence with the result. */
+  result: string;
+  status: TestStatus;
+  /** Extra lines for THESIS.md: method notes, accounts used, overlaps and caveats. */
+  notes: string[];
+  chart: { kind: "line" | "stack"; unit: "pct" | "num" | "usd"; x: string[]; series: ChartSeries[] } | null;
+  queries: Array<{ kind: "sql" | "http" | "transform"; title: string; code: string }>;
+}
+
+/** One row of the results table at the top of /thesis and THESIS.md. */
+export interface ResultRow {
+  id: string;
+  code: string;
+  test: string;
+  rule: string;
+  result: string;
+  status: TestStatus;
+}
+
 export interface ThesisJson {
   available: boolean;
   asOf: DateStr;
@@ -124,6 +187,9 @@ export interface ThesisJson {
     explorerBackfillDone: boolean;
   };
   explorerTest: ExplorerTest;
+  rigor: Rigor;
+  related: RelatedTest[];
+  results: ResultRow[];
   confounders: Confounder[];
   verdict: {
     baseIntentsWins: number;
@@ -134,6 +200,8 @@ export interface ThesisJson {
     robustnessIntentsWins: number;
     robustnessPriceWins: number;
     supported: "yes" | "partly" | "no";
+    /** The rule the verdict follows, in plain words. */
+    rule: string;
     headline: string;
     evidenceFor: string[];
     evidenceAgainst: string[];

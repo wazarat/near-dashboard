@@ -13,6 +13,8 @@ import { LeadLagChart } from "@/components/thesis/lead-lag-chart";
 import { LevelsChart } from "@/components/thesis/levels-chart";
 import { OosChart } from "@/components/thesis/oos-chart";
 import { ReproduceCard } from "@/components/thesis/reproduce-card";
+import { ResultsTable } from "@/components/thesis/results-table";
+import { BeyondPriceCard, GrangerCard, SignificanceCard } from "@/components/thesis/rigor-cards";
 import { RobustnessTable } from "@/components/thesis/robustness-table";
 import { TextListCard } from "@/components/thesis/text-list-card";
 import { anchorData, thesisData } from "@/lib/data";
@@ -50,6 +52,13 @@ export function ThesisView() {
     <div className="space-y-10">
       <ClaimCard data={data} />
 
+      <Section id="results" title="Every pre-registered test at a glance" lede="The rules were committed before any of these tests ran. Each row links to its card below.">
+        <ResultsTable rows={data.results} />
+        <p id="test-verdict-gate" className="max-w-3xl text-xs text-ink-300">
+          {verdict.rule}
+        </p>
+      </Section>
+
       <Section id="levels" title="Do the series move together at all?" lede="Before any lag test, the raw weekly levels on one indexed axis.">
         <LevelsChart data={data} scale={scale} onScaleChange={(s) => void setState({ scale: s })} />
       </Section>
@@ -60,6 +69,14 @@ export function ThesisView() {
 
       <Section id="oos" title="Does it forecast?" lede="A correlation found on the whole window can be luck. This fits on the early weeks only and scores the late ones.">
         <OosChart data={data} />
+      </Section>
+
+      <Section id="rigor" title="Is the lead more than noise?" lede="A fixed noise band is a rough guide. These tests put a p-value on the lead, ask whether Intents adds anything once price is known, and check which way the relationship runs.">
+        <div className="space-y-8">
+          <SignificanceCard data={data} />
+          <BeyondPriceCard data={data} />
+          <GrangerCard data={data} />
+        </div>
       </Section>
 
       <Section id="robustness" title="Does the result survive the obvious objections?" lede="Spikes, settlement counting itself as usage, and the week boundary.">
