@@ -785,6 +785,17 @@ test("thesis charts expose a Query tab with SQL", async ({ page }) => {
   await expect(page.locator("pre").first()).toContainText(/SELECT|GET|weekly/);
 });
 
+test("thesis results table lists every pre-registered test and links to its card", async ({ page }) => {
+  await page.goto("/thesis/");
+  const table = page.getByTestId("thesis-results-table");
+  await expect(table).toBeVisible();
+  const links = table.locator("a[href^='#test-']");
+  expect(await links.count()).toBe(10);
+  for (const href of await links.evaluateAll((as) => as.map((a) => a.getAttribute("href")))) await expect(page.locator(href as string)).toBeAttached();
+  for (const code of ["A1", "A2", "A3", "B1", "B2", "B3", "B4", "B5", "B6"]) await expect(page.getByRole("heading", { name: new RegExp(`^Test ${code} `) })).toBeAttached();
+  expect(await page.getByTestId("test-status-line").count()).toBeGreaterThanOrEqual(9);
+});
+
 test("compare tray and presets drive the URL", async ({ page }) => {
   await page.goto("/compare/");
   await page.getByRole("button", { name: /Liquid staking/ }).first().click();

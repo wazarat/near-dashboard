@@ -9,6 +9,34 @@ import { fmtNum, fmtPct } from "@/lib/format";
 import type { RelatedTest } from "@/lib/thesis-types";
 import { TestStatusLine } from "./test-status";
 
+/** A test whose data is not committed: no chart to draw, so the card says why and shows the query that would fill it. */
+function UncomputedCard({ test }: { test: RelatedTest }) {
+  return (
+    <div className="space-y-3" id={`test-${test.id}`}>
+      <section className="space-y-2 rounded-lg border bg-card p-4" aria-labelledby={`test-${test.id}-title`}>
+        <h3 id={`test-${test.id}-title`} className="text-sm font-semibold text-ink-50">
+          Test {test.code} · {test.title}
+        </h3>
+        <p className="text-sm text-ink-50">{test.result}</p>
+        {test.queries.length > 0 && (
+          <details className="text-xs text-ink-300">
+            <summary className="cursor-pointer">The query this test needs</summary>
+            {test.queries.map((q) => (
+              <div key={q.title} className="mt-2">
+                <div className="font-medium">{q.title}</div>
+                <pre className="mt-1 overflow-x-auto rounded-md border p-2 text-[11px]">
+                  <code>{q.code}</code>
+                </pre>
+              </div>
+            ))}
+          </details>
+        )}
+      </section>
+      <TestStatusLine status={test.status} rule={test.rule} />
+    </div>
+  );
+}
+
 const COLORS = [CHART.intents, CHART.usage, CHART.price, "var(--cat-3)"];
 
 /** One related test (B1 to B6) as a card. its chart, the Query tab, one plain sentence and the pass or fail line. */
@@ -24,6 +52,7 @@ export function RelatedTestCard({ test }: { test: RelatedTest }) {
         filename: `thesis-${test.id}.csv`,
       }
     : undefined;
+  if (!chart || !points.length) return <UncomputedCard test={test} />;
   return (
     <div className="space-y-3" id={`test-${test.id}`}>
       <ChartCard takeawayPlacement="inline" scope="whole-chain" id={`thesis-${test.id}`} title={`Test ${test.code} · ${test.title}`} takeaway={test.result} info={test.rule} table={table} queries={test.queries}>
