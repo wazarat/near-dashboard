@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-11-14",
-  "aurora": {"totalAddresses":12609534,"totalBlocks":224501008,"totalTxns":82133854},
-  "near": {"nodesOnline":371,"totalTxns":5482696428,"tps":9}
+  "asOf": "2026-11-15",
+  "aurora": {"totalAddresses":12609933,"totalBlocks":224652954,"totalTxns":82143527},
+  "near": {"nodesOnline":371,"totalTxns":5483623431,"tps":2}
 }
