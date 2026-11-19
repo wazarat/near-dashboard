@@ -31,29 +31,28 @@ npm start            # open http://localhost:3000
 
 - Do `npm run build`: see 13 checks pass (1,088 projects, 24 sectors, 6 native chains, 96 leaders, 141 events, 42 rounds, 4 Tier 1 rows, and six USD totals), then the live-vs-snapshot totals, then the thesis summary line (window, cutoff, lead-lag wins, out-of-sample wins, verdict).
 - Open `/`: see the KPI tiles, chain over time and chain activity (NearBlocks with the BigQuery overlay), the sector treemap, native vs imported shares, concentration curve, analyst notes and the events timeline.
-- Open `/thesis`: see the verdict badge, then one card per test. Click **Query** on any card: see the exact SQL or API call and the transform behind it. The same numbers are in `THESIS.md`.
+- Read `THESIS.md`: the thesis-track write-up, the verdict and every test, rebuilt from the committed raw files.
 - Open `/intents`: see 1Click swap volume from the Explorer API next to DefiLlama's all-channel series with the share, plus routes, assets and referrals.
 - Run `npm test`: see the unit tests (fixtures only, no live calls). Run `npm run e2e` (it builds for itself): see the Playwright checks at 1440 and 390 px with zero console errors. Run `npm run e2e:wall`: see the login wall as a logged-out reader meets it.
 - Run `npm run rebuild` twice: see no diff in `src/data/generated/` or `THESIS.md`.
 
 ## Pages
 
+The tabs match the other CanHav atlases (Overview, Sectors, Traction, Funding, Explorer, Compare, Methodology), plus Intents. The old `/thesis`, `/investors`, `/security` and `/about` URLs redirect to Overview, Funding, Methodology and Methodology.
+
 | Page | What it shows |
 |---|---|
 | `/` Overview | KPI tiles, chain over time (NEAR and Aurora, or the selection's own summed history when a filter is set), chain activity, risers and fallers, sector treemap, native vs imported, concentration curve, live insights and analyst notes, events timeline (table first, each event in a pop-up with its source) |
-| `/sectors` | Sector bars, tier by sector, sector cards with ranked leaders |
+| `/sectors` | Sector bars, tier by sector, sector cards with three leaders each, ranked by the sector headline; the numbers sit in each sector pop-up |
 | `/traction` | Leaderboard with traction, momentum, activity and financials column sets, business-model scatter, activity without TVL, listed vs live by discovery source |
 | `/intents` | 1Click swap volume, weekly series, success and refund rates, routes, assets, referrals, coverage against DefiLlama |
-| `/thesis` | The claim, verdict and four tests with Chart, Table and Query tabs, confounders, evidence for and against, what would change the conclusion |
-| `/funding` | Funding type breakdown (a type opens its projects and rounds in a pop-up), ecosystem money cards, rounds table, rounds over time, financials |
-| `/investors` | Investors by deals, portfolios, investor pop-up |
-| `/security` | Chain-level checklist for NEAR L1, NEAR Intents and Aurora, security facts by type and by sector (no per-project ratings), incidents as a sortable table |
+| `/funding` | Funding type breakdown (a type opens its projects and rounds in a pop-up), ecosystem money cards, rounds table, rounds over time, financials, then investors by deals with portfolios and the investor pop-up |
 | `/explorer` | Every column with a column chooser and CSV download of the filtered view, a Map and Table switch (`?view=map` is the sector treemap of the same selection) and its own search box, plus the "Newly detected" review list |
-| `/about` | About and methodology: the track, every source, THESIS.md and the independence statement |
 | `/help-track` | Public list of projects whose metric applies but no free source covers yet, grouped by metric, each with a link to suggest a source |
 | `/compare` | Up to four projects: metric matrix with sector ranks, ratios, indexed overlay, side-by-side profiles |
+| `/methodology` | The independence statement, coverage terms and counting rules, every source, the security record (chain-level checklist, security facts, incidents) and the Verified on NEAR card |
 
-Every chart has an info icon naming its source, an empty state, a table view and an Expand button that opens it larger with a range brush and its computed summary as points (Thesis and Intents keep the summary on the card); every chart on Overview, Thesis, Intents, Sectors and Traction also has a Query tab with the SQL, API call and transform behind it, and the Leaderboard and Explorer tables carry the same queries in a "How this is calculated" block. Filters, each chart's own metric and each card's own time range (7d, 30d, 90d or All, under its own key such as `cr` or `hr`), the legacy-listing switch of each card (`legacy`, a list of the cards that include the 620 legacy listings, which are hidden by default), the compare selection, the open project, sector, investor, funding type (`?fundingType=`) or event (`?event=`) pop-up and the expanded chart (`?expand=<id>`) live in the URL, so any view can be shared.
+Every chart has an info icon naming its source, an empty state, a table view and an Expand button that opens it larger with a range brush and its computed summary as points (Intents keeps the summary on the card); every chart on Overview, Intents, Sectors and Traction also has a Query tab with the SQL, API call and transform behind it, and the Leaderboard and Explorer tables carry the same queries in a "How this is calculated" block. Filters, each chart's own metric and each card's own time range (7d, 30d, 90d or All, under its own key such as `cr` or `hr`), the legacy-listing switch of each card (`legacy`, a list of the cards that include the legacy listings, which are hidden by default), the compare selection, the open project, sector, investor, funding type (`?fundingType=`) or event (`?event=`) pop-up and the expanded chart (`?expand=<id>`) live in the URL, so any view can be shared.
 
 ## Data
 

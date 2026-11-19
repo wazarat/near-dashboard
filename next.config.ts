@@ -21,6 +21,17 @@ export function hostRedirects(env: Record<string, string | undefined>) {
 }
 
 /**
+ * Tabs folded in on 2026-11-19 to match the other CanHav atlases. Shared links keep working, query included
+ * (?investor=, ?project=), so a pop-up link still opens its pop-up on the new page.
+ */
+export const TAB_REDIRECTS = [
+  { source: "/thesis/", destination: "/", permanent: true },
+  { source: "/investors/", destination: "/funding/#investors", permanent: true },
+  { source: "/security/", destination: "/methodology/#security", permanent: true },
+  { source: "/about/", destination: "/methodology/", permanent: true },
+];
+
+/**
  * Served by Next on Vercel (no static export since the login wall). Pages still prerender
  * as static HTML; src/proxy.ts runs Clerk in front of them when its keys are set.
  */
@@ -28,7 +39,7 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   images: { unoptimized: true },
   async redirects() {
-    return hostRedirects(process.env);
+    return [...hostRedirects(process.env), ...TAB_REDIRECTS];
   },
   turbopack: {
     rules: {

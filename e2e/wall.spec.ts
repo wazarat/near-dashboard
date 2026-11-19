@@ -3,9 +3,9 @@ import fs from "node:fs";
 import path from "node:path";
 
 /** The login wall, logged out (docs/ATLAS-UI.md, section 3, Access; rules in src/lib/gate.ts). */
-const GATED = ["/funding/", "/investors/", "/security/"];
-/** The thesis evidence: open to everyone, checked route by route in logged-out.spec.ts. */
-const OPEN = ["/", "/thesis/", "/intents/", "/explorer/", "/sectors/", "/traction/"];
+const GATED = ["/funding/"];
+/** Open to everyone, checked route by route in logged-out.spec.ts. */
+const OPEN = ["/", "/intents/", "/explorer/", "/sectors/", "/traction/", "/methodology/"];
 const SHOTS = path.join(__dirname, "screenshots");
 fs.mkdirSync(SHOTS, { recursive: true });
 
@@ -38,7 +38,9 @@ for (const open of OPEN) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
     await expect(page.getByTestId("login-dialog")).toHaveCount(0);
     await expect(page.getByTestId("login-wall")).toHaveCount(0);
-    await expect(page.locator("[data-chart-card]").first()).toBeVisible({ timeout: 15_000 });
+    // Methodology is text, with its one chart group (the security record) behind the login; every other open tab draws charts.
+    if (open === "/methodology/") await expect(page.getByTestId("methodology-terms")).toBeVisible({ timeout: 15_000 });
+    else await expect(page.locator("[data-chart-card]").first()).toBeVisible({ timeout: 15_000 });
     await noOverflow(page);
     await page.screenshot({ path: path.join(SHOTS, `wall-public-${open === "/" ? "overview" : open.replace(/\//g, "")}-${info.project.name}.png`) });
     await page.getByTestId("header-login").click();
@@ -51,7 +53,7 @@ for (const open of OPEN) {
 test("every tab stays in the header for a logged-out reader", async ({ page }) => {
   await page.goto("/");
   const nav = page.getByRole("navigation", { name: "Primary" });
-  await expect(nav.getByRole("link")).toHaveText(["Overview", "Sectors", "Traction", "Intents", "Thesis", "Funding", "Investors", "Security", "Explorer", "Compare"]);
+  await expect(nav.getByRole("link")).toHaveText(["Overview", "Sectors", "Traction", "Intents", "Funding", "Explorer", "Compare", "Methodology"]);
 });
 
 for (const route of GATED) {
@@ -89,7 +91,7 @@ test("an expanded chart link on a gated tab stays closed", async ({ page }) => {
 });
 
 test("an expanded chart link on a public tab still opens", async ({ page }) => {
-  await page.goto("/thesis/?expand=thesis-levels");
+  await page.goto("/intents/?expand=intents-volume");
   await expect(page.locator("[data-expanded-chart]")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByTestId("login-dialog")).toHaveCount(0);
 });
@@ -162,10 +164,13 @@ test("shared sector, investor and funding type links show a summary and one logi
   await expect(investor).not.toContainText("Portfolio (");
 });
 
-test("About is open to a logged-out reader and states the independence line", async ({ page }) => {
-  await page.goto("/about/");
+test("Methodology is open to a logged-out reader, states the independence line and keeps the security record behind the login", async ({ page }) => {
+  await page.goto("/methodology/");
   await expect(page.getByTestId("independence")).toContainText("no affiliation to NEAR Foundation or Aurora", { timeout: 15_000 });
+  await expect(page.getByTestId("methodology-terms")).toContainText("Coverage terms");
   await expect(page.getByTestId("login-wall")).toHaveCount(0);
+  await expect(page.locator("#security").getByTestId("login-panel")).toHaveCount(1);
+  await expect(page.locator('#security [data-chart-card="Incidents"]')).toHaveCount(0);
 });
 
 test("Help us track this is open to a logged-out reader", async ({ page }) => {
@@ -175,10 +180,11 @@ test("Help us track this is open to a logged-out reader", async ({ page }) => {
   await expect(page.getByTestId("login-dialog")).toHaveCount(0);
 });
 
-test("the footer methodology is open on a gated tab", async ({ page }) => {
+test("the footer link to Methodology stays usable on a gated tab", async ({ page }) => {
   await page.goto("/funding/");
   await expect(page.getByTestId("login-dialog")).toBeVisible({ timeout: 15_000 });
   await page.keyboard.press("Escape");
-  await expect(page.locator("#methodology")).toContainText("Coverage terms");
-  await expect(page.locator("#methodology").locator("xpath=ancestor-or-self::*[@inert]")).toHaveCount(0);
+  const link = page.locator('footer a[href="/methodology/"]');
+  await expect(link).toBeVisible();
+  await expect(link.locator("xpath=ancestor-or-self::*[@inert]")).toHaveCount(0);
 });

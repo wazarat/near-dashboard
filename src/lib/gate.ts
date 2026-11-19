@@ -3,9 +3,10 @@
  * the browser). Pure, so the table is tested. With the wall off (no Clerk keys) everything is allowed.
  *
  * | Area                                        | Logged out                            | Logged in |
- * | Overview, Thesis, Intents, Explorer,        | Full                                  | Full      |
- * |   Sectors, Traction, About and methodology  |                                       |           |
- * | Funding, Investors, Security                | Login pop-up over a blurred preview   | Full      |
+ * | Overview, Sectors, Traction, Intents,       | Full                                  | Full      |
+ * |   Explorer and Methodology                  |                                       |           |
+ * | Funding (with Investors)                    | Login pop-up over a blurred preview   | Full      |
+ * | Security section on Methodology             | Heading and one login panel           | Full      |
  * | Compare                                     | Full view of a comparison in the URL  | Full      |
  * | Add to compare, presets (anywhere)          | Opens the login pop-up, then finishes | Works     |
  * | Project pop-up                              | Header, Overview and Traction         | Full      |
@@ -15,16 +16,13 @@
  */
 import { NAV } from "./nav";
 
-/**
- * Open to everyone. The thesis evidence (Overview, Thesis, Intents, Explorer, Sectors, Traction, About and
- * methodology) is never behind a login: a judge has to read every chart and its query without an account.
- */
-export const PUBLIC_PATHS = ["/", "/thesis/", "/intents/", "/explorer/", "/sectors/", "/traction/", "/compare/", "/help-track/", "/about/"] as const;
+/** Open to everyone: every chart and its query can be read without an account. */
+export const PUBLIC_PATHS = ["/", "/intents/", "/explorer/", "/sectors/", "/traction/", "/compare/", "/methodology/", "/help-track/"] as const;
 /** Public pages that are not tabs (linked from the footer and from Not tracked info tips). */
-export const PUBLIC_PAGES_OUTSIDE_NAV = ["/help-track/", "/about/"] as const;
-export const GATED_PATHS = ["/funding/", "/investors/", "/security/"] as const;
+export const PUBLIC_PAGES_OUTSIDE_NAV = ["/help-track/"] as const;
+export const GATED_PATHS = ["/funding/"] as const;
 
-export type GatedAction = "compare-add" | "project-detail" | "sector-detail" | "investor-detail" | "funding-detail";
+export type GatedAction = "compare-add" | "project-detail" | "sector-detail" | "investor-detail" | "funding-detail" | "security-detail";
 
 function normalize(path: string): string {
   const p = path.split(/[?#]/)[0] || "/";

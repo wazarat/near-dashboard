@@ -1,5 +1,5 @@
 /**
- * Computes every number behind the /thesis page and renders THESIS.md from
+ * Computes every number behind THESIS.md and renders it from
  * docs/templates/THESIS.template.md. Reads only committed files (data/history, data/raw and
  * src/data/generated written by build-data.ts); no network, so `npm run rebuild` is reproducible
  * on a fresh clone. Output is deterministic: no timestamps other than the data window itself.

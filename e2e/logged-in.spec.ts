@@ -9,7 +9,7 @@ import { TEST_USER } from "./test-user";
  */
 test.skip(!process.env.CLERK_SECRET_KEY || !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, "No Clerk keys in the environment, so the signed-in run is skipped.");
 
-const TABS = ["/sectors/", "/traction/", "/intents/", "/funding/", "/investors/", "/security/", "/explorer/"];
+const TABS = ["/sectors/", "/traction/", "/intents/", "/funding/", "/explorer/", "/methodology/"];
 
 function watch(page: Page) {
   const errors: string[] = [];

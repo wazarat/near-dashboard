@@ -10,12 +10,11 @@ import path from "node:path";
  */
 const ROUTES = [
   { path: "/", name: "overview" },
-  { path: "/thesis/", name: "thesis" },
   { path: "/intents/", name: "intents" },
   { path: "/explorer/", name: "explorer" },
   { path: "/sectors/", name: "sectors" },
   { path: "/traction/", name: "traction" },
-  { path: "/about/", name: "methodology" },
+  { path: "/methodology/", name: "methodology" },
 ];
 const SHOTS = path.join(__dirname, "screenshots");
 fs.mkdirSync(SHOTS, { recursive: true });
@@ -58,9 +57,10 @@ for (const route of ROUTES) {
     expect((await context.cookies()).filter((c) => /session|clerk|__client/i.test(c.name)), "no session cookie is set").toEqual([]);
 
     const cards = page.locator("[data-chart-card]");
-    if (route.path === "/about/") {
-      await expect(page.getByRole("heading", { level: 1, name: "About and methodology" })).toBeVisible();
-      await expect(page.getByTestId("about-sources")).toBeVisible();
+    if (route.path === "/methodology/") {
+      await expect(page.getByRole("heading", { level: 1, name: "Methodology" })).toBeVisible();
+      await expect(page.getByTestId("methodology-sources")).toBeVisible();
+      await expect(page.getByTestId("methodology-terms")).toContainText("Coverage terms.");
     } else {
       await expect(cards.first()).toBeVisible({ timeout: 20_000 });
     }
@@ -69,8 +69,11 @@ for (const route of ROUTES) {
     const noSignIn = async () => {
       await expect(page.getByTestId("login-dialog")).toHaveCount(0);
       await expect(page.getByTestId("login-wall")).toHaveCount(0);
-      await expect(page.getByTestId("login-panel")).toHaveCount(0);
-      await expect(page.getByText("Log in for free access")).toHaveCount(0);
+      // The one login panel allowed is the security record's, on Methodology: it stays behind the login as the Security tab was.
+      await expect(page.locator('[data-testid="login-panel"]:not(#security [data-testid="login-panel"])')).toHaveCount(0);
+      const prompts = await page.getByText("Log in for free access").count();
+      const securityPrompts = await page.locator("#security").getByText("Log in for free access").count();
+      expect(prompts - securityPrompts, "no login prompt outside the security record").toBe(0);
       await expect(page.locator("main [inert], main [aria-hidden='true'].blur-sm, main .blur-sm")).toHaveCount(0);
       await expect(page.locator("[class*='cl-rootBox'], [class*='cl-modal'], iframe[src*='clerk']")).toHaveCount(0);
     };
@@ -81,6 +84,9 @@ for (const route of ROUTES) {
       const card = cards.nth(i);
       const title = (await card.getAttribute("data-chart-card")) ?? `card ${i}`;
       await card.scrollIntoViewIfNeeded();
+      // A dropdown card (the Overview timeline) is opened first.
+      const closed = card.locator("h3 button[aria-expanded='false']");
+      if (await closed.count()) await closed.click();
       // The chart itself: a drawn body, not the empty state.
       const body = card.locator("[data-chart-body]");
       await expect(body, `${title} has a body`).toBeVisible();
@@ -107,10 +113,10 @@ for (const route of ROUTES) {
         await how.locator("summary").click();
       }
     }
-    if (route.path !== "/about/") expect(count, "the route has charts").toBeGreaterThan(0);
+    if (route.path !== "/methodology/") expect(count, "the route has charts").toBeGreaterThan(0);
 
-    // The footer methodology is part of every page.
-    await expect(page.locator("#methodology-title")).toBeVisible();
+    // Every page links the Methodology tab from its footer.
+    await expect(page.locator('footer a[href="/methodology/"]')).toBeVisible();
     await noSignIn();
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.screenshot({ path: path.join(SHOTS, `logged-out-${route.name}-${info.project.name}.png`), fullPage: true });

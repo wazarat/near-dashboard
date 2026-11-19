@@ -8,14 +8,12 @@ import newlyDetectedJson from "@/data/generated/newly-detected.json";
 import projectsJson from "@/data/generated/projects.json";
 import roundsJson from "@/data/generated/rounds.json";
 import intentsJson from "@/data/generated/intents.json";
-import thesisJson from "@/data/generated/thesis.json";
 import queriesJson from "@/data/generated/queries.json";
 import anchorJson from "@/data/generated/anchor.json";
 import type { AnchorCard } from "./anchor";
 import type { NewlyDetected, Series } from "./history-types";
 import { sqlSpec, type QuerySpec, type SqlId } from "./query-specs";
 import type { IntentsSummary } from "./intents";
-import type { ThesisJson } from "./thesis-types";
 import type { ChainData, EcosystemEvent, Investor, Leader, MemoInsight, Meta, Project, Round, SeriesFile } from "./types";
 
 export const projects = projectsJson as unknown as Project[];
@@ -29,7 +27,6 @@ export const chainData = chainJson as unknown as ChainData;
 export const intentsData = intentsJson as unknown as IntentsSummary & { llamaDaily: Series };
 /** The latest onchain anchor of the evidence, from data/anchors/index.json. */
 export const anchorData = anchorJson as unknown as AnchorCard;
-export const thesisData = thesisJson as unknown as ThesisJson | { available: false; reason: string };
 /** The SQL file behind a BigQuery chart, as committed in queries/ (read at build time, never copied). */
 export function sql(id: SqlId, table?: string): QuerySpec {
   const text = (queriesJson as Record<string, string>)[id];

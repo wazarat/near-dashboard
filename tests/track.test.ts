@@ -53,9 +53,9 @@ describe("analytics events", () => {
       tab_view: { tab: "intents", auth: "out" },
       project_open: { sector, auth: "in" },
       sector_open: { sector, auth: "off" },
-      investor_open: { page: "investors", auth: "in" },
-      chart_expand: { chart: "thesis-levels", auth: "out" },
-      chart_view: { view: "query", page: "thesis" },
+      investor_open: { page: "funding", auth: "in" },
+      chart_expand: { chart: "intents-volume", auth: "out" },
+      chart_view: { view: "query", page: "intents" },
       csv_download: { source: "explorer_filtered", auth: "in" },
       compare_add: { count: 2, auth: "out" },
       filter_use: { filter: "q", page: "explorer" },
@@ -86,7 +86,7 @@ describe("analytics events", () => {
 
   it("investor_open carries the page, never the investor", () => {
     expect(EVENT_PROPS.investor_open).toEqual(["page", "auth"]);
-    expect(eventProps("investor_open", { page: "investors", auth: "in", investor: "pantera-capital" })).toEqual({ page: "investors", auth: "in" });
+    expect(eventProps("investor_open", { page: "funding", auth: "in", investor: "pantera-capital" })).toEqual({ page: "funding", auth: "in" });
   });
 
   it("filter_use carries the filter's key, never what was typed", () => {
@@ -99,10 +99,11 @@ describe("analytics events", () => {
   it("name pages by tab, and anything unknown as other", () => {
     expect(pageOf("/")).toBe("overview");
     expect(pageOf("/intents/")).toBe("intents");
-    expect(pageOf("/thesis")).toBe("thesis");
+    expect(pageOf("/methodology")).toBe("methodology");
+    expect(pageOf("/thesis")).toBe("other");
     expect(pageOf("/explorer?q=x")).toBe("explorer");
     expect(pageOf("/someone@example.com/")).toBe("other");
-    expect(PAGES).toEqual(["overview", "sectors", "traction", "intents", "thesis", "funding", "investors", "security", "explorer", "compare", "other"]);
+    expect(PAGES).toEqual(["overview", "sectors", "traction", "intents", "funding", "explorer", "compare", "methodology", "other"]);
   });
 
   it("says whether the wall is off, or the reader is in or out", () => {

@@ -3,8 +3,8 @@ import { allowed, compareChange, decodePending, encodePending, GATED_PATHS, isGa
 import { NAV } from "@/lib/nav";
 
 describe("login wall rules", () => {
-  it("keeps every tab in the header, none hidden", () => {
-    expect(NAV.map((n) => n.label)).toEqual(["Overview", "Sectors", "Traction", "Intents", "Thesis", "Funding", "Investors", "Security", "Explorer", "Compare"]);
+  it("keeps every tab in the header, the other CanHav atlases' seven plus Intents", () => {
+    expect(NAV.map((n) => n.label)).toEqual(["Overview", "Sectors", "Traction", "Intents", "Funding", "Explorer", "Compare", "Methodology"]);
     for (const n of NAV) expect(Object.keys(n).sort()).toEqual(["href", "label"]);
   });
 
@@ -12,20 +12,18 @@ describe("login wall rules", () => {
     expect(unclassifiedTabs()).toEqual([]);
     const tabs = [...PUBLIC_PATHS, ...GATED_PATHS].filter((p) => !(PUBLIC_PAGES_OUTSIDE_NAV as readonly string[]).includes(p));
     expect(tabs.sort()).toEqual(NAV.map((n) => n.href).sort());
-    expect(new Set(tabs).size).toBe(10);
+    expect(new Set(tabs).size).toBe(8);
     // The one public page outside the tabs is the Help us track this list.
-    expect(PUBLIC_PAGES_OUTSIDE_NAV).toEqual(["/help-track/", "/about/"]);
-    expect(isGatedPath("/about/")).toBe(false);
+    expect(PUBLIC_PAGES_OUTSIDE_NAV).toEqual(["/help-track/"]);
     expect(isGatedPath("/help-track/")).toBe(false);
   });
 
-  it("leaves the thesis evidence open (Overview, Thesis, Intents, Explorer, Sectors, Traction) and Compare, and gates Funding, Investors and Security", () => {
-    for (const p of ["/", "/thesis/", "/intents/", "/explorer/", "/sectors/", "/traction/", "/compare/"]) expect(isGatedPath(p)).toBe(false);
-    for (const p of ["/funding/", "/investors/", "/security/"]) expect(isGatedPath(p)).toBe(true);
-    expect(isGatedPath("/security")).toBe(true);
+  it("leaves every chart page open and gates Funding, where Investors now sits", () => {
+    for (const p of ["/", "/intents/", "/explorer/", "/sectors/", "/traction/", "/compare/", "/methodology/"]) expect(isGatedPath(p)).toBe(false);
+    expect(isGatedPath("/funding/")).toBe(true);
+    expect(isGatedPath("/funding")).toBe(true);
     expect(isGatedPath("/funding/?fundingType=grant")).toBe(true);
     expect(isGatedPath("/intents/?expand=intents-volume")).toBe(false);
-    expect(isGatedPath("/thesis?expand=thesis-levels")).toBe(false);
     expect(isGatedPath("/nowhere/")).toBe(false);
   });
 
@@ -38,12 +36,12 @@ describe("login wall rules", () => {
 
   it("logged out, with the wall on, opens public pages only and no gated action", () => {
     expect(allowed({ path: "/" }, false, true)).toBe(true);
-    expect(allowed({ path: "/thesis/" }, false, true)).toBe(true);
     expect(allowed({ path: "/compare/" }, false, true)).toBe(true);
     expect(allowed({ path: "/help-track/" }, false, true)).toBe(true);
-    for (const p of ["/intents/", "/explorer/", "/sectors/", "/traction/", "/about/"]) expect(allowed({ path: p }, false, true)).toBe(true);
-    for (const p of ["/funding/", "/investors/", "/security/"]) expect(allowed({ path: p }, false, true)).toBe(false);
-    for (const action of ["compare-add", "project-detail", "sector-detail", "investor-detail", "funding-detail"] as const) expect(allowed({ action }, false, true)).toBe(false);
+    for (const p of ["/intents/", "/explorer/", "/sectors/", "/traction/", "/methodology/"]) expect(allowed({ path: p }, false, true)).toBe(true);
+    expect(allowed({ path: "/funding/" }, false, true)).toBe(false);
+    // The security record on Methodology stays behind the login, as the Security tab was.
+    for (const action of ["compare-add", "project-detail", "sector-detail", "investor-detail", "funding-detail", "security-detail"] as const) expect(allowed({ action }, false, true)).toBe(false);
     expect(PUBLIC_PROJECT_SECTIONS).toEqual(["header", "overview", "traction"]);
   });
 });

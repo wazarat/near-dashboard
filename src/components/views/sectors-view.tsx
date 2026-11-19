@@ -89,7 +89,7 @@ export function SectorsView() {
 
       <ChartCard
         id="sector-cards"
-        method={{ sentence: "One card per sector with its project count, NEAR-native share and top three leaders, ranked by the sector's headline metric where it has one and otherwise by research rank.", queries: [SPECS.snapshotCsv, SPECS.sectorCards] }}
+        method={{ sentence: "One card per sector with its project count, NEAR-native share and top three leaders, ranked by the sector's headline metric where it has one and otherwise by research rank.", queries: [SPECS.llamaProtocolTvl, SPECS.llamaProtocolFlows, SPECS.snapshotCsv, SPECS.sectorCards] }}
         title="Sector cards"
         takeaway={gridTakeaway}
         info="One card per sector, with project count and NEAR-native share. Leaders are ranked by the sector's headline metric where it has one, otherwise by research rank. Open a sector for its metrics."

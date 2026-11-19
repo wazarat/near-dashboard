@@ -1,85 +1,24 @@
 import Link from "next/link";
 import { DataFreshness } from "@/components/atlas/data-freshness";
-import { meta, projects } from "@/lib/data";
-import { SIBLING_ATLAS_URL } from "@/lib/env";
-import { fmtUsdFull } from "@/lib/format";
-import { MethodologyDetails } from "./methodology-details";
-
-/** Directory-only listings whose status is still unverified (validators with a live pool were promoted on 2026-11-13). */
-const LEGACY_LISTINGS = projects.filter((p) => p.statusGroup === "Legacy listing").length;
 
 const LINK = "underline-offset-2 hover:text-ink-50 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-electric-500/60";
 
+/** The other CanHav chain atlases, linked from every footer as theirs link to this one. */
+const SIBLINGS = [
+  { href: "https://arbitrum.canhav.com", label: "arbitrum.canhav.com" },
+  { href: "https://base.canhav.com", label: "base.canhav.com" },
+  { href: "https://robinhood.canhav.com", label: "robinhood.canhav.com" },
+];
+
 /**
- * Page frame footer (standard section 3): the Methodology block, then "Data as
- * of", the sources, the disclaimer and the links to the sibling atlas and canhav.com.
+ * Page frame footer, as on the other CanHav atlases: "Data as of", the sources, the disclaimer, and links to the
+ * Methodology tab, the sibling atlases and canhav.com. The methodology itself lives on its own tab.
  */
 export function SiteFooter() {
   return (
     <footer className="mt-16 border-t border-ink-700/40">
       <div className="mx-auto w-full max-w-atlas px-5 py-10 sm:px-6 lg:px-8">
-        <MethodologyDetails>
-          <div className="mt-4 grid gap-6 md:grid-cols-2">
-            <div className="space-y-3">
-              <p>
-                <strong className="font-medium text-ink-50">Universe.</strong> {meta.counts.projects} projects across {meta.counts.sectors} sectors, assembled from NEAR Catalog (all 344
-                projects via its API), AwesomeNEAR (789 of 1,093 listings), the Aurora ecosystem page, the near.org ecosystem page, DefiLlama and news research. Every row
-                carries the URL it was found at. The CSVs are the source of truth for membership; live data only adds metrics.
-              </p>
-              <p>
-                <strong className="font-medium text-ink-50">Traction.</strong> TVL, 30-day DEX volume, 30-day fees and 30-day revenue come from the DefiLlama API.{" "}
-                {meta.live
-                  ? `${meta.counts.liveProjects} projects refresh daily from DefiLlama's history (window ending ${meta.asOfLabel}); the rest keep the ${meta.snapshotAsOfLabel} research snapshot.`
-                  : `Pulled ${meta.asOfLabel}.`}{" "}
-                Tiers follow the snapshot thresholds. Tier 1 means TVL at or above $50M, 30-day volume at or above $500M, or 30-day fees at or above $1M; Tier 2 means $5M, $50M or
-                $100K; Tier 3 any measurable activity; &ldquo;Tracked, negligible&rdquo; means a DefiLlama listing exists but every figure is zero; a project DefiLlama does not track yet reads &ldquo;TBD&rdquo;.
-              </p>
-              <p>
-                <strong className="font-medium text-ink-50">Sector leaders.</strong> One rule ranks leaders on the sector cards, in the sector pop-up and on the Traction tab.
-                Active projects whose headline metric is at least 1% of the sector&apos;s top value come first, highest first; the rest follow in research rank. Sectors with no
-                traction headline rank by a fact where one exists (NEAR Intents volume routed for wallets, assets held on NEAR for exchanges, NEAR staked for validators) and
-                otherwise by research rank. Defunct and Inactive projects are never ranked, and sector totals use the same set as the leaders.
-              </p>
-              <p>
-                <strong className="font-medium text-ink-50">Coverage terms.</strong> <em>Not tracked</em> means DefiLlama does not report that metric for the project. It is a coverage
-                gap, not a zero and not unverified data, so blank cells are left out of every sum. <em>Not researched</em> means the field was never checked. <em>Not disclosed</em> and{" "}
-                <em>Unknown</em> mean it was checked and nothing was found.
-              </p>
-              <p>
-                <strong className="font-medium text-ink-50">TVL overlap.</strong> Summed protocol TVL double counts liquid staking and bridges compared with DefiLlama&apos;s default
-                chain TVL, which excludes them. CEX reserves held on NEAR (Binance alone held about $522M on {meta.snapshotAsOfLabel}) are excluded from TVL and kept as an
-                &ldquo;Other traction signal&rdquo;.
-              </p>
-            </div>
-            <div className="space-y-3">
-              <p>
-                <strong className="font-medium text-ink-50">Chain activity and NEAR Intents.</strong> Daily transactions, active accounts and new accounts come from NearBlocks and
-                the NEAR BigQuery public dataset (<code className="font-mono text-xs text-ink-50">bigquery-public-data.crypto_near_mainnet_us</code>). Intents volume comes from
-                DefiLlama&apos;s NEAR Intents adapter and, where a partner JWT is present, from the NEAR Intents Explorer API, which covers 1Click swaps only.
-              </p>
-              <p>
-                <strong className="font-medium text-ink-50">Funding and security.</strong> Researched for 75 projects (funding) and 27 projects plus both chains (security). Security
-                facts are shown as found (audits, dated incidents, noted red flags) without a rating. &ldquo;No published audit found&rdquo; means none was found in the sources checked,
-                not that the project is unaudited.
-              </p>
-              <p>
-                <strong className="font-medium text-ink-50">Status.</strong> {LEGACY_LISTINGS.toLocaleString("en-US")} listings come only from the 2021 to 2023 AwesomeNEAR directory, which marks everything active, so
-                they read &ldquo;Legacy listing, status unverified&rdquo;. They are left out of every card by default; a card whose counts they change has its own &ldquo;Include legacy&rdquo; switch. &ldquo;Defunct&rdquo; marks protocols whose DefiLlama page no longer resolves.
-              </p>
-              <p>
-                <strong className="font-medium text-ink-50">Confidence.</strong> Native-chain classification for directory-only rows is heuristic and carries its own confidence flag.
-                Funding rounds whose confidence is not &ldquo;Sourced&rdquo; are muted and labelled. Every project pop-up lists its sources.
-              </p>
-              <p>
-                <strong className="font-medium text-ink-50">Totals in this build.</strong> Summed TVL {fmtUsdFull(meta.totals.tvl)} (NEAR {fmtUsdFull(meta.totals.tvlNear)}, Aurora{" "}
-                {fmtUsdFull(meta.totals.tvlAurora)}), 30d volume {fmtUsdFull(meta.totals.volume)}, 30d fees {fmtUsdFull(meta.totals.fees)}, 30d revenue{" "}
-                {fmtUsdFull(meta.totals.revenue)}.
-              </p>
-            </div>
-          </div>
-        </MethodologyDetails>
-
-        <div className="mt-10 flex flex-col gap-6 border-t border-ink-700/40 pt-6 text-label text-ink-300 md:flex-row md:items-start md:justify-between">
+        <div className="flex flex-col gap-6 text-label text-ink-300 md:flex-row md:items-start md:justify-between">
           <div className="max-w-2xl space-y-2">
             <DataFreshness />
             <p>Sources. DefiLlama (protocols, fees, stablecoins, yields, hacks), NearBlocks, Aurora Blockscout, GeckoTerminal, NEAR Catalog, the NEAR Intents Explorer API, the NEAR BigQuery public dataset and the CanHav research CSVs committed in the repository.</p>
@@ -88,13 +27,8 @@ export function SiteFooter() {
           </div>
           <ul className="flex flex-wrap gap-x-5 gap-y-2 md:flex-col md:gap-y-2">
             <li>
-              <a href="#methodology" className={LINK}>
+              <Link href="/methodology/" prefetch={false} className={LINK}>
                 Methodology
-              </a>
-            </li>
-            <li>
-              <Link href="/about/" prefetch={false} className={LINK}>
-                About
               </Link>
             </li>
             <li>
@@ -102,13 +36,13 @@ export function SiteFooter() {
                 Help us track this
               </Link>
             </li>
-            {SIBLING_ATLAS_URL && (
-              <li>
-                <a href={SIBLING_ATLAS_URL} className={LINK} target="_blank" rel="noopener noreferrer">
-                  Robinhood Chain atlas
+            {SIBLINGS.map((a) => (
+              <li key={a.href}>
+                <a href={a.href} className={LINK} target="_blank" rel="noopener noreferrer">
+                  {a.label}
                 </a>
               </li>
-            )}
+            ))}
             <li>
               <a href="https://canhav.com" className={LINK} target="_blank" rel="noopener noreferrer">
                 canhav.com

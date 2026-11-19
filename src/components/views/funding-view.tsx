@@ -6,10 +6,11 @@ import { FundingTypeBreakdown } from "@/components/charts/funding-type-breakdown
 import { MoneyCards } from "@/components/charts/money-cards";
 import { RoundsOverTime } from "@/components/charts/rounds-over-time";
 import { RoundsTable } from "@/components/charts/rounds-table";
+import { InvestorsView } from "@/components/views/investors-view";
 import { rounds } from "@/lib/data";
 import { useFilters } from "@/lib/filters";
 
-/** Funding page: how projects are funded, the headline capital events, and every recorded round. */
+/** Funding page: how projects are funded, the headline capital events, every recorded round, then the investors behind them. */
 export function FundingView() {
   const { filtered, projectsFor, openFundingType, openProject, openInvestor, openEvent } = useFilters();
   const [onlySelection, setOnlySelection] = useState(false);
@@ -29,6 +30,13 @@ export function FundingView() {
       <RoundsOverTime rounds={visibleRounds} />
       <RoundsTable rounds={rounds} visible={visibleRounds} onlySelection={onlySelection} onOnlySelectionChange={setOnlySelection} onOpenProject={openProject} onOpenInvestor={openInvestor} />
       <FinancialsTable projects={filtered} onOpen={openProject} />
+      {/* The Investors tab folded in here, as on the other CanHav atlases; /investors/ redirects to this anchor. */}
+      <section id="investors" aria-labelledby="investors-title" className="scroll-mt-24 space-y-3 pt-4">
+        <h2 id="investors-title" className="font-display text-title text-ink-50">
+          Investors
+        </h2>
+        <InvestorsView />
+      </section>
     </div>
   );
 }

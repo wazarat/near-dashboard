@@ -16,16 +16,14 @@ const PAGES: Array<{ name: string; url: string; expect: string }> = [
   { name: "traction-fees-momentum", url: "/traction/?lb=fees&cols=momentum", expect: "Leaderboard" },
   { name: "funding", url: "/funding/", expect: "Rounds" },
   { name: "funding-type-modal", url: "/funding/?fundingType=VC-backed", expect: "Filter the atlas to this type" },
-  { name: "security", url: "/security/", expect: "NEAR Intents" },
+  { name: "methodology", url: "/methodology/", expect: "Coverage terms and counting rules" },
   { name: "explorer", url: "/explorer/", expect: "Download filtered CSV" },
   { name: "explorer-empty", url: "/explorer/?q=zzzzqqq", expect: "No projects match" },
   { name: "explorer-map", url: "/explorer/?view=map", expect: "Box size is" },
   { name: "intents", url: "/intents/", expect: "Daily volume" },
-  { name: "thesis", url: "/thesis/", expect: "Cross-chain volume through NEAR Intents" },
-  { name: "investors", url: "/investors/?investor=dragonfly-capital", expect: "Portfolio (" },
+  { name: "investors", url: "/funding/?investor=dragonfly-capital", expect: "Portfolio (" },
   { name: "compare-empty", url: "/compare/", expect: "Liquid staking" },
   { name: "help-track", url: "/help-track/", expect: "Help us track this" },
-  { name: "about", url: "/about/", expect: "About and methodology" },
   { name: "compare-liquid-staking", url: "/compare/?compare=meta-pool,rhea-lst-rnear,linear-protocol&cm=fees", expect: "Meta Pool" },
 ];
 
@@ -587,7 +585,7 @@ test("tables of records keep the count out of the title and in their own Showing
   await expect.poll(async () => nums(await roundsLine.textContent())[0]).toBeLessThan(allTotal);
   expect(nums(await roundsLine.textContent())[1]).toBe(allTotal);
 
-  await page.goto("/investors/");
+  await page.goto("/funding/");
   const investorsCard = page.locator('[data-chart-card="Investors"]');
   await expect(investorsCard.getByRole("heading", { name: "Investors", exact: true })).toBeVisible({ timeout: 15_000 });
   const [invShown, invTotal] = nums(await investorsCard.getByTestId("showing-line").textContent());
@@ -608,7 +606,7 @@ test("tables of records keep the count out of the title and in their own Showing
 });
 
 test("security publishes facts, not ratings, and lists incidents as a sortable table", async ({ page }) => {
-  await page.goto("/security/");
+  await page.goto("/methodology/#security");
   await expect(page.locator('[data-chart-card="Security facts"]')).toContainText("No published audit found");
   await expect(page.getByText(/\b(High|Medium|Low) risk\b/)).toHaveCount(0);
   await expect(page.getByText(/Security risk levels|High and Medium risk projects/)).toHaveCount(0);
@@ -681,7 +679,7 @@ test("with a filter every Overview card follows it, the chain cards switching to
   expect(errors, errors.join("\n")).toEqual([]);
 });
 
-test("the Overview timeline and the Methodology section are dropdowns, closed until opened", async ({ page }) => {
+test("the Overview timeline is a dropdown, closed until opened", async ({ page }) => {
   await page.goto("/");
   const card = page.locator('[data-chart-card="Timeline"]');
   const toggle = card.locator("h3 button[aria-expanded]");
@@ -691,16 +689,6 @@ test("the Overview timeline and the Methodology section are dropdowns, closed un
   await expect(card.locator("tbody tr").first()).toBeVisible();
   await toggle.click();
   await expect(card.locator("tbody tr")).toHaveCount(0);
-  const methodology = page.locator("details#methodology");
-  await expect(methodology).not.toHaveAttribute("open", "");
-  await expect(methodology.getByText("Coverage terms.")).toBeHidden();
-  // The footer link to the section opens it.
-  await page.locator('footer a[href="#methodology"]').click();
-  await expect(methodology).toHaveAttribute("open", "");
-  await expect(methodology.getByText("Coverage terms.")).toBeVisible();
-  // A shared link to the section opens it on load.
-  await page.goto("/about/#methodology");
-  await expect(page.locator("details#methodology")).toHaveAttribute("open", "", { timeout: 15_000 });
 });
 
 test("KPI tiles count the projects in each sum and list them in the info pop-up", async ({ page }) => {
@@ -775,25 +763,27 @@ test("project modal opens from a shared URL with history tabs", async ({ page })
   await expect(dialog).toContainText("History");
 });
 
-test("thesis charts expose a Query tab with SQL", async ({ page }) => {
-  await page.goto("/thesis/");
-  const query = page.getByRole("tab", { name: "Query" });
-  await expect(query.nth(2)).toBeAttached();
-  expect(await query.count()).toBeGreaterThan(2);
-  await query.first().click();
-  await expect(page.locator("pre").first()).toBeVisible();
-  await expect(page.locator("pre").first()).toContainText(/SELECT|GET|weekly/);
-});
-
-test("thesis results table lists every pre-registered test and links to its card", async ({ page }) => {
-  await page.goto("/thesis/");
-  const table = page.getByTestId("thesis-results-table");
-  await expect(table).toBeVisible();
-  const links = table.locator("a[href^='#test-']");
-  expect(await links.count()).toBe(10);
-  for (const href of await links.evaluateAll((as) => as.map((a) => a.getAttribute("href")))) await expect(page.locator(href as string)).toBeAttached();
-  for (const code of ["A1", "A2", "A3", "B1", "B2", "B3", "B4", "B5", "B6"]) await expect(page.getByRole("heading", { name: new RegExp(`^Test ${code} `) })).toBeAttached();
-  expect(await page.getByTestId("test-status-line").count()).toBeGreaterThanOrEqual(9);
+test("the tabs match the other CanHav atlases, plus Intents, and the old tab URLs redirect", async ({ page }) => {
+  await page.goto("/");
+  const nav = page.getByRole("navigation", { name: "Primary" });
+  await expect(nav.getByRole("link")).toHaveText(["Overview", "Sectors", "Traction", "Intents", "Funding", "Explorer", "Compare", "Methodology"], { timeout: 15_000 });
+  for (const [from, to] of [
+    ["/thesis/", /\/$/],
+    ["/investors/?investor=dragonfly-capital", /\/funding\/\?investor=dragonfly-capital#investors$/],
+    ["/security/", /\/methodology\/#security$/],
+    ["/about/", /\/methodology\/$/],
+  ] as const) {
+    await page.goto(from);
+    await expect(page).toHaveURL(to);
+  }
+  await expect(page.getByRole("heading", { level: 1, name: "Methodology" })).toBeVisible();
+  // The methodology lives on its tab; the footer links to it, and to the sibling atlases.
+  await expect(page.getByTestId("methodology-terms")).toContainText("Coverage terms.");
+  await expect(page.locator("footer")).not.toContainText("Coverage terms.");
+  await expect(page.locator('footer a[href="/methodology/"]')).toBeVisible();
+  for (const host of ["arbitrum", "base", "robinhood"]) await expect(page.locator(`footer a[href="https://${host}.canhav.com"]`)).toBeVisible();
+  await page.goto("/funding/");
+  await expect(page.getByRole("heading", { level: 2, name: "Investors", exact: true })).toBeVisible({ timeout: 15_000 });
 });
 
 test("compare tray and presets drive the URL", async ({ page }) => {
@@ -804,7 +794,7 @@ test("compare tray and presets drive the URL", async ({ page }) => {
 });
 
 test("investor modal opens from the investors table", async ({ page }) => {
-  await page.goto("/investors/");
+  await page.goto("/funding/");
   await page.locator("table").getByRole("button", { name: "Pantera Capital", exact: true }).first().click();
   await expect(page).toHaveURL(/investor=pantera-capital/);
   await expect(page.getByRole("dialog")).toContainText("Pantera Capital");
@@ -838,7 +828,7 @@ test("a project opened from the sector modal replaces it instead of stacking", a
 });
 
 test("a project opened from the investor modal replaces it instead of stacking", async ({ page }) => {
-  await page.goto("/investors/?investor=dragonfly-capital");
+  await page.goto("/funding/?investor=dragonfly-capital");
   const investor = page.getByTestId("investor-modal");
   await expect(investor).toContainText("Portfolio (", { timeout: 15_000 });
   await investor.locator("ul button").first().click();
@@ -911,19 +901,19 @@ test("analytics events carry closed-set properties only", async ({ page }, info)
   await page.getByTestId("project-modal").getByTestId("compare-button").click();
   await expect.poll(async () => (await queued(page)).find((e) => e.name === "compare_add")?.data).toEqual({ count: 1, auth: "off" });
 
-  await page.goto("/investors/?investor=dragonfly-capital");
-  await expect.poll(async () => (await queued(page)).find((e) => e.name === "investor_open")?.data).toEqual({ page: "investors", auth: "off" });
+  await page.goto("/funding/?investor=dragonfly-capital");
+  await expect.poll(async () => (await queued(page)).find((e) => e.name === "investor_open")?.data).toEqual({ page: "funding", auth: "off" });
 
-  await page.goto("/thesis/");
+  await page.goto("/intents/");
   await page.getByRole("tab", { name: "Query" }).first().click();
-  await expect.poll(async () => (await queued(page)).find((e) => e.name === "chart_view")?.data).toEqual({ view: "query", page: "thesis" });
+  await expect.poll(async () => (await queued(page)).find((e) => e.name === "chart_view")?.data).toEqual({ view: "query", page: "intents" });
 
   // Nothing typed, no project id, no investor and no URL ever appears in what is queued.
   const all = JSON.stringify(await queued(page));
   expect(all).not.toMatch(/meta pool|rhea|dragonfly|near-intents|https?:/i);
 });
 
-test("card summaries show as points in the expanded view, and stay on the card for Thesis and Intents", async ({ page }) => {
+test("card summaries show as points in the expanded view, and stay on the card for Intents", async ({ page }) => {
   await page.goto("/");
   const card = page.locator('[data-chart-card="Native vs imported"]');
   await expect(card).toBeVisible({ timeout: 15_000 });
@@ -932,10 +922,7 @@ test("card summaries show as points in the expanded view, and stay on the card f
   const dialog = page.locator('[data-expanded-chart="native-vs-imported"]');
   await expect(dialog.getByTestId("takeaway")).toBeVisible({ timeout: 15_000 });
   await expect(dialog.getByTestId("takeaway").locator("li").first()).toContainText(/NEAR-native/);
-  // The pages whose summaries are the argument keep them on the card.
-  await page.goto("/thesis/");
-  const thesis = page.locator("[data-chart-card]").first();
-  await expect(thesis.locator("p").first()).not.toBeEmpty();
+  // Intents keeps its summaries on the card.
   await page.goto("/intents/");
   await expect(page.locator('[data-chart-card]').first().locator("p").first()).not.toBeEmpty();
 });
@@ -943,7 +930,7 @@ test("card summaries show as points in the expanded view, and stay on the card f
 test("the Verified on NEAR card renders and links a NearBlocks transaction", async ({ page }) => {
   const index = path.join(__dirname, "..", "data", "anchors", "index.json");
   const anchored = fs.existsSync(index) && Object.keys(JSON.parse(fs.readFileSync(index, "utf8"))).length > 0;
-  await page.goto("/thesis/");
+  await page.goto("/methodology/#verified");
   const card = page.getByTestId("anchor-card");
   await expect(card).toBeVisible({ timeout: 15_000 });
   await expect(card.getByRole("heading", { name: "Verified on NEAR" })).toBeVisible();
